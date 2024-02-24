@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import Hero from "../components/Hero/Hero";
 import NavBar from "../components/NavBar/NavBar";
 
 const Home = () => {
   return (
     <div>
-      <NavBar />
-      <Hero />
+      <div className="relative">
+        <Hero />
+      </div>
     </div>
   );
 };

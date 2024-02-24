@@ -1,21 +1,16 @@
 import React, { useState } from "react";
 import logo from "../../assets/png/logo-color.png";
 
-const NavBar = () => {
-  const [activeTab, setActiveTab] = useState("home");
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const tabs = ["Home", "About", "Services", "Team", "Contacts", "Blogs"];
-
+const NavBar = ({ menuOpen, setMenuOpen, activeTab, setActiveTab, tabs }) => {
   return (
-    <div className="flex justify-between px-5 pb-2 md:px-0 md:mx-40 pt-5 items-center bg-white mb-5 shadow-sm md:shadow-none">
+    <div className="flex justify-between px-5 pb-5 lg:px-40 pt-5 items-center bg-white mb-5 shadow-sm lg:shadow-none fixed w-full">
       <div className="flex items-end gap-10 w-full">
         <div className="flex items-center gap-2">
           <img className="w-10 rounded" src={logo} />
           <span className="text-3xl font-semibold font-primary">GIGSFLIX.</span>
         </div>
-        <nav className="hidden md:block mb-1 absolute md:relative top-12 md:top-0 right-0 bg-white text-center w-full md:w-fit border md:border-none">
-          <ul className="flex gap-5 flex-col md:flex-row">
+        <nav className="hidden lg:block mb-1 absolute lg:relative lg:top-0 right-0 bg-white text-center lg:w-fit lg:border-none">
+          <ul className="flex gap-5 flex-col lg:flex-row">
             {tabs.map((tab) => {
               return (
                 <li
@@ -32,35 +27,17 @@ const NavBar = () => {
             })}
           </ul>
         </nav>
-        {menuOpen && (
-          <nav className="block md:hidden mb-1 absolute bottom-0 md:top-0 right-0 bg-white text-center w-full md:w-fit border md:border-none">
-            <ul className="flex gap-5 flex-col md:flex-row">
-              {tabs.map((tab) => {
-                return (
-                  <li
-                    className={
-                      activeTab == tab.toLowerCase()
-                        ? "nav_text text-primaryLight border-primary"
-                        : "nav_text"
-                    }
-                    onClick={() => setActiveTab(tab.toLowerCase())}
-                  >
-                    {tab}
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-        )}
       </div>
 
-      <div className="gap-5 hidden md:flex">
-        <button className="btn text-primaryLight">Log In</button>
-        <button className="btn bg-primaryLight text-white">
+      <div className="gap-5 hidden lg:flex">
+        <button className="btn text-primaryLight rounded-md hover:bg-primaryLight hover:text-white">
+          Log In
+        </button>
+        <button className="btn bg-primaryLight rounded-md text-white hover:bg-white hover:text-primaryLight">
           Create Account
         </button>
       </div>
-      <div className="block md:hidden">
+      <div className="block lg:hidden">
         {!menuOpen ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"

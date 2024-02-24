@@ -5,9 +5,9 @@
 @tailwind utilities;
 
 .nav_text {
-  @apply font-primary text-sm font-semibold text-gray-500 cursor-pointer px-1 py-3 md:py-0 border-b-2 border-white hover:bg-gray-100 md:hover:bg-white md:hover:border-primaryLight  rounded-sm transition duration-300;
+  @apply font-primary text-sm font-semibold text-gray-500 cursor-pointer px-1 py-3 lg:py-0 border-b-2 border-white hover:bg-gray-100 lg:hover:bg-slate-50 lg:hover:border-primaryLight  rounded-sm transition duration-300;
 }
 
 .btn {
-  @apply py-2 px-3 border border-primaryLight font-medium shadow-sm rounded-md tracking-wider text-sm font-primary hover:opacity-70 whitespace-nowrap;
+  @apply py-2 px-3 border border-primaryLight font-medium shadow-sm tracking-wider text-sm font-primary hover:opacity-70 whitespace-nowrap transition-colors duration-500;
 }
