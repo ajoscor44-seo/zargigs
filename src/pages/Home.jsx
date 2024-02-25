@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import Hero from "../components/Hero/Hero";
 import AboutUs from "../components/AboutUs/AboutUs";
 import WhatYouDo from "../components/WhatYouDo/WhatYouDo";
-import Teams from "../components/Teams/Teams";
-import ContactUs from "../components/ContactUs/ContactUs";
 import OurHandles from "../components/OurHandles/OurHandles";
 import Services from "../components/Services/Services";
+import Footer from "../components/Footer/Footer";
 
 const Home = () => {
   return (
@@ -14,10 +13,9 @@ const Home = () => {
         <Hero />
         <Services />
         <WhatYouDo />
-        {/* <Teams /> */}
         <AboutUs />
-        {/* <ContactUs /> */}
         <OurHandles />
+        <Footer />
       </div>
     </div>
   );

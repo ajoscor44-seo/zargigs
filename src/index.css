@@ -11,3 +11,15 @@
 .btn {
   @apply py-2 px-3 font-medium shadow-sm tracking-wider text-sm font-primary hover:opacity-70 whitespace-nowrap transition-colors duration-500;
 }
+
+.footer_head {
+  @apply font-medium text-xl font-primary mb-3;
+}
+
+.footer_list {
+  @apply text-sm flex flex-col gap-2 mb-5 font-primary font-medium;
+}
+
+.footer_list-item {
+  @apply hover:text-primary hover:underline cursor-pointer;
+}
