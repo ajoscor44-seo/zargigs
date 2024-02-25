@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import hero_img from "../../assets/images/girl-pointing.png";
 import NavBar from "../NavBar/NavBar";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const Hero = () => {
   const [activeTab, setActiveTab] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
   const tabs = [
-    { name: "Home", to: 0 },
-    { name: "For Advertisers", to: 900 },
-    { name: "For Members", to: 2200 },
-    { name: "About", to: 3200 },
-    { name: "Contacts Us", to: 0 },
+    { name: "Home", to: 0, toBig: 0 },
+    { name: "For Advertisers", to: 900, toBig: 700 },
+    { name: "For Members", to: 2200, toBig: 1500 },
+    { name: "About", to: 3200, toBig: 2000 },
+    { name: "Contacts Us", to: 0, toBig: 0 },
   ];
 
   const scrollTo = (to) => {
@@ -29,6 +30,7 @@ const Hero = () => {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           tabs={tabs}
+          scrollTo={scrollTo}
         />
         {menuOpen && (
           <nav className="block lg:hidden pb-5 fixed right-0 bg-white text-center w-full shadow-lg top-20 border-t border-primaryLight">
@@ -53,12 +55,16 @@ const Hero = () => {
               })}
             </ul>
             <div className="gap-3 lg:hidden flex justify-center px-3 mt-2">
-              <button className="btn border border-primaryLight text-primaryLight rounded-md hover:bg-primaryLight hover:text-white">
-                Log In
-              </button>
-              <button className="btn bg-primaryLight rounded-md text-white hover:bg-white hover:text-primaryLight">
-                Create Account
-              </button>
+              <Link to="/login">
+                <button className="btn border border-primaryLight text-primaryLight rounded-md hover:bg-primaryLight hover:text-white">
+                  Log In
+                </button>
+              </Link>
+              <Link to="/signup">
+                <button className="btn bg-primaryLight rounded-md text-white hover:bg-white hover:text-primaryLight">
+                  Create Account
+                </button>
+              </Link>
             </div>
           </nav>
         )}

@@ -6,7 +6,7 @@ import lady_advertiser from "../../assets/images/lady-advertiser.jpg";
 
 const Services = () => {
   return (
-    <div className="bg-white px-4 py-10 grid grid-flow-col lg:flex-row lg:pt-20 lg:px-72 lg:justify-center lg:items-end">
+    <div className="bg-white px-4 py-10 grid lg:grid-flow-col lg:flex-row lg:pt-20 lg:px-72 lg:justify-center lg:items-end">
       <div className="col-span-2">
         <img src={lady_advertiser} className="mb-10" />
       </div>

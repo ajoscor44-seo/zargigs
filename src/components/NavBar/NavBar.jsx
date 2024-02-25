@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import logo from "../../assets/png/logo-color.png";
 
-const NavBar = ({ menuOpen, setMenuOpen, activeTab, setActiveTab, tabs }) => {
+const NavBar = ({
+  menuOpen,
+  setMenuOpen,
+  activeTab,
+  setActiveTab,
+  tabs,
+  scrollTo,
+}) => {
   return (
     <div className="flex justify-between px-5 pb-5 lg:px-40 pt-5 items-center bg-white mb-5 shadow-sm lg:shadow-none fixed w-full">
       <div className="flex items-end gap-10 w-full">
@@ -19,7 +26,11 @@ const NavBar = ({ menuOpen, setMenuOpen, activeTab, setActiveTab, tabs }) => {
                       ? "nav_text text-primaryLight border-primary"
                       : "nav_text"
                   }
-                  onClick={() => setActiveTab(tab.name.toLowerCase())}
+                  onClick={() => {
+                    setActiveTab(tab.name.toLowerCase());
+                    scrollTo(tab.toBig);
+                    setMenuOpen(false);
+                  }}
                 >
                   {tab.name}
                 </li>

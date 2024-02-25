@@ -3,7 +3,7 @@ import { MdMail, MdMailOutline } from "react-icons/md";
 
 const Footer = () => {
   return (
-    <div className="bg-white p-5">
+    <div className="bg-white p-5 lg:flex lg:justify-center gap-20">
       <div>
         <h2 className="footer_head">Company</h2>
         <ul className="footer_list">

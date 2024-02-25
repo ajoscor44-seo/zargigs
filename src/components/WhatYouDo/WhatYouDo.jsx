@@ -5,7 +5,7 @@ import man_member from "../../assets/images/businessman-talking-phone-2.png";
 const WhatYouDo = () => {
   return (
     <div className="bg-white px-4 py-10 grid lg:grid-cols-2 lg:pt-20 lg:px-72 lg:justify-center lg:items-start">
-      <div className="order-2">
+      <div className="lg:order-2">
         <img src={man_member} className="mb-10" />
       </div>
       <div>
