@@ -4,6 +4,8 @@ import { FaFacebook } from "react-icons/fa6";
 import { GrGoogle, GrPowerReset } from "react-icons/gr";
 import { MdOutlineLogin } from "react-icons/md";
 import logo from "../assets/png/logo-color.png";
+import loginIllustration from "../assets/images/login-illustration-png.png";
+import googleIcon from "../assets/png/google-icon.png";
 
 const Login = () => {
   const [email, setEmail] = useState(null);
@@ -24,17 +26,21 @@ const Login = () => {
   };
 
   return (
-    <div className="bg-white px-4 py-10">
-      <div className="flex items-center gap-2 px-4">
-        <img className="w-10 rounded" src={logo} />
-
-        <div className="flex items-start flex-col">
-          <h2 className="text-2xl font-primary font-bold">GigsFlix</h2>
-          <span className="h-1 w-6 rounded-full bg-primaryLight"></span>
+    <div className="bg-white px-4 py-10 lg:py-0 lg:flex max-h-screen overflow-hidden">
+      <div className="lg:flex lg:flex-col lg:py-5 flex-1">
+        <div className="flex items-center gap-2 px-4">
+          <img className="w-10 rounded" src={logo} />
+          <div className="flex items-start flex-col">
+            <h2 className="text-2xl font-primary font-bold">GigsFlix</h2>
+            <span className="h-1 w-6 rounded-full bg-primaryLight"></span>
+          </div>
+        </div>
+        <div className="col-span-2 hidden lg:flex lg:justify-center">
+          <img src={loginIllustration} className="h-svh" />
         </div>
       </div>
 
-      <div>
+      <div className="lg:bg-slate-50 lg:p-10 lg:pt-20">
         <p className="font-bold font-primary mt-4 px-4 text-lg">
           Welcome back! 👋
         </p>
@@ -85,11 +91,11 @@ const Login = () => {
         </form>
         <div className="flex flex-col gap-4 px-4">
           <div className="btn rounded-sm flex justify-center items-center gap-2 font-primary text-red-600 border mt-3">
-            <GrGoogle size={20} />
+            <img src={googleIcon} className="w-8" />
             <span className="text-xl text-dark">Continue With Google</span>
           </div>
           <div className="btn rounded-sm flex justify-center items-center gap-2 font-primary text-blue-600 border mt-3">
-            <FaFacebook size={20} />
+            <FaFacebook size={25} />
             <span className="text-xl text-dark">Continue With Facebook</span>
           </div>
           <Link to="/forgot-password">
