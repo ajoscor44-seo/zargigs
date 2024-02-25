@@ -5,10 +5,10 @@ import NavBar from "../NavBar/NavBar";
 const Hero = () => {
   const [activeTab, setActiveTab] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
-  const tabs = ["Home", "About", "Services", "Team", "Contacts"];
+  const tabs = ["Home", "For Advertisers", "For Members", "About", "Contacts"];
 
   return (
-    <div className="hero relative border-b border-gray-200">
+    <div className="relative">
       <div className="bg-primary relative h-fit">
         <NavBar
           menuOpen={menuOpen}
@@ -28,7 +28,10 @@ const Hero = () => {
                         ? "nav_text text-primaryLight border-primary"
                         : "nav_text"
                     }
-                    onClick={() => setActiveTab(tab.toLowerCase())}
+                    onClick={() => {
+                      setActiveTab(tab.toLowerCase());
+                      setMenuOpen(false);
+                    }}
                   >
                     {tab}
                   </li>
@@ -36,7 +39,7 @@ const Hero = () => {
               })}
             </ul>
             <div className="gap-3 lg:hidden flex justify-center px-3 mt-2">
-              <button className="btn text-primaryLight rounded-md hover:bg-primaryLight hover:text-white">
+              <button className="btn border border-primaryLight text-primaryLight rounded-md hover:bg-primaryLight hover:text-white">
                 Log In
               </button>
               <button className="btn bg-primaryLight rounded-md text-white hover:bg-white hover:text-primaryLight">
@@ -81,9 +84,9 @@ const Hero = () => {
           </button>
           <div className="mt-5 text-gray-600 font-medium">
             Already A User?,{" "}
-            <span className="text-primaryLight cursor-pointer hover:underline font-primary">
+            <span className="text-primaryLight cursor-pointer hover:underline font-primary font-bold">
               {" "}
-              LOGIN{" "}
+              Login{" "}
             </span>
           </div>
           <img className="hidden lg:block" src={hero_img} />

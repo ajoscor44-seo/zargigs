@@ -9,5 +9,5 @@
 }
 
 .btn {
-  @apply py-2 px-3 border border-primaryLight font-medium shadow-sm tracking-wider text-sm font-primary hover:opacity-70 whitespace-nowrap transition-colors duration-500;
+  @apply py-2 px-3 font-medium shadow-sm tracking-wider text-sm font-primary hover:opacity-70 whitespace-nowrap transition-colors duration-500;
 }

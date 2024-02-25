@@ -30,7 +30,7 @@ const NavBar = ({ menuOpen, setMenuOpen, activeTab, setActiveTab, tabs }) => {
       </div>
 
       <div className="gap-5 hidden lg:flex">
-        <button className="btn text-primaryLight rounded-md hover:bg-primaryLight hover:text-white">
+        <button className="btn border border-primaryLight text-primaryLight rounded-md hover:bg-primaryLight hover:text-white">
           Log In
         </button>
         <button className="btn bg-primaryLight rounded-md text-white hover:bg-white hover:text-primaryLight">
