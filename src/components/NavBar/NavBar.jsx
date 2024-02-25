@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import logo from "../../assets/png/logo-color.png";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const NavBar = ({
   menuOpen,
@@ -21,6 +22,7 @@ const NavBar = ({
             {tabs.map((tab) => {
               return (
                 <li
+                  key={tab.name}
                   className={
                     activeTab == tab.name.toLowerCase()
                       ? "nav_text text-primaryLight border-primary"
@@ -41,12 +43,16 @@ const NavBar = ({
       </div>
 
       <div className="gap-5 hidden lg:flex">
-        <button className="btn border border-primaryLight text-primaryLight rounded-md hover:bg-primaryLight hover:text-white">
-          Log In
-        </button>
-        <button className="btn bg-primaryLight rounded-md text-white hover:bg-white hover:text-primaryLight">
-          Create Account
-        </button>
+        <Link to="/login">
+          <button className="btn border border-primaryLight text-primaryLight rounded-md hover:bg-primaryLight hover:text-white">
+            Log In
+          </button>
+        </Link>
+        <Link to="/signup">
+          <button className="btn bg-primaryLight rounded-md text-white hover:bg-white hover:text-primaryLight">
+            Create Account
+          </button>
+        </Link>
       </div>
       <div className="block lg:hidden">
         {!menuOpen ? (

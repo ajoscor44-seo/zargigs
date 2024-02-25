@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 import postAdvertImg from "../../assets/png/post-advert.png";
 import man_member from "../../assets/images/businessman-talking-phone-2.png";
 
@@ -89,9 +90,11 @@ const WhatYouDo = () => {
             </div>
           </div>
           <div className="flex items-start">
-            <button className="btn bg-primaryLight rounded-sm text-white">
-              Get Started
-            </button>
+            <Link to="/signup">
+              <button className="btn bg-primaryLight rounded-sm text-white">
+                Get Started
+              </button>
+            </Link>
           </div>
         </div>
       </div>

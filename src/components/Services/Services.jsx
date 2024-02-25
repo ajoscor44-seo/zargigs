@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 import { FaUsers, FaMoneyBillTrendUp } from "react-icons/fa6";
 import { MdAddReaction, MdGppGood } from "react-icons/md";
 import postAdvertImg from "../../assets/png/post-advert.png";
@@ -85,26 +86,12 @@ const Services = () => {
               </p>
             </div>
           </div>
-          {/* <div className="grid grid-flow-col gap-3 items-start">
-            <div className="service_icon border p-4 rounded-full">
-              <MdGppGood size={30} className="text-primaryLight" />
-            </div>
-
-            <div>
-              <p className="font-bold text-lg font-primary">
-                Easy Campaign Management
-              </p>
-              <p className="font-medium text-sm font-primary mt-2 pr-2">
-                Launching your campaign is simple and straightforward. Choose
-                your desired actions (likes, shares, advert postings), set your
-                budget, and watch your engagement grow.
-              </p>
-            </div>
-          </div> */}
           <div className="flex items-start">
-            <button className="btn bg-primaryLight rounded-sm text-white">
-              Get Started
-            </button>
+            <Link to="/signup">
+              <button className="btn bg-primaryLight rounded-sm text-white">
+                Get Started
+              </button>
+            </Link>
           </div>
         </div>
       </div>

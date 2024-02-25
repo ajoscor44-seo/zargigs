@@ -1,5 +1,6 @@
 import React from "react";
-import { MdMail, MdMailOutline } from "react-icons/md";
+import { MdMail } from "react-icons/md";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const Footer = () => {
   return (
@@ -17,8 +18,12 @@ const Footer = () => {
       <div>
         <h2 className="footer_head">Quick Links</h2>
         <ul className="footer_list">
-          <li className="footer_list-item">Create Account</li>
-          <li className="footer_list-item">Login</li>
+          <Link to="/signup">
+            <li className="footer_list-item">Create Account</li>
+          </Link>
+          <Link to="/login">
+            <li className="footer_list-item">Login</li>
+          </Link>
           <li className="footer_list-item">Terms</li>
           <li className="footer_list-item">Pricing</li>
           <li className="footer_list-item">Earnings</li>

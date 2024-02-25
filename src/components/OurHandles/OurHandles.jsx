@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 import { FaFacebook } from "react-icons/fa6";
 import { FaTwitter } from "react-icons/fa6";
 import { FaSquareInstagram } from "react-icons/fa6";
@@ -15,12 +16,16 @@ const OurHandles = () => {
           income with their social media accounts. Get started today for free.
         </p>
         <div className="flex justify-center gap-5 mt-3">
-          <button className="btn bg-primary text-white rounded-sm">
-            CREATE ACCOUNT
-          </button>
-          <button className="btn text-primary border border-primary rounded-sm">
-            LOGIN
-          </button>
+          <Link to="/signup">
+            <button className="btn bg-primary text-white rounded-sm">
+              CREATE ACCOUNT
+            </button>
+          </Link>
+          <Link to="/login">
+            <button className="btn text-primary border border-primary rounded-sm">
+              LOGIN
+            </button>
+          </Link>
         </div>
       </div>
       <div className="flex items-center flex-col mt-5">

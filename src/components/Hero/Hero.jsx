@@ -69,7 +69,7 @@ const Hero = () => {
           </nav>
         )}
       </div>
-      <div className="grid grid-flow-col lg:flex-row lg:pt-20 lg:px-72 lg:justify-center">
+      <div className="grid grid-flow-col lg:flex-row lg:pt-20 md:0 lg:px-72 lg:justify-center">
         <div className="flex flex-col justify-center items-center px-5 py-20 lg:py-0 col-span-1">
           <div className="flex flex-col items-center text-center text-gray-700 text-3xl mt-10 pt-10 lg:pt-0 pb-5 font-extrabold">
             <span className="text-primaryLight mb-5 md:text-4xl px-4 lg:text-start">
@@ -85,29 +85,33 @@ const Hero = () => {
             social media account.
           </p>
 
-          <button className="btn bg-primaryLight text-white mt-5 font-bold rounded-full">
-            Get Started{" "}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-6 h-6 inline-block"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
-              />
-            </svg>
-          </button>
+          <Link to="/signup">
+            <button className="btn bg-primaryLight text-white mt-5 font-bold rounded-full">
+              Get Started{" "}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6 inline-block"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
+                />
+              </svg>
+            </button>
+          </Link>
           <div className="mt-5 text-gray-600 font-medium">
             Already A User?,{" "}
-            <span className="text-primaryLight cursor-pointer hover:underline font-primary font-bold">
-              {" "}
-              Login{" "}
-            </span>
+            <Link to="/login">
+              <span className="text-primaryLight cursor-pointer hover:underline font-primary font-bold">
+                {" "}
+                Login{" "}
+              </span>
+            </Link>
           </div>
         </div>
         <div className="col-span-2 flex justify-center items-center overflow-hidden">
