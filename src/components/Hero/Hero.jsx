@@ -1,11 +1,24 @@
 import React, { useState } from "react";
-import hero_img from "../../assets/images/girl-pointing.jpg";
+import hero_img from "../../assets/images/girl-pointing.png";
 import NavBar from "../NavBar/NavBar";
 
 const Hero = () => {
   const [activeTab, setActiveTab] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
-  const tabs = ["Home", "For Advertisers", "For Members", "About", "Contacts"];
+  const tabs = [
+    { name: "Home", to: 0 },
+    { name: "For Advertisers", to: 900 },
+    { name: "For Members", to: 2200 },
+    { name: "About", to: 3200 },
+    { name: "Contacts Us", to: 0 },
+  ];
+
+  const scrollTo = (to) => {
+    window.scrollTo({
+      top: to,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <div className="relative">
@@ -24,16 +37,17 @@ const Hero = () => {
                 return (
                   <li
                     className={
-                      activeTab == tab.toLowerCase()
+                      activeTab == tab.name.toLowerCase()
                         ? "nav_text text-primaryLight border-primary"
                         : "nav_text"
                     }
                     onClick={() => {
-                      setActiveTab(tab.toLowerCase());
+                      setActiveTab(tab.name.toLowerCase());
+                      scrollTo(tab.to);
                       setMenuOpen(false);
                     }}
                   >
-                    {tab}
+                    {tab.name}
                   </li>
                 );
               })}
@@ -49,17 +63,17 @@ const Hero = () => {
           </nav>
         )}
       </div>
-      <div className="flex flex-col lg:flex-row border">
-        <div className="flex flex-col justify-center items-center px-5 py-20 lg:pt-40">
-          <div className="flex flex-col items-center text-center text-gray-700 text-3xl mt-10 pt-10 pb-5 font-extrabold">
-            <span className="text-primaryLight mb-5 md:text-4xl px-4">
+      <div className="grid grid-flow-col lg:flex-row lg:pt-20 lg:px-72 lg:justify-center">
+        <div className="flex flex-col justify-center items-center px-5 py-20 lg:py-0 col-span-1">
+          <div className="flex flex-col items-center text-center text-gray-700 text-3xl mt-10 pt-10 lg:pt-0 pb-5 font-extrabold">
+            <span className="text-primaryLight mb-5 md:text-4xl px-4 lg:text-start">
               Ready To Increase Your Income?
             </span>
-            <span className="font-sans px-5 py-3">
+            <span className="font-sans px-5 py-3 lg:text-start">
               Get Paid for Posting Adverts Daily On Your Social Media.
             </span>
           </div>
-          <p className="text-center font-semibold font-primary text-lg">
+          <p className="text-center font-semibold font-primary text-lg lg:text-start px-4">
             Earn daily income by reselling products, posting adverts and
             performing simple social tasks for top businesses and brands on your
             social media account.
@@ -89,6 +103,8 @@ const Hero = () => {
               Login{" "}
             </span>
           </div>
+        </div>
+        <div className="col-span-2 flex justify-center items-center overflow-hidden">
           <img className="hidden lg:block" src={hero_img} />
         </div>
       </div>

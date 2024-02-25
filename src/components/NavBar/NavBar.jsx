@@ -15,13 +15,13 @@ const NavBar = ({ menuOpen, setMenuOpen, activeTab, setActiveTab, tabs }) => {
               return (
                 <li
                   className={
-                    activeTab == tab.toLowerCase()
+                    activeTab == tab.name.toLowerCase()
                       ? "nav_text text-primaryLight border-primary"
                       : "nav_text"
                   }
-                  onClick={() => setActiveTab(tab.toLowerCase())}
+                  onClick={() => setActiveTab(tab.name.toLowerCase())}
                 >
-                  {tab}
+                  {tab.name}
                 </li>
               );
             })}
