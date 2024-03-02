@@ -8,6 +8,7 @@ import {
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/Forgot-Password";
+import ClientDashboard from "./pages/ClientDashboard";
 
 function App() {
   return (
@@ -25,6 +26,9 @@ function App() {
           </Route>
           <Route path="/forgot-password">
             <ForgotPassword />
+          </Route>
+          <Route path="/dashboard">
+            <ClientDashboard />
           </Route>
         </Switch>
       </Router>
