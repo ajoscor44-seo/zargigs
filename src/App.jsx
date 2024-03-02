@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/Forgot-Password";
 import ClientDashboard from "./pages/ClientDashboard";
+import HelpSupport from "./pages/HelpSupport";
 
 function App() {
   return (
@@ -29,6 +30,9 @@ function App() {
           </Route>
           <Route path="/dashboard">
             <ClientDashboard />
+          </Route>
+          <Route path="/help-support">
+            <HelpSupport />
           </Route>
         </Switch>
       </Router>
