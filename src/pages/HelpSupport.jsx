@@ -13,11 +13,13 @@ const HelpSupport = () => {
   return (
     <div className="flex flex-col">
       <BackNav pageName={"Help and Support"} />
-      <Disclaimer disclaimerMsg={disclaimerMsg} />
-      <SupportMsg />
-      <Supports />
-      <Chat />
-      <ClientMenuBar />
+      <div className="underBackNav">
+        <Disclaimer disclaimerMsg={disclaimerMsg} />
+        <SupportMsg />
+        <Supports />
+        <Chat />
+        <ClientMenuBar />
+      </div>
     </div>
   );
 };

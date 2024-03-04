@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import { FaUsers, FaMoneyBillTrendUp } from "react-icons/fa6";
-import { MdAddReaction, MdGppGood } from "react-icons/md";
+import { MdAddReaction } from "react-icons/md";
 import postAdvertImg from "../../assets/png/post-advert.png";
 import lady_advertiser from "../../assets/images/lady-advertiser.jpg";
 

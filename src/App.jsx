@@ -10,6 +10,10 @@ import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/Forgot-Password";
 import ClientDashboard from "./pages/ClientDashboard";
 import HelpSupport from "./pages/HelpSupport";
+import Notifications from "./pages/Notifications";
+import UserDetails from "./pages/UserDetails";
+import UpdateLocation from "./pages/UpdateLocation";
+import Settings from "./pages/Settings";
 
 function App() {
   return (
@@ -33,6 +37,21 @@ function App() {
           </Route>
           <Route path="/help-support">
             <HelpSupport />
+          </Route>
+          <Route path="/notifications">
+            <Notifications />
+          </Route>
+          <Route path="/user-details">
+            <UserDetails />
+          </Route>
+          <Route path="/ref/:username">
+            <SignUp />
+          </Route>
+          <Route path="/update-location">
+            <UpdateLocation />
+          </Route>
+          <Route path="/account-settings">
+            <Settings />
           </Route>
         </Switch>
       </Router>
