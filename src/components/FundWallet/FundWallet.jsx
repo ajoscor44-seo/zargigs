@@ -1,6 +1,7 @@
 import React from "react";
 import BackNav from "../BackNav/BackNav";
 import numeral from "numeral";
+import ClientMenuBar from "../ClientMenuBar/ClientMenuBar";
 
 const FundWallet = () => {
   const balance = 2000;
@@ -107,7 +108,7 @@ const FundWallet = () => {
           </div>
         </div>
 
-        <div className="flex flex-col p-3 font-primary">
+        <div className="flex flex-col p-3 font-primary mb-10">
           <p className="text-xs text-primary">
             You can choose your preferred method of payment such as Card
             Payment, Bank Transfer, USSD etc. Simply click on "Change Payment"
@@ -193,6 +194,8 @@ const FundWallet = () => {
             </table>
           </div>
         </div>
+
+        <ClientMenuBar />
       </div>
     </div>
   );
