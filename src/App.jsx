@@ -15,6 +15,8 @@ import UserDetails from "./pages/UserDetails";
 import UpdateLocation from "./pages/UpdateLocation";
 import Settings from "./pages/Settings";
 import FundWallet from "./components/FundWallet/FundWallet";
+import Withdraw from "./components/Withdraw/Withdraw";
+import TransactionHistory from "./pages/TransactionHistory";
 
 function App() {
   return (
@@ -48,11 +50,17 @@ function App() {
           <Route path="/fund-wallet">
             <FundWallet />
           </Route>
+          <Route path="/withdraw">
+            <Withdraw />
+          </Route>
           <Route path="/update-location">
             <UpdateLocation />
           </Route>
           <Route path="/account-settings">
             <Settings />
+          </Route>
+          <Route path="/transaction-history">
+            <TransactionHistory />
           </Route>
           <Route path="/ref/:username">
             <SignUp />

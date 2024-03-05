@@ -4,6 +4,7 @@ import { PiWalletLight } from "react-icons/pi";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { IoCartOutline } from "react-icons/io5";
 import { TfiMenuAlt } from "react-icons/tfi";
+import { FaRegUser } from "react-icons/fa6";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const ClientMenuBar = () => {
@@ -39,13 +40,15 @@ const ClientMenuBar = () => {
         />
         <span className="text-sm">Order</span>
       </div>
-      <div className="flex flex-col justify-between items-center cursor-pointer">
-        <TfiMenuAlt
-          size={25}
-          className="bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full p-2"
-        />
-        <span className="text-sm">More</span>
-      </div>
+      <Link to="/account-settings">
+        <div className="flex flex-col justify-between items-center cursor-pointer">
+          <FaRegUser
+            size={25}
+            className="bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full p-2"
+          />
+          <span className="text-sm">Me</span>
+        </div>
+      </Link>
     </div>
   );
 };

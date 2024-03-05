@@ -156,7 +156,7 @@ const FundWallet = () => {
                         {funding.date}
                       </td>
                       <td className="text-center font-semibold border">
-                        ₦{funding.amount}
+                        ₦{numeral(funding.amount).format("0,0.00")}
                       </td>
                       <td className="text-center font-semibold border">
                         {funding.gateway}
