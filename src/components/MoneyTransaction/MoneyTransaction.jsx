@@ -6,16 +6,20 @@ const MoneyTransaction = () => {
   return (
     <div className="bg-white px-10 py-3 flex justify-between items-center">
       <div>
-        <button className="moneyTrans">
-          <FaWallet className="font-bold" />
-          FUND WALLET
-        </button>
+        <Link to="fund-wallet">
+          <button className="moneyTrans">
+            <FaWallet className="font-bold" />
+            FUND WALLET
+          </button>
+        </Link>
       </div>
       <div>
-        <button className="moneyTrans">
-          <CiBank size={20} className="font-bold" />
-          WITHDRAW
-        </button>
+        <Link to="/withdraw">
+          <button className="moneyTrans">
+            <CiBank size={20} className="font-bold" />
+            WITHDRAW
+          </button>
+        </Link>
       </div>
     </div>
   );

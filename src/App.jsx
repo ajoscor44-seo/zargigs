@@ -14,6 +14,7 @@ import Notifications from "./pages/Notifications";
 import UserDetails from "./pages/UserDetails";
 import UpdateLocation from "./pages/UpdateLocation";
 import Settings from "./pages/Settings";
+import FundWallet from "./components/FundWallet/FundWallet";
 
 function App() {
   return (
@@ -44,14 +45,17 @@ function App() {
           <Route path="/user-details">
             <UserDetails />
           </Route>
-          <Route path="/ref/:username">
-            <SignUp />
+          <Route path="/fund-wallet">
+            <FundWallet />
           </Route>
           <Route path="/update-location">
             <UpdateLocation />
           </Route>
           <Route path="/account-settings">
             <Settings />
+          </Route>
+          <Route path="/ref/:username">
+            <SignUp />
           </Route>
         </Switch>
       </Router>
