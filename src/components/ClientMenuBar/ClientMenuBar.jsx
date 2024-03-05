@@ -4,17 +4,20 @@ import { PiWalletLight } from "react-icons/pi";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { IoCartOutline } from "react-icons/io5";
 import { TfiMenuAlt } from "react-icons/tfi";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const ClientMenuBar = () => {
   return (
     <div className="fixed bottom-0 bg-white w-full py-2 px-5 border-t flex justify-between">
-      <div className="flex flex-col justify-between items-center cursor-pointer">
-        <FaHome
-          size={25}
-          className="bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full p-2"
-        />
-        <span className="text-sm">Home</span>
-      </div>
+      <Link to="/dashboard">
+        <div className="flex flex-col justify-between items-center cursor-pointer">
+          <FaHome
+            size={25}
+            className="bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full p-2"
+          />
+          <span className="text-sm">Home</span>
+        </div>
+      </Link>
       <div className="flex flex-col justify-between items-center cursor-pointer">
         <PiWalletLight
           size={25}
@@ -27,7 +30,7 @@ const ClientMenuBar = () => {
           size={25}
           className="hover:bg-slate-200 bg-slate-100 w-8 h-8 rounded-full p-1"
         />
-        <span className="text-sm">Advertiser</span>
+        <span className="text-sm">Advertise</span>
       </div>
       <div className="flex flex-col justify-between items-center cursor-pointer">
         <IoCartOutline
