@@ -1,5 +1,6 @@
 import React from "react";
 import { GiTakeMyMoney } from "react-icons/gi";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const ReferAndEarn = ({ username, referralLink }) => {
   return (
@@ -9,9 +10,11 @@ const ReferAndEarn = ({ username, referralLink }) => {
           <span>Refer and Earn</span>
           <GiTakeMyMoney size={25} className="text-primary" />
         </h2>
-        <button className="rounded-full bg-primaryLight text-white text-xs px-2 py-1 cursor-pointer">
-          INVITE FRIENDS
-        </button>
+        <Link to="/invite">
+          <div className="rounded-full bg-primaryLight text-white text-center text-xs px-2 py-1 cursor-pointer">
+            INVITE FRIENDS
+          </div>
+        </Link>
       </div>
       <div className="px-3 py-4 flex flex-col justify-center items-center">
         <h2 className="text-sm mb-2">My Referral Link:</h2>

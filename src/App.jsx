@@ -14,9 +14,10 @@ import Notifications from "./pages/Notifications";
 import UserDetails from "./pages/UserDetails";
 import UpdateLocation from "./pages/UpdateLocation";
 import Settings from "./pages/Settings";
-import FundWallet from "./components/FundWallet/FundWallet";
-import Withdraw from "./components/Withdraw/Withdraw";
 import TransactionHistory from "./pages/TransactionHistory";
+import InviteFriends from "./components/InviteFriends/InviteFriends";
+import FundWallets from "./pages/FundWallet";
+import Withdrawal from "./pages/Withdrawal";
 
 function App() {
   return (
@@ -48,13 +49,16 @@ function App() {
             <UserDetails />
           </Route>
           <Route path="/fund-wallet">
-            <FundWallet />
+            <FundWallets />
           </Route>
           <Route path="/withdraw">
-            <Withdraw />
+            <Withdrawal />
           </Route>
           <Route path="/update-location">
             <UpdateLocation />
+          </Route>
+          <Route path="/invite">
+            <InviteFriends />
           </Route>
           <Route path="/account-settings">
             <Settings />
