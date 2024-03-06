@@ -19,27 +19,33 @@ const ClientMenuBar = () => {
           <span className="text-sm">Home</span>
         </div>
       </Link>
-      <div className="flex flex-col justify-between items-center cursor-pointer">
-        <PiWalletLight
-          size={25}
-          className="bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full p-2"
-        />
-        <span className="text-sm">Earn</span>
-      </div>
-      <div className="flex flex-col justify-between items-center cursor-pointer">
-        <IoIosAddCircleOutline
-          size={25}
-          className="hover:bg-slate-200 bg-slate-100 w-8 h-8 rounded-full p-1"
-        />
-        <span className="text-sm">Advertise</span>
-      </div>
-      <div className="flex flex-col justify-between items-center cursor-pointer">
-        <IoCartOutline
-          size={25}
-          className="bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full p-2"
-        />
-        <span className="text-sm">Order</span>
-      </div>
+      <Link to="/earn">
+        <div className="flex flex-col justify-between items-center cursor-pointer">
+          <PiWalletLight
+            size={25}
+            className="bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full p-2"
+          />
+          <span className="text-sm">Earn</span>
+        </div>
+      </Link>
+      <Link to="/advertise">
+        <div className="flex flex-col justify-between items-center cursor-pointer">
+          <IoIosAddCircleOutline
+            size={25}
+            className="hover:bg-slate-200 bg-slate-100 w-8 h-8 rounded-full p-1"
+          />
+          <span className="text-sm">Advertise</span>
+        </div>
+      </Link>
+      <Link to="/order">
+        <div className="flex flex-col justify-between items-center cursor-pointer">
+          <IoCartOutline
+            size={25}
+            className="bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full p-2"
+          />
+          <span className="text-sm">Order</span>
+        </div>
+      </Link>
       <Link to="/account-settings">
         <div className="flex flex-col justify-between items-center cursor-pointer">
           <FaRegUser

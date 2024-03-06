@@ -18,6 +18,7 @@ import TransactionHistory from "./pages/TransactionHistory";
 import InviteFriends from "./components/InviteFriends/InviteFriends";
 import FundWallets from "./pages/FundWallet";
 import Withdrawal from "./pages/Withdrawal";
+import Earn from "./pages/Earn";
 
 function App() {
   return (
@@ -59,6 +60,9 @@ function App() {
           </Route>
           <Route path="/invite">
             <InviteFriends />
+          </Route>
+          <Route path="/earn">
+            <Earn />
           </Route>
           <Route path="/account-settings">
             <Settings />

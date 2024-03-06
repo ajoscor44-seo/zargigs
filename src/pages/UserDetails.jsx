@@ -37,7 +37,11 @@ const UserDetails = () => {
 
   return (
     <div>
-      <BackNav pageName={"User Details"} />
+      <BackNav
+        pageName={"User Details"}
+        pathToGo={"/dashboard"}
+        usePath={true}
+      />
       <div className="underBackNav mb-20 bg-slate-100">
         <div className="font-primary pt-5 bg-white">
           <Link to="/account-settings">

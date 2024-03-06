@@ -38,7 +38,11 @@ To get started, simply visit https://gigsflix.ng/#/ref/${username} to register o
 
   return (
     <div className="relative">
-      <BackNav pageName={"Invite Friends"} />
+      <BackNav
+        pageName={"Invite Friends"}
+        usePath={true}
+        pathToGo={"/user-details"}
+      />
       <button
         onClick={() => copyToClipboard(messageRef)}
         className="absolute z-20 flex right-3 top-4 items-center gap-2 px-2 py-1 rounded-full text-white bg-primaryLight"
