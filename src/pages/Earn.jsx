@@ -73,7 +73,7 @@ const Earn = () => {
             {activeTab === "postAds" ? (
               <EarnWithAds setActiveTab={setActiveTab} />
             ) : (
-              <EarnWithTasks />
+              <EarnWithTasks setActiveTab={setActiveTab} />
             )}
           </div>
         </div>
