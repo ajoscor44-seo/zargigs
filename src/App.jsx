@@ -19,6 +19,7 @@ import InviteFriends from "./components/InviteFriends/InviteFriends";
 import FundWallets from "./pages/FundWallet";
 import Withdrawal from "./pages/Withdrawal";
 import Earn from "./pages/Earn";
+import EarnWithTasks from "./pages/EarnWithTasks";
 
 function App() {
   return (
@@ -48,6 +49,9 @@ function App() {
           </Route>
           <Route path="/user-details">
             <UserDetails />
+          </Route>
+          <Route path="/earn/:slug">
+            <EarnWithTasks />
           </Route>
           <Route path="/fund-wallet">
             <FundWallets />

@@ -19,7 +19,7 @@ const BackNav = ({ pageName, pathToGo, usePath }) => {
           <IoIosArrowBack size={20} onClick={goBack} />
         </div>
       </Link>
-      <span className="font-semibold font-primary text-lg">{pageName}</span>
+      <span className="font-semibold font-primary text-md">{pageName}</span>
     </div>
   );
 };

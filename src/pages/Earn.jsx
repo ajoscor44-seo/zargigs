@@ -5,11 +5,18 @@ import { Link } from "react-router-dom/cjs/react-router-dom";
 import EarnWithAds from "../components/EarnWithAds/EarnWithAds";
 import EarnWithTasks from "../components/EarnWithTasks/EarnWithTasks";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
+import waysToEarnForTasks from "../data/waysToEarnForTasks";
+import waysToEarnForAds from "../data/waysToEarnForAdvert";
 
 const Earn = () => {
-  const [activeTab, setActiveTab] = useState("postAds");
   const uploadedTasks = ["Hello", "Hello"];
-  const availableTasks = ["This", "That"];
+  const [activeTab, setActiveTab] = useState("postAds");
+  const totalAdvertTasks = waysToEarnForAds.reduce((total, way) => {
+    return total + way.availableTasks.length;
+  }, 0);
+  const totalNormalTasks = waysToEarnForTasks.reduce((total, way) => {
+    return total + way.availableTasks.length;
+  }, 0);
 
   return (
     <div>
@@ -47,12 +54,19 @@ const Earn = () => {
             <div
               className={
                 activeTab === "postAds"
-                  ? "bg-slate-200 rounded-t p-3 font-bold text-center"
-                  : "rounded-t p-3 font-bold text-center"
+                  ? "bg-slate-200 rounded-t p-3 font-bold text-center flex items-center justify-between"
+                  : "rounded-t p-3 font-bold text-center flex items-center justify-between"
               }
               onClick={() => setActiveTab("postAds")}
             >
-              POST ADVERTS
+              POST ADVERTS{" "}
+              {totalAdvertTasks ? (
+                <span className="bg-red-500 text-white px-2 rounded">
+                  {totalAdvertTasks}
+                </span>
+              ) : (
+                <span></span>
+              )}
             </div>
             <div
               className={
@@ -63,9 +77,13 @@ const Earn = () => {
               onClick={() => setActiveTab("doTasks")}
             >
               PERFORM SOCIAL TASKS{" "}
-              <span className="bg-red-500 text-white px-2 rounded">
-                {availableTasks.length}
-              </span>
+              {totalNormalTasks ? (
+                <span className="bg-red-500 text-white px-2 rounded">
+                  {totalNormalTasks}
+                </span>
+              ) : (
+                <span></span>
+              )}
             </div>
           </div>
 

@@ -84,3 +84,11 @@
 .underBackNav {
   padding-top: 61px;
 }
+
+.subTaskHistoryTab {
+  @apply flex items-center p-2 methodNote;
+}
+
+.subTaskHistoryTab.active {
+  @apply flex items-center p-2 methodNote bg-blue-100;
+}
