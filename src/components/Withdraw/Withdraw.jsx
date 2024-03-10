@@ -7,16 +7,14 @@ import { CiBank } from "react-icons/ci";
 import { TfiMenuAlt } from "react-icons/tfi";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { Link } from "react-router-dom/cjs/react-router-dom";
+import user from "../../data/user";
+import adminData from "../../data/adminData";
 
 const Withdraw = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const balance = 21;
-  const charges = 10;
+  const balance = user.balance;
+  const charges = adminData.chargeForWithdrawal;
   const amountWithdrawable = balance - charges;
-  const firstname = "Pablo";
-  const lastname = "Richie";
-  const accountNumber = "00345190";
-  const userBank = "Guaranty Trust Bank";
 
   return (
     <div>
@@ -41,10 +39,10 @@ const Withdraw = () => {
         <div className="flex justify-between items-center border-b p-2 px-4">
           <span>
             <p className="text-sm text-primary">Bank Details:</p>
-            <h2 className="font-bold">{firstname + " " + lastname}</h2>
+            <h2 className="font-bold">{user.bankDetails.accountName}</h2>
             <span className="font-normal text-sm flex items-center gap-1">
-              <span>{accountNumber}</span> <CiBank size={15} />{" "}
-              <span>{userBank}</span>
+              <span>{user.bankDetails.accountNumber}</span> <CiBank size={15} />{" "}
+              <span>{user.bankDetails.bankName}</span>
             </span>
           </span>
           <span>
