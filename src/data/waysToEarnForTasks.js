@@ -16,6 +16,11 @@ const waysToEarnForTasks = [
           platformName: "Instagram",
           taskPerformed: "Follow",
           taskState: "pending",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
         },
       ],
       inReviewTasks: [
@@ -26,6 +31,11 @@ const waysToEarnForTasks = [
           platformName: "Instagram",
           taskPerformed: "Follow",
           taskState: "in Review",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
         },
       ],
       failedTasks: [
@@ -36,6 +46,11 @@ const waysToEarnForTasks = [
           platformName: "Instagram",
           taskPerformed: "Follow",
           taskState: "failed",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
         },
         {
           date: "Feb 25th 2024 3:27 pm",
@@ -44,6 +59,11 @@ const waysToEarnForTasks = [
           platformName: "Facebook",
           taskPerformed: "Follow",
           taskState: "failed",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
         },
       ],
       completedTasks: [
@@ -54,6 +74,11 @@ const waysToEarnForTasks = [
           platformName: "Instagram",
           taskPerformed: "Follow",
           taskState: "completed",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
         },
         {
           date: "Feb 25th 2024 3:27 pm",
@@ -62,6 +87,11 @@ const waysToEarnForTasks = [
           platformName: "Facebook",
           taskPerformed: "Follow",
           taskState: "completed",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
         },
         {
           date: "Feb 25th 2024 3:27 pm",
@@ -70,6 +100,11 @@ const waysToEarnForTasks = [
           platformName: "Tiktok",
           taskPerformed: "Follow",
           taskState: "completed",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
         },
       ],
       cancelledTasks: [
@@ -80,6 +115,11 @@ const waysToEarnForTasks = [
           platformName: "Instagram",
           taskPerformed: "Follow",
           taskState: "cancelled",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
         },
         {
           date: "Feb 25th 2024 3:27 pm",
@@ -88,6 +128,11 @@ const waysToEarnForTasks = [
           platformName: "Facebook",
           taskPerformed: "Follow",
           taskState: "cancelled",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
         },
       ],
     },
@@ -112,6 +157,11 @@ const waysToEarnForTasks = [
           platformName: "Facebook",
           taskPerformed: "Follow",
           taskState: "pending",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
         },
       ],
       cancelledTasks: [],

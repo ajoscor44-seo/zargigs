@@ -17,7 +17,7 @@ import { SiAudiomack } from "react-icons/si";
 import { SlUserFollowing } from "react-icons/sl";
 import playStoreImage from "../../assets/images/playstore-icon.png";
 
-const EarningWay = ({ way, addSelectBtn }) => {
+const EarningWay = ({ way, addSelectBtn, wayDescription }) => {
   return (
     <div className="hover:bg-slate-50 p-4 flex gap-2">
       <div className="flex flex-col items-center gap-2">
@@ -95,7 +95,7 @@ const EarningWay = ({ way, addSelectBtn }) => {
         </div>
         <div>
           <p className="font-semibold leading-4 mt-2 methodNote">
-            {way.title}. The more {way.whatTheyDo}, the more you earn.
+            {wayDescription}
           </p>
           <div className="methodNote font-extrabold mt-1 flex items-center justify-between">
             <div className="flex items-center gap-2">

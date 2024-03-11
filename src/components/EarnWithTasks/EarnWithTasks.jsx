@@ -26,7 +26,11 @@ const EarnWithTasks = ({ setActiveTab }) => {
         {waysToEarnForTasks.map((way) => {
           return (
             <Link to={way.pathToPage} key={way.pathToPage}>
-              <EarningWay way={way} addSelectBtn={true} />
+              <EarningWay
+                way={way}
+                addSelectBtn={true}
+                wayDescription={`${way.title}. The more ${way.whatTheyDo}, the more you earn.`}
+              />
             </Link>
           );
         })}

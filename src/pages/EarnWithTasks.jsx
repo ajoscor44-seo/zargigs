@@ -9,15 +9,22 @@ import PendingSubtask from "../components/PendingSubtask/PendingSubtask";
 import FailedSubtask from "../components/FailedSubtask/FailedSubtask";
 import CompletedSubtask from "../components/CompletedSubtask/CompletedSubtask";
 import CancelledSubtasks from "../components/CancelledSubtasks/CancelledSubtasks";
+import waysToEarnForAds from "../data/waysToEarnForAdvert";
 
 const EarnWithTasks = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const param = useParams();
   const slug = param.slug;
 
-  const wayToEarn = waysToEarnForTasks.find(
+  const waysToEarn = slug.startsWith("earn")
+    ? waysToEarnForTasks
+    : waysToEarnForAds;
+
+  const wayToEarn = waysToEarn.find(
     (way) => way.pathToPage === "/earn/" + slug
   );
+
+  console.log;
 
   return (
     <div>
@@ -114,7 +121,7 @@ const EarnWithTasks = () => {
             </div>
           </div>
 
-          <div className="subTasksHistory">
+          <div>
             {activeTab == "pending" ? (
               <PendingSubtask
                 pendingSubtasks={wayToEarn.subTasksHistory.pendingTasks}

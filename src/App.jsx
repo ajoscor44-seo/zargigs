@@ -20,6 +20,7 @@ import FundWallets from "./pages/FundWallet";
 import Withdrawal from "./pages/Withdrawal";
 import Earn from "./pages/Earn";
 import EarnWithTasks from "./pages/EarnWithTasks";
+import BecomeAMember from "./pages/BecomeAMember";
 
 function App() {
   return (
@@ -50,9 +51,6 @@ function App() {
           <Route path="/user-details">
             <UserDetails />
           </Route>
-          <Route path="/earn/:slug">
-            <EarnWithTasks />
-          </Route>
           <Route path="/fund-wallet">
             <FundWallets />
           </Route>
@@ -64,6 +62,12 @@ function App() {
           </Route>
           <Route path="/invite">
             <InviteFriends />
+          </Route>
+          <Route path="/earn/:slug">
+            <EarnWithTasks />
+          </Route>
+          <Route path="/become-a-member">
+            <BecomeAMember />
           </Route>
           <Route path="/earn">
             <Earn />
