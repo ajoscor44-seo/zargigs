@@ -4,6 +4,7 @@ import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import adminData from "../data/adminData";
 import numeral from "numeral";
 import { Link } from "react-router-dom/cjs/react-router-dom";
+import PayAmountBar from "../components/PayAmountBar/PayAmountBar";
 
 const BecomeAMember = () => {
   return (
@@ -63,18 +64,11 @@ const BecomeAMember = () => {
             and activate your membership.
           </p>
         </div>
-        <div className="bg-white flex justify-between items-center fixed bottom-16 pt-0 pb-1 w-full px-5 border">
-          <p>
-            <span className="methodNote">Membership Fee</span>
-            <h2 className="font-semibold text-2xl">
-              ₦{numeral(adminData.membershipFee).format("0,0")}
-            </h2>
-          </p>
-
-          <button className="uppercase text-xs bg-primaryLight py-2 px-4 rounded-sm text-white font-semibold">
-            Click Here To Pay Now
-          </button>
-        </div>
+        <PayAmountBar
+          feeTitle={"Membership Fee"}
+          fee={adminData.membershipFee}
+          btnText={"Click Here To Pay Now"}
+        />
       </div>
 
       <ClientMenuBar />

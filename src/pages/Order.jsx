@@ -1,19 +1,19 @@
 import React from "react";
 import BackNav from "../components/BackNav/BackNav";
-import { Link } from "react-router-dom/cjs/react-router-dom";
-import { FaHistory } from "react-icons/fa";
-import user from "../data/user";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import PricingWay from "../components/PricingWay/PricingWay";
+import { Link } from "react-router-dom/cjs/react-router-dom";
+import { FaHistory } from "react-icons/fa";
 import waysToCreateAdvertTasks from "../data/waysToCreateAdvertsTasks";
+import user from "../data/user";
 
-const Adevertise = () => {
+const Order = () => {
   return (
     <div className="font-primary">
       <BackNav
-        pageName={"Advertise On Social Media"}
+        pageName={"Order Engagements"}
         usePath={true}
-        pathToGo={"/dashboard"}
+        pathToGo={"/advertise"}
       />
       <div className="underBackNav">
         <Link to="/order-history">
@@ -29,15 +29,14 @@ const Adevertise = () => {
         </p>
         <div className="py-3">
           <div className="flex justify-center gap-2">
-            <div className="bg-primary px-5 py-3 methodNote text-white rounded-sm">
-              ADVERT TASKS
-            </div>
-
-            <Link to="/order">
+            <Link to="/advertise">
               <div className="bg-transparent px-5 py-3 methodNote rounded-sm">
-                ENGAGEMENT TASKS
+                ADVERT TASKS
               </div>
             </Link>
+            <div className="bg-primary px-5 py-3 methodNote text-white rounded-sm">
+              ENGAGEMENT TASKS
+            </div>
           </div>
           <p className="text-center methodNote px-5 py-3 font-semibold">
             Advert tasks are created to get people to post your adverts on
@@ -49,7 +48,10 @@ const Adevertise = () => {
         <div className="py-4 flex flex-col gap-2 mb-12">
           {waysToCreateAdvertTasks.map((way) => {
             return (
-              <Link to={way.pathToPage} key={way.pathToPage}>
+              <Link
+                to={user.isMember ? way.pathToPage : "/earn/become-a-member"}
+                key={way.pathToPage}
+              >
                 <PricingWay
                   way={way}
                   addSelectBtn={true}
@@ -65,4 +67,4 @@ const Adevertise = () => {
   );
 };
 
-export default Adevertise;
+export default Order;

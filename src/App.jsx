@@ -22,6 +22,8 @@ import Earn from "./pages/Earn";
 import EarnWithTasks from "./pages/EarnWithTasks";
 import BecomeAMember from "./pages/BecomeAMember";
 import Adevertise from "./pages/Advertise";
+import Order from "./pages/Order";
+import CreateAdvert from "./pages/CreateAdvert";
 
 function App() {
   return (
@@ -64,8 +66,14 @@ function App() {
           <Route path="/invite">
             <InviteFriends />
           </Route>
+          <Route path="/advertise/:slug">
+            <CreateAdvert />
+          </Route>
           <Route path="/advertise">
             <Adevertise />
+          </Route>
+          <Route path="/order">
+            <Order />
           </Route>
           <Route path="/earn/become-a-member">
             <BecomeAMember />
