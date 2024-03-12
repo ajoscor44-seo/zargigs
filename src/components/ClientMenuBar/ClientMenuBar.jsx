@@ -8,6 +8,7 @@ import { Link } from "react-router-dom/cjs/react-router-dom";
 import waysToEarnForAds from "../../data/waysToEarnForAdvert";
 import waysToEarnForTasks from "../../data/waysToEarnForTasks";
 import Notifier from "../Notifier/Notifier";
+import user from "../../data/user";
 
 const ClientMenuBar = () => {
   const advertTasks = waysToEarnForAds.reduce((total, wayToEarn) => {
@@ -28,7 +29,7 @@ const ClientMenuBar = () => {
           <span className="text-sm">Home</span>
         </div>
       </Link>
-      <Link to="/earn">
+      <Link to={user.isMember ? "/earn" : "/earn/become-a-member"}>
         <div className="flex flex-col justify-between items-center cursor-pointer relative">
           <PiWalletLight
             size={25}

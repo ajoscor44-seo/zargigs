@@ -1,19 +1,8 @@
 import React from "react";
-import {
-  FaFacebook,
-  FaInstagram,
-  FaTiktok,
-  FaWhatsapp,
-  FaTwitter,
-  FaYoutube,
-  FaTelegram,
-} from "react-icons/fa6";
-import playStoreImage from "../../assets/images/playstore-icon.png";
-import { IoLogoAppleAppstore } from "react-icons/io5";
-import { SiAudiomack } from "react-icons/si";
 import waysToEarnForAds from "../../data/waysToEarnForAdvert";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import EarningWay from "../EarningWay/EarningWay";
+import user from "../../data/user";
 
 const EarnWithAds = ({ setActiveTab }) => {
   return (
@@ -40,7 +29,10 @@ const EarnWithAds = ({ setActiveTab }) => {
       <div className="py-4 flex flex-col gap-2 mb-6">
         {waysToEarnForAds.map((way) => {
           return (
-            <Link to={way.pathToPage} key={way.pathToPage}>
+            <Link
+              to={user.isMember ? way.pathToPage : "/earn/become-a-member"}
+              key={way.pathToPage}
+            >
               <EarningWay
                 way={way}
                 addSelectBtn={true}

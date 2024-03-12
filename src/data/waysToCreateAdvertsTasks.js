@@ -1,0 +1,288 @@
+const waysToCreateAdvertTasks = [
+  {
+    title: "Get People to Post Your Adverts on their Whatsapp Status",
+    platformName: "Whatsapp",
+    amountToPay: 100,
+    pathToPage: "/earn/post-on-facebook",
+    platforms: ["Whatsapp"],
+    uploadedTasks: [],
+    description:
+      "Get real people to post your Adverts on their whatsapp status. Each person will create two separate status posts with one post containing your advert image/video while the second post will contain ONLY your advert text or caption. A Whatsapp user may have over 100 views on their Whatsapp status.",
+    subTasksHistory: {
+      pendingTasks: [
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Instagram",
+          taskPerformed: "Follow",
+          taskState: "pending",
+        },
+      ],
+      inReviewTasks: [
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Instagram",
+          taskPerformed: "Follow",
+          taskState: "in Review",
+        },
+      ],
+      failedTasks: [
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Instagram",
+          taskPerformed: "Follow",
+          taskState: "failed",
+        },
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Facebook",
+          taskPerformed: "Follow",
+          taskState: "failed",
+        },
+      ],
+      completedTasks: [
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Instagram",
+          taskPerformed: "Follow",
+          taskState: "completed",
+        },
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Facebook",
+          taskPerformed: "Follow",
+          taskState: "completed",
+        },
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Tiktok",
+          taskPerformed: "Follow",
+          taskState: "completed",
+        },
+      ],
+      cancelledTasks: [
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Instagram",
+          taskPerformed: "Follow",
+          taskState: "cancelled",
+        },
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Facebook",
+          taskPerformed: "Follow",
+          taskState: "cancelled",
+        },
+      ],
+    },
+  },
+  {
+    title: "Get People to Post Your Adverts on Facebook",
+    platformName: "Facebook",
+    amountToPay: 150,
+    pathToPage: "/earn/post-on-Instagram",
+    platforms: ["Facebook"],
+    uploadedTasks: [],
+    description:
+      "Get people with atleast 1000 active followers EACH on their Facebook Account to post your advert to their followers. This will give your advert massive views within a short period of time. You can indicate any number of people you want to post your advert on their page.",
+    subTasksHistory: {
+      pendingTasks: [
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Instagram",
+          taskPerformed: "Follow",
+          taskState: "pending",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
+        },
+      ],
+      inReviewTasks: [
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Instagram",
+          taskPerformed: "Follow",
+          taskState: "in Review",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
+        },
+      ],
+      failedTasks: [
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Instagram",
+          taskPerformed: "Follow",
+          taskState: "failed",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
+        },
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Facebook",
+          taskPerformed: "Follow",
+          taskState: "failed",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
+        },
+      ],
+      completedTasks: [
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Instagram",
+          taskPerformed: "Follow",
+          taskState: "completed",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
+        },
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Facebook",
+          taskPerformed: "Follow",
+          taskState: "completed",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
+        },
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Tiktok",
+          taskPerformed: "Follow",
+          taskState: "completed",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
+        },
+      ],
+      cancelledTasks: [
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Instagram",
+          taskPerformed: "Follow",
+          taskState: "cancelled",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
+        },
+        {
+          date: "Feb 25th 2024 3:27 pm",
+          title: "Follow People & Pages",
+          earning: 3,
+          platformName: "Facebook",
+          taskPerformed: "Follow",
+          taskState: "cancelled",
+          postedBy: {
+            username: "Gbabia",
+            firstname: "Gbabua",
+            lastname: "Pabz",
+          },
+        },
+      ],
+    },
+  },
+  {
+    title: "Get People to Post Your Adverts on Instagram",
+    platformName: "Instagram",
+    amountToPay: 150,
+    pathToPage: "/earn/post-on-twitter",
+    platforms: ["Instagram"],
+    uploadedTasks: [],
+    description:
+      "Get people with atleast 1000 active followers EACH on their Instagram Account to post your advert to their followers. This will give your advert massive views within a short period of time. You can indicate any number of people you want to post your advert on their page.",
+    subTasksHistory: {
+      pendingTasks: [],
+      inReviewTasks: [],
+      failedTasks: [],
+      completedTasks: [],
+      cancelledTasks: [],
+    },
+  },
+  {
+    title: "Get People to Post Your Adverts on Twitter",
+    platformName: "Twitter",
+    amountToPay: 150,
+    pathToPage: "/earn/post-on-twitter",
+    platforms: ["Twitter"],
+    uploadedTasks: [],
+    description:
+      "Get people with atleast 1000 active followers EACH on their Twitter Account to post your advert to their followers. This will give your advert massive views within a short period of time. You can indicate any number of people you want to post your advert.",
+    subTasksHistory: {
+      pendingTasks: [],
+      inReviewTasks: [],
+      failedTasks: [],
+      completedTasks: [],
+      cancelledTasks: [],
+    },
+  },
+  {
+    title: "Get people to post your advert on their Tiktok Account.",
+    platformName: "Tiktok",
+    amountToPay: 150,
+    pathToPage: "/earn/post-on-tiktok",
+    platforms: ["Tiktok"],
+    uploadedTasks: [],
+    description:
+      "Get people with atleast 1000 active followers EACH on their Tiktok Account to post your advert to their followers. This will give your advert massive views within a short period of time. You can indicate any number of people you want to post your advert.",
+    subTasksHistory: {
+      pendingTasks: [],
+      inReviewTasks: [],
+      failedTasks: [],
+      completedTasks: [],
+      cancelledTasks: [],
+    },
+  },
+];
+
+export default waysToCreateAdvertTasks;

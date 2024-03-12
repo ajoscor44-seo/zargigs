@@ -4,9 +4,12 @@ import { TfiHelpAlt } from "react-icons/tfi";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { FaCircleUser } from "react-icons/fa6";
 import { Link } from "react-router-dom/cjs/react-router-dom";
+import allNotifications from "../../data/notifications";
 
 const ClientNavbar = () => {
-  const [newNotificationsNumber, setNewNotificationsNumber] = useState(5);
+  const [newNotificationsNumber, setNewNotificationsNumber] = useState(
+    allNotifications.length
+  );
 
   return (
     <div className="bg-white border fixed w-full top-0 lg:hidden p-4 flex items-center justify-between">
@@ -34,6 +37,7 @@ const ClientNavbar = () => {
             </span>
           </div>
         </Link>
+
         <Link to="/user-details">
           <div className="hover:opacity-80">
             <FaCircleUser

@@ -3,6 +3,7 @@ import BackNav from "../components/BackNav/BackNav";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import adminData from "../data/adminData";
 import numeral from "numeral";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const BecomeAMember = () => {
   return (
@@ -29,8 +30,10 @@ const BecomeAMember = () => {
               <span className="font-extrabold">Earn steady daily figures</span>{" "}
               by following, liking, commenting, sharing, retweeting or posting
               adverts for businesses on your social media. Click{" "}
-              <span className="text-primaryLight hover:underline">here</span> to
-              see what you will earn when you perform social tasks
+              <Link to="/earn">
+                <span className="text-primaryLight hover:underline">here </span>
+              </Link>
+              to see what you will earn when you perform social tasks
             </li>
             <li className="text-xs font-semibold leading-5 mb-5">
               <span className="font-extrabold">
