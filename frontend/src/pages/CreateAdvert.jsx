@@ -140,7 +140,6 @@ const CreateAdvert = () => {
         fee={0}
         btnText={"Submit and Make Payment"}
       />
-      <ClientMenuBar />
     </div>
   );
 };

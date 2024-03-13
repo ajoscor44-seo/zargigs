@@ -18,7 +18,6 @@ const Notifications = () => {
           return <Notification notification={notification} />;
         })}
       </div>
-      <ClientMenuBar />
     </div>
   );
 };

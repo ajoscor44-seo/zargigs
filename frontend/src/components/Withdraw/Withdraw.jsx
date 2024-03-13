@@ -116,7 +116,6 @@ const Withdraw = () => {
           </div>
         </div>
       </div>
-      <ClientMenuBar />
     </div>
   );
 };

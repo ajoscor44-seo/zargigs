@@ -1,5 +1,4 @@
 import Home from "./pages/Home";
-import "./App.css";
 import {
   BrowserRouter as Router,
   Switch,
@@ -24,6 +23,7 @@ import BecomeAMember from "./pages/BecomeAMember";
 import Adevertise from "./pages/Advertise";
 import Order from "./pages/Order";
 import CreateAdvert from "./pages/CreateAdvert";
+import ClientLayout from "./Layouts/ClientLayout";
 
 function App() {
   return (
@@ -33,66 +33,68 @@ function App() {
           <Route exact path="/">
             <Home />
           </Route>
-          <Route path="/login">
-            <Login />
+          <Route path="/ref/:username">
+            <SignUp />
           </Route>
           <Route path="/signup">
             <SignUp />
           </Route>
+          <Route path="/login">
+            <Login />
+          </Route>
           <Route path="/forgot-password">
             <ForgotPassword />
           </Route>
-          <Route path="/dashboard">
-            <ClientDashboard />
-          </Route>
-          <Route path="/help-support">
-            <HelpSupport />
-          </Route>
-          <Route path="/notifications">
-            <Notifications />
-          </Route>
-          <Route path="/user-details">
-            <UserDetails />
-          </Route>
-          <Route path="/fund-wallet">
-            <FundWallets />
-          </Route>
-          <Route path="/withdraw">
-            <Withdrawal />
-          </Route>
-          <Route path="/update-location">
-            <UpdateLocation />
-          </Route>
-          <Route path="/invite">
-            <InviteFriends />
-          </Route>
-          <Route path="/advertise/:slug">
-            <CreateAdvert />
-          </Route>
-          <Route path="/advertise">
-            <Adevertise />
-          </Route>
-          <Route path="/order">
-            <Order />
-          </Route>
-          <Route path="/earn/become-a-member">
-            <BecomeAMember />
-          </Route>
-          <Route path="/earn/:slug">
-            <EarnWithTasks />
-          </Route>
-          <Route path="/earn">
-            <Earn />
-          </Route>
-          <Route path="/account-settings">
-            <Settings />
-          </Route>
-          <Route path="/transaction-history">
-            <TransactionHistory />
-          </Route>
-          <Route path="/ref/:username">
-            <SignUp />
-          </Route>
+          <ClientLayout>
+            <Route path="/dashboard">
+              <ClientDashboard />
+            </Route>
+            <Route path="/help-support">
+              <HelpSupport />
+            </Route>
+            <Route path="/notifications">
+              <Notifications />
+            </Route>
+            <Route path="/user-details">
+              <UserDetails />
+            </Route>
+            <Route path="/fund-wallet">
+              <FundWallets />
+            </Route>
+            <Route path="/withdraw">
+              <Withdrawal />
+            </Route>
+            <Route path="/update-location">
+              <UpdateLocation />
+            </Route>
+            <Route path="/invite">
+              <InviteFriends />
+            </Route>
+            <Route path="/advertise/:slug">
+              <CreateAdvert />
+            </Route>
+            <Route path="/advertise">
+              <Adevertise />
+            </Route>
+            <Route path="/order">
+              <Order />
+            </Route>
+            <Route exact path="/become-a-member">
+              <BecomeAMember />
+            </Route>
+            <Route path="/earn/:slug">
+              <EarnWithTasks />
+            </Route>
+            <Route path="/earn">
+              <Earn />
+            </Route>
+            <Route path="/account-settings">
+              <Settings />
+            </Route>
+            <Route path="/transaction-history">
+              <TransactionHistory />
+            </Route>
+          </ClientLayout>
         </Switch>
       </Router>
     </>

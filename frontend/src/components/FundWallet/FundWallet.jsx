@@ -123,8 +123,6 @@ const FundWallet = () => {
             </table>
           </div>
         </div>
-
-        <ClientMenuBar />
       </div>
     </div>
   );

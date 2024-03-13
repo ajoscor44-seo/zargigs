@@ -27,7 +27,7 @@ const ClientDashboard = () => {
       description:
         "Earn steady income by reselling products and posting adverts and performing social tasks for businesses and top brands on your social media account.",
       btnText: "Become A Member",
-      path: "/earn/become-a-member",
+      path: "/become-a-member",
     },
   ];
 
@@ -76,7 +76,6 @@ const ClientDashboard = () => {
         </div>
       )}
       <RecentActivities recentActivities={recentActivities} />
-      <ClientMenuBar />
     </div>
   );
 };

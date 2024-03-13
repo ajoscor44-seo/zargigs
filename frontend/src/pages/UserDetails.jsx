@@ -119,7 +119,6 @@ const UserDetails = () => {
 
         <ReferAndEarn referralLink={referralLink} username={username} />
       </div>
-      <ClientMenuBar />
     </div>
   );
 };

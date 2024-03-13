@@ -99,8 +99,6 @@ To get started, simply visit https://gigsflix.ng/#/ref/${username} to register o
           </div>
         </div>
       </div>
-
-      <ClientMenuBar />
     </div>
   );
 };

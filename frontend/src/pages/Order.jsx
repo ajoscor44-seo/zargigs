@@ -49,7 +49,7 @@ const Order = () => {
           {waysToCreateAdvertTasks.map((way) => {
             return (
               <Link
-                to={user.isMember ? way.pathToPage : "/earn/become-a-member"}
+                to={user.isMember ? way.pathToPage : "/become-a-member"}
                 key={way.pathToPage}
               >
                 <PricingWay
@@ -62,7 +62,6 @@ const Order = () => {
           })}
         </div>
       </div>
-      <ClientMenuBar />
     </div>
   );
 };

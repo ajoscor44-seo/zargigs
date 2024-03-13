@@ -27,7 +27,7 @@ const EarnWithTasks = ({ setActiveTab }) => {
         {waysToEarnForTasks.map((way) => {
           return (
             <Link
-              to={user.isMember ? way.pathToPage : "/earn/become-a-member"}
+              to={user.isMember ? way.pathToPage : "/become-a-member"}
               key={way.pathToPage}
             >
               <EarningWay

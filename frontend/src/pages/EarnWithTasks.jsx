@@ -24,8 +24,6 @@ const EarnWithTasks = () => {
     (way) => way.pathToPage === "/earn/" + slug
   );
 
-  console.log;
-
   return (
     <div>
       <BackNav pageName={wayToEarn.title} usePath={true} pathToGo={"/earn"} />
@@ -146,7 +144,6 @@ const EarnWithTasks = () => {
           </div>
         </div>
       </div>
-      <ClientMenuBar />
     </div>
   );
 };

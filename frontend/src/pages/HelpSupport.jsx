@@ -18,7 +18,6 @@ const HelpSupport = () => {
         <SupportMsg />
         <Supports />
         <Chat />
-        <ClientMenuBar />
       </div>
     </div>
   );
