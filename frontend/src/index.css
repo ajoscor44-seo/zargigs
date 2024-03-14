@@ -114,6 +114,10 @@
   margin-bottom: 150px;
 }
 
+.disabledBtn {
+  opacity: 0.5;
+}
+
 @keyframes pulse-size {
   0%,
   100% {

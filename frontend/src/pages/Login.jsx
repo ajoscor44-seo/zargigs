@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import { FaFacebook } from "react-icons/fa6";
-import { GrGoogle, GrPowerReset } from "react-icons/gr";
+import { GrPowerReset } from "react-icons/gr";
 import { MdOutlineLogin } from "react-icons/md";
 import logo from "../assets/png/logo-color.png";
 import loginIllustration from "../assets/images/login-illustration-png.png";
@@ -94,10 +94,10 @@ const Login = () => {
             <img src={googleIcon} className="w-8" />
             <span className="text-xl text-dark">Continue With Google</span>
           </div>
-          <div className="btn rounded-sm flex justify-center items-center gap-2 font-primary text-blue-600 border mt-3">
+          {/* <div className="btn rounded-sm flex justify-center items-center gap-2 font-primary text-blue-600 border mt-3">
             <FaFacebook size={25} />
             <span className="text-xl text-dark">Continue With Facebook</span>
-          </div>
+          </div> */}
           <Link to="/forgot-password">
             <p className="flex justify-center text-primary hover:text-primaryLight">
               Forgot Password

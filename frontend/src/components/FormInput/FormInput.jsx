@@ -1,8 +1,12 @@
 import React from "react";
+import { FaLock, FaUser } from "react-icons/fa6";
+import { MdEmail } from "react-icons/md";
 import { PiWarningCircle } from "react-icons/pi";
 import { TfiMenuAlt } from "react-icons/tfi";
+import referreIcon from "../../assets/png/referrer-icon.png";
 
 const FormInput = ({
+  icon,
   label,
   placeholder,
   note,
@@ -32,7 +36,21 @@ const FormInput = ({
           }
         >
           <div className="text-slate-600">
-            <TfiMenuAlt size={20} />
+            {icon == "password" ? (
+              <FaLock />
+            ) : icon == "email" ? (
+              <MdEmail size={20} />
+            ) : icon == "user" ? (
+              <FaUser size={20} />
+            ) : icon == "referrer" ? (
+              <img
+                className="w-6 h-6 object-cover"
+                src={referreIcon}
+                alt="Referrer Icon"
+              />
+            ) : (
+              <TfiMenuAlt size={20} />
+            )}
           </div>
           <div className="flex-1">
             {useSelect ? (

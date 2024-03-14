@@ -73,7 +73,7 @@ function App() {
             <Route path="/advertise/:slug">
               <CreateAdvert />
             </Route>
-            <Route path="/advertise">
+            <Route exact path="/advertise">
               <Adevertise />
             </Route>
             <Route path="/order">
@@ -85,7 +85,7 @@ function App() {
             <Route path="/earn/:slug">
               <EarnWithTasks />
             </Route>
-            <Route path="/earn">
+            <Route exact path="/earn">
               <Earn />
             </Route>
             <Route path="/account-settings">
