@@ -1,10 +1,18 @@
 import User from "../Models/user.model.js";
 import bcryptjs from "bcryptjs";
-import { ErrorHandler } from "../utils/error.js";
 
 export const signup = async (req, res, next) => {
-  const { firstname, lastname, username, email, password, referredBy, role } =
-    req.body;
+  const {
+    firstname,
+    lastname,
+    username,
+    email,
+    password,
+    referredBy,
+    role,
+    isEmailVerified,
+    isMember,
+  } = req.body;
   const hashedPassword = bcryptjs.hashSync(password, 10);
   const newUser = new User({
     firstname,
@@ -14,6 +22,8 @@ export const signup = async (req, res, next) => {
     password: hashedPassword,
     referredBy,
     role: role || "user",
+    isEmailVerified,
+    isMember,
   });
   try {
     await newUser.save();
