@@ -5,10 +5,12 @@ const userSchema = new mongoose.Schema(
     firstname: {
       type: String,
       required: true,
+      unique: false,
     },
     lastname: {
       type: String,
       required: true,
+      unique: false,
     },
     username: {
       type: String,
@@ -23,22 +25,27 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+      unique: false,
     },
     referredBy: {
       type: String,
       required: true,
+      unique: false,
     },
     role: {
       type: String,
       required: true,
+      unique: false,
     },
     isEmailVerified: {
       type: Boolean,
       required: true,
+      unique: false,
     },
     isMember: {
       type: Boolean,
       required: true,
+      unique: false,
     },
   },
   { timestamps: true }

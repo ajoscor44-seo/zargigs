@@ -1,9 +1,17 @@
 import React, { useState } from "react";
 import SignupLayout from "../Layouts/SignupLayout";
-import { Link } from "react-router-dom/cjs/react-router-dom";
+import { Link, useParams } from "react-router-dom/cjs/react-router-dom";
 import PageSlider from "../components/PageSlider/PageSlider";
 
 const SignUp = () => {
+  const [formData, setFormData] = useState({
+    isMember: false,
+    isEmailVerified: false,
+    role: "user",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const params = useParams();
   const [pages, setPages] = useState([
     {
       bgColor: "bg-white",
@@ -18,6 +26,8 @@ const SignUp = () => {
           type: "text",
           error: "An error occurred here",
           isError: false,
+          defaultValue: "",
+          name: "firstname",
         },
         {
           label: "Lastname",
@@ -27,6 +37,8 @@ const SignUp = () => {
           type: "text",
           error: "An error occurred here",
           isError: false,
+          defaultValue: "",
+          name: "lastname",
         },
         {
           label: "Referrer's Username (Optional)",
@@ -36,6 +48,8 @@ const SignUp = () => {
           type: "text",
           error: "An error occurred here",
           isError: false,
+          defaultValue: params?.username,
+          name: "referredBy",
         },
       ],
     },
@@ -52,6 +66,8 @@ const SignUp = () => {
           type: "text",
           error: "An error occurred here",
           isError: false,
+          defaultValue: "",
+          name: "username",
         },
         {
           label: "Email",
@@ -61,6 +77,8 @@ const SignUp = () => {
           type: "email",
           error: "An error occurred here",
           isError: false,
+          defaultValue: "",
+          name: "email",
         },
         {
           label: "Password",
@@ -70,10 +88,75 @@ const SignUp = () => {
           type: "password",
           error: "An error occurred here",
           isError: false,
+          defaultValue: "",
+          name: "password",
         },
       ],
     },
   ]);
+
+  const handleInputError = (currentPage) => {
+    if (currentPage == 0) {
+      if (!formData.firstname) {
+        setError("Please input firstname");
+        return true;
+      }
+      if (!formData.lastname) {
+        setError("Please input lastname");
+        return true;
+      }
+      if (!formData.referredBy) {
+        setFormData({ ...formData, referredBy: "admin" });
+      }
+    }
+
+    if (currentPage == pages.length - 1) {
+      if (!formData.username) {
+        setError("Please input username");
+        return true;
+      }
+      if (!formData.email) {
+        setError("Please input an email");
+        return true;
+      }
+      if (!formData.password) {
+        setError("Please input a password");
+        return true;
+      }
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch("http://localhost:3000/api/v1/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+      if (
+        data.message.includes(`dup key: { username: "${formData.username}" }`)
+      ) {
+        setError(`Username: ${formData.username} already exists.`);
+      } else if (
+        data.message.includes(`dup key: { email: "${formData.email}" }`)
+      ) {
+        setError(`Email: ${formData.email} already exists.`);
+      } else {
+        setError(null);
+      }
+      setIsLoading(false);
+    } catch (error) {
+      return;
+    }
+  };
 
   return (
     <div
@@ -82,7 +165,15 @@ const SignUp = () => {
     >
       <SignupLayout>
         <div className="flex-1 border py-5 rounded-sm">
-          <PageSlider pages={pages} />
+          <PageSlider
+            errorMsg={error}
+            setError={setError}
+            isLoading={isLoading}
+            pages={pages}
+            handleChange={handleChange}
+            handleSubmit={handleSubmit}
+            handleInputError={handleInputError}
+          />
         </div>
       </SignupLayout>
     </div>
