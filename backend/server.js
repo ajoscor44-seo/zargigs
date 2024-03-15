@@ -4,8 +4,8 @@ import dotenv from "dotenv";
 import useRoutes from "./V1/Routes/user.route.js";
 import authRoutes from "./V1/Routes/auth.route.js";
 dotenv.config();
+import cors from "cors";
 // import bodyParser from "body-parser";
-// import cors from "cors";
 
 mongoose
   .connect(process.env.MONGO)
@@ -17,7 +17,14 @@ mongoose
   });
 
 const app = express();
-
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: "GET,POST,PUT,HEAD,DELETE",
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.use("/api/v1/user", useRoutes);
@@ -38,4 +45,3 @@ app.listen(3000, () => {
 });
 // app.use(bodyParser.json({ limit: "30mb", extended: true }));
 // app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-// app.use(cors());
