@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom/cjs/react-router-dom";
-import { FaFacebook } from "react-icons/fa6";
 import { GrPowerReset } from "react-icons/gr";
 import { MdOutlineLogin } from "react-icons/md";
 import logo from "../assets/png/logo-color.png";
@@ -10,19 +9,59 @@ import googleIcon from "../assets/png/google-icon.png";
 const Login = () => {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const resetForm = () => {
     setEmail("");
     setPassword("");
   };
 
-  const submitForm = (e) => {
-    e.preventDefault();
-    if (!email || !password) {
-      console.log("No email or password");
+  const login = async () => {
+    try {
+      const formData = {
+        email,
+        password,
+      };
+      const response = await fetch("http://localhost:3000/api/v1/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+      setIsLoading(false);
+      return data;
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
       return;
     }
-    console.log(`Email: ${email}`, `Password: ${password}`);
+  };
+
+  const submitForm = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    if (!email && !password) {
+      setError("No email and password");
+      setIsLoading(false);
+      return;
+    } else if (!email) {
+      setError("Please input a email address");
+      setIsLoading(false);
+      return;
+    } else if (!password) {
+      setError("Please input your password");
+      setIsLoading(false);
+      return;
+    } else {
+      const currentUser = await login();
+      setError(null);
+      setIsLoading(false);
+    }
+    setError(null);
+    setIsLoading(false);
   };
 
   return (
@@ -47,9 +86,10 @@ const Login = () => {
         <p className="font-normal font-primary mt-2 px-4 text-md">
           Fill the fields below to log into your account.
         </p>
+        <p className="text-center text-red-500 py-3 font-semibold">{error}</p>
         <form
           onSubmit={(e) => submitForm(e)}
-          className="flex flex-col gap-4 px-4 py-5"
+          className="flex flex-col gap-4 px-4 pb-5"
         >
           <div className="flex flex-col">
             <span className="text-primaryLight text-lg mb-1 font-primary font-medium">
@@ -77,15 +117,19 @@ const Login = () => {
           </div>
           <div className="flex gap-4 justify-end">
             <button
+              disabled={isLoading}
               className="btn rounded bg-red-500 text-white font-primary font-bold flex items-center"
               onClick={resetForm}
             >
               <GrPowerReset size={15} className="me-2" />
               Reset
             </button>
-            <button className="btn rounded bg-primaryLight text-white font-primary font-bold flex items-center">
+            <button
+              disabled={isLoading}
+              className="btn rounded bg-primaryLight text-white font-primary font-bold flex items-center"
+            >
               <MdOutlineLogin size={15} className="me-2" />
-              Login
+              {isLoading ? "Loading..." : "Login"}
             </button>
           </div>
         </form>
@@ -94,17 +138,13 @@ const Login = () => {
             <img src={googleIcon} className="w-8" />
             <span className="text-xl text-dark">Continue With Google</span>
           </div>
-          {/* <div className="btn rounded-sm flex justify-center items-center gap-2 font-primary text-blue-600 border mt-3">
-            <FaFacebook size={25} />
-            <span className="text-xl text-dark">Continue With Facebook</span>
-          </div> */}
           <Link to="/forgot-password">
             <p className="flex justify-center text-primary hover:text-primaryLight">
               Forgot Password
             </p>
           </Link>
           <p className="flex justify-center">
-            Don't have an account?
+            Dont have an account?
             <Link to="/signup">
               <span className="text-primary hover:text-primaryLight ms-1">
                 {" "}

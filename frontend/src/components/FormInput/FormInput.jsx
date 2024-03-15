@@ -17,6 +17,9 @@ const FormInput = ({
   useTextArea,
   useSelect,
   selections,
+  value,
+  name,
+  handleChange,
 }) => {
   return (
     <div className="flex flex-col mt-1">
@@ -31,7 +34,8 @@ const FormInput = ({
         <div
           className={
             fullRounded
-              ? "border rounded-full flex items-center py-4 px-5 gap-2"
+              ? "border rounded-full flex items-center py-4 px-5 gap-2" +
+                (icon == "referrer" && value ? " bg-slate-50 opacity-60" : " ")
               : "border rounded flex items-center py-4 px-5 gap-2"
           }
         >
@@ -68,6 +72,10 @@ const FormInput = ({
                 className="w-full outline-none placeholder:text-sm"
                 type={type}
                 placeholder={placeholder}
+                defaultValue={value}
+                disabled={icon == "referrer" && value}
+                name={name}
+                onChange={handleChange}
               />
             )}
           </div>

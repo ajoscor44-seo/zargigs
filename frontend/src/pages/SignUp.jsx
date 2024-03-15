@@ -4,15 +4,8 @@ import { Link, useParams } from "react-router-dom/cjs/react-router-dom";
 import PageSlider from "../components/PageSlider/PageSlider";
 
 const SignUp = () => {
-  const [formData, setFormData] = useState({
-    isMember: false,
-    isEmailVerified: false,
-    role: "user",
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
   const params = useParams();
-  const [pages, setPages] = useState([
+  const pagesData = [
     {
       bgColor: "bg-white",
       title: "Sign Up on Gigsflix",
@@ -93,7 +86,15 @@ const SignUp = () => {
         },
       ],
     },
-  ]);
+  ];
+  const [formData, setFormData] = useState({
+    isMember: false,
+    isEmailVerified: false,
+    role: "user",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [pages, setPages] = useState(pagesData);
 
   const handleInputError = (currentPage) => {
     if (currentPage == 0) {
@@ -151,6 +152,7 @@ const SignUp = () => {
         setError(`Email: ${formData.email} already exists.`);
       } else {
         setError(null);
+        setPages(pagesData);
       }
       setIsLoading(false);
     } catch (error) {
