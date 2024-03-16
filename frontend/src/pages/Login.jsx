@@ -5,63 +5,50 @@ import { MdOutlineLogin } from "react-icons/md";
 import logo from "../assets/png/logo-color.png";
 import loginIllustration from "../assets/images/login-illustration-png.png";
 import googleIcon from "../assets/png/google-icon.png";
+import { useAuth } from "../context/AuthContext";
+import FormInput from "../components/FormInput/FormInput";
 
 const Login = () => {
   const [email, setEmail] = useState(null);
+  const [formData, setFormData] = useState({});
+  const { loginUser, currentUser } = useAuth();
   const [password, setPassword] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const resetForm = () => {
     setEmail("");
     setPassword("");
   };
 
-  const login = async () => {
-    try {
-      const formData = {
-        email,
-        password,
-      };
-      const response = await fetch("http://localhost:3000/api/v1/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await response.json();
-      setIsLoading(false);
-      return data;
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
-      return;
-    }
-  };
-
   const submitForm = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    if (!email && !password) {
+    if (!formData.email && !formData.password) {
       setError("No email and password");
       setIsLoading(false);
       return;
-    } else if (!email) {
+    } else if (!formData.email) {
       setError("Please input a email address");
       setIsLoading(false);
       return;
-    } else if (!password) {
+    } else if (!formData.password) {
       setError("Please input your password");
       setIsLoading(false);
       return;
     } else {
-      const currentUser = await login();
-      setError(null);
+      const res = await loginUser(formData.email, formData.password);
+      if (res.message) {
+        setError(res.message);
+      } else {
+        setError(null);
+      }
       setIsLoading(false);
     }
-    setError(null);
-    setIsLoading(false);
   };
 
   return (
@@ -86,33 +73,43 @@ const Login = () => {
         <p className="font-normal font-primary mt-2 px-4 text-md">
           Fill the fields below to log into your account.
         </p>
-        <p className="text-center text-red-500 py-3 font-semibold">{error}</p>
+        {error && (
+          <p className="text-center bg-red-200 text-red-500 my-2 mx-4 rounded py-1 font-semibold">
+            {error}
+          </p>
+        )}
         <form
           onSubmit={(e) => submitForm(e)}
           className="flex flex-col gap-4 px-4 pb-5"
         >
           <div className="flex flex-col">
-            <span className="text-primaryLight text-lg mb-1 font-primary font-medium">
-              Email:
-            </span>
-            <input
-              type="email"
-              placeholder="example@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="border p-3 rounded outline-primaryLight"
+            <FormInput
+              icon={"email"}
+              label={"Email"}
+              placeholder={"example@gmail.com"}
+              note={"Please input your email address"}
+              errorMsg={"Invalid Email"}
+              isError={false}
+              type={"email"}
+              fullRounded={false}
+              value={""}
+              name={"email"}
+              handleChange={handleChange}
             />
           </div>
           <div className="flex flex-col">
-            <span className="text-primaryLight text-lg mb-1 font-primary font-medium">
-              Password:
-            </span>
-            <input
-              type="password"
-              placeholder="********"
-              value={password}
-              className="border p-3 rounded outline-primaryLight"
-              onChange={(e) => setPassword(e.target.value)}
+            <FormInput
+              icon={"password"}
+              label={"Password"}
+              placeholder={"********"}
+              note={"Please input your password"}
+              errorMsg={"Invalid password"}
+              isError={false}
+              type={"password"}
+              fullRounded={false}
+              value={""}
+              name={"password"}
+              handleChange={handleChange}
             />
           </div>
           <div className="flex gap-4 justify-end">

@@ -1,5 +1,5 @@
-import React from "react";
-import { FaLock, FaUser } from "react-icons/fa6";
+import React, { useState } from "react";
+import { FaEye, FaEyeSlash, FaLock, FaUser } from "react-icons/fa6";
 import { MdEmail } from "react-icons/md";
 import { PiWarningCircle } from "react-icons/pi";
 import { TfiMenuAlt } from "react-icons/tfi";
@@ -21,6 +21,8 @@ const FormInput = ({
   name,
   handleChange,
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className="flex flex-col mt-1">
       <span className="text-xs font-semibold mb-2">{label}</span>
@@ -70,18 +72,28 @@ const FormInput = ({
             ) : (
               <input
                 className="w-full outline-none placeholder:text-sm"
-                type={type}
+                type={icon == "password" && showPassword ? "text" : type}
                 placeholder={placeholder}
                 defaultValue={value}
                 disabled={icon == "referrer" && value}
                 name={name}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
               />
             )}
           </div>
           <div>
             {isError ? (
               <PiWarningCircle size={20} className="text-red-400" />
+            ) : (
+              <div></div>
+            )}
+            {icon == "password" ? (
+              <span
+                className="text-gray-400"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash size={25} /> : <FaEye size={25} />}
+              </span>
             ) : (
               <div></div>
             )}
