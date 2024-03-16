@@ -23,10 +23,10 @@ const Login = () => {
   const resetForm = () => {
     setEmail("");
     setPassword("");
+    setError(null);
   };
 
-  const submitForm = async (e) => {
-    e.preventDefault();
+  const submitForm = async () => {
     setIsLoading(true);
     if (!formData.email && !formData.password) {
       setError("No email and password");
@@ -78,10 +78,7 @@ const Login = () => {
             {error}
           </p>
         )}
-        <form
-          onSubmit={(e) => submitForm(e)}
-          className="flex flex-col gap-4 px-4 pb-5"
-        >
+        <div className="flex flex-col gap-4 px-4 pb-5">
           <div className="flex flex-col">
             <FormInput
               icon={"email"}
@@ -92,7 +89,7 @@ const Login = () => {
               isError={false}
               type={"email"}
               fullRounded={false}
-              value={""}
+              value={email}
               name={"email"}
               handleChange={handleChange}
             />
@@ -107,7 +104,7 @@ const Login = () => {
               isError={false}
               type={"password"}
               fullRounded={false}
-              value={""}
+              value={password}
               name={"password"}
               handleChange={handleChange}
             />
@@ -124,12 +121,13 @@ const Login = () => {
             <button
               disabled={isLoading}
               className="btn rounded bg-primaryLight text-white font-primary font-bold flex items-center"
+              onClick={submitForm}
             >
               <MdOutlineLogin size={15} className="me-2" />
               {isLoading ? "Loading..." : "Login"}
             </button>
           </div>
-        </form>
+        </div>
         <div className="flex flex-col gap-4 px-4">
           <div className="btn rounded-sm flex justify-center items-center gap-2 font-primary text-red-600 border mt-3">
             <img src={googleIcon} className="w-8" />
