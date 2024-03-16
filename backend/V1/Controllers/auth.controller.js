@@ -28,6 +28,16 @@ export const signup = async (req, res, next) => {
     isMember,
   });
   try {
+    const userWithMail = await User.findOne({ email });
+    if (userWithMail) {
+      const error = ErrorHandler(400, "Email is already taken");
+      return res.status(400).json(error);
+    }
+    const userWithUsername = await User.findOne({ username });
+    if (userWithUsername) {
+      const error = ErrorHandler(400, "Username is already taken");
+      return res.status(400).json(error);
+    }
     await newUser.save();
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {
@@ -42,13 +52,13 @@ export const login = async (req, res, next) => {
     const validUser = await User.findOne({ email });
     if (!validUser) {
       const error = ErrorHandler(404, "User not found");
-      return res.json(error);
+      return res.status(404).json(error);
     }
     const validPassword =
       password && bcryptjs.compareSync(password, validUser.password);
     if (!validPassword) {
       const error = ErrorHandler(401, "Wrong credentials");
-      return res.json(error);
+      return res.status(401).json(error);
     }
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
     const { password: hashedPassword, ...rest } = validUser._doc;
