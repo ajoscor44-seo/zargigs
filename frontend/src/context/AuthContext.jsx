@@ -23,9 +23,31 @@ const AuthProvider = ({ children }) => {
         },
         body: JSON.stringify(formData),
       });
-      const user = await response.json();
-      setCurrentUser(user);
-      return user;
+      const res = await response.json();
+      if (!res.message) {
+        setCurrentUser(res);
+      }
+      return res;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  };
+
+  const signupUser = async (formData) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/v1/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const res = await response.json();
+      if (!res.message) {
+        setCurrentUser(res);
+      }
+      return res;
     } catch (error) {
       console.log(error);
       return error;
@@ -35,6 +57,7 @@ const AuthProvider = ({ children }) => {
   const AuthValue = {
     currentUser,
     loginUser,
+    signupUser,
   };
 
   return (

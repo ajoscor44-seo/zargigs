@@ -43,11 +43,12 @@ const Login = () => {
     } else {
       const res = await loginUser(formData.email, formData.password);
       if (res.message) {
-        setError(res.message);
+        setIsLoading(false);
+        return setError(res.message);
       } else {
-        setError(null);
+        setIsLoading(false);
+        return resetForm();
       }
-      setIsLoading(false);
     }
   };
 

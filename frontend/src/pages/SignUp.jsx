@@ -2,9 +2,16 @@ import React, { useState } from "react";
 import SignupLayout from "../Layouts/SignupLayout";
 import { Link, useParams } from "react-router-dom/cjs/react-router-dom";
 import PageSlider from "../components/PageSlider/PageSlider";
+import { useAuth } from "../context/AuthContext";
 
 const SignUp = () => {
+  const { signupUser, currentUser } = useAuth();
   const params = useParams();
+  const [formData, setFormData] = useState({
+    isMember: false,
+    isEmailVerified: false,
+    role: "user",
+  });
   const pagesData = [
     {
       bgColor: "bg-white",
@@ -19,7 +26,7 @@ const SignUp = () => {
           type: "text",
           error: "An error occurred here",
           isError: false,
-          defaultValue: "",
+          value: formData.firstname && formData.firstname,
           name: "firstname",
         },
         {
@@ -30,7 +37,7 @@ const SignUp = () => {
           type: "text",
           error: "An error occurred here",
           isError: false,
-          defaultValue: "",
+          value: formData.lastname && formData.lastname,
           name: "lastname",
         },
         {
@@ -42,6 +49,9 @@ const SignUp = () => {
           error: "An error occurred here",
           isError: false,
           defaultValue: params?.username,
+          value: params?.username
+            ? params?.username
+            : formData.referredBy && formData.referredBy,
           name: "referredBy",
         },
       ],
@@ -59,7 +69,7 @@ const SignUp = () => {
           type: "text",
           error: "An error occurred here",
           isError: false,
-          defaultValue: "",
+          value: formData.username && formData.username,
           name: "username",
         },
         {
@@ -70,7 +80,7 @@ const SignUp = () => {
           type: "email",
           error: "An error occurred here",
           isError: false,
-          defaultValue: "",
+          value: formData.email && formData.email,
           name: "email",
         },
         {
@@ -81,17 +91,12 @@ const SignUp = () => {
           type: "password",
           error: "An error occurred here",
           isError: false,
-          defaultValue: "",
+          value: formData.password && formData.password,
           name: "password",
         },
       ],
     },
   ];
-  const [formData, setFormData] = useState({
-    isMember: false,
-    isEmailVerified: false,
-    role: "user",
-  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [pages, setPages] = useState(pagesData);
@@ -134,27 +139,15 @@ const SignUp = () => {
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("http://localhost:3000/api/v1/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await response.json();
-      if (
-        data.message.includes(`dup key: { username: "${formData.username}" }`)
-      ) {
-        setError(`Username: ${formData.username} already exists.`);
-      } else if (
-        data.message.includes(`dup key: { email: "${formData.email}" }`)
-      ) {
-        setError(`Email: ${formData.email} already exists.`);
+      const res = await signupUser(formData);
+      console.log(res);
+      setIsLoading(false);
+      if (res.message) {
+        return setError(res.message);
       } else {
         setError(null);
-        setPages(pagesData);
+        return setPages(pagesData);
       }
-      setIsLoading(false);
     } catch (error) {
       return;
     }

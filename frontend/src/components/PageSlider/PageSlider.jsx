@@ -2,13 +2,26 @@ import React, { useState } from "react";
 import FormInput from "../FormInput/FormInput";
 import { IoArrowBackSharp, IoArrowForwardSharp } from "react-icons/io5";
 
-const PageSlider = ({ pages }) => {
+const PageSlider = ({
+  errorMsg,
+  setError,
+  isLoading,
+  pages,
+  handleChange,
+  handleSubmit,
+  handleInputError,
+}) => {
   const [currentPage, setCurrentPage] = useState(0);
 
   const nextPage = () => {
-    if (currentPage === pages.length - 1) {
+    const inputError = handleInputError(currentPage);
+    if (inputError) {
       return;
     }
+    if (currentPage === pages.length - 1) {
+      return handleSubmit();
+    }
+    setError(null);
     setCurrentPage((prevPage) => (prevPage + 1) % pages.length);
   };
   const prevPage = () => {
@@ -47,7 +60,7 @@ const PageSlider = ({ pages }) => {
               >
                 {page.formInputs.map((formInput) => {
                   return (
-                    <div className="mx-2">
+                    <div className="mx-2" key={formInput.label}>
                       <FormInput
                         label={formInput.label}
                         placeholder={formInput.placeholder}
@@ -57,6 +70,9 @@ const PageSlider = ({ pages }) => {
                         icon={formInput.icon}
                         isError={formInput.isError}
                         errorMsg={formInput.error}
+                        value={formInput.value}
+                        name={formInput.name}
+                        handleChange={handleChange}
                       />
                     </div>
                   );
@@ -67,27 +83,30 @@ const PageSlider = ({ pages }) => {
         </div>
       </div>
 
-      <div className="flex justify-between mt-4 mx-3 items-center">
-        <button
-          disabled={currentPage === 0}
-          onClick={prevPage}
-          className={`bg-slate-500 text-white py-2 px-4 rounded outline-none flex items-center gap-1 ${
-            currentPage === 0 ? "disabledBtn" : ""
-          }`}
-        >
-          <IoArrowBackSharp />
-          <span>Back</span>
-        </button>
-        <button
-          disabled={currentPage === pages.length}
-          onClick={nextPage}
-          className={
-            "bg-primaryLight text-white py-2 px-4 rounded outline-none flex items-center gap-1"
-          }
-        >
-          <span>Next</span>
-          <IoArrowForwardSharp />
-        </button>
+      <div className="flex flex-col text-center">
+        <p className="py-2 text-red-500">{errorMsg}</p>
+        <div className="flex justify-between mx-3 items-center">
+          <button
+            disabled={currentPage === 0}
+            onClick={prevPage}
+            className={`bg-slate-500 text-white py-2 px-4 rounded outline-none flex items-center gap-1 ${
+              currentPage === 0 ? "disabledBtn" : ""
+            }`}
+          >
+            <IoArrowBackSharp />
+            <span>Back</span>
+          </button>
+          <button
+            disabled={isLoading}
+            onClick={nextPage}
+            className={`bg-primaryLight text-white py-2 px-4 rounded outline-none flex items-center gap-1 ${
+              isLoading ? "disabledBtn" : ""
+            }`}
+          >
+            <span>{isLoading ? "loading" : "Next"}</span>
+            <IoArrowForwardSharp />
+          </button>
+        </div>
       </div>
     </div>
   );
