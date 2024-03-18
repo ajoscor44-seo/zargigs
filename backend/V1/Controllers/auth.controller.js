@@ -39,7 +39,10 @@ export const signup = async (req, res, next) => {
       return res.status(400).json(error);
     }
     await newUser.save();
-    res.status(201).json({ message: "User created successfully" });
+    res.status(201).json({
+      status: "Signup successfully",
+      success: true,
+    });
   } catch (error) {
     next(error);
   }
@@ -66,7 +69,7 @@ export const login = async (req, res, next) => {
     res
       .cookie("access_token", token, { httpOnly: true, expires: expiryDate })
       .status(200)
-      .json(rest);
+      .json({ ...rest, id: validUser._id });
   } catch (error) {
     next(error);
   }

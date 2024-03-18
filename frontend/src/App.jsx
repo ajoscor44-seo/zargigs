@@ -25,8 +25,9 @@ import Order from "./pages/Order";
 import CreateAdvert from "./pages/CreateAdvert";
 import ClientLayout from "./Layouts/ClientLayout";
 import InputUserInfoLayout from "./Layouts/InputUserInfoLayout";
-import VerifyEmail from "./components/VerifyEmail/VerifyEmail";
 import AuthProvider from "./context/AuthContext.jsx";
+import VerifyEmailAddress from "./pages/VerifyEmailAddress.jsx";
+import PrivateRoute from "./routers/PrivateRoutes.jsx";
 
 function App() {
   return (
@@ -50,6 +51,14 @@ function App() {
             <Route exact path="/forgot-password">
               <ForgotPassword />
             </Route>
+
+            {/* Input User Info Page Layout */}
+            {/* <InputUserInfoLayout> */}
+            {/* <Route path="/verify-email">
+                <VerifyEmailAddress />
+              </Route> */}
+            <PrivateRoute path="/verify-email" component={VerifyEmailAddress} />
+            {/* </InputUserInfoLayout> */}
 
             {/* Client Page Layout */}
             <ClientLayout>
@@ -102,13 +111,6 @@ function App() {
                 <TransactionHistory />
               </Route>
             </ClientLayout>
-
-            {/* Input User Info Page Layout */}
-            <InputUserInfoLayout>
-              <Route path="/verify-email">
-                <VerifyEmail />
-              </Route>
-            </InputUserInfoLayout>
           </Switch>
         </AuthProvider>
       </Router>

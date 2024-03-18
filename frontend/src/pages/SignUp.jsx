@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import SignupLayout from "../Layouts/SignupLayout";
-import { Link, useParams } from "react-router-dom/cjs/react-router-dom";
+import { useHistory, useParams } from "react-router-dom/cjs/react-router-dom";
 import PageSlider from "../components/PageSlider/PageSlider";
 import { useAuth } from "../context/AuthContext";
 
 const SignUp = () => {
   const { signupUser, currentUser } = useAuth();
   const params = useParams();
+  const history = useHistory();
   const [formData, setFormData] = useState({
     isMember: false,
     isEmailVerified: false,
@@ -140,13 +141,17 @@ const SignUp = () => {
     try {
       setIsLoading(true);
       const res = await signupUser(formData);
-      console.log(res);
       setIsLoading(false);
+      if (res.statusCode == 500) {
+        return setError("An error occurred. Please try again later.");
+      }
       if (res.message) {
         return setError(res.message);
       } else {
         setError(null);
-        return setPages(pagesData);
+        setPages(pagesData);
+        history.push("/login");
+        return;
       }
     } catch (error) {
       return;

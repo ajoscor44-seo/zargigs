@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
 
@@ -7,8 +7,14 @@ export const useAuth = () => {
 };
 
 const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState();
+  const [currentUser, setCurrentUser] = useState(
+    localStorage.getItem("currentUser")
+  );
   const [loading, setLoading] = useState();
+
+  useEffect(() => {
+    localStorage.setItem("currentUser", currentUser);
+  }, [currentUser]);
 
   const loginUser = async (email, password) => {
     try {
@@ -23,13 +29,12 @@ const AuthProvider = ({ children }) => {
         },
         body: JSON.stringify(formData),
       });
-      const res = await response.json();
-      if (!res.message) {
-        setCurrentUser(res);
+      const user = await response.json();
+      if (!user.message) {
+        setCurrentUser(user);
       }
-      return res;
+      return user;
     } catch (error) {
-      console.log(error);
       return error;
     }
   };
