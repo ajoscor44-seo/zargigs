@@ -34,34 +34,26 @@ function App() {
     <>
       <Router>
         <AuthProvider>
-          <Switch>
-            {/* Public Pages */}
-            <Route exact path="/">
-              <Home />
-            </Route>
-            <Route exact path="/ref/:username">
-              <SignUp />
-            </Route>
-            <Route exact path="/signup">
-              <SignUp />
-            </Route>
-            <Route exact path="/login">
-              <Login />
-            </Route>
-            <Route exact path="/forgot-password">
-              <ForgotPassword />
-            </Route>
+          {/* Public Pages */}
+          <Route exact path="/">
+            <Home />
+          </Route>
+          <Route exact path="/ref/:username">
+            <SignUp />
+          </Route>
+          <Route exact path="/signup">
+            <SignUp />
+          </Route>
+          <Route exact path="/login">
+            <Login />
+          </Route>
+          <Route exact path="/forgot-password">
+            <ForgotPassword />
+          </Route>
 
-            {/* Input User Info Page Layout */}
-            {/* <InputUserInfoLayout> */}
-            {/* <Route path="/verify-email">
-                <VerifyEmailAddress />
-              </Route> */}
-            <PrivateRoute path="/verify-email" component={VerifyEmailAddress} />
-            {/* </InputUserInfoLayout> */}
-
-            {/* Client Page Layout */}
-            <ClientLayout>
+          {/* Client Page Layout */}
+          <ClientLayout>
+            <Switch>
               <Route path="/dashboard">
                 <ClientDashboard />
               </Route>
@@ -110,8 +102,19 @@ function App() {
               <Route path="/transaction-history">
                 <TransactionHistory />
               </Route>
-            </ClientLayout>
-          </Switch>
+            </Switch>
+          </ClientLayout>
+
+          {/* Input User Info Page Layout */}
+          <InputUserInfoLayout>
+            <Switch>
+              <PrivateRoute
+                path="/verify-email"
+                component={VerifyEmailAddress}
+              />
+              <PrivateRoute path="/user-info" component={VerifyEmailAddress} />
+            </Switch>
+          </InputUserInfoLayout>
         </AuthProvider>
       </Router>
     </>

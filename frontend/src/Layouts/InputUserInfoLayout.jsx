@@ -4,9 +4,9 @@ import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 
 const InputUserInfoLayout = ({ children }) => {
   return (
-    <div>
+    <div className="bg-gray-50" style={{ height: "100vh" }}>
       <ClientNavbar />
-      {children}
+      <div className="flex justify-center items-center">{children}</div>
       <ClientMenuBar />
     </div>
   );

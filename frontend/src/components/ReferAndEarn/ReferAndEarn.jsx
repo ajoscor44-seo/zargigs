@@ -8,7 +8,6 @@ const ReferAndEarn = ({ username }) => {
   const { currentUser } = useAuth();
   const inputRef = useRef(null);
   const referralLink = `https://gigsflix.com/ref/${currentUser.username.toLowerCase()}`;
-  const referralLink = `https://gigsflix.com/ref/${currentUser.username.toLowerCase()}`;
 
   const copyToClipboard = (inputRef) => {
     const textIsCopied = CopyToClipboard(inputRef);
