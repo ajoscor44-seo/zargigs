@@ -1,8 +1,6 @@
-import React from "react";
-
 const CopyToClipboard = (messageRef) => {
-  const textarea = messageRef.current;
-  textarea.select();
+  const textInput = messageRef.current;
+  textInput.select();
   const value = document.execCommand("copy").valueOf();
 
   return value;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
 import MoneyTransaction from "../components/MoneyTransaction/MoneyTransaction";
 import ClientsEarnings from "../components/ClientEarnings/ClientsEarnings";
@@ -9,16 +9,26 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { FaLocationDot } from "react-icons/fa6";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import ReferAndEarn from "../components/ReferAndEarn/ReferAndEarn";
+import { useAuth } from "../context/AuthContext";
 
 const UserDetails = () => {
+  const { currentUser } = useAuth();
+  const [userImageURL, setUserImageURL] = useState(
+    "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+  );
+
+  // Updates user profile
+  useEffect(() => {
+    if (currentUser.image) {
+      return setUserImageURL(currentUser.image);
+    }
+  }, [currentUser]);
   const [show, setShow] = useState(false);
   const totalEarnings = 12000;
   const pendingEarnings = 1000;
   const amountWithdrawn = 10000;
   const amountSpent = 6400;
   const username = "Xavier";
-  const firstname = "Pablo";
-  const lastname = "Richie";
   const isOnline = true;
   const badgeColor = isOnline ? "primaryLight" : "slate-300";
   const balance = totalEarnings - amountWithdrawn;
@@ -33,7 +43,7 @@ const UserDetails = () => {
     state: "Ondo",
     country: "Nigeria",
   };
-  const referralLink = "https://gigsflix.com/ref/xavier";
+  const referralLink = `https://gigsflix.com/ref/${currentUser.username.toLowerCase()}`;
 
   return (
     <div>
@@ -51,16 +61,18 @@ const UserDetails = () => {
           </Link>
           <div className="flex flex-col border-b pb-3 justify-center items-center">
             <div className="border-2 rounded-md relative">
-              <img className="w-32 h-32 object-cover" src={userImage} />
+              <img className="w-32 h-32 object-cover" src={userImageURL} />
               <span
                 className={`isOnline w-5 h-5 bg-${badgeColor} rounded-full absolute bottom-3 right-4`}
               ></span>
             </div>
             <div className="p-2 font-primary flex flex-col items-center">
               <h1 className="font-bold text-2xl text-slate-600">
-                {firstname + " " + lastname}
+                {currentUser.firstname + " " + currentUser.lastname}
               </h1>
-              <span className="font-semibold">@{username.toLowerCase()}</span>
+              <span className="font-semibold">
+                @{currentUser.username.toLowerCase()}
+              </span>
               <Link to="/update-location">
                 <div className="flex">
                   <FaLocationDot className="text-primaryLight" />
@@ -117,7 +129,10 @@ const UserDetails = () => {
           <MoneyTransaction />
         </div>
 
-        <ReferAndEarn referralLink={referralLink} username={username} />
+        <ReferAndEarn
+          referralLink={referralLink}
+          username={currentUser.username}
+        />
       </div>
     </div>
   );

@@ -17,6 +17,7 @@ const ClientNavbar = () => {
     allNotifications.length
   );
 
+  // Updates user profile
   useEffect(() => {
     if (currentUser.image) {
       return setUserImageURL(currentUser.image);

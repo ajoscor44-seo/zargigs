@@ -1,8 +1,21 @@
-import React from "react";
+import React, { useRef } from "react";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { Link } from "react-router-dom/cjs/react-router-dom";
+import CopyToClipboard from "../../hooks/CopyToClipboard";
+import { useAuth } from "../../context/AuthContext";
 
-const ReferAndEarn = ({ username, referralLink }) => {
+const ReferAndEarn = ({ username }) => {
+  const { currentUser } = useAuth();
+  const inputRef = useRef(null);
+  const referralLink = `https://gigsflix.com/ref/${currentUser.username.toLowerCase()}`;
+  const referralLink = `https://gigsflix.com/ref/${currentUser.username.toLowerCase()}`;
+
+  const copyToClipboard = (inputRef) => {
+    const textIsCopied = CopyToClipboard(inputRef);
+
+    alert("Copied: " + textIsCopied);
+  };
+
   return (
     <div className="mt-5 bg-white">
       <div className="flex justify-between p-3 font-primary border-b">
@@ -22,7 +35,18 @@ const ReferAndEarn = ({ username, referralLink }) => {
           <div className="p-2 border bg-slate-200 rounded-s">
             {referralLink}
           </div>
-          <button className="text-white cursor-pointer rounded-r py-2 px-3 bg-primaryLight">
+          {false && (
+            <textarea
+              ref={inputRef}
+              rows={25}
+              className="p-2 border bg-slate-200 rounded-s"
+              defaultValue={referralLink}
+            ></textarea>
+          )}
+          <button
+            onClick={() => copyToClipboard(inputRef)}
+            className="text-white cursor-pointer rounded-r py-2 px-3 bg-primaryLight"
+          >
             COPY
           </button>
         </div>

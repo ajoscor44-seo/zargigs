@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import logo from "../assets/png/logo-color.png";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import googleIcon from "../assets/png/google-icon.png";
+import OAuth from "../components/OAuth/OAuth";
 
 const SignupLayout = ({ children }) => {
   return (
@@ -17,10 +18,7 @@ const SignupLayout = ({ children }) => {
         </div>
       </div>
       {children}
-      <div className="btn rounded-sm flex justify-center items-center gap-2 font-primary text-red-600 border mt-3">
-        <img src={googleIcon} className="w-8" />
-        <span className="text-xl text-dark">Continue With Google</span>
-      </div>
+      <OAuth />
       <div className="flex flex-col justify-center bg-white items-center">
         <p className="text-center text-sm px-8 mx-4 mt-5">
           By signing up, you agree to our{" "}
