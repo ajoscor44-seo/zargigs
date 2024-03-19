@@ -6,6 +6,7 @@ const user = {
   email: "pablo@gmail.com",
   password: "Hash",
   referredBy: "mcgregor",
+  isMember: false,
   isEmailVerified: true,
   imageUrl: "fakeImageUrl",
   religion: "Islam",
@@ -25,13 +26,21 @@ const user = {
     bankName: "Guaranty Trust Bank",
     accountName: "Pablo Richie Muller",
   },
+  userEarnings: {
+    totalEarnings: 1500000,
+    pendingEarnings: 120000,
+    amountSpent: 90000,
+    amountWithdrawn: 320000,
+    balance: 1180000,
+  },
   uploadedTasks: [],
+
+  // To be removed
   totalEarnings: 1500000,
   pendingEarnings: 120000,
   amountSpent: 90000,
   amountWithdrawn: 320000,
   balance: 1180000,
-  isMember: false,
 };
 
 export default user;

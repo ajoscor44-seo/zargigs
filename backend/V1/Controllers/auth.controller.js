@@ -69,7 +69,57 @@ export const login = async (req, res, next) => {
     res
       .cookie("access_token", token, { httpOnly: true, expires: expiryDate })
       .status(200)
-      .json({ ...rest, id: validUser._id });
+      .json(rest);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const google = async (req, res, next) => {
+  const { name, email, isEmailVerified, image, referredBy, role, isMember } =
+    req.body;
+
+  try {
+    const fullName = name.split(" ");
+    const validUser = await User.findOne({ email: email });
+    if (validUser) {
+      const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
+      const { password: hashedPassword, ...rest } = validUser._doc;
+      const expiryDate = new Date(Date.now() + 3600000);
+      res
+        .cookie("access_token", token, { httpOnly: true, expires: expiryDate })
+        .status(200)
+        .json(rest);
+    } else {
+      const generatedPassword = Math.random().toString(36).slice(-8);
+
+      const hashedPassword =
+        generatedPassword && bcryptjs.hashSync(generatedPassword, 10);
+      const newUser = new User({
+        firstname: fullName[0],
+        lastname: fullName[1],
+        username:
+          name.split(" ").join("").toLowerCase() +
+          Math.floor(Math.random() * 10000).toString(),
+        email,
+        password: hashedPassword,
+        referredBy,
+        role: role || "user",
+        isEmailVerified,
+        isMember,
+        image,
+      });
+
+      await newUser.save();
+
+      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
+      const { password: hashedPassword2, ...rest } = newUser._doc;
+      const expiryDate = new Date(Date.now() + 3600000);
+      res
+        .cookie("access_token", token, { httpOnly: true, expires: expiryDate })
+        .status(200)
+        .json(rest);
+    }
   } catch (error) {
     next(error);
   }

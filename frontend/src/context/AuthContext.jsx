@@ -59,10 +59,35 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const OAuthUser = async (cred) => {
+    const res = await fetch("http://localhost:3000/api/v1/auth/google", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: cred.user.displayName,
+        email: cred.user.email,
+        isEmailVerified: cred.user.emailVerified,
+        image: cred.user.photoURL,
+        referredBy: "admin",
+        role: "user",
+        isMember: false,
+      }),
+    });
+
+    const user = await res.json();
+    if (!user.message) {
+      setCurrentUser(user);
+    }
+    return user;
+  };
+
   const AuthValue = {
     currentUser,
     loginUser,
     signupUser,
+    OAuthUser,
   };
 
   return (

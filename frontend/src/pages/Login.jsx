@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom/cjs/react-router-dom";
+import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import { GrPowerReset } from "react-icons/gr";
 import { MdOutlineLogin } from "react-icons/md";
 import logo from "../assets/png/logo-color.png";
 import loginIllustration from "../assets/images/login-illustration-png.png";
-import googleIcon from "../assets/png/google-icon.png";
 import { useAuth } from "../context/AuthContext";
 import FormInput from "../components/FormInput/FormInput";
+import OAuth from "../components/OAuth/OAuth";
 
 const Login = () => {
   const [email, setEmail] = useState(null);
@@ -15,6 +15,7 @@ const Login = () => {
   const [password, setPassword] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const history = useHistory();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -47,6 +48,7 @@ const Login = () => {
         return setError(res.message);
       } else {
         setIsLoading(false);
+        history.push("/dashboard");
         return resetForm();
       }
     }
@@ -130,10 +132,7 @@ const Login = () => {
           </div>
         </div>
         <div className="flex flex-col gap-4 px-4">
-          <div className="btn rounded-sm flex justify-center items-center gap-2 font-primary text-red-600 border mt-3">
-            <img src={googleIcon} className="w-8" />
-            <span className="text-xl text-dark">Continue With Google</span>
-          </div>
+          <OAuth />
           <Link to="/forgot-password">
             <p className="flex justify-center text-primary hover:text-primaryLight">
               Forgot Password
