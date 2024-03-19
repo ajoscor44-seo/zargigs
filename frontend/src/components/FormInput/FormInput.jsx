@@ -31,6 +31,7 @@ const FormInput = ({
           className="border rounded outline-none p-2"
           placeholder={placeholder}
           rows={5}
+          value={value}
         ></textarea>
       ) : (
         <div
@@ -60,10 +61,17 @@ const FormInput = ({
           </div>
           <div className="flex-1">
             {useSelect ? (
-              <select className="w-full outline-none">
+              <select
+                className="w-full outline-none"
+                name={name}
+                onChange={handleChange}
+              >
                 {selections.map((selection) => {
                   return (
-                    <option className="p-4 text-xs text-slate-600 font-semibold">
+                    <option
+                      value={selection}
+                      className="p-4 text-xs text-slate-600 font-semibold"
+                    >
                       {selection}
                     </option>
                   );

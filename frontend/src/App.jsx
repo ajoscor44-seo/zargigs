@@ -28,6 +28,8 @@ import InputUserInfoLayout from "./Layouts/InputUserInfoLayout";
 import AuthProvider from "./context/AuthContext.jsx";
 import VerifyEmailAddress from "./pages/VerifyEmailAddress.jsx";
 import PrivateRoute from "./routers/PrivateRoutes.jsx";
+import SetLocationPage from "./pages/SetLocation.jsx";
+import VerifiedEmailPrivateRoute from "./routers/VerifiedEmailPrivateRoutes.jsx";
 
 function App() {
   return (
@@ -112,7 +114,10 @@ function App() {
                 path="/verify-email"
                 component={VerifyEmailAddress}
               />
-              <PrivateRoute path="/user-info" component={VerifyEmailAddress} />
+              <VerifiedEmailPrivateRoute
+                path="/set-location"
+                component={SetLocationPage}
+              />
             </Switch>
           </InputUserInfoLayout>
         </AuthProvider>

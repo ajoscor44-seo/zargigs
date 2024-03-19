@@ -58,7 +58,7 @@ const VerifyEmail = () => {
             </div>
           </div>
 
-          <div className="flex flex-col justify-end items-center">
+          <div className="flex flex-col items-center">
             <p className="font-semibold text-sm">Didn't receive the mail?</p>
             <p className="text-sm text-green-500 font-semibold cursor-pointer">
               Click to Resend Mail
