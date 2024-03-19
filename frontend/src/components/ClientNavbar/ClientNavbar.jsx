@@ -1,15 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../../assets/png/logo-color.png";
 import { TfiHelpAlt } from "react-icons/tfi";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { FaCircleUser } from "react-icons/fa6";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import allNotifications from "../../data/notifications";
+import { useAuth } from "../../context/AuthContext";
 
 const ClientNavbar = () => {
+  const { currentUser } = useAuth();
+  const [userImageURL, setUserImageURL] = useState(
+    "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+  );
+
   const [newNotificationsNumber, setNewNotificationsNumber] = useState(
     allNotifications.length
   );
+
+  useEffect(() => {
+    if (currentUser.image) {
+      return setUserImageURL(currentUser.image);
+    }
+  }, [currentUser]);
 
   return (
     <div className="bg-white border fixed w-full top-0 lg:hidden p-4 flex items-center justify-between">
@@ -40,9 +52,10 @@ const ClientNavbar = () => {
 
         <Link to="/user-details">
           <div className="hover:opacity-80">
-            <FaCircleUser
-              size={35}
-              className="text-primaryLight hover:text-primary transition-colors duration-500"
+            <img
+              src={userImageURL}
+              alt="Profile Picture"
+              className="w-10 h-10 border rounded-full"
             />
           </div>
         </Link>

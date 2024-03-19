@@ -8,12 +8,13 @@ export const useAuth = () => {
 
 const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(
-    localStorage.getItem("currentUser")
+    JSON.parse(localStorage.getItem("currentUser"))
   );
+
   const [loading, setLoading] = useState();
 
   useEffect(() => {
-    localStorage.setItem("currentUser", currentUser);
+    return localStorage.setItem("currentUser", JSON.stringify(currentUser));
   }, [currentUser]);
 
   const loginUser = async (email, password) => {
