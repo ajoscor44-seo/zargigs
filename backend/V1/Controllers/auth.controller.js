@@ -2,6 +2,9 @@ import User from "../Models/user.model.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { ErrorHandler } from "../utils/error.js";
+import Token from "../Models/Token.js";
+import crypto from "crypto";
+import nodemailer from "nodemailer";
 
 export const signup = async (req, res, next) => {
   const {
@@ -39,8 +42,20 @@ export const signup = async (req, res, next) => {
       return res.status(400).json(error);
     }
     await newUser.save();
+
+    // Generate OTP token
+    const OTPToken = new Token({
+      userId: newUser._id,
+      token: `${Math.floor(1000 + Math.random() * 9000)}`,
+    });
+
+    console.log(OTPToken);
+    await OTPToken.save();
+
+    // Send OTP mail
+    await sendOTP(email, OTPToken.token, lastname);
     res.status(201).json({
-      status: "Signup successfully",
+      status: "Email sent successfully.",
       success: true,
     });
   } catch (error) {
@@ -120,6 +135,62 @@ export const google = async (req, res, next) => {
         .status(200)
         .json(rest);
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const sendOTP = async (email, OTP, lastname) => {
+  try {
+    // Creates Email Transporter
+    let transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: import.meta.env.VITE_FIREBASE_API_KEY,
+        pass: process.env.PASSWORD,
+      },
+    });
+
+    // Sends Email
+    let info = await transporter.sendMail({
+      from: process.env.USER,
+      to: email,
+      subject: "Account Verification",
+      text: `Welcome to Gigsflix ${lastname}, here is your OTP to verify your ${process.env.USER} account`,
+      html: `<div>${OTP}</div>`,
+    });
+  } catch (error) {
+    console.log(error, "Email failed to send");
+  }
+};
+
+export const verifyEmail = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+
+    const validUser = await User.findOne({ email });
+
+    if (!validUser) {
+      return res
+        .status(400)
+        .json({ message: "User does not exist.", success: false });
+    }
+
+    const validOTP = await Token.findOne({
+      token: otp,
+    });
+
+    if (!validOTP) {
+      return res.status(400).json({ message: "Invalid OTP.", success: false });
+    }
+    console.log(validOTP);
+    await User.updateOne(
+      { _id: validOTP.userId },
+      { $set: { isEmailVerified: true } }
+    );
+    await Token.findByIdAndDelete(validOTP._id);
+
+    res.status(200).json({ status: "Email Verified" });
   } catch (error) {
     next(error);
   }

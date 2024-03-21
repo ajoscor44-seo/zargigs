@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BsPower } from "react-icons/bs";
 import { useAuth } from "../../context/AuthContext";
-import tfa_icon from "../../assets/png/twofactor.png";
-import { FaArrowLeft } from "react-icons/fa6";
 import FormInput from "../FormInput/FormInput";
 import { BiSolidCheckCircle } from "react-icons/bi";
 
