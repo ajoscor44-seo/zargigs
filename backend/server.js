@@ -5,7 +5,6 @@ import useRoutes from "./V1/Routes/user.route.js";
 import authRoutes from "./V1/Routes/auth.route.js";
 dotenv.config();
 import cors from "cors";
-// import bodyParser from "body-parser";
 
 mongoose
   .connect(process.env.MONGO)
@@ -43,5 +42,3 @@ app.use((err, req, res, next) => {
 app.listen(3000, () => {
   console.log("Server running");
 });
-// app.use(bodyParser.json({ limit: "30mb", extended: true }));
-// app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));

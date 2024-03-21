@@ -72,6 +72,10 @@ export const login = async (req, res, next) => {
       const error = ErrorHandler(404, "User not found");
       return res.status(404).json(error);
     }
+    if (!validUser.isEmailVerified) {
+      const error = ErrorHandler(404, "Please verify your email to continue.");
+      return res.status(404).json(error);
+    }
     const validPassword =
       password && bcryptjs.compareSync(password, validUser.password);
     if (!validPassword) {
@@ -146,7 +150,7 @@ export const sendOTP = async (email, OTP, lastname) => {
     let transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
-        user: import.meta.env.VITE_FIREBASE_API_KEY,
+        user: process.env.USER,
         pass: process.env.PASSWORD,
       },
     });
@@ -156,8 +160,8 @@ export const sendOTP = async (email, OTP, lastname) => {
       from: process.env.USER,
       to: email,
       subject: "Account Verification",
-      text: `Welcome to Gigsflix ${lastname}, here is your OTP to verify your ${process.env.USER} account`,
-      html: `<div>${OTP}</div>`,
+      text: `Welcome to Gigsflix ${lastname}!,`,
+      html: `<div>Here is your OTP (${OTP}) to verify your ${process.env.USER} account.</div>`,
     });
   } catch (error) {
     console.log(error, "Email failed to send");
