@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { BsPower } from "react-icons/bs";
 import { useAuth } from "../../context/AuthContext";
 import tfa_icon from "../../assets/png/twofactor.png";
 import { FaArrowLeft } from "react-icons/fa6";
+import OtpInput from "../OTPInput/OTPInput";
 
 const VerifyEmail = () => {
   const { currentUser } = useAuth();
+  const [otp, setOtp] = useState(Array(4).fill(""));
 
   return (
     <div
@@ -15,9 +17,6 @@ const VerifyEmail = () => {
       <div className="bg-white rounded shadow-2xl">
         <span className="flex justify-between items-center px-3 py-2 border-b text-sm">
           <h2 className="font-bold">Welcome to Gigsflix</h2>{" "}
-          <span className="flex items-center cursor-pointer text-red-600">
-            <BsPower /> Logout
-          </span>
         </span>
 
         <div className="p-3 flex flex-col gap-2">
@@ -45,13 +44,9 @@ const VerifyEmail = () => {
 
             <div className="flex flex-col gap-2">
               <span>ENTER TWO FACTOR CODE:</span>
-              <div className="flex flex-1">
-                <input
-                  type="number"
-                  placeholder=""
-                  className="border-2 border-r-0 p-2 rounded-s outline-none"
-                />
-                <button className="bg-green-500 px-2 font-semibold text-white text-xs rounded-e">
+              <div className="flex flex-1 gap-2">
+                <OtpInput otp={otp} setOtp={setOtp} />
+                <button className="bg-green-500 px-2 font-semibold text-white text-xs rounded">
                   CONTINUE
                 </button>
               </div>

@@ -1,4 +1,5 @@
 const religions = [
+  "Select Your Religion",
   "Buddhism",
   "Christianity",
   "Hinduism",

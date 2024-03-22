@@ -118,6 +118,23 @@
   opacity: 0.5;
 }
 
+.hideDropIcon {
+  -webkit-appearance: none; /* Removes default styling for select on WebKit browsers */
+  -moz-appearance: none; /* Removes default styling for select on Mozilla browsers */
+  appearance: none;
+}
+
+.numberInputWithoutControl,
+.numberInputWithoutControl::-webkit-inner-spin-button,
+.numberInputWithoutControl::-webkit-outer-spin-button {
+  /* Chrome, Safari, Edge, Opera */
+  -webkit-appearance: none;
+  margin: 0;
+
+  /* Firefox */
+  -moz-appearance: textfield;
+}
+
 @keyframes pulse-size {
   0%,
   100% {
