@@ -49,7 +49,6 @@ export const signup = async (req, res, next) => {
       token: `${Math.floor(1000 + Math.random() * 9000)}`,
     });
 
-    console.log(OTPToken);
     await OTPToken.save();
 
     // Send OTP mail
@@ -148,10 +147,13 @@ export const sendOTP = async (email, OTP, lastname) => {
   try {
     // Creates Email Transporter
     let transporter = nodemailer.createTransport({
-      service: "Gmail",
+      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.USER,
-        pass: process.env.PASSWORD,
+        pass: process.env.GOOGLE_APP_PASSWORD,
       },
     });
 
@@ -160,8 +162,14 @@ export const sendOTP = async (email, OTP, lastname) => {
       from: process.env.USER,
       to: email,
       subject: "Account Verification",
-      text: `Welcome to Gigsflix ${lastname}!,`,
-      html: `<div>Here is your OTP (${OTP}) to verify your ${process.env.USER} account.</div>`,
+      html: `
+        <div class="border border-green-500 rounded-md px-10 text-center">
+          <h1 class="text-green-500 font-bold">Welcome to Gigsflix ${lastname}!</h1>
+          <p>Here is your OTP</p>
+          <h2 class="text-green-500">${OTP}</h2>
+          <p>Copy and paste the OTP to verify your Gigsflix account.</p>
+        </div>
+      `,
     });
   } catch (error) {
     console.log(error, "Email failed to send");
@@ -187,7 +195,6 @@ export const verifyEmail = async (req, res, next) => {
     if (!validOTP) {
       return res.status(400).json({ message: "Invalid OTP.", success: false });
     }
-    console.log(validOTP);
     await User.updateOne(
       { _id: validOTP.userId },
       { $set: { isEmailVerified: true } }
