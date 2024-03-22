@@ -9,7 +9,7 @@ const VerifiedEmailPrivateRoute = ({ component: Component, ...rest }) => {
     <Route
       {...rest}
       render={(props) => {
-        return currentUser && currentUser.isEmailVerified ? (
+        return currentUser ? (
           <Component {...props} />
         ) : (
           <Redirect to="/login" />
