@@ -150,7 +150,7 @@ const SignUp = () => {
       } else {
         setError(null);
         setPages(pagesData);
-        history.push("/login");
+        history.push("/verify-email");
         return;
       }
     } catch (error) {
