@@ -30,96 +30,96 @@ import VerifyEmailAddress from "./pages/VerifyEmailAddress.jsx";
 import PrivateRoute from "./routers/PrivateRoutes.jsx";
 import SetLocationPage from "./pages/SetLocation.jsx";
 import VerifiedEmailPrivateRoute from "./routers/VerifiedEmailPrivateRoutes.jsx";
+import UploadProfilePicPrivateRoute from "./routers/UploadProfileRoutes.jsx";
+import UploadProfilePage from "./pages/UploadProfile.jsx";
+import SetBirthReligion from "./pages/SetBirthReligion.jsx";
 
 function App() {
   return (
     <>
       <Router>
+        <Route exact path="/">
+          <Home />
+        </Route>
+
         <AuthProvider>
-          {/* Public Pages */}
-          <Route exact path="/">
-            <Home />
-          </Route>
-          <Route exact path="/ref/:username">
-            <SignUp />
-          </Route>
-          <Route exact path="/signup">
-            <SignUp />
-          </Route>
-          <Route exact path="/login">
-            <Login />
-          </Route>
-          <Route exact path="/forgot-password">
-            <ForgotPassword />
-          </Route>
+          <Switch>
+            {/* Public Pages */}
+            <Route exact path="/ref/:username">
+              <SignUp />
+            </Route>
+            <Route exact path="/signup">
+              <SignUp />
+            </Route>
+            <Route exact path="/login">
+              <Login />
+            </Route>
+            <Route exact path="/forgot-password">
+              <ForgotPassword />
+            </Route>
 
-          {/* Client Page Layout */}
-          <ClientLayout>
-            <Switch>
-              <Route path="/dashboard">
-                <ClientDashboard />
-              </Route>
-              <Route path="/help-support">
-                <HelpSupport />
-              </Route>
-              <Route path="/notifications">
-                <Notifications />
-              </Route>
-              <Route path="/user-details">
-                <UserDetails />
-              </Route>
-              <Route path="/fund-wallet">
-                <FundWallets />
-              </Route>
-              <Route path="/withdraw">
-                <Withdrawal />
-              </Route>
-              <Route path="/update-location">
-                <UpdateLocation />
-              </Route>
-              <Route path="/invite">
-                <InviteFriends />
-              </Route>
-              <Route path="/advertise/:slug">
-                <CreateAdvert />
-              </Route>
-              <Route exact path="/advertise">
-                <Adevertise />
-              </Route>
-              <Route path="/order">
-                <Order />
-              </Route>
-              <Route exact path="/become-a-member">
-                <BecomeAMember />
-              </Route>
-              <Route path="/earn/:slug">
-                <EarnWithTasks />
-              </Route>
-              <Route exact path="/earn">
-                <Earn />
-              </Route>
-              <Route path="/account-settings">
-                <Settings />
-              </Route>
-              <Route path="/transaction-history">
-                <TransactionHistory />
-              </Route>
-            </Switch>
-          </ClientLayout>
+            {/* Client Info Input Pages */}
+            <PrivateRoute path="/verify-email" component={VerifyEmailAddress} />
+            <Route path="/set-location">
+              <SetLocationPage />
+            </Route>
+            <Route path="/upload-profile-pic">
+              <UploadProfilePage />
+            </Route>
+            <Route path="/set-birth-religion">
+              <SetBirthReligion />
+            </Route>
 
-          {/* Input User Info Page Layout */}
-          <InputUserInfoLayout>
-            <Switch>
-              <PrivateRoute
-                path="/verify-email"
-                component={VerifyEmailAddress}
-              />
-              <VerifiedEmailPrivateRoute
-                path="/set-location"
-                component={SetLocationPage}
-              />
-            </Switch>
-          </InputUserInfoLayout>
+            {/* Client Page Layout */}
+            <Route path="/dashboard">
+              <ClientDashboard />
+            </Route>
+            <Route path="/help-support">
+              <HelpSupport />
+            </Route>
+            <Route path="/notifications">
+              <Notifications />
+            </Route>
+            <Route path="/user-details">
+              <UserDetails />
+            </Route>
+            <Route path="/fund-wallet">
+              <FundWallets />
+            </Route>
+            <Route path="/withdraw">
+              <Withdrawal />
+            </Route>
+            <Route path="/update-location">
+              <UpdateLocation />
+            </Route>
+            <Route path="/invite">
+              <InviteFriends />
+            </Route>
+            <Route path="/advertise/:slug">
+              <CreateAdvert />
+            </Route>
+            <Route exact path="/advertise">
+              <Adevertise />
+            </Route>
+            <Route path="/order">
+              <Order />
+            </Route>
+            <Route exact path="/become-a-member">
+              <BecomeAMember />
+            </Route>
+            <Route path="/earn/:slug">
+              <EarnWithTasks />
+            </Route>
+            <Route exact path="/earn">
+              <Earn />
+            </Route>
+            <Route path="/account-settings">
+              <Settings />
+            </Route>
+            <Route path="/transaction-history">
+              <TransactionHistory />
+            </Route>
+          </Switch>
         </AuthProvider>
       </Router>
     </>

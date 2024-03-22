@@ -2,6 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import FormInput from "../FormInput/FormInput";
 import { BiSolidCheckCircle } from "react-icons/bi";
+import {
+  FaLocationDot,
+  FaLocationPin,
+  FaLocationPinLock,
+} from "react-icons/fa6";
 
 const SetLocation = () => {
   const { currentUser } = useAuth();
@@ -32,7 +37,7 @@ const SetLocation = () => {
 
   return (
     <div
-      className="underBackNav font-primary mt-5 mx-3 flex flex-col justify-center"
+      className="underBackNav font-primary mt-5 mx-3 flex flex-col justify-center mb-20"
       style={{ maxWidth: "400px" }}
     >
       <div className="bg-white rounded shadow-2xl">
@@ -64,29 +69,35 @@ const SetLocation = () => {
               name={"gender"}
               handleChange={handleChange}
             />
-            <FormInput
-              useSelect={true}
-              selections={states}
-              value={userLocation.state}
-              name={"state"}
-              handleChange={handleLocationChange}
-            />
-            {userLocation.state && userLocation.state !== "Select State" && (
+            <div className="mt-3">
+              <span className="flex items-center">
+                <FaLocationDot className="text-red-500" size={15} />
+                <span className="text-sm font-bold ms-1">Your Location</span>
+              </span>
               <FormInput
                 useSelect={true}
-                selections={LGAs}
-                value={userLocation.LGA}
-                name={"LGA"}
+                selections={states}
+                value={userLocation.state}
+                name={"state"}
                 handleChange={handleLocationChange}
-                note={
-                  "You will have to select your state before selecting LGA."
-                }
               />
-            )}
+              {userLocation.state && userLocation.state !== "Select State" && (
+                <FormInput
+                  useSelect={true}
+                  selections={LGAs}
+                  value={userLocation.LGA}
+                  name={"LGA"}
+                  handleChange={handleLocationChange}
+                  note={
+                    "You will have to select your state before selecting LGA."
+                  }
+                />
+              )}
+            </div>
           </div>
 
-          <button className="bg-green-500 text-white font-semibold text-sm py-3 rounded">
-            SET LOCATION
+          <button className="bg-green-500 text-white font-semibold text-sm py-2 rounded">
+            SET DETAILS
           </button>
         </div>
       </div>

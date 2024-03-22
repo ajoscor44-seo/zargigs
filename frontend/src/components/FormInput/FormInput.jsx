@@ -20,6 +20,7 @@ const FormInput = ({
   value,
   name,
   handleChange,
+  hideDropIcon,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -37,9 +38,9 @@ const FormInput = ({
         <div
           className={
             fullRounded
-              ? "border rounded-full flex items-center py-4 px-5 gap-2" +
+              ? "border rounded-full flex items-center py-4 pl-4 pr-1 gap-2" +
                 (icon == "referrer" && value ? " bg-slate-50 opacity-60" : " ")
-              : "border rounded flex items-center py-4 px-5 gap-2"
+              : "border rounded flex items-center py-4 pl-4 pr-1 gap-2"
           }
         >
           <div className="text-slate-600">
@@ -62,7 +63,11 @@ const FormInput = ({
           <div className="flex-1">
             {useSelect ? (
               <select
-                className="w-full outline-none"
+                className={
+                  hideDropIcon
+                    ? "w-full outline-none hideDropIcon"
+                    : "w-full outline-none"
+                }
                 name={name}
                 onChange={handleChange}
               >
