@@ -3,8 +3,8 @@ import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { ErrorHandler } from "../utils/error.js";
 import Token from "../Models/Token.js";
-import crypto from "crypto";
 import nodemailer from "nodemailer";
+import AccessToken from "../Models/access-tokens.model.js";
 
 export const signup = async (req, res, next) => {
   const {
@@ -48,14 +48,13 @@ export const signup = async (req, res, next) => {
       userId: newUser._id,
       token: `${Math.floor(1000 + Math.random() * 9000)}`,
     });
-
     await OTPToken.save();
 
     // Send OTP mail
     await sendOTP(email, OTPToken.token, lastname);
     res.status(201).json({
-      status: "Email sent successfully.",
-      success: true,
+      message: "Email sent successfully.",
+      failed: false,
     });
   } catch (error) {
     next(error);
@@ -72,8 +71,8 @@ export const login = async (req, res, next) => {
       return res.status(404).json(error);
     }
     if (!validUser.isEmailVerified) {
-      const error = ErrorHandler(404, "Please verify your email to continue.");
-      return res.status(404).json(error);
+      const error = ErrorHandler(400, c);
+      return res.status(400).json(error);
     }
     const validPassword =
       password && bcryptjs.compareSync(password, validUser.password);
@@ -82,12 +81,18 @@ export const login = async (req, res, next) => {
       return res.status(401).json(error);
     }
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
-    const { password: hashedPassword, ...rest } = validUser._doc;
     const expiryDate = new Date(Date.now() + 3600000);
+    const accessToken = new AccessToken({
+      username: validUser.username,
+      email,
+      accessToken: token,
+    });
+    await accessToken.save();
+
     res
       .cookie("access_token", token, { httpOnly: true, expires: expiryDate })
       .status(200)
-      .json(rest);
+      .json({ message: "Login successful", failed: false });
   } catch (error) {
     next(error);
   }
@@ -172,7 +177,8 @@ export const sendOTP = async (email, OTP, lastname) => {
       `,
     });
   } catch (error) {
-    console.log(error, "Email failed to send");
+    const err = ErrorHandler(500, "Email failed to send");
+    console.log(error, err);
   }
 };
 
@@ -183,9 +189,8 @@ export const verifyEmail = async (req, res, next) => {
     const validUser = await User.findOne({ email });
 
     if (!validUser) {
-      return res
-        .status(400)
-        .json({ message: "User does not exist.", success: false });
+      const error = ErrorHandler(404, "User does not exist.");
+      return res.status(404).json(error);
     }
 
     const validOTP = await Token.findOne({
@@ -193,7 +198,8 @@ export const verifyEmail = async (req, res, next) => {
     });
 
     if (!validOTP) {
-      return res.status(400).json({ message: "Invalid OTP.", success: false });
+      const error = ErrorHandler(404, "Invalid OTP.");
+      return res.status(400).json(error);
     }
     await User.updateOne(
       { _id: validOTP.userId },
@@ -201,8 +207,13 @@ export const verifyEmail = async (req, res, next) => {
     );
     await Token.findByIdAndDelete(validOTP._id);
 
-    res.status(200).json({ status: "Email Verified" });
+    res.status(200).json({ message: "Email Verified", failed: false });
   } catch (error) {
     next(error);
   }
+};
+
+export const signout = (req, res, next) => {
+  const { email, accessToken } = req.body;
+  //
 };

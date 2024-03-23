@@ -6,6 +6,10 @@ const accessTokenSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    email: {
+      type: String,
+      required: true,
+    },
     accessToken: {
       type: String,
       required: true,
@@ -14,6 +18,6 @@ const accessTokenSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const accessToken = mongoose.model("accessToken", accessTokenSchema);
+const AccessToken = mongoose.model("accessToken", accessTokenSchema);
 
-export default accessToken;
+export default AccessToken;

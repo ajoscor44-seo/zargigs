@@ -33,12 +33,12 @@ app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || "Internal Server Error";
   return res.status(statusCode).json({
-    success: false,
+    failed: true,
     message,
     statusCode,
   });
 });
 
 app.listen(3000, () => {
-  console.log("Server running");
+  console.log("Server running on Port: 3000");
 });
