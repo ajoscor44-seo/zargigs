@@ -71,8 +71,17 @@ export const login = async (req, res, next) => {
       return res.status(404).json(error);
     }
     if (!validUser.isEmailVerified) {
-      const error = ErrorHandler(400, c);
-      return res.status(400).json(error);
+      const error = ErrorHandler(400, "Please verify your email to continue.");
+      // Generate OTP token
+      const OTPToken = new Token({
+        userId: validUser._id,
+        token: `${Math.floor(1000 + Math.random() * 9000)}`,
+      });
+      await OTPToken.save();
+
+      // Send OTP mail
+      await sendOTP(email, OTPToken.token, validUser.lastname);
+      res.status(401).json(error);
     }
     const validPassword =
       password && bcryptjs.compareSync(password, validUser.password);

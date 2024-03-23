@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import SignUp from "./SignUp";
-import VerifyEmailAddress from "./VerifyEmailAddress";
+import VerifyEmail from "../components/VerifyEmail/VerifyEmail";
 
 const RegistrationPage = () => {
   const [signedIn, setSignedIn] = useState(
@@ -9,7 +9,13 @@ const RegistrationPage = () => {
 
   return (
     <div>
-      {signedIn ? <VerifyEmailAddress /> : <SignUp setSignedIn={setSignedIn} />}
+      {signedIn ? (
+        <div className="bg-slate-50">
+          <VerifyEmail />
+        </div>
+      ) : (
+        <SignUp setSignedIn={setSignedIn} />
+      )}
     </div>
   );
 };

@@ -6,10 +6,17 @@ import OtpInput from "../OTPInput/OTPInput";
 import { BiSolidCheckCircle } from "react-icons/bi";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
-const VerifyEmail = () => {
+const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
   const { currentUser, verifyUserEmail } = useAuth();
   const [otp, setOtp] = useState(Array(4).fill(""));
   const [emailVerified, setEmailVerified] = useState(false);
+
+  const showLoginContent = () => {
+    if (isLoginPage) {
+      return setNotVerified(false)
+    }
+    return
+  }
 
   const verifyEmail = async () => {
     const email = sessionStorage.getItem("auth-user-email");
@@ -36,7 +43,7 @@ const VerifyEmail = () => {
             Yay, your email has been verified successfully.
           </p>
           <Link to="/login">
-            <button className="bg-green-500 px-5 py-2 text-white font-bold rounded mt-5">
+            <button onClick={showLoginContent} className="bg-green-500 px-5 py-2 text-white font-bold rounded mt-5">
               Back to Login
             </button>
           </Link>

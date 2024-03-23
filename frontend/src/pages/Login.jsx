@@ -4,14 +4,14 @@ import { GrPowerReset } from "react-icons/gr";
 import { MdOutlineLogin } from "react-icons/md";
 import logo from "../assets/png/logo-color.png";
 import loginIllustration from "../assets/images/login-illustration-png.png";
+import googleIcon from "../assets/png/google-icon.png";
 import { useAuth } from "../context/AuthContext";
 import FormInput from "../components/FormInput/FormInput";
-import OAuth from "../components/OAuth/OAuth";
 
-const Login = () => {
+const Login = ({ setNotVerified }) => {
   const [email, setEmail] = useState(null);
   const [formData, setFormData] = useState({});
-  const { loginUser, currentUser } = useAuth();
+  const { loginUser } = useAuth();
   const [password, setPassword] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -43,13 +43,24 @@ const Login = () => {
       return;
     } else {
       const res = await loginUser(formData.email, formData.password);
-      if (res.message) {
+      console.log(res);
+      if (
+        res.failed &&
+        res.message == "Please verify your email to continue."
+      ) {
+        setIsLoading(false);
+        setError(res.message);
+        sessionStorage.setItem("auth-user-email", formData.email);
+        return setNotVerified(true);
+      }
+      if (res.failed) {
         setIsLoading(false);
         return setError(res.message);
       } else {
         setIsLoading(false);
-        history.push("/dashboard");
-        return resetForm();
+        sessionStorage.removeItem("auth-user-email");
+        resetForm();
+        return history.push("/dashboard");
       }
     }
   };
@@ -132,7 +143,10 @@ const Login = () => {
           </div>
         </div>
         <div className="flex flex-col gap-4 px-4">
-          <OAuth setError={setError} />
+          <div className="btn rounded-sm flex justify-center items-center gap-2 font-primary text-red-600 border mt-3">
+            <img src={googleIcon} className="w-8" />
+            <span className="text-xl text-dark">Continue With Google</span>
+          </div>
           <Link to="/forgot-password">
             <p className="flex justify-center text-primary hover:text-primaryLight">
               Forgot Password

@@ -23,17 +23,14 @@ import BecomeAMember from "./pages/BecomeAMember";
 import Adevertise from "./pages/Advertise";
 import Order from "./pages/Order";
 import CreateAdvert from "./pages/CreateAdvert";
-import ClientLayout from "./Layouts/ClientLayout";
-import InputUserInfoLayout from "./Layouts/InputUserInfoLayout";
 import AuthProvider from "./context/AuthContext.jsx";
 import VerifyEmailAddress from "./pages/VerifyEmailAddress.jsx";
 import PrivateRoute from "./routers/PrivateRoutes.jsx";
 import SetLocationPage from "./pages/SetLocation.jsx";
-import VerifiedEmailPrivateRoute from "./routers/VerifiedEmailPrivateRoutes.jsx";
-import UploadProfilePicPrivateRoute from "./routers/UploadProfileRoutes.jsx";
 import UploadProfilePage from "./pages/UploadProfile.jsx";
 import SetBirthReligion from "./pages/SetBirthReligion.jsx";
 import RegistrationPage from "./pages/Registration.jsx";
+import Authentication from "./pages/Authentication.jsx";
 
 function App() {
   return (
@@ -53,7 +50,7 @@ function App() {
               <RegistrationPage />
             </Route>
             <Route exact path="/login">
-              <Login />
+              <Authentication />
             </Route>
             <Route exact path="/forgot-password">
               <ForgotPassword />
