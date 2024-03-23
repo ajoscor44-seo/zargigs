@@ -2,13 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import FormInput from "../FormInput/FormInput";
 import { BiSolidCheckCircle } from "react-icons/bi";
-import {
-  FaLocationDot,
-  FaLocationPin,
-  FaLocationPinLock,
-} from "react-icons/fa6";
+import { FaLocationDot } from "react-icons/fa6";
 
-const SetLocation = () => {
+const SetLocation = ({ setActivePage }) => {
   const { currentUser } = useAuth();
 
   // Selects Data
@@ -29,6 +25,11 @@ const SetLocation = () => {
       ...userLocation,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const setLocation = async () => {
+    //
+    setActivePage("upload-profile-pic");
   };
 
   useEffect(() => {
@@ -96,7 +97,10 @@ const SetLocation = () => {
             </div>
           </div>
 
-          <button className="bg-green-500 text-white font-semibold text-sm py-2 rounded">
+          <button
+            onClick={setLocation}
+            className="bg-green-500 text-white font-semibold text-sm py-2 rounded"
+          >
             SET DETAILS
           </button>
         </div>

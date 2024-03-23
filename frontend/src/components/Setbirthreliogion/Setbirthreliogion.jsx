@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import FormInput from "../FormInput/FormInput";
 import religions from "../../data/religions";
 
-const SetLocation = () => {
+const SetBirthReligion = () => {
   const { currentUser } = useAuth();
 
   // Selects Data
@@ -111,4 +111,4 @@ const SetLocation = () => {
   );
 };
 
-export default SetLocation;
+export default SetBirthReligion;

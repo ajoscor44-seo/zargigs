@@ -5,7 +5,11 @@ import { FaUserLarge } from "react-icons/fa6";
 import { IoIosArrowForward } from "react-icons/io";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
-const UploadProfilePic = () => {
+const UploadProfilePic = ({ setActivePage }) => {
+  const uploadProfilePic = async () => {
+    //
+    setActivePage("birth-religion");
+  };
   return (
     <div
       className="underBackNav font-primary mt-5 mx-3 flex flex-col justify-center"
@@ -14,7 +18,10 @@ const UploadProfilePic = () => {
       <div className="bg-white rounded shadow-2xl">
         <span className="flex justify-between items-center px-3 py-2 border-b text-sm">
           <h2 className="font-bold">More About You</h2>{" "}
-          <button className="text-white bg-green-500 px-5 py-2 rounded-full flex items-center gap-1">
+          <button
+            onClick={() => setActivePage("birth-religion")}
+            className="text-white bg-green-500 px-5 py-2 rounded-full flex items-center gap-1"
+          >
             <span>SKIP</span>
             <Link to="/set-birth-religion">
               <IoIosArrowForward size={15} className="font-bold" />
@@ -39,7 +46,10 @@ const UploadProfilePic = () => {
         </div>
 
         <div className="flex justify-center pt-3 pb-14">
-          <div className="relative bg-green-200 w-fit p-5 rounded-full">
+          <div
+            className="relative bg-green-200 w-fit p-5 rounded-full"
+            onClick={uploadProfilePic}
+          >
             <FaUserLarge size={120} className="text-green-500 rounded-full" />
             <div className="flex flex-col items-center absolute top-12 left-6 text-white">
               <BiCamera size={30} className="text-white" />

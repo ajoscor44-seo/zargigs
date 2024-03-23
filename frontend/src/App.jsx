@@ -4,7 +4,6 @@ import {
   Switch,
   Route,
 } from "react-router-dom/cjs/react-router-dom.min";
-import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/Forgot-Password";
 import ClientDashboard from "./pages/ClientDashboard";
@@ -24,13 +23,10 @@ import Adevertise from "./pages/Advertise";
 import Order from "./pages/Order";
 import CreateAdvert from "./pages/CreateAdvert";
 import AuthProvider from "./context/AuthContext.jsx";
-import VerifyEmailAddress from "./pages/VerifyEmailAddress.jsx";
 import PrivateRoute from "./routers/PrivateRoutes.jsx";
-import SetLocationPage from "./pages/SetLocation.jsx";
-import UploadProfilePage from "./pages/UploadProfile.jsx";
-import SetBirthReligion from "./pages/SetBirthReligion.jsx";
 import RegistrationPage from "./pages/Registration.jsx";
 import Authentication from "./pages/Authentication.jsx";
+import UploadInfoPage from "./pages/UploadInfoPage.jsx";
 
 function App() {
   return (
@@ -57,18 +53,8 @@ function App() {
             </Route>
 
             {/* Client Info Input Pages */}
-            {/* <PrivateRoute path="/verify-email" component={VerifyEmailAddress} /> */}
-            <Route path="/verify-email">
-              <VerifyEmailAddress />
-            </Route>
-            <Route path="/set-location">
-              <SetLocationPage />
-            </Route>
-            <Route path="/upload-profile-pic">
-              <UploadProfilePage />
-            </Route>
-            <Route path="/set-birth-religion">
-              <SetBirthReligion />
+            <Route path="/input-user-info">
+              <UploadInfoPage />
             </Route>
 
             {/* Client Page Layout */}
