@@ -30,11 +30,11 @@ const AuthProvider = ({ children }) => {
         },
         body: JSON.stringify(formData),
       });
-      const user = await response.json();
-      if (!user.message) {
-        setCurrentUser(user);
+      const data = await response.json();
+      if (!data.failed) {
+        setCurrentUser(data);
       }
-      return user;
+      return data;
     } catch (error) {
       return error;
     }
@@ -49,13 +49,13 @@ const AuthProvider = ({ children }) => {
         },
         body: JSON.stringify(formData),
       });
-      const res = await response.json();
-      if (!res.message) {
-        setCurrentUser(res);
+      const data = await response.json();
+      if (!data.failed) {
+        localStorage.setItem("newUser", JSON.stringify(formData));
       }
-      return res;
+
+      return data;
     } catch (error) {
-      console.log(error);
       return error;
     }
   };
@@ -77,11 +77,35 @@ const AuthProvider = ({ children }) => {
       }),
     });
 
-    const user = await res.json();
-    if (!user.message) {
-      setCurrentUser(user);
+    const data = await res.json();
+    if (!data.failed) {
+      setCurrentUser(data);
     }
     return user;
+  };
+
+  const verifyUserEmail = async (email, otp) => {
+    try {
+      const formData = {
+        email,
+        otp,
+      };
+      const response = await fetch(
+        "http://localhost:3000/api/v1/auth/verifyWithOTP",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+      const data = await response.json();
+
+      return data;
+    } catch (error) {
+      return error;
+    }
   };
 
   const AuthValue = {
@@ -89,6 +113,7 @@ const AuthProvider = ({ children }) => {
     loginUser,
     signupUser,
     OAuthUser,
+    verifyUserEmail,
   };
 
   return (

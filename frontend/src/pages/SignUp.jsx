@@ -4,8 +4,8 @@ import { useHistory, useParams } from "react-router-dom/cjs/react-router-dom";
 import PageSlider from "../components/PageSlider/PageSlider";
 import { useAuth } from "../context/AuthContext";
 
-const SignUp = () => {
-  const { signupUser, currentUser } = useAuth();
+const SignUp = ({ setSignedIn }) => {
+  const { signupUser } = useAuth();
   const params = useParams();
   const history = useHistory();
   const [formData, setFormData] = useState({
@@ -145,16 +145,17 @@ const SignUp = () => {
       if (res.statusCode == 500) {
         return setError("An error occurred. Please try again later.");
       }
-      if (res.message) {
+      if (res.failed) {
         return setError(res.message);
       } else {
         setError(null);
         setPages(pagesData);
-        history.push("/verify-email");
+        setSignedIn(formData.email);
+        sessionStorage.setItem("auth-user-email", formData.email);
         return;
       }
     } catch (error) {
-      return;
+      return console.log(error);
     }
   };
 

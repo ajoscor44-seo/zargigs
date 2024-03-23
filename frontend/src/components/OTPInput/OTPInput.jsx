@@ -25,7 +25,7 @@ function OtpInput({ otp, setOtp }) {
   };
 
   return (
-    <div className={`grid ${"grid-cols-" + otp.length} gap-2`}>
+    <div className={`grid ${"grid-cols-" + (otp.length || 4)} gap-2`}>
       {otp.map((digit, index) => (
         <input
           key={index}

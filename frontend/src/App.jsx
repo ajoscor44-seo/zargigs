@@ -33,6 +33,7 @@ import VerifiedEmailPrivateRoute from "./routers/VerifiedEmailPrivateRoutes.jsx"
 import UploadProfilePicPrivateRoute from "./routers/UploadProfileRoutes.jsx";
 import UploadProfilePage from "./pages/UploadProfile.jsx";
 import SetBirthReligion from "./pages/SetBirthReligion.jsx";
+import RegistrationPage from "./pages/Registration.jsx";
 
 function App() {
   return (
@@ -49,7 +50,7 @@ function App() {
               <SignUp />
             </Route>
             <Route exact path="/signup">
-              <SignUp />
+              <RegistrationPage />
             </Route>
             <Route exact path="/login">
               <Login />
@@ -59,7 +60,10 @@ function App() {
             </Route>
 
             {/* Client Info Input Pages */}
-            <PrivateRoute path="/verify-email" component={VerifyEmailAddress} />
+            {/* <PrivateRoute path="/verify-email" component={VerifyEmailAddress} /> */}
+            <Route path="/verify-email">
+              <VerifyEmailAddress />
+            </Route>
             <Route path="/set-location">
               <SetLocationPage />
             </Route>
