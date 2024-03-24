@@ -32,6 +32,7 @@ export const signup = async (req, res, next) => {
   });
   try {
     const userWithMail = await User.findOne({ email });
+    const referrer = await User.findOne({ referredBy });
     if (userWithMail) {
       const error = ErrorHandler(400, "Email is already taken");
       return res.status(400).json(error);
@@ -42,6 +43,23 @@ export const signup = async (req, res, next) => {
       return res.status(400).json(error);
     }
     await newUser.save();
+
+    if (referrer) {
+      await referrer.updateOne({
+        referrals: [
+          ...referrer.referrals,
+          {
+            firstname,
+            lastname,
+            username,
+            referredBy,
+            role,
+            isEmailVerified,
+            isMember,
+          },
+        ],
+      });
+    }
 
     // Generate OTP token
     const OTPToken = new Token({
@@ -89,8 +107,8 @@ export const login = async (req, res, next) => {
       const error = ErrorHandler(401, "Wrong credentials");
       return res.status(401).json(error);
     }
-    const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
-    const expiryDate = new Date(Date.now() + 3600000);
+    const { password: hashedPassword, ...rest } = validUser._doc;
+    const token = jwt.sign({ ...rest }, process.env.JWT_SECRET);
     const accessToken = new AccessToken({
       username: validUser.username,
       email,
@@ -99,11 +117,18 @@ export const login = async (req, res, next) => {
     await accessToken.save();
 
     res
-      .cookie("access_token", token, { httpOnly: true, expires: expiryDate })
+      .cookie("access_token", token, {
+        httpOnly: true,
+        maxAge: 7200000,
+      })
       .status(200)
-      .json({ message: "Login successful", failed: false });
+      .json({
+        message: "Login successful",
+        failed: false,
+        access_token: token,
+      });
   } catch (error) {
-    next(error);
+    next({ message: "Internal server error. Please try again." });
   }
 };
 
@@ -115,13 +140,19 @@ export const google = async (req, res, next) => {
     const fullName = name.split(" ");
     const validUser = await User.findOne({ email: email });
     if (validUser) {
-      const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
       const { password: hashedPassword, ...rest } = validUser._doc;
-      const expiryDate = new Date(Date.now() + 3600000);
+      const token = jwt.sign({ ...rest }, process.env.JWT_SECRET);
       res
-        .cookie("access_token", token, { httpOnly: true, expires: expiryDate })
+        .cookie("access_token", token, {
+          httpOnly: true,
+          maxAge: 3600000,
+        })
         .status(200)
-        .json(rest);
+        .json({
+          message: "Login successful",
+          failed: false,
+          access_token: token,
+        });
     } else {
       const generatedPassword = Math.random().toString(36).slice(-8);
 
@@ -144,7 +175,9 @@ export const google = async (req, res, next) => {
 
       await newUser.save();
 
-      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
+      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
       const { password: hashedPassword2, ...rest } = newUser._doc;
       const expiryDate = new Date(Date.now() + 3600000);
       res

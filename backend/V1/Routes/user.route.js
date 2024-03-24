@@ -1,11 +1,8 @@
 import express from "express";
+import { getUser } from "../Controllers/user.controller.js";
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.json({
-    message: "Hello there",
-  });
-});
+router.get("/user-details", getUser);
 
 export default router;

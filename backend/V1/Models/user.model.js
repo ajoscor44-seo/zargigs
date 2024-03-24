@@ -32,6 +32,11 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: false,
     },
+    referrals: {
+      type: Array,
+      required: false,
+      unique: false,
+    },
     role: {
       type: String,
       required: true,
