@@ -22,17 +22,17 @@ export const signup = async (req, res, next) => {
   const newUser = new User({
     firstname,
     lastname,
-    username,
+    username: username.toLowerCase(),
     email,
     password: hashedPassword,
-    referredBy,
+    referredBy: referredBy.toLowerCase(),
     role: role || "user",
     isEmailVerified,
     isMember,
   });
   try {
     const userWithMail = await User.findOne({ email });
-    const referrer = await User.findOne({ referredBy });
+    const referrer = await User.findOne({ username: referredBy });
     if (userWithMail) {
       const error = ErrorHandler(400, "Email is already taken");
       return res.status(400).json(error);
@@ -44,18 +44,12 @@ export const signup = async (req, res, next) => {
     }
     await newUser.save();
 
-    if (referrer) {
+    if (referrer && referrer !== "admin") {
       await referrer.updateOne({
         referrals: [
           ...referrer.referrals,
           {
-            firstname,
-            lastname,
-            username,
-            referredBy,
-            role,
-            isEmailVerified,
-            isMember,
+            userId: newUser._id,
           },
         ],
       });
