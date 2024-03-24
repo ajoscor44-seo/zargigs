@@ -14,13 +14,13 @@ const ClientNavbar = () => {
   );
 
   const [newNotificationsNumber, setNewNotificationsNumber] = useState(
-    allNotifications.length
+    allNotifications?.length
   );
 
   // Updates user profile
   useEffect(() => {
-    if (currentUser.image) {
-      return setUserImageURL(currentUser.image);
+    if (currentUser?.image) {
+      return setUserImageURL(currentUser?.image);
     }
   }, [currentUser]);
 

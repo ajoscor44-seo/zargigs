@@ -10,8 +10,10 @@ import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import user from "../data/user";
 import recentActivities from "../data/recentActivities";
 import WhatTheyCanDo from "../components/WhatTheyCanDo/WhatTheyCanDo";
+import { useAuth } from "../context/AuthContext";
 
 const ClientDashboard = () => {
+  const { getCurrentUser } = useAuth();
   const possibleActions = [
     {
       personnel: "Advertisers",
@@ -64,6 +66,7 @@ const ClientDashboard = () => {
             {possibleActions.map((action) => {
               return (
                 <WhatTheyCanDo
+                  key={action.personnel}
                   btnText={action.btnText}
                   actionDesription={action.description}
                   actionPersonnel={action.personnel}

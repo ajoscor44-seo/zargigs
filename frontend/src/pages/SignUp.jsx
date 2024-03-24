@@ -134,7 +134,7 @@ const SignUp = ({ setSignedIn }) => {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value.toLowerCase() });
   };
 
   const handleSubmit = async () => {

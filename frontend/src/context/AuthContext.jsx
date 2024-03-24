@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { Spinner } from "react-bootstrap";
 
 const AuthContext = createContext();
 
@@ -7,15 +8,37 @@ export const useAuth = () => {
 };
 
 const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(
-    JSON.parse(localStorage.getItem("currentUser"))
+  const [userToken, setUserToken] = useState(
+    sessionStorage.getItem("access_token")
   );
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [loading, setLoading] = useState();
+  const getCurrentUser = async () => {
+    return await fetch("http://localhost:3000/api/v1/user/user-details", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${userToken}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => data)
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   useEffect(() => {
-    return localStorage.setItem("currentUser", JSON.stringify(currentUser));
-  }, [currentUser]);
+    const fetchData = async () => {
+      setLoading(true);
+      const user = await getCurrentUser();
+      setLoading(false);
+      return setCurrentUser(user);
+    };
+
+    fetchData();
+  }, [userToken]);
 
   const loginUser = async (email, password) => {
     try {
@@ -31,9 +54,6 @@ const AuthProvider = ({ children }) => {
         body: JSON.stringify(formData),
       });
       const data = await response.json();
-      if (!data.failed) {
-        setCurrentUser(data);
-      }
       return data;
     } catch (error) {
       return error;
@@ -49,12 +69,7 @@ const AuthProvider = ({ children }) => {
         },
         body: JSON.stringify(formData),
       });
-      const data = await response.json();
-      if (!data.failed) {
-        localStorage.setItem("newUser", JSON.stringify(formData));
-      }
-
-      return data;
+      return await response.json();
     } catch (error) {
       return error;
     }
@@ -79,7 +94,7 @@ const AuthProvider = ({ children }) => {
 
     const data = await res.json();
     if (!data.failed) {
-      setCurrentUser(data);
+      setUserToken(data);
     }
     return user;
   };
@@ -109,6 +124,7 @@ const AuthProvider = ({ children }) => {
   };
 
   const AuthValue = {
+    userToken,
     currentUser,
     loginUser,
     signupUser,
@@ -118,7 +134,13 @@ const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={AuthValue}>
-      {!loading && children}
+      {loading ? (
+        <div>
+          <Spinner />
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };

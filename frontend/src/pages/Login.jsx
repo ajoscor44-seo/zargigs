@@ -43,7 +43,7 @@ const Login = ({ setNotVerified }) => {
       return;
     } else {
       const res = await loginUser(formData.email, formData.password);
-      console.log(res);
+
       if (
         res.failed &&
         res.message == "Please verify your email to continue."
@@ -59,6 +59,7 @@ const Login = ({ setNotVerified }) => {
       } else {
         setIsLoading(false);
         sessionStorage.removeItem("auth-user-email");
+        sessionStorage.setItem("access_token", res.access_token);
         resetForm();
         return history.push("/dashboard");
       }

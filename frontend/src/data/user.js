@@ -33,7 +33,7 @@ const user = {
     amountWithdrawn: 320000,
     balance: 1180000,
   },
-  uploadedTasks: [],
+  // uploadedTasks: [],
 
   // To be removed
   totalEarnings: 1500000,

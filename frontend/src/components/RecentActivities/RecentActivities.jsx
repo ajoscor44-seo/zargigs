@@ -12,7 +12,12 @@ const RecentActivities = ({ recentActivities }) => {
       </div>
       <div className="recentActivities">
         {recentActivities.map((recentActivity) => {
-          return <RecentActivity recentActivity={recentActivity} />;
+          return (
+            <RecentActivity
+              key={recentActivity.username}
+              recentActivity={recentActivity}
+            />
+          );
         })}
       </div>
     </div>
