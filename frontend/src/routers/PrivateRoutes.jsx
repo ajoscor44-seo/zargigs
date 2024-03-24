@@ -9,10 +9,8 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     <Route
       {...rest}
       render={(props) => {
-        return (currentUser && !currentUser.isEmailVerified) || !currentUser ? (
+        return currentUser && currentUser.isEmailVerified ? (
           <Component {...props} />
-        ) : currentUser && currentUser.isEmailVerified ? (
-          <Redirect to="/dashboard" />
         ) : (
           <Redirect to="/login" />
         );

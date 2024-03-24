@@ -32,10 +32,12 @@ function App() {
   return (
     <>
       <Router>
+        {/* Landing Page */}
         <Route exact path="/">
           <Home />
         </Route>
 
+        {/* App Routes */}
         <AuthProvider>
           <Switch>
             {/* Public Pages */}
@@ -48,64 +50,37 @@ function App() {
             <Route exact path="/login">
               <Authentication />
             </Route>
-            <Route exact path="/forgot-password">
-              <ForgotPassword />
-            </Route>
+
+            {/* Client Forgot Password Route */}
+            <PrivateRoute
+              exact
+              path="/forgot-password/:username"
+              component={ForgotPassword}
+            />
 
             {/* Client Info Input Pages */}
-            <Route path="/input-user-info">
-              <UploadInfoPage />
-            </Route>
+            <PrivateRoute path="/input-user-info" component={UploadInfoPage} />
 
             {/* Client Page Layout */}
-            <Route path="/dashboard">
-              <ClientDashboard />
-            </Route>
-            <Route path="/help-support">
-              <HelpSupport />
-            </Route>
-            <Route path="/notifications">
-              <Notifications />
-            </Route>
-            <Route path="/user-details">
-              <UserDetails />
-            </Route>
-            <Route path="/fund-wallet">
-              <FundWallets />
-            </Route>
-            <Route path="/withdraw">
-              <Withdrawal />
-            </Route>
-            <Route path="/update-location">
-              <UpdateLocation />
-            </Route>
-            <Route path="/invite">
-              <InviteFriends />
-            </Route>
-            <Route path="/advertise/:slug">
-              <CreateAdvert />
-            </Route>
-            <Route exact path="/advertise">
-              <Adevertise />
-            </Route>
-            <Route path="/order">
-              <Order />
-            </Route>
-            <Route exact path="/become-a-member">
-              <BecomeAMember />
-            </Route>
-            <Route path="/earn/:slug">
-              <EarnWithTasks />
-            </Route>
-            <Route exact path="/earn">
-              <Earn />
-            </Route>
-            <Route path="/account-settings">
-              <Settings />
-            </Route>
-            <Route path="/transaction-history">
-              <TransactionHistory />
-            </Route>
+            <PrivateRoute path="/dashboard" component={ClientDashboard} />
+            <PrivateRoute path="/help-support" component={HelpSupport} />
+            <PrivateRoute path="/notifications" component={Notifications} />
+            <PrivateRoute path="/user-details" component={UserDetails} />
+            <PrivateRoute path="/fund-wallet" component={FundWallets} />
+            <PrivateRoute path="/withdraw" component={Withdrawal} />
+            <PrivateRoute path="/update-location" component={UpdateLocation} />
+            <PrivateRoute path="/invite" component={InviteFriends} />
+            <PrivateRoute path="/advertise/:slug" component={CreateAdvert} />
+            <PrivateRoute path="/advertise" component={Adevertise} />
+            <PrivateRoute path="/order" component={Order} />
+            <PrivateRoute path="/become-a-member" component={BecomeAMember} />
+            <PrivateRoute path="/earn/:slug" component={EarnWithTasks} />
+            <PrivateRoute path="/earn" component={Earn} />
+            <PrivateRoute path="/account-settings" component={Settings} />
+            <PrivateRoute
+              path="/transaction-history"
+              component={TransactionHistory}
+            />
           </Switch>
         </AuthProvider>
       </Router>
