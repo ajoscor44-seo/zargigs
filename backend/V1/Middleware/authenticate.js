@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
-  // const token = req.cookies["access_token"];
 
   if (token == null) {
     const error = ErrorHandler(401, "Not Authenticated");

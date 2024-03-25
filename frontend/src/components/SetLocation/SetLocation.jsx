@@ -3,18 +3,48 @@ import { useAuth } from "../../context/AuthContext";
 import FormInput from "../FormInput/FormInput";
 import { BiSolidCheckCircle } from "react-icons/bi";
 import { FaLocationDot } from "react-icons/fa6";
+import fetchStates from "../../hooks/fetchStatesData";
 
-const SetLocation = ({ setActivePage }) => {
+const SetLocation = ({ setActivePage, setError }) => {
   const { currentUser } = useAuth();
-
-  // Selects Data
-  const [genders, setGenders] = useState(["Select Gender", "Male", "Female"]);
-  const [states, setStates] = useState(["Select State", "Abia", "Adamawa"]);
-  const [LGAs, setLGAs] = useState(["Select LGA", "Male", "Female"]);
 
   // User Location and Gender data
   const [userLocation, setUserLocation] = useState({});
   const [selectedGender, setSelectedGender] = useState(null);
+
+  // Selects Data
+  const [genders, setGenders] = useState([
+    "Select Gender",
+    "Male",
+    "Female",
+    "Transgender",
+    "Custom",
+    "Others",
+  ]);
+  const [statesData, setStatesData] = useState([]);
+
+  // Get the states from the location data
+  const states = statesData?.map((state) => state.name);
+
+  // Get the lgas from the location data
+  const LGAs = statesData
+    ?.find((state) => state.name == userLocation.state)
+    ?.lgas?.map((lga) => lga.name);
+  // console.log(LGAs);
+  const LGAList =
+    userLocation.state == "Select State" || !userLocation.state
+      ? ["Abeg go select state jor"]
+      : LGAs;
+
+  // Fetches the location data
+  useEffect(() => {
+    const fetchData = async () => {
+      const states = await fetchStates();
+      return setStatesData(states);
+    };
+
+    fetchData();
+  }, []);
 
   const handleChange = (e) => {
     return setSelectedGender(e.target.value);
@@ -28,8 +58,20 @@ const SetLocation = ({ setActivePage }) => {
   };
 
   const setLocation = async () => {
-    //
-    setActivePage("upload-profile-pic");
+    if (userLocation.state && userLocation.LGA && selectedGender) {
+      setError(null);
+      setActivePage("upload-profile-pic");
+      return;
+    }
+    if (!selectedGender) {
+      return setError("Please select a gender.");
+    }
+    if (!userLocation.state || userLocation.state == "Select State") {
+      return setError("Please input your state.");
+    }
+    if (!userLocation.LGA) {
+      return setError("Please input your local govt.");
+    }
   };
 
   useEffect(() => {
@@ -38,7 +80,7 @@ const SetLocation = ({ setActivePage }) => {
 
   return (
     <div
-      className="underBackNav font-primary mt-5 mx-3 flex flex-col justify-center mb-20"
+      className="font-primary mx-3 mt-10 flex flex-col justify-center mb-20"
       style={{ maxWidth: "400px" }}
     >
       <div className="bg-white rounded shadow-2xl">
@@ -77,7 +119,7 @@ const SetLocation = ({ setActivePage }) => {
               </span>
               <FormInput
                 useSelect={true}
-                selections={states}
+                selections={["Select State", ...states]}
                 value={userLocation.state}
                 name={"state"}
                 handleChange={handleLocationChange}
@@ -85,7 +127,7 @@ const SetLocation = ({ setActivePage }) => {
               {userLocation.state && userLocation.state !== "Select State" && (
                 <FormInput
                   useSelect={true}
-                  selections={LGAs}
+                  selections={["Select LGA", ...LGAList]}
                   value={userLocation.LGA}
                   name={"LGA"}
                   handleChange={handleLocationChange}

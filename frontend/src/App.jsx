@@ -27,6 +27,7 @@ import PrivateRoute from "./routers/PrivateRoutes.jsx";
 import RegistrationPage from "./pages/Registration.jsx";
 import Authentication from "./pages/Authentication.jsx";
 import UploadInfoPage from "./pages/UploadInfoPage.jsx";
+import UploadProfilePrivateRoute from "./routers/UploadProfileRoutes.jsx";
 
 function App() {
   return (
@@ -59,10 +60,16 @@ function App() {
             />
 
             {/* Client Info Input Pages */}
-            <PrivateRoute path="/input-user-info" component={UploadInfoPage} />
+            <UploadProfilePrivateRoute
+              path="/input-user-info"
+              component={UploadInfoPage}
+            />
 
             {/* Client Page Layout */}
             <PrivateRoute path="/dashboard" component={ClientDashboard} />
+            {/* <Route exact path="/dashboard">
+              <ClientDashboard />
+            </Route> */}
             <PrivateRoute path="/help-support" component={HelpSupport} />
             <PrivateRoute path="/notifications" component={Notifications} />
             <PrivateRoute path="/user-details" component={UserDetails} />

@@ -79,6 +79,7 @@ const ClientDashboard = () => {
         </div>
       )}
       <RecentActivities recentActivities={recentActivities} />
+      <ClientMenuBar />
     </div>
   );
 };

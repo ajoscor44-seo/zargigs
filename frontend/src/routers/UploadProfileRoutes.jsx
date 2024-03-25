@@ -2,7 +2,7 @@ import React from "react";
 import { Redirect, Route } from "react-router-dom/cjs/react-router-dom.min";
 import { useAuth } from "../context/AuthContext";
 
-const UploadProfilePicPrivateRoute = ({ component: Component, ...rest }) => {
+const UploadProfilePrivateRoute = ({ component: Component, ...rest }) => {
   const { currentUser } = useAuth();
 
   return (
@@ -12,19 +12,19 @@ const UploadProfilePicPrivateRoute = ({ component: Component, ...rest }) => {
         return currentUser &&
           currentUser.isEmailVerified &&
           !currentUser.location &&
-          !currentUser.image ? (
+          !currentUser.religion ? (
           <Component {...props} />
         ) : currentUser &&
           currentUser.isEmailVerified &&
-          !currentUser.location &&
-          !currentUser.religion ? (
-          <Redirect to="/set-birth-religion" />
-        ) : (
+          currentUser.location &&
+          currentUser.religion ? (
           <Redirect to="/dashboard" />
+        ) : (
+          <Redirect to="/login" />
         );
       }}
     ></Route>
   );
 };
 
-export default UploadProfilePicPrivateRoute;
+export default UploadProfilePrivateRoute;
