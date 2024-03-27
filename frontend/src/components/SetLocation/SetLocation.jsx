@@ -1,27 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import FormInput from "../FormInput/FormInput";
 import { BiSolidCheckCircle } from "react-icons/bi";
 import { FaLocationDot } from "react-icons/fa6";
-import fetchStates from "../../hooks/fetchStatesData";
 
-const SetLocation = ({ setActivePage, setError }) => {
+const SetLocation = ({
+  setActivePage,
+  setError,
+  userLocation,
+  setUserLocation,
+  selectedGender,
+  setSelectedGender,
+  statesData,
+}) => {
   const { currentUser } = useAuth();
 
-  // User Location and Gender data
-  const [userLocation, setUserLocation] = useState({});
-  const [selectedGender, setSelectedGender] = useState(null);
-
   // Selects Data
-  const [genders, setGenders] = useState([
+  const genders = [
     "Select Gender",
     "Male",
     "Female",
     "Transgender",
     "Custom",
     "Others",
-  ]);
-  const [statesData, setStatesData] = useState([]);
+  ];
 
   // Get the states from the location data
   const states = statesData?.map((state) => state.name);
@@ -30,21 +32,11 @@ const SetLocation = ({ setActivePage, setError }) => {
   const LGAs = statesData
     ?.find((state) => state.name == userLocation.state)
     ?.lgas?.map((lga) => lga.name);
-  // console.log(LGAs);
+
   const LGAList =
     userLocation.state == "Select State" || !userLocation.state
       ? ["Abeg go select state jor"]
       : LGAs;
-
-  // Fetches the location data
-  useEffect(() => {
-    const fetchData = async () => {
-      const states = await fetchStates();
-      return setStatesData(states);
-    };
-
-    fetchData();
-  }, []);
 
   const handleChange = (e) => {
     return setSelectedGender(e.target.value);
@@ -109,6 +101,7 @@ const SetLocation = ({ setActivePage, setError }) => {
               useSelect={true}
               selections={genders}
               value={selectedGender}
+              // defa
               name={"gender"}
               handleChange={handleChange}
             />

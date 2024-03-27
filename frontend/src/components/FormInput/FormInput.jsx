@@ -70,6 +70,7 @@ const FormInput = ({
                 }
                 name={name}
                 onChange={handleChange}
+                defaultValue={value}
               >
                 {selections.map((selection) => {
                   return (

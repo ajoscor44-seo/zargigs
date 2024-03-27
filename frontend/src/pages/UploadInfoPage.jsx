@@ -1,13 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ClientNavbar from "../components/ClientNavbar/ClientNavbar";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import SetLocation from "../components/SetLocation/SetLocation";
 import SetBirthReligion from "../components/Setbirthreliogion/Setbirthreliogion";
 import UploadProfilePic from "../components/UploadProfilePic/UploadProfilePic";
+import fetchStates from "../hooks/fetchStatesData";
 
 const UploadInfoPage = () => {
   const [activePage, setActivePage] = useState("location");
   const [error, setError] = useState(null);
+  const [statesData, setStatesData] = useState([]);
+
+  // User Location and Gender data
+  const [userLocation, setUserLocation] = useState({});
+  const [selectedGender, setSelectedGender] = useState(null);
+
+  // Fetches the location data
+  useEffect(() => {
+    const fetchData = async () => {
+      const states = await fetchStates();
+      return setStatesData(states);
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div>
@@ -19,7 +35,16 @@ const UploadInfoPage = () => {
           </span>
         )}
         {activePage == "location" ? (
-          <SetLocation setActivePage={setActivePage} setError={setError} />
+          <SetLocation
+            setActivePage={setActivePage}
+            setError={setError}
+            userLocation={userLocation}
+            setUserLocation={setUserLocation}
+            selectedGender={selectedGender}
+            setSelectedGender={setSelectedGender}
+            statesData={statesData}
+            setStatesData={setStatesData}
+          />
         ) : activePage == "birth-religion" ? (
           <SetBirthReligion />
         ) : (
