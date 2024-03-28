@@ -7,9 +7,8 @@ import { IoArrowForward } from "react-icons/io5";
 import { storage } from "../../config/firebase.config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
-const UploadProfilePic = ({ setActivePage }) => {
+const UploadProfilePic = ({ setActivePage, image, setImage }) => {
   const fileInputRef = useRef();
-  const [image, setImage] = useState(undefined);
   const [imageError, setImageError] = useState(null);
   const [imagePercentage, setImagePercentage] = useState(null);
 

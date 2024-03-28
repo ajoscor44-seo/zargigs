@@ -66,10 +66,6 @@ const SetLocation = ({
     }
   };
 
-  useEffect(() => {
-    console.log({ ...userLocation, gender: selectedGender });
-  }, [selectedGender, userLocation]);
-
   return (
     <div
       className="font-primary mx-3 mt-10 flex flex-col justify-center mb-20"

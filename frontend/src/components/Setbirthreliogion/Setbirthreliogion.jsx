@@ -1,38 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../../context/AuthContext";
 import FormInput from "../FormInput/FormInput";
 import religions from "../../data/religions";
+import { IoArrowForward } from "react-icons/io5";
 
-const SetBirthReligion = () => {
-  const { currentUser } = useAuth();
-
-  // Selects Data
-  const [days, setDays] = useState(["Day", 1, 2]);
-  const [months, setMonths] = useState(["Month", "January", "February"]);
-  const [years, setYears] = useState(["Year", 2024, 2023]);
-
-  // User Location and Gender data
-  const [userLocation, setUserLocation] = useState({});
-  const [selectedGender, setSelectedGender] = useState(null);
-
+const SetBirthReligion = ({
+  setActivePage,
+  selectedReligion,
+  setSelectedReligion,
+  userDOB,
+  setUserDOB,
+  years,
+  months,
+  days,
+}) => {
+  // Handles change in religion selection
   const handleChange = (e) => {
-    return setSelectedGender(e.target.value);
+    return setSelectedReligion(e.target.value);
   };
 
-  const handleLocationChange = (e) => {
-    return setUserLocation({
-      ...userLocation,
+  // Handles the date of birth changes
+  const handleDOBChange = (e) => {
+    return setUserDOB({
+      ...userDOB,
       [e.target.name]: e.target.value,
     });
   };
 
-  useEffect(() => {
-    console.log({ ...userLocation, gender: selectedGender });
-  }, [selectedGender, userLocation]);
-
   return (
     <div
-      className="underBackNav font-primary mt-5 mx-3 flex flex-col justify-center"
+      className="font-primary mt-5 mx-3 flex flex-col justify-center"
       style={{ maxWidth: "400px" }}
     >
       <div className="bg-white rounded shadow-2xl">
@@ -42,6 +38,15 @@ const SetBirthReligion = () => {
 
         <div className="p-3 flex flex-col gap-2">
           <div className="flex flex-col gap-2 py-0">
+            <button
+              onClick={() => setActivePage("upload-profile-pic")}
+              className="bg-gray-400 flex items-center justify-center gap-1 text-white p-2 w-fit rounded"
+            >
+              <span>Back</span>
+              <span>
+                <IoArrowForward />
+              </span>
+            </button>
             <p className="text-sm font-semibold">
               Let's know about you so we can personalise your experience on
               GigsFlix
@@ -64,25 +69,25 @@ const SetBirthReligion = () => {
               <FormInput
                 useSelect={true}
                 selections={days}
-                value={selectedGender}
+                value={userDOB?.day}
                 name={"day"}
-                handleChange={handleChange}
+                handleChange={handleDOBChange}
                 hideDropIcon={true}
               />
               <FormInput
                 useSelect={true}
                 selections={months}
-                value={selectedGender}
+                value={userDOB?.month}
                 name={"month"}
-                handleChange={handleChange}
+                handleChange={handleDOBChange}
                 hideDropIcon={true}
               />
               <FormInput
                 useSelect={true}
-                selections={years}
-                value={selectedGender}
+                selections={["Year", ...years]}
+                value={userDOB?.year}
                 name={"year"}
-                handleChange={handleChange}
+                handleChange={handleDOBChange}
                 hideDropIcon={true}
               />
             </div>
@@ -90,7 +95,7 @@ const SetBirthReligion = () => {
               <FormInput
                 useSelect={true}
                 selections={religions}
-                value={selectedGender}
+                value={selectedReligion}
                 name={"religion"}
                 handleChange={handleChange}
                 label={"What's Your Religion?"}
