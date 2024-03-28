@@ -2,14 +2,10 @@ import mongoose from "mongoose";
 
 const userDetailsSchema = new mongoose.Schema(
   {
-    username: {
+    userId: {
       type: String,
       required: true,
       unique: true,
-    },
-    imageUrl: {
-      type: String,
-      required: false,
     },
     religion: {
       type: String,
