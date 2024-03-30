@@ -140,6 +140,7 @@ const Settings = () => {
           })}
         </div>
       </div>
+      <ClientMenuBar />
     </div>
   );
 };

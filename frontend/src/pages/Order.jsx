@@ -62,6 +62,7 @@ const Order = () => {
           })}
         </div>
       </div>
+      <ClientMenuBar />
     </div>
   );
 };

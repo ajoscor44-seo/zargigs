@@ -13,11 +13,12 @@ const Notifications = () => {
   return (
     <div>
       <BackNav pageName={"Notifications"} />
-      <div className="underBackNav">
+      <div className="underBackNav mb-20">
         {notifications.map((notification) => {
           return <Notification notification={notification} />;
         })}
       </div>
+      <ClientMenuBar />
     </div>
   );
 };

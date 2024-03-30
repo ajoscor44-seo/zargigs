@@ -18,7 +18,7 @@ const UploadInfoPage = () => {
   const [days, setDays] = useState(["Day"]);
 
   // Dynamically generate years based on the current year
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear() - 13;
   const years = [...Array.from({ length: 100 }, (_, i) => currentYear - i)];
 
   // User details data

@@ -129,6 +129,7 @@ const TransactionHistory = () => {
           </tbody>
         </table>
       </div>
+      <ClientMenuBar />
     </div>
   );
 };

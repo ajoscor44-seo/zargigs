@@ -13,12 +13,13 @@ const HelpSupport = () => {
   return (
     <div className="flex flex-col">
       <BackNav pageName={"Help and Support"} />
-      <div className="underBackNav">
+      <div className="underBackNav mb-20">
         <Disclaimer disclaimerMsg={disclaimerMsg} />
         <SupportMsg />
         <Supports />
         <Chat />
       </div>
+      <ClientMenuBar />
     </div>
   );
 };

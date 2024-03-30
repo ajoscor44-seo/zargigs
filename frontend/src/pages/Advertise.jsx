@@ -60,6 +60,7 @@ const Adevertise = () => {
           })}
         </div>
       </div>
+      <ClientMenuBar />
     </div>
   );
 };

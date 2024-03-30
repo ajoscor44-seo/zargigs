@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
 import MoneyTransaction from "../components/MoneyTransaction/MoneyTransaction";
 import ClientsEarnings from "../components/ClientEarnings/ClientsEarnings";
-import userImage from "../assets/images/user-image.png";
 import numeral from "numeral";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import { IoSettingsOutline } from "react-icons/io5";
@@ -23,24 +22,23 @@ const UserDetails = () => {
       return setUserImageURL(currentUser.image);
     }
   }, [currentUser]);
+
   const [show, setShow] = useState(false);
-  const totalEarnings = 12000;
-  const pendingEarnings = 1000;
-  const amountWithdrawn = 10000;
-  const amountSpent = 6400;
-  const username = "Xavier";
+  const totalEarnings = currentUser.totalEarnings;
+  const pendingEarnings = currentUser.pendingEarnings;
+  const amountWithdrawn = currentUser.amountWithdrawn;
+  const amountSpent = currentUser.amountSpent;
   const isOnline = true;
   const badgeColor = isOnline ? "primaryLight" : "slate-300";
   const balance = totalEarnings - amountWithdrawn;
   const userPeoples = {
-    referrals: 10,
-    followers: 100,
-    following: 3,
+    referrals: currentUser.referrals.length || 0,
+    followers: currentUser?.followers?.length || 0,
+    following: currentUser?.followers?.length || 0,
   };
   const state = show ? "block" : "hidden";
   const location = {
-    LGA: "Akure South",
-    state: "Ondo",
+    ...currentUser.location,
     country: "Nigeria",
   };
   const referralLink = `https://gigsflix.com/ref/${currentUser.username.toLowerCase()}`;
@@ -134,6 +132,7 @@ const UserDetails = () => {
           username={currentUser.username}
         />
       </div>
+      <ClientMenuBar />
     </div>
   );
 };

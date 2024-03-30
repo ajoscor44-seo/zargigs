@@ -70,6 +70,7 @@ const BecomeAMember = () => {
           btnText={"Click Here To Pay Now"}
         />
       </div>
+      <ClientMenuBar />
     </div>
   );
 };
