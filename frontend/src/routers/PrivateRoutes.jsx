@@ -12,13 +12,11 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
       render={(props) => {
         return currentUser &&
           currentUser.isEmailVerified &&
-          currentUser.location &&
-          currentUser.religion ? (
+          currentUser.gender ? (
           <Component {...props} />
         ) : currentUser &&
           currentUser.isEmailVerified &&
-          !currentUser.location &&
-          !currentUser.religion ? (
+          !currentUser.gender ? (
           <Redirect to="/input-user-info" />
         ) : currentUser && !currentUser.isEmailVerified ? (
           <Redirect to="/login" />

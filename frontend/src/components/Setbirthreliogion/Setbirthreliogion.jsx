@@ -29,10 +29,10 @@ const SetBirthReligion = ({
 
   return (
     <div
-      className="font-primary mt-12 mx-3 flex flex-col justify-center"
+      className="font-primary mt-4 mx-3 flex flex-col justify-center"
       style={{ maxWidth: "400px" }}
     >
-      <div className="bg-white rounded shadow-2xl">
+      <div className="bg-white rounded mb-20 shadow-2xl">
         <span className="flex justify-between items-center px-3 py-2 border-b text-sm">
           <h2 className="font-bold">More About You</h2>{" "}
         </span>
