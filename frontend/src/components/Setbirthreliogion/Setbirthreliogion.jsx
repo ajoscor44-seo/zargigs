@@ -12,6 +12,7 @@ const SetBirthReligion = ({
   years,
   months,
   days,
+  uploadUserDetails,
 }) => {
   // Handles change in religion selection
   const handleChange = (e) => {
@@ -28,7 +29,7 @@ const SetBirthReligion = ({
 
   return (
     <div
-      className="font-primary mt-5 mx-3 flex flex-col justify-center"
+      className="font-primary mt-12 mx-3 flex flex-col justify-center"
       style={{ maxWidth: "400px" }}
     >
       <div className="bg-white rounded shadow-2xl">
@@ -107,7 +108,10 @@ const SetBirthReligion = ({
             </div>
           </div>
 
-          <button className="bg-green-500 text-white font-semibold text-sm py-3 rounded">
+          <button
+            onClick={uploadUserDetails}
+            className="bg-green-500 text-white font-semibold text-sm py-3 rounded"
+          >
             PROCEED TO DASHBOARD
           </button>
         </div>

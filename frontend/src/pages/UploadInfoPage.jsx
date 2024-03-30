@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import months from "../data/months";
+import fetchStates from "../hooks/fetchStatesData";
 import ClientNavbar from "../components/ClientNavbar/ClientNavbar";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import SetLocation from "../components/SetLocation/SetLocation";
 import SetBirthReligion from "../components/Setbirthreliogion/Setbirthreliogion";
 import UploadProfilePic from "../components/UploadProfilePic/UploadProfilePic";
-import fetchStates from "../hooks/fetchStatesData";
-import months from "../data/months";
 
 const UploadInfoPage = () => {
+  const { currentUser, userToken } = useAuth();
+  const history = useHistory();
   const [activePage, setActivePage] = useState("location");
   const [error, setError] = useState(null);
   const [statesData, setStatesData] = useState([]);
@@ -24,7 +28,7 @@ const UploadInfoPage = () => {
   const [userDOB, setUserDOB] = useState({
     day: new Date().getDate(),
     month: months[new Date().getMonth() + 1],
-    year: new Date().getFullYear(),
+    year: new Date().getFullYear() - 13,
   });
   const [selectedGender, setSelectedGender] = useState(null);
 
@@ -60,15 +64,95 @@ const UploadInfoPage = () => {
     updateDaysInMonth();
   }, [userDOB?.month, userDOB?.year, months]);
 
-  useEffect(() => {
-    console.log({
-      location: userLocation,
-      image,
-      religion,
-      dateOfBirth: userDOB,
-      gender: selectedGender,
-    });
-  });
+  // To consume api
+  // useEffect(() => {
+  //   console.log({
+  //     id: currentUser._id,
+  //     email: currentUser.email,
+  //     image,
+  //     religion,
+  //     gender: selectedGender,
+  //     location: userLocation,
+  //     dateOfBirth: userDOB,
+  //     bankDetails: {
+  //       accountNumber: null,
+  //       bankName: null,
+  //       accountName: null,
+  //     },
+  //     userEarnings: {
+  //       totalEarnings: 0,
+  //       pendingEarnings: 0,
+  //       amountSpent: 0,
+  //       amountWithdrawn: 0,
+  //       balance: 0,
+  //     },
+  //   });
+  // }, [
+  //   selectedGender,
+  //   userLocation,
+  //   userDOB?.month,
+  //   userDOB?.year,
+  //   currentUser,
+  // ]);
+  const uploadUserDetails = async () => {
+    if (!currentUser.email && !currentUser._id) {
+      return history.push("/login");
+    }
+    if (!selectedGender) {
+      return setError("No gender selected");
+    }
+    if (!userLocation.state || !userLocation.LGA) {
+      return setError("Invalid Location");
+    }
+    if (!userDOB.day || !userDOB.month || !userDOB.year) {
+      return setError("Invalid birth date");
+    }
+
+    try {
+      const formData = {
+        image,
+        religion,
+        gender: selectedGender,
+        location: userLocation,
+        dateOfBirth: userDOB,
+        bankDetails: {
+          accountNumber: null,
+          bankName: null,
+          accountName: null,
+        },
+        userEarnings: {
+          totalEarnings: 0,
+          pendingEarnings: 0,
+          amountSpent: 0,
+          amountWithdrawn: 0,
+          balance: 0,
+        },
+      };
+
+      const response = await fetch(
+        "http://localhost:3000/api/v1/user/user-details",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${userToken}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      if (data.failed) {
+        if (data.message == "User's details already exists.") {
+          return history.push("/dashboard");
+        }
+        return setError(data.message);
+      }
+      return history.push("/dashboard");
+    } catch (error) {
+      return console.error(error);
+    }
+  };
 
   return (
     <div>
@@ -100,6 +184,7 @@ const UploadInfoPage = () => {
             years={years}
             months={months}
             days={days}
+            uploadUserDetails={uploadUserDetails}
           />
         ) : (
           <UploadProfilePic

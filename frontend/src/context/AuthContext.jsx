@@ -9,7 +9,7 @@ export const useAuth = () => {
 
 const AuthProvider = ({ children }) => {
   const [userToken, setUserToken] = useState(
-    sessionStorage.getItem("access_token")
+    sessionStorage.getItem("access_token") || null
   );
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);

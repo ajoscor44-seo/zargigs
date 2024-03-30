@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 
-function OtpInput({ otp, setOtp }) {
+function OtpInput({ otp, setOtp, error }) {
   const inputRefs = useRef([]);
 
   const handleChange = (event, index) => {
@@ -34,9 +34,9 @@ function OtpInput({ otp, setOtp }) {
           maxLength={1}
           value={digit}
           onChange={(event) => handleChange(event, index)}
-          className={
-            "border py-1 px-2 rounded outline-green-500 text-2xl font-bold text-center numberInputWithoutControl"
-          }
+          className={`border py-1 px-2 rounded outline-${
+            error ? "red" : "green"
+          }-500 text-2xl font-bold text-center numberInputWithoutControl`}
         />
       ))}
     </div>

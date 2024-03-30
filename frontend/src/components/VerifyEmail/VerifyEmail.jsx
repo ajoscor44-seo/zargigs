@@ -10,23 +10,24 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
   const { currentUser, verifyUserEmail } = useAuth();
   const [otp, setOtp] = useState(Array(4).fill(""));
   const [emailVerified, setEmailVerified] = useState(false);
+  const [error, setError] = useState(null);
 
   const showLoginContent = () => {
     if (isLoginPage) {
-      return setNotVerified(false)
+      return setNotVerified(false);
     }
-    return
-  }
+    return;
+  };
 
   const verifyEmail = async () => {
     const email = sessionStorage.getItem("auth-user-email");
     const res = await verifyUserEmail(email, otp.join(""));
 
-    if (!res.failed) {
-      sessionStorage.removeItem("auth-user-email");
-      return setEmailVerified(true);
+    if (res.failed) {
+      return setError(res.message);
     }
-    return;
+    sessionStorage.removeItem("auth-user-email");
+    return setEmailVerified(true);
   };
 
   return (
@@ -43,7 +44,10 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
             Yay, your email has been verified successfully.
           </p>
           <Link to="/login">
-            <button onClick={showLoginContent} className="bg-green-500 px-5 py-2 text-white font-bold rounded mt-5">
+            <button
+              onClick={showLoginContent}
+              className="bg-green-500 px-5 py-2 text-white font-bold rounded mt-5"
+            >
               Back to Login
             </button>
           </Link>
@@ -70,6 +74,9 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
               mail in your inbox. You can also click the Resend Button below to
               get the mail again.
             </p>
+            <p className="text-red-500 font-semibold text-sm text-center">
+              {error}
+            </p>
             <div className="flex my-5 gap-2">
               <img
                 className="h-20 object-cover"
@@ -80,7 +87,7 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
               <div className="flex flex-col gap-2">
                 <span>ENTER TWO FACTOR CODE:</span>
                 <div className="flex flex-1 gap-2">
-                  <OtpInput otp={otp} setOtp={setOtp} />
+                  <OtpInput otp={otp} setOtp={setOtp} error={error} />
                   <button
                     onClick={() => verifyEmail()}
                     className="bg-green-500 px-2 font-semibold text-white text-xs rounded"

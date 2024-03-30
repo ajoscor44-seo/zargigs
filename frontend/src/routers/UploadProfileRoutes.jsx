@@ -20,7 +20,7 @@ const UploadProfilePrivateRoute = ({ component: Component, ...rest }) => {
           currentUser.religion ? (
           <Redirect to="/dashboard" />
         ) : (
-          <Redirect to="/login" />
+          <Redirect to="/signup" />
         );
       }}
     ></Route>

@@ -3,7 +3,8 @@ import { Redirect, Route } from "react-router-dom/cjs/react-router-dom.min";
 import { useAuth } from "../context/AuthContext";
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
-  const { userToken, currentUser } = useAuth();
+  const { currentUser } = useAuth();
+  console.log(currentUser);
 
   return (
     <Route
@@ -14,15 +15,15 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
           currentUser.location &&
           currentUser.religion ? (
           <Component {...props} />
-        ) : currentUser && !currentUser.isEmailVerified ? (
-          <Redirect to="/login" />
         ) : currentUser &&
           currentUser.isEmailVerified &&
           !currentUser.location &&
           !currentUser.religion ? (
           <Redirect to="/input-user-info" />
-        ) : (
+        ) : currentUser && !currentUser.isEmailVerified ? (
           <Redirect to="/login" />
+        ) : (
+          <Redirect to="/signup" />
         );
       }}
     ></Route>
