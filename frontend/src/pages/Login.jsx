@@ -11,7 +11,7 @@ import FormInput from "../components/FormInput/FormInput";
 const Login = ({ setNotVerified }) => {
   const [email, setEmail] = useState(null);
   const [formData, setFormData] = useState({});
-  const { loginUser } = useAuth();
+  const { loginUser, fetchUserData } = useAuth();
   const [password, setPassword] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -61,6 +61,7 @@ const Login = ({ setNotVerified }) => {
         sessionStorage.removeItem("auth-user-email");
         sessionStorage.setItem("access_token", res.access_token);
         resetForm();
+        await fetchUserData();
         return history.push("/dashboard");
       }
     }

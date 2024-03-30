@@ -10,7 +10,7 @@ import SetBirthReligion from "../components/Setbirthreliogion/Setbirthreliogion"
 import UploadProfilePic from "../components/UploadProfilePic/UploadProfilePic";
 
 const UploadInfoPage = () => {
-  const { currentUser, userToken } = useAuth();
+  const { currentUser, userToken, fetchUserData } = useAuth();
   const history = useHistory();
   const [activePage, setActivePage] = useState("location");
   const [error, setError] = useState(null);
@@ -141,13 +141,14 @@ const UploadInfoPage = () => {
         }
       );
       const data = await response.json();
-      console.log(data);
       if (data.failed) {
         if (data.message == "User's details already exists.") {
+          await fetchUserData();
           return history.push("/dashboard");
         }
         return setError(data.message);
       }
+      await fetchUserData();
       return history.push("/dashboard");
     } catch (error) {
       return console.error(error);

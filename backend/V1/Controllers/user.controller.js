@@ -10,12 +10,12 @@ export const getUserDetails = async (req, res, next) => {
     return res.status(404).json(error);
   }
 
+  // Destructures user object
   const { _id, __v, iat, createdAt, updatedAt, role, ...rest } = req.user;
 
   const validUserDetails = await UserDetails.findOne({ userId: validUser._id });
   if (!validUserDetails) {
-    const error = ErrorHandler(404, "User details not found.");
-    return res.status(404).json(error);
+    return res.status(200).json({ ...rest });
   }
 
   // Destructures user details object

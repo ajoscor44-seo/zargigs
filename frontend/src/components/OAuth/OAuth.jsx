@@ -7,7 +7,7 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom";
 
 const OAuth = ({ setError }) => {
   const [disabledBtn, setDisabledBtn] = useState(false);
-  const { OAuthUser } = useAuth();
+  const { OAuthUser, fetchUserData } = useAuth();
   const auth = getAuth(app);
   const history = useHistory();
 
@@ -25,6 +25,7 @@ const OAuth = ({ setError }) => {
       }
       setDisabledBtn(false);
       setError(null);
+      await fetchUserData()
       history.push("/dashboard");
     } catch (error) {
       return error;

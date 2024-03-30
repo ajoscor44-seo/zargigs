@@ -29,15 +29,16 @@ const AuthProvider = ({ children }) => {
       });
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const user = await getCurrentUser();
-      setLoading(false);
-      return setCurrentUser(user);
-    };
+  const fetchUserData = async () => {
+    setLoading(true);
+    setUserToken(sessionStorage.getItem("access_token"));
+    const user = await getCurrentUser();
+    setLoading(false);
+    return setCurrentUser(user);
+  };
 
-    fetchData();
+  useEffect(() => {
+    fetchUserData();
   }, [userToken]);
 
   const loginUser = async (email, password) => {
@@ -126,6 +127,7 @@ const AuthProvider = ({ children }) => {
   const AuthValue = {
     userToken,
     currentUser,
+    fetchUserData,
     loginUser,
     signupUser,
     OAuthUser,
@@ -136,7 +138,7 @@ const AuthProvider = ({ children }) => {
     <AuthContext.Provider value={AuthValue}>
       {loading ? (
         <div>
-          <Spinner />
+          <Spinner size={25} />
         </div>
       ) : (
         children
