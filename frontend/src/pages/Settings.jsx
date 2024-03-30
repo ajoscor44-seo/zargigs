@@ -21,11 +21,10 @@ import {
 } from "react-icons/ci";
 import { MdOutlinePrivacyTip } from "react-icons/md";
 import { FcAbout } from "react-icons/fc";
+import { useAuth } from "../context/AuthContext";
 
 const Settings = () => {
-  const firstname = "Pablo";
-  const lastname = "Richie";
-  const username = "Xavier";
+  const { currentUser } = useAuth();
   const settings = [
     {
       icon: <BsCart2 size={20} />,
@@ -109,15 +108,15 @@ const Settings = () => {
       <div className="underBackNav font-primary">
         <div className="p-2 flex border bg-slate-50">
           <div className="flex items-center justify-center">
-            <img src={userImage} className="object-cover w-16 h-16" />
+            <img src={currentUser.image} className="object-cover w-16 h-16" />
           </div>
           <div className="flex flex-1 items-center justify-between">
             <div>
               <h2 className="font-semibold text-xl text-slate-600">
-                {firstname + " " + lastname}
+                {currentUser.firstname + " " + currentUser.lastname}
               </h2>
               <span className="text-md text-slate-400">
-                @{username.toLowerCase()}
+                @{currentUser.username.toLowerCase()}
               </span>
             </div>
             <Link to="/user-details">
@@ -132,6 +131,7 @@ const Settings = () => {
           {settings.map((setting) => {
             return (
               <Setting
+                key={setting.name}
                 path={setting.path}
                 settingName={setting.name}
                 icon={setting.icon}

@@ -1,7 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import useRoutes from "./V1/Routes/user.route.js";
+import userRoutes from "./V1/Routes/user.route.js";
+import activityRoutes from "./V1/Routes/recent-activities.route.js";
 import authRoutes from "./V1/Routes/auth.route.js";
 dotenv.config();
 import cors from "cors";
@@ -34,14 +35,15 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("tiny"));
 
-// Client authentication route
+//Public Client authentication route
 app.use("/api/v1/auth", authRoutes);
 
 // Authenticate User with token
 app.use(authenticateToken);
 
-// Routes
-app.use("/api/v1/user", useRoutes);
+//Protected Routes
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/activities", activityRoutes);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;

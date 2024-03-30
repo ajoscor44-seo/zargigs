@@ -7,13 +7,13 @@ import MoneyTransaction from "../components/MoneyTransaction/MoneyTransaction";
 import EarningMethods from "../components/EarningMethods/EarningMethods";
 import RecentActivities from "../components/RecentActivities/RecentActivities";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
-import user from "../data/user";
-import recentActivities from "../data/recentActivities";
 import WhatTheyCanDo from "../components/WhatTheyCanDo/WhatTheyCanDo";
 import { useAuth } from "../context/AuthContext";
 
+import recentActivities from "../data/recentActivities";
+
 const ClientDashboard = () => {
-  const { getCurrentUser } = useAuth();
+  const { currentUser } = useAuth();
   const possibleActions = [
     {
       personnel: "Advertisers",
@@ -36,20 +36,20 @@ const ClientDashboard = () => {
   return (
     <div className="clientDashboard bg-slate-50">
       <ClientNavbar />
-      {user.isMember ? (
+      {currentUser.isMember ? (
         <div className="block">
-          <ClientWelcomeMsg username={user.username} />
+          <ClientWelcomeMsg username={currentUser.username} />
           <ClientDashboardCard
-            firstname={user.firstname}
-            lastname={user.lastname}
-            userBalance={user.balance}
+            firstname={currentUser.firstname}
+            lastname={currentUser.lastname}
+            userBalance={currentUser.balance}
           />
           <MoneyTransaction />
           <ClientsEarnings
-            totalEarnings={user.totalEarnings}
-            pendingEarnings={user.pendingEarnings}
-            amountWithdrawn={user.amountWithdrawn}
-            amountSpent={user.amountSpent}
+            totalEarnings={currentUser.totalEarnings}
+            pendingEarnings={currentUser.pendingEarnings}
+            amountWithdrawn={currentUser.amountWithdrawn}
+            amountSpent={currentUser.amountSpent}
           />
           <EarningMethods />
         </div>
