@@ -1,4 +1,3 @@
-import userDetails from "../../V1/Models/user-details.model.js";
 import UserDetails from "../../V1/Models/user-details.model.js";
 import User from "../Models/user.model.js";
 import { ErrorHandler } from "../utils/error.js";
@@ -13,10 +12,23 @@ export const getUserDetails = async (req, res, next) => {
 
   const { _id, __v, iat, createdAt, updatedAt, role, ...rest } = req.user;
 
-  const validUserDetails = userDetails.findOne({ userId: req.user._id });
-  console.log(validUserDetails);
+  const validUserDetails = await UserDetails.findOne({ userId: validUser._id });
+  if (!validUserDetails) {
+    const error = ErrorHandler(404, "User details not found.");
+    return res.status(404).json(error);
+  }
 
-  res.json({ ...rest });
+  // Destructures user details object
+  const {
+    userId,
+    _id: detailsId,
+    __v: detailsV,
+    createdAt: detailsCreatedAt,
+    updatedAt: detailsUpdatedAt,
+    ...details
+  } = validUserDetails._doc;
+
+  res.json({ ...rest, ...details });
   next();
 };
 
