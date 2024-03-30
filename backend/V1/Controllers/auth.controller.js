@@ -39,7 +39,7 @@ export const signup = async (req, res, next) => {
     }
     const userWithUsername = await User.findOne({ username });
     if (userWithUsername) {
-      const error = ErrorHandler(400, "Username is already taken");
+      const error = ErrorHandler(400, "Username is already taken.");
       return res.status(400).json(error);
     }
     await newUser.save();

@@ -1,18 +1,30 @@
+import userDetails from "../../V1/Models/user-details.model.js";
 import UserDetails from "../../V1/Models/user-details.model.js";
 import User from "../Models/user.model.js";
 import { ErrorHandler } from "../utils/error.js";
 
 export const getUserDetails = async (req, res, next) => {
-  res.json(req.user);
+  // Checks for valid user
+  const validUser = await User.findOne({ email: req.user.email });
+  if (!validUser) {
+    const error = ErrorHandler(404, "There's no user with this email.");
+    return res.status(404).json(error);
+  }
+
+  const { _id, __v, iat, createdAt, updatedAt, role, ...rest } = req.user;
+
+  const validUserDetails = userDetails.findOne({ userId: req.user._id });
+  console.log(validUserDetails);
+
+  res.json({ ...rest });
   next();
 };
 
 export const addUserDetails = async (req, res, next) => {
   const {
-    id,
-    email,
     location,
     religion,
+    gender,
     dateOfBirth,
     image,
     bankDetails,
@@ -20,22 +32,16 @@ export const addUserDetails = async (req, res, next) => {
   } = req.body;
 
   // Checks for valid user
-  const validUser = await User.findOne({ email });
+  const validUser = await User.findOne({ email: req.user.email });
   if (!validUser) {
     const error = ErrorHandler(404, "There's no user with this email.");
     return res.status(404).json(error);
   }
 
   // Checks for user details
-  const userDetails = await UserDetails.findOne({ userId: id });
+  const userDetails = await UserDetails.findOne({ userId: validUser._id });
   if (userDetails) {
     const error = ErrorHandler(400, "User's details already exists.");
-    return res.status(400).json(error);
-  }
-
-  // Checks if the user is the owner of account
-  if (req.user._id !== id) {
-    const error = ErrorHandler(400, "Unauthorized Action.");
     return res.status(400).json(error);
   }
 
@@ -44,12 +50,13 @@ export const addUserDetails = async (req, res, next) => {
       userId: validUser._id,
       location,
       religion,
+      gender,
       dateOfBirth,
       bankDetails,
       userEarnings,
     });
     if (image) {
-      await User.findOneAndUpdate({ email }, { image });
+      await User.findOneAndUpdate({ email: req.user.email }, { image });
     }
     await newUserDetails.save();
 
@@ -66,34 +73,20 @@ export const addUserDetails = async (req, res, next) => {
 
 // Updates user details
 export const updateUserDetails = async (req, res, next) => {
-  const {
-    id,
-    email,
-    location,
-    religion,
-    dateOfBirth,
-    image,
-    bankDetails,
-    userEarnings,
-  } = req.body;
+  const { location, religion, dateOfBirth, image, bankDetails, userEarnings } =
+    req.body;
 
   // Checks for valid user
-  const validUser = await User.findOne({ email });
+  const validUser = await User.findOne({ email: req.user.email });
   if (!validUser) {
     const error = ErrorHandler(404, "There's no user with this email.");
     return res.status(404).json(error);
   }
 
   // Checks for user details
-  const userDetails = await UserDetails.findOne({ userId: id });
+  const userDetails = await UserDetails.findOne({ userId: req.user._id });
   if (!userDetails) {
     const error = ErrorHandler(400, "User's details does not exists.");
-    return res.status(400).json(error);
-  }
-
-  // Checks if the user is the owner of account
-  if (req.user.id !== id) {
-    const error = ErrorHandler(400, "Cannot add other user's details.");
     return res.status(400).json(error);
   }
 

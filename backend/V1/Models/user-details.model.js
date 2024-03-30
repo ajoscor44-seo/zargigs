@@ -11,6 +11,10 @@ const userDetailsSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    gender: {
+      type: String,
+      required: false,
+    },
     location: {
       type: Object,
       required: false,
