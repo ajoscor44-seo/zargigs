@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ClientNavbar from "../components/ClientNavbar/ClientNavbar";
 import ClientWelcomeMsg from "../components/ClientWelcomeMsg/ClientWelcomeMsg";
 import ClientDashboardCard from "../components/ClientDashboardCard/ClientDashboardCard";
@@ -10,10 +10,35 @@ import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import WhatTheyCanDo from "../components/WhatTheyCanDo/WhatTheyCanDo";
 import { useAuth } from "../context/AuthContext";
 
-import recentActivities from "../data/recentActivities";
-
 const ClientDashboard = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, userToken } = useAuth();
+  const [recentActivities, setRecentActivities] = useState([]);
+
+  // Fetches the recent activities
+  const fetchRecentActivities = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/v1/activities/recent-activities",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+      const data = await response.json();
+      setRecentActivities(data);
+      return data;
+    } catch (error) {
+      return error;
+    }
+  };
+
+  useEffect(() => {
+    fetchRecentActivities();
+  }, []);
+
   const possibleActions = [
     {
       personnel: "Advertisers",
@@ -78,7 +103,9 @@ const ClientDashboard = () => {
           </div>
         </div>
       )}
-      <RecentActivities recentActivities={recentActivities} />
+      {recentActivities.length && (
+        <RecentActivities recentActivities={recentActivities} />
+      )}
       <ClientMenuBar />
     </div>
   );
