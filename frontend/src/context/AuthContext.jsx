@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
+import io from "socket.io-client";
 
 const AuthContext = createContext();
 
@@ -8,6 +9,8 @@ export const useAuth = () => {
 };
 
 const AuthProvider = ({ children }) => {
+  const socket = io.connect("http://localhost:3000");
+
   const [userToken, setUserToken] = useState(
     sessionStorage.getItem("access_token") || null
   );

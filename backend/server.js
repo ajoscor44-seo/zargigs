@@ -9,7 +9,9 @@ import cors from "cors";
 import authenticateToken from "./V1/Middleware/authenticate.js";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
+import { app, server } from "./V1/socket/socket.js";
 
+// Connects to db
 mongoose
   .connect(process.env.MONGO)
   .then(() => {
@@ -18,20 +20,22 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+// Port Number
+const PORT = process.env.PORT || 5000;
 
-const app = express();
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    methods: "GET,POST,PUT,HEAD,DELETE",
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-    optionsSuccessStatus: 200,
-  })
-);
+app.use(cors());
+
+// app.use(
+//   cors({
+//     origin: "http://localhost:5173",
+//     methods: "GET,POST,PUT,HEAD,DELETE",
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//     credentials: true,
+//     optionsSuccessStatus: 200,
+//   })
+// );
 // Parses json bodies
 app.use(express.json());
-// Parses cookie
 app.use(cookieParser());
 app.use(morgan("tiny"));
 
@@ -42,8 +46,8 @@ app.use("/api/v1/auth", authRoutes);
 app.use(authenticateToken);
 
 //Protected Routes
-app.use("/api/v1/user", userRoutes);
-app.use("/api/v1/activities", activityRoutes);
+// app.use("/api/v1/user", userRoutes);
+// app.use("/api/v1/activities", activityRoutes);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
@@ -55,6 +59,9 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log("Server running on Port: 3000");
+// server.listen(3000, () => {
+//   console.log("Server running on Port: 3000");
+// });
+app.listen(PORT, () => {
+  console.log(`Server running on Port: ${PORT}`);
 });

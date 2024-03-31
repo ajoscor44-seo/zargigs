@@ -96,7 +96,7 @@ export const login = async (req, res, next) => {
       res.status(401).json(error);
     }
     const validPassword =
-      password && bcryptjs.compareSync(password, validUser.password);
+      password && bcryptjs.compareSync(password, validUser.password || "");
     if (!validPassword) {
       const error = ErrorHandler(401, "Wrong credentials");
       return res.status(401).json(error);
@@ -250,6 +250,10 @@ export const verifyEmail = async (req, res, next) => {
 };
 
 export const signout = (req, res, next) => {
-  const { email, accessToken } = req.body;
-  //
+  try {
+    res.cookie("access_token", "", { maxAge: 0 });
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    next(error);
+  }
 };
