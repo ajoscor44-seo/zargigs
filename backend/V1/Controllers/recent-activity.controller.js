@@ -1,5 +1,6 @@
 import RecentActivity from "../Models/recent-activity.model.js";
 import User from "../Models/user.model.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 import { ErrorHandler } from "../utils/error.js";
 
 export const getRecentActivities = async (req, res, next) => {
@@ -41,6 +42,13 @@ export const postRecentActivities = async (req, res, next) => {
     category,
   });
   await newRecentActivity.save();
+
+  const receiverSocketId = getReceiverSocketId(req.user._id);
+
+  if (receiverSocketId) {
+    io.to(receiverSocketId).emit("newRecentActivity", newRecentActivity);
+  }
+
   res
     .status(200)
     .json({ status: 200, failed: true, message: "Recent Activity Added" });

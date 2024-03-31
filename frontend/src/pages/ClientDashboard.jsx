@@ -10,10 +10,12 @@ import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import WhatTheyCanDo from "../components/WhatTheyCanDo/WhatTheyCanDo";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import useListenRecentActivity from "../hooks/useListenRecentActivity";
 
 const ClientDashboard = () => {
   const { currentUser } = useAuth();
   const [recentActivities, setRecentActivities] = useState([]);
+  useListenRecentActivity(setRecentActivities, recentActivities);
 
   // Fetches the recent activities
   const fetchRecentActivities = async () => {

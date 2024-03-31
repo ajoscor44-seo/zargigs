@@ -1,6 +1,8 @@
+import dotenv from "dotenv";
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
+dotenv.config();
 
 const app = express();
 
@@ -8,30 +10,33 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: process.env.CLIENT_URL,
-    methods: ["GET","POST","PUT","HEAD","DELETE"],
+    methods: ["GET", "POST", "PUT", "HEAD", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   },
 });
 
+export const getReceiverSocketId = (receiverId) => {
+  return userSocketMap[receiverId];
+};
 
 io.on("connection", (socket) => {
-  const userSocketMap = { userId: socket.id }
-  
+  const userSocketMap = {};
+
   console.log("A user connected", socket.id);
 
-  const userId = socket.handshake.query.userId
+  const userId = socket.handshake.query.userId;
 
   if (userId !== "undefined") {
-    return userSocketMap(userId) = socket.id
+    return (userSocketMap[userId] = socket.id);
   }
 
-  io.emit("getOnlineUsers", Object.keys(userSocketMap))
+  io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   socket.on("disconnect", () => {
     console.log("User disconnects", socket.id);
-    delete userSocketMap(userId)
-  io.emit("getOnlineUsers", Object.keys(userSocketMap))
+    delete userSocketMap[userId];
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
 });
 

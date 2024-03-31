@@ -9,9 +9,11 @@ import { FaLocationDot } from "react-icons/fa6";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import ReferAndEarn from "../components/ReferAndEarn/ReferAndEarn";
 import { useAuth } from "../context/AuthContext";
+import { useSocketContext } from "../context/SocketContext";
 
 const UserDetails = () => {
   const { currentUser } = useAuth();
+  const { onlineUsers } = useSocketContext();
   const [userImageURL, setUserImageURL] = useState(
     "https://cdn-icons-png.flaticon.com/512/149/149071.png"
   );
@@ -28,7 +30,7 @@ const UserDetails = () => {
   const pendingEarnings = currentUser.pendingEarnings;
   const amountWithdrawn = currentUser.amountWithdrawn;
   const amountSpent = currentUser.amountSpent;
-  const isOnline = true;
+  const isOnline = onlineUsers.includes(currentUser.id);
   const badgeColor = isOnline ? "primaryLight" : "slate-300";
   const balance = totalEarnings - amountWithdrawn;
   const userPeoples = {

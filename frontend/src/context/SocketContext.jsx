@@ -15,7 +15,8 @@ export const SocketContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (currentUser) {
-      const socket = io(import.meta.env.SERVER_BASE_URL, {
+      const socket = io("http://localhost:3000", {
+        withCredentials: true,
         query: {
           userId: currentUser.id,
         },
@@ -34,7 +35,7 @@ export const SocketContextProvider = ({ children }) => {
         setSocket(null);
       }
     }
-  }, []);
+  }, [currentUser]);
 
   return (
     <SocketContext.Provider value={{ socket, onlineUsers }}>
