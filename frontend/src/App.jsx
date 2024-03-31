@@ -32,7 +32,6 @@ import UploadProfilePrivateRoute from "./routers/UploadProfileRoutes.jsx";
 import { SocketContextProvider } from "./context/SocketContext.jsx";
 
 function App() {
-  console.log(import.meta.env.SERVER_BASE_URL);
   axios.defaults.baseURL = "http://localhost:3000";
   axios.defaults.withCredentials = true;
 

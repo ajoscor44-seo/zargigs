@@ -12,17 +12,13 @@ import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
 const ClientDashboard = () => {
-  const { currentUser, userToken } = useAuth();
+  const { currentUser } = useAuth();
   const [recentActivities, setRecentActivities] = useState([]);
 
   // Fetches the recent activities
   const fetchRecentActivities = async () => {
     try {
-      const response = await axios.get("/api/v1/activities/recent-activities", {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
+      const response = await axios.get("/api/v1/activities/recent-activities");
       const data = await response.data;
 
       if (data.failed) {

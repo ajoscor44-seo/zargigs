@@ -59,7 +59,6 @@ const Login = ({ setNotVerified }) => {
       } else {
         setIsLoading(false);
         sessionStorage.removeItem("auth-user-email");
-        sessionStorage.setItem("access_token", res.access_token);
         resetForm();
         await fetchUserData();
         return history.push("/dashboard");

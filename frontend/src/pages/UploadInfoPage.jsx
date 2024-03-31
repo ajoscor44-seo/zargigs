@@ -11,7 +11,7 @@ import UploadProfilePic from "../components/UploadProfilePic/UploadProfilePic";
 import axios from "axios";
 
 const UploadInfoPage = () => {
-  const { currentUser, userToken, fetchUserData } = useAuth();
+  const { currentUser, fetchUserData } = useAuth();
   const history = useHistory();
   const [activePage, setActivePage] = useState("location");
   const [error, setError] = useState(null);
@@ -130,11 +130,7 @@ const UploadInfoPage = () => {
         },
       };
 
-      const response = await axios.post("/api/v1/user/user-details", formData, {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
+      const response = await axios.post("/api/v1/user/user-details", formData);
 
       const data = await response.data;
       if (data.failed) {

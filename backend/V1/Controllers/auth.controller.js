@@ -119,7 +119,6 @@ export const login = async (req, res, next) => {
       .json({
         message: "Login successful",
         failed: false,
-        access_token: token,
       });
   } catch (error) {
     next({ message: "Internal server error. Please try again." });

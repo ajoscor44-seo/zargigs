@@ -9,19 +9,12 @@ export const useAuth = () => {
 };
 
 const AuthProvider = ({ children }) => {
-  const [userToken, setUserToken] = useState(
-    sessionStorage.getItem("access_token") || null
-  );
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const getCurrentUser = async () => {
     return await axios
-      .get("/api/v1/user/user-details", {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      })
+      .get("/api/v1/user/user-details")
       .then((response) => {
         return response.data;
       })
@@ -32,7 +25,6 @@ const AuthProvider = ({ children }) => {
 
   const fetchUserData = async () => {
     setLoading(true);
-    setUserToken(sessionStorage.getItem("access_token"));
     const user = await getCurrentUser();
     setLoading(false);
     if (user.failed) return setCurrentUser(null);
@@ -41,7 +33,7 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     fetchUserData();
-  }, [userToken]);
+  }, []);
 
   const loginUser = async (email, password) => {
     try {
@@ -83,10 +75,7 @@ const AuthProvider = ({ children }) => {
       });
 
       const data = res.data;
-      if (!data.failed) {
-        setUserToken(data);
-      }
-      return user;
+      return data;
     } catch (error) {
       return error;
     }
@@ -108,7 +97,6 @@ const AuthProvider = ({ children }) => {
   };
 
   const AuthValue = {
-    userToken,
     currentUser,
     fetchUserData,
     loginUser,

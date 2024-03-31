@@ -14,7 +14,7 @@ const RecentActivities = ({ recentActivities }) => {
         {recentActivities.map((recentActivity) => {
           return (
             <RecentActivity
-              key={recentActivity.username}
+              key={recentActivity._id}
               recentActivity={recentActivity}
             />
           );
