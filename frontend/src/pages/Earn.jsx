@@ -96,6 +96,7 @@ const Earn = () => {
           </div>
         </div>
       </div>
+      <ClientMenuBar />
     </div>
   );
 };

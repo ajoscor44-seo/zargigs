@@ -9,8 +9,11 @@ import waysToEarnForAds from "../../data/waysToEarnForAdvert";
 import waysToEarnForTasks from "../../data/waysToEarnForTasks";
 import Notifier from "../Notifier/Notifier";
 import user from "../../data/user";
+import { useAuth } from "../../context/AuthContext";
 
 const ClientMenuBar = () => {
+  const { currentUser } = useAuth();
+
   const advertTasks = waysToEarnForAds.reduce((total, wayToEarn) => {
     return total + wayToEarn.availableTasks.length;
   }, 0);
@@ -29,7 +32,7 @@ const ClientMenuBar = () => {
           <span className="text-sm">Home</span>
         </div>
       </Link>
-      <Link to={user.isMember ? "/earn" : "/become-a-member"}>
+      <Link to={currentUser.isMember ? "/earn" : "/become-a-member"}>
         <div className="flex flex-col justify-between items-center cursor-pointer relative">
           <PiWalletLight
             size={25}

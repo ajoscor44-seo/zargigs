@@ -30,6 +30,8 @@ import Authentication from "./pages/Authentication.jsx";
 import UploadInfoPage from "./pages/UploadInfoPage.jsx";
 import UploadProfilePrivateRoute from "./routers/UploadProfileRoutes.jsx";
 import { SocketContextProvider } from "./context/SocketContext.jsx";
+import MemberPrivateRoute from "./routers/MemberPrivateRoute.jsx";
+import VerifiedMemberPrivateRoute from "./routers/VerifiedMemberPrivateRoute.jsx";
 
 function App() {
   axios.defaults.baseURL = "http://localhost:3000";
@@ -77,7 +79,10 @@ function App() {
               <PrivateRoute path="/notifications" component={Notifications} />
               <PrivateRoute path="/user-details" component={UserDetails} />
               <PrivateRoute path="/fund-wallet" component={FundWallets} />
-              <PrivateRoute path="/withdraw" component={Withdrawal} />
+              <VerifiedMemberPrivateRoute
+                path="/withdraw"
+                component={Withdrawal}
+              />
               <PrivateRoute
                 path="/update-location"
                 component={UpdateLocation}
@@ -86,8 +91,14 @@ function App() {
               <PrivateRoute path="/advertise/:slug" component={CreateAdvert} />
               <PrivateRoute path="/advertise" component={Adevertise} />
               <PrivateRoute path="/order" component={Order} />
-              <PrivateRoute path="/become-a-member" component={BecomeAMember} />
-              <PrivateRoute path="/earn/:slug" component={EarnWithTasks} />
+              <MemberPrivateRoute
+                path="/become-a-member"
+                component={BecomeAMember}
+              />
+              <VerifiedMemberPrivateRoute
+                path="/earn/:slug"
+                component={EarnWithTasks}
+              />
               <PrivateRoute path="/earn" component={Earn} />
               <PrivateRoute path="/account-settings" component={Settings} />
               <PrivateRoute
