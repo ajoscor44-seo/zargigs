@@ -28,7 +28,7 @@ export const getUserDetails = async (req, res, next) => {
     ...details
   } = validUserDetails._doc;
 
-  res.json({ ...rest, ...details });
+  res.json({ ...rest, ...details, id: _id });
   next();
 };
 

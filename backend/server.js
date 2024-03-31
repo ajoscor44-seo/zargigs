@@ -23,17 +23,13 @@ mongoose
 // Port Number
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// Configure CORS
+const corsOptions = {
+  origin: "http://localhost:5173",
+  credentials: true,
+};
+app.use(cors(corsOptions));
 
-// app.use(
-//   cors({
-//     origin: "http://localhost:5173",
-//     methods: "GET,POST,PUT,HEAD,DELETE",
-//     allowedHeaders: ["Content-Type", "Authorization"],
-//     credentials: true,
-//     optionsSuccessStatus: 200,
-//   })
-// );
 // Parses json bodies
 app.use(express.json());
 app.use(cookieParser());
@@ -46,8 +42,8 @@ app.use("/api/v1/auth", authRoutes);
 app.use(authenticateToken);
 
 //Protected Routes
-// app.use("/api/v1/user", userRoutes);
-// app.use("/api/v1/activities", activityRoutes);
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/activities", activityRoutes);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;

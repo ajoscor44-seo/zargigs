@@ -8,6 +8,7 @@ import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import SetLocation from "../components/SetLocation/SetLocation";
 import SetBirthReligion from "../components/Setbirthreliogion/Setbirthreliogion";
 import UploadProfilePic from "../components/UploadProfilePic/UploadProfilePic";
+import axios from "axios";
 
 const UploadInfoPage = () => {
   const { currentUser, userToken, fetchUserData } = useAuth();
@@ -129,18 +130,13 @@ const UploadInfoPage = () => {
         },
       };
 
-      const response = await fetch(
-        "http://localhost:3000/api/v1/user/user-details",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${userToken}`,
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-      const data = await response.json();
+      const response = await axios.post("/api/v1/user/user-details", formData, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      const data = await response.data;
       if (data.failed) {
         if (data.message == "User's details already exists.") {
           await fetchUserData();

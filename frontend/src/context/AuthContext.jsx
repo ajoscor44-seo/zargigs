@@ -1,6 +1,6 @@
+import axios from "axios";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
-import io from "socket.io-client";
 
 const AuthContext = createContext();
 
@@ -9,8 +9,6 @@ export const useAuth = () => {
 };
 
 const AuthProvider = ({ children }) => {
-  const socket = io.connect("http://localhost:3000");
-
   const [userToken, setUserToken] = useState(
     sessionStorage.getItem("access_token") || null
   );
@@ -18,15 +16,15 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const getCurrentUser = async () => {
-    return await fetch("http://localhost:3000/api/v1/user/user-details", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${userToken}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => data)
+    return await axios
+      .get("/api/v1/user/user-details", {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      })
       .catch((error) => {
         console.error(error);
       });
@@ -37,6 +35,7 @@ const AuthProvider = ({ children }) => {
     setUserToken(sessionStorage.getItem("access_token"));
     const user = await getCurrentUser();
     setLoading(false);
+    if (user.failed) return setCurrentUser(null);
     return setCurrentUser(user);
   };
 
@@ -50,14 +49,10 @@ const AuthProvider = ({ children }) => {
         email,
         password,
       };
-      const response = await fetch("http://localhost:3000/api/v1/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await response.json();
+
+      const response = await axios.post("/api/v1/auth/login", formData);
+
+      const data = response.data;
       return data;
     } catch (error) {
       return error;
@@ -66,14 +61,10 @@ const AuthProvider = ({ children }) => {
 
   const signupUser = async (formData) => {
     try {
-      const response = await fetch("http://localhost:3000/api/v1/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      return await response.json();
+      const response = await axios.post("/api/v1/auth/signup", formData);
+
+      const data = response.data;
+      return data;
     } catch (error) {
       return error;
     }
@@ -81,23 +72,17 @@ const AuthProvider = ({ children }) => {
 
   const OAuthUser = async (cred) => {
     try {
-      const res = await fetch("http://localhost:3000/api/v1/auth/google", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: cred.user.displayName,
-          email: cred.user.email,
-          isEmailVerified: cred.user.emailVerified,
-          image: cred.user.photoURL,
-          referredBy: "admin",
-          role: "user",
-          isMember: false,
-        }),
+      const res = await axios.post("/api/v1/auth/google", {
+        name: cred.user.displayName,
+        email: cred.user.email,
+        isEmailVerified: cred.user.emailVerified,
+        image: cred.user.photoURL,
+        referredBy: "admin",
+        role: "user",
+        isMember: false,
       });
 
-      const data = await res.json();
+      const data = res.data;
       if (!data.failed) {
         setUserToken(data);
       }
@@ -113,17 +98,8 @@ const AuthProvider = ({ children }) => {
         email,
         otp,
       };
-      const response = await fetch(
-        "http://localhost:3000/api/v1/auth/verifyWithOTP",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-      const data = await response.json();
+      const response = await axios.post("/api/v1/auth/verifyWithOTP", formData);
+      const data = response.data;
 
       return data;
     } catch (error) {

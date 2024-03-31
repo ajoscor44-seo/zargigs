@@ -9,6 +9,7 @@ import RecentActivities from "../components/RecentActivities/RecentActivities";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import WhatTheyCanDo from "../components/WhatTheyCanDo/WhatTheyCanDo";
 import { useAuth } from "../context/AuthContext";
+import axios from "axios";
 
 const ClientDashboard = () => {
   const { currentUser, userToken } = useAuth();
@@ -17,17 +18,16 @@ const ClientDashboard = () => {
   // Fetches the recent activities
   const fetchRecentActivities = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/v1/activities/recent-activities",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
-      const data = await response.json();
+      const response = await axios.get("/api/v1/activities/recent-activities", {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      const data = await response.data;
+
+      if (data.failed) {
+        return console.error(data.message);
+      }
       setRecentActivities(data);
       return data;
     } catch (error) {

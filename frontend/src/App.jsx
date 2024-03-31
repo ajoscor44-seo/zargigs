@@ -4,6 +4,7 @@ import {
   Switch,
   Route,
 } from "react-router-dom/cjs/react-router-dom.min";
+import axios from "axios";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/Forgot-Password";
 import ClientDashboard from "./pages/ClientDashboard";
@@ -28,8 +29,13 @@ import RegistrationPage from "./pages/Registration.jsx";
 import Authentication from "./pages/Authentication.jsx";
 import UploadInfoPage from "./pages/UploadInfoPage.jsx";
 import UploadProfilePrivateRoute from "./routers/UploadProfileRoutes.jsx";
+import { SocketContextProvider } from "./context/SocketContext.jsx";
 
 function App() {
+  console.log(import.meta.env.SERVER_BASE_URL);
+  axios.defaults.baseURL = "http://localhost:3000";
+  axios.defaults.withCredentials = true;
+
   return (
     <>
       <Router>
@@ -40,52 +46,57 @@ function App() {
 
         {/* App Routes */}
         <AuthProvider>
-          <Switch>
-            {/* Public Pages */}
-            <Route exact path="/ref/:username">
-              <SignUp />
-            </Route>
-            <Route exact path="/signup">
-              <RegistrationPage />
-            </Route>
-            <Route exact path="/login">
-              <Authentication />
-            </Route>
+          <SocketContextProvider>
+            <Switch>
+              {/* Public Pages */}
+              <Route exact path="/ref/:username">
+                <SignUp />
+              </Route>
+              <Route exact path="/signup">
+                <RegistrationPage />
+              </Route>
+              <Route exact path="/login">
+                <Authentication />
+              </Route>
 
-            {/* Client Forgot Password Route */}
-            <PrivateRoute
-              exact
-              path="/forgot-password/:username"
-              component={ForgotPassword}
-            />
+              {/* Client Forgot Password Route */}
+              <PrivateRoute
+                exact
+                path="/forgot-password/:username"
+                component={ForgotPassword}
+              />
 
-            {/* Client Info Input Pages */}
-            <UploadProfilePrivateRoute
-              path="/input-user-info"
-              component={UploadInfoPage}
-            />
+              {/* Client Info Input Pages */}
+              <UploadProfilePrivateRoute
+                path="/input-user-info"
+                component={UploadInfoPage}
+              />
 
-            {/* Client Page Layout */}
-            <PrivateRoute path="/dashboard" component={ClientDashboard} />
-            <PrivateRoute path="/help-support" component={HelpSupport} />
-            <PrivateRoute path="/notifications" component={Notifications} />
-            <PrivateRoute path="/user-details" component={UserDetails} />
-            <PrivateRoute path="/fund-wallet" component={FundWallets} />
-            <PrivateRoute path="/withdraw" component={Withdrawal} />
-            <PrivateRoute path="/update-location" component={UpdateLocation} />
-            <PrivateRoute path="/invite" component={InviteFriends} />
-            <PrivateRoute path="/advertise/:slug" component={CreateAdvert} />
-            <PrivateRoute path="/advertise" component={Adevertise} />
-            <PrivateRoute path="/order" component={Order} />
-            <PrivateRoute path="/become-a-member" component={BecomeAMember} />
-            <PrivateRoute path="/earn/:slug" component={EarnWithTasks} />
-            <PrivateRoute path="/earn" component={Earn} />
-            <PrivateRoute path="/account-settings" component={Settings} />
-            <PrivateRoute
-              path="/transaction-history"
-              component={TransactionHistory}
-            />
-          </Switch>
+              {/* Client Page Layout */}
+              <PrivateRoute path="/dashboard" component={ClientDashboard} />
+              <PrivateRoute path="/help-support" component={HelpSupport} />
+              <PrivateRoute path="/notifications" component={Notifications} />
+              <PrivateRoute path="/user-details" component={UserDetails} />
+              <PrivateRoute path="/fund-wallet" component={FundWallets} />
+              <PrivateRoute path="/withdraw" component={Withdrawal} />
+              <PrivateRoute
+                path="/update-location"
+                component={UpdateLocation}
+              />
+              <PrivateRoute path="/invite" component={InviteFriends} />
+              <PrivateRoute path="/advertise/:slug" component={CreateAdvert} />
+              <PrivateRoute path="/advertise" component={Adevertise} />
+              <PrivateRoute path="/order" component={Order} />
+              <PrivateRoute path="/become-a-member" component={BecomeAMember} />
+              <PrivateRoute path="/earn/:slug" component={EarnWithTasks} />
+              <PrivateRoute path="/earn" component={Earn} />
+              <PrivateRoute path="/account-settings" component={Settings} />
+              <PrivateRoute
+                path="/transaction-history"
+                component={TransactionHistory}
+              />
+            </Switch>
+          </SocketContextProvider>
         </AuthProvider>
       </Router>
     </>
