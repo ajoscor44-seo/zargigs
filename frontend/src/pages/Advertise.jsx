@@ -2,7 +2,6 @@ import React from "react";
 import BackNav from "../components/BackNav/BackNav";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import { FaHistory } from "react-icons/fa";
-import user from "../data/user";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import PricingWay from "../components/PricingWay/PricingWay";
 import waysToCreateAdvertTasks from "../data/waysToCreateAdvertsTasks";

@@ -13,6 +13,7 @@ import religions from "../data/religions";
 
 const CreateAdvert = () => {
   const [activeMediaUploadTab, setActiveMediaUploadTab] = useState("photo");
+  const [amountToPay, setAmountToPay] = useState(0);
   const params = useParams();
   const slug = params.slug;
 
@@ -38,19 +39,29 @@ const CreateAdvert = () => {
           <FormInput
             type={"number"}
             fullRounded={true}
-            placeholder={"No. Of Whatsapp Status Advert Posts"}
-            label={"Number of Whatsapp Status Advert Posts You Want"}
-            note={
-              "This is the desired Number of Whatsapp Status Advert Posts you want us to get for you."
-            }
+            placeholder={`No. Of ${wayToCreateAdvert.platformName} Advert Posts`}
+            label={`Number of ${wayToCreateAdvert.platformName} Advert Posts You Want`}
+            note={`This is the desired Number of ${wayToCreateAdvert.platformName} Advert Posts you want us to get for you.`}
             errorMsg={"Please input a valid number"}
             isError={false}
+            handleChange={(e) =>
+              setAmountToPay(
+                Number(e.target.value) * Number(wayToCreateAdvert.amountToPay)
+              )
+            }
           />
           <FormInput
             label={"Select Gender"}
             placeholder={"Select Gender"}
             useSelect={true}
-            selections={["Select Gender", "Male", "Female"]}
+            selections={[
+              "Select Gender",
+              "Male",
+              "Female",
+              "Transgender",
+              "Custom",
+              "Others",
+            ]}
             note={
               "You can select the kind of gender whether male or female that you want to see your task. For example, if you are selling women fashion items, you can select the Female gender so your task will be shown to only females. Select 'All Gender' if you want to target all genders"
             }
@@ -137,9 +148,10 @@ const CreateAdvert = () => {
 
       <PayAmountBar
         feeTitle={"You will pay"}
-        fee={0}
+        fee={amountToPay}
         btnText={"Submit and Make Payment"}
       />
+      <ClientMenuBar />
     </div>
   );
 };
