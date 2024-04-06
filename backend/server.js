@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import userRoutes from "./V1/Routes/user.route.js";
 import activityRoutes from "./V1/Routes/recent-activities.route.js";
 import notificationRoutes from "./V1/Routes/notification.route.js";
+import tasksRoutes from "./V1/Routes/tasks.route.js";
 import authRoutes from "./V1/Routes/auth.route.js";
 dotenv.config();
 import cors from "cors";
@@ -46,6 +47,7 @@ app.use(authenticateToken);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/activities", activityRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
+app.use("/api/v1/tasks", tasksRoutes);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
