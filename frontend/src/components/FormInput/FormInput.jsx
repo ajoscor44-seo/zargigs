@@ -33,6 +33,8 @@ const FormInput = ({
           placeholder={placeholder}
           rows={5}
           value={value}
+          onChange={(e) => handleChange(e)}
+          name={name}
         ></textarea>
       ) : (
         <div

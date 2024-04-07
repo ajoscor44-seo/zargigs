@@ -51,7 +51,7 @@ export const postRecentActivities = async (req, res, next) => {
 
   res
     .status(200)
-    .json({ status: 200, failed: true, message: "Recent Activity Added" });
+    .json({ status: 200, failed: false, message: "Recent Activity Added" });
 
   next();
 };

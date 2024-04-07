@@ -20,7 +20,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
         ) : currentUser && !currentUser.isEmailVerified ? (
           <Redirect to="/login" />
         ) : (
-          <Redirect to="/signup" />
+          <Redirect to="/login" />
         );
       }}
     ></Route>

@@ -45,17 +45,17 @@ export const postAdvertTask = async (req, res, next) => {
     religion,
     caption,
     mediaUrl,
-    numberOfTasks,
+    numberOfTasks: Number(numberOfTasks),
     allocatedTasks: 0,
     completedTasks: 0,
-    costPerTask,
+    costPerTask: Number(costPerTask),
     status: "pending",
   });
   await newAdvertTask.save(); // Saves new advert task
 
   res.status(200).json({
     status: 200,
-    failed: true,
+    failed: false,
     message: "Advert Created successfully.",
   });
 

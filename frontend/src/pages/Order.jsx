@@ -4,8 +4,7 @@ import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import PricingWay from "../components/PricingWay/PricingWay";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import { FaHistory } from "react-icons/fa";
-import waysToCreateAdvertTasks from "../data/waysToCreateAdvertsTasks";
-import user from "../data/user";
+import waysToCreateEngagementTasks from "../data/waysToCreateEngagementTasks";
 
 const Order = () => {
   return (
@@ -46,12 +45,9 @@ const Order = () => {
         </div>
 
         <div className="py-4 flex flex-col gap-2 mb-12">
-          {waysToCreateAdvertTasks.map((way) => {
+          {waysToCreateEngagementTasks.map((way) => {
             return (
-              <Link
-                to={user.isMember ? way.pathToPage : "/become-a-member"}
-                key={way.pathToPage}
-              >
+              <Link to={way.pathToPage} key={way.pathToPage}>
                 <PricingWay
                   way={way}
                   addSelectBtn={true}

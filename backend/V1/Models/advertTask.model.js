@@ -8,7 +8,7 @@ const taskSchema = new Schema(
       ref: "user",
       required: true,
     },
-    type: {
+    taskType: {
       type: String,
       required: true,
     },
@@ -50,11 +50,11 @@ const taskSchema = new Schema(
       required: false,
       default: 0,
     },
-    taskCost: {
-      type: Boolean,
+    costPerTask: {
+      type: Number,
       required: true,
     },
-    status: { type: Number, required: true, default: "pending" },
+    status: { type: String, required: false, default: "pending" },
   },
   {
     timestamps: true,

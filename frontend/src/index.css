@@ -1,5 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
 
+:root {
+  --danger: #dc143c;
+  --warning: #ffa500;
+  --light: #ffffff;
+  --success: #049e04;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
