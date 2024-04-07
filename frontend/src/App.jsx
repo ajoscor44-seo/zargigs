@@ -90,6 +90,7 @@ function App() {
               <PrivateRoute path="/invite" component={InviteFriends} />
               <PrivateRoute path="/advertise/:slug" component={CreateAdvert} />
               <PrivateRoute path="/advertise" component={Adevertise} />
+              <PrivateRoute path="/order/:slug" component={CreateAdvert} />
               <PrivateRoute path="/order" component={Order} />
               <MemberPrivateRoute
                 path="/become-a-member"

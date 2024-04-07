@@ -38,9 +38,9 @@ const Order = () => {
             </div>
           </div>
           <p className="text-center methodNote px-5 py-3 font-semibold">
-            Advert tasks are created to get people to post your adverts on
-            various social media platforms. Check below to see the price of
-            creating various advert tasks:
+            Engagement tasks are created to get people to perform simple tasks
+            for you on their social media account. Check below to see the price
+            of creating various engagement tasks:
           </p>
         </div>
 

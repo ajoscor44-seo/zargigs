@@ -85,11 +85,11 @@ const PricingWay = ({ way, addSelectBtn, wayDescription }) => {
       </div>
       <div className="flex-1">
         <div className="flex flex-col gap-1 border-b pb-1">
-          <h1 className="text-md font-extrabold">{way.title}</h1>
+          <h1 className="text-sm font-extrabold">{way.title}</h1>
           <span className="text-xs">
             Pricings:{" "}
             <span className="font-extrabold">
-              ₦{way.amountToPay} per Advert Post
+              ₦{way.amountToPay} per engagement
             </span>
           </span>
         </div>
