@@ -90,9 +90,6 @@ const CreateOrder = () => {
     if (!taskData.religion) {
       return setError("Select A Religion.");
     }
-    if (!taskData.caption) {
-      return setError("Input A Caption.");
-    }
     if (!taskData.link) {
       return setError("Input the link to your profile or page.");
     }
