@@ -2,6 +2,25 @@ import AdvertTask from "../Models/advertTask.model.js";
 import User from "../Models/user.model.js";
 import { ErrorHandler } from "../utils/error.js";
 
+export const getAdvertTask = async (req, res, next) => {
+  // Checks for valid user
+  const validUser = await User.findOne({ email: req.user.email });
+  if (!validUser) {
+    const error = ErrorHandler(404, "There's no user with this email.");
+    return res.status(404).json(error);
+  }
+  const { id } = req.params;
+
+  const advertTask = await AdvertTask.find({ _id: id });
+  console.log(advertTask);
+  const adverttask = advertTask.map((advertTask) => {
+    const { createdBy, updatedAt, __v, _id, ...rest } = advertTask.toObject();
+    return { id: _id, ...rest };
+  });
+  res.status(200).json(adverttask);
+  next();
+};
+
 export const getAdvertTasks = async (req, res, next) => {
   // Checks for valid user
   const validUser = await User.findOne({ email: req.user.email });
@@ -10,8 +29,23 @@ export const getAdvertTasks = async (req, res, next) => {
     return res.status(404).json(error);
   }
 
-  const advertTasks = await AdvertTask.find({});
-  res.status(200).json(advertTasks);
+  const advertTasks = await AdvertTask.find();
+  const adverttasks = advertTasks.map((advertTask) => {
+    const {
+      createdBy,
+      updatedAt,
+      taskType,
+      gender,
+      location,
+      religion,
+      caption,
+      __v,
+      _id,
+      ...rest
+    } = advertTask.toObject();
+    return { id: _id, ...rest };
+  });
+  res.status(200).json(adverttasks);
   next();
 };
 
@@ -46,8 +80,8 @@ export const postAdvertTask = async (req, res, next) => {
     caption,
     mediaUrl,
     numberOfTasks: Number(numberOfTasks),
-    allocatedTasks: 0,
-    completedTasks: 0,
+    allocatedTasks: [],
+    completedTasks: [],
     costPerTask: Number(costPerTask),
     status: "pending",
   });

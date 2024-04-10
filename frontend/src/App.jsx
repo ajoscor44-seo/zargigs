@@ -32,6 +32,8 @@ import UploadProfilePrivateRoute from "./routers/UploadProfileRoutes.jsx";
 import { SocketContextProvider } from "./context/SocketContext.jsx";
 import MemberPrivateRoute from "./routers/MemberPrivateRoute.jsx";
 import VerifiedMemberPrivateRoute from "./routers/VerifiedMemberPrivateRoute.jsx";
+import OrderHistory from "./pages/OrderHistory.jsx";
+import AdvertOrderDetails from "./pages/AdvertOrderDetails.jsx";
 
 function App() {
   axios.defaults.baseURL = "http://localhost:3000";
@@ -91,6 +93,11 @@ function App() {
               <PrivateRoute path="/advertise/:slug" component={CreateAdvert} />
               <PrivateRoute path="/advertise" component={Adevertise} />
               <PrivateRoute path="/order/:slug" component={CreateAdvert} />
+              <PrivateRoute
+                path="/order-history/:id"
+                component={AdvertOrderDetails}
+              />
+              <PrivateRoute path="/order-history" component={OrderHistory} />
               <PrivateRoute path="/order" component={Order} />
               <MemberPrivateRoute
                 path="/become-a-member"
