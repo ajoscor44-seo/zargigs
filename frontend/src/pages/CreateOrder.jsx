@@ -1,45 +1,41 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
 import { useHistory, useParams } from "react-router-dom/cjs/react-router-dom";
-import waysToCreateAdvertTasks from "../data/waysToCreateAdvertsTasks";
 import PricingWay from "../components/PricingWay/PricingWay";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import FormInput from "../components/FormInput/FormInput";
 import PayAmountBar from "../components/PayAmountBar/PayAmountBar";
-import { FcAddImage } from "react-icons/fc";
-import { FaVideo } from "react-icons/fa6";
 import allStates from "../data/states";
 import religions from "../data/religions";
 import axios from "axios";
 import ToastNotification from "../components/ToastNotification/ToastNotification";
+import waysToCreateEngagementTasks from "../data/waysToCreateEngagementTasks";
 // import payWithMonicredit from "../hooks/PayWithMonicredit";
 
-const CreateAdvert = () => {
+const CreateOrder = () => {
   const [toastNotifications, setToastNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const history = useHistory();
-  const [activeMediaUploadTab, setActiveMediaUploadTab] = useState("photo");
   const [amountToPay, setAmountToPay] = useState(0);
   const [error, setError] = useState(null);
   const params = useParams();
   const slug = params.slug;
-  const wayToCreateAdvert = waysToCreateAdvertTasks.find(
-    (wayToCreateAdvertTasks) => {
-      return wayToCreateAdvertTasks.pathToPage == "/advertise/" + slug;
+  const wayToCreateEngagement = waysToCreateEngagementTasks.find(
+    (wayToCreateEngagementTask) => {
+      return wayToCreateEngagementTask.pathToPage == "/order/" + slug;
     }
   );
 
   // Task data object
   const [taskData, setTaskData] = useState({
-    taskType: "advert",
+    taskType: "engagement",
     gender: undefined,
     location: undefined,
     religion: undefined,
-    caption: undefined,
-    mediaUrl: undefined,
+    link: undefined,
     numberOfTasks: undefined,
-    costPerTask: wayToCreateAdvert.amountToPay,
-    taskPlatform: wayToCreateAdvert.platformName.toLowerCase(),
+    costPerTask: wayToCreateEngagement.amountToPay,
+    taskPlatform: wayToCreateEngagement.platformName.toLowerCase(),
   });
 
   // Toast Notification
@@ -71,7 +67,7 @@ const CreateAdvert = () => {
   // Adds new task
   const addNewtask = async (taskData) => {
     return await axios
-      .post("/api/v1/tasks/adverts", taskData)
+      .post("/api/v1/tasks/engagements", taskData)
       .then((response) => {
         return response.data;
       })
@@ -97,6 +93,9 @@ const CreateAdvert = () => {
     if (!taskData.caption) {
       return setError("Input A Caption.");
     }
+    if (!taskData.link) {
+      return setError("Input the link to your profile or page.");
+    }
     setError(null);
     setLoading(true);
     const paymentProcessed = await processPayment();
@@ -112,7 +111,7 @@ const CreateAdvert = () => {
 
         const toastTimeout = setTimeout(() => {
           setToastNotifications([]);
-          history.push("/advertise");
+          history.push("/order");
           clearTimeout(toastTimeout);
         }, 2500);
         return setLoading(false);
@@ -129,14 +128,14 @@ const CreateAdvert = () => {
   return (
     <div>
       <BackNav
-        pageName={"Post Advert on " + wayToCreateAdvert.platformName}
+        pageName={"Engagement on " + wayToCreateEngagement.platformName}
         usePath={true}
-        pathToGo={"/advertise"}
+        pathToGo={"/order"}
       />
       <div className="underBackNav font-primary mb-28">
         <PricingWay
-          way={wayToCreateAdvert}
-          wayDescription={wayToCreateAdvert.description}
+          way={wayToCreateEngagement}
+          wayDescription={wayToCreateEngagement.description}
         />
         {error && (
           <p className="fixed top-12 z-10 w-full text-center bg-red-200 text-red-500 rounded py-1 font-semibold">
@@ -147,9 +146,9 @@ const CreateAdvert = () => {
           <FormInput
             type={"number"}
             fullRounded={true}
-            placeholder={`No. Of ${wayToCreateAdvert.platformName} Advert Posts`}
-            label={`Number of ${wayToCreateAdvert.platformName} Advert Posts You Want`}
-            note={`This is the desired Number of ${wayToCreateAdvert.platformName} Advert Posts you want us to get for you.`}
+            placeholder={`No. Of ${wayToCreateEngagement.platformName} Engagements`}
+            label={`Number of ${wayToCreateEngagement.platformName} Engagements You Want`}
+            note={`This is the desired number of ${wayToCreateEngagement.platformName} Engagements you want us to get for you.`}
             errorMsg={"Please input a valid number"}
             isError={false}
             name={"numberOfTasks"}
@@ -159,7 +158,8 @@ const CreateAdvert = () => {
                 [e.target.name]: e.target.value,
               });
               setAmountToPay(
-                Number(e.target.value) * Number(wayToCreateAdvert.amountToPay)
+                Number(e.target.value) *
+                  Number(wayToCreateEngagement.amountToPay)
               );
             }}
           />
@@ -210,60 +210,20 @@ const CreateAdvert = () => {
             isError={false}
           />
           <FormInput
-            label={"Enter Advert Text or Caption"}
-            placeholder={""}
-            useTextArea={true}
-            note={
-              "Please enter the advert text or caption. The advert text or caption should be well detailed. You can also include a link to your site, a phone number for people to contact you or any information you want people to see on your advert."
+            label={
+              "Your Social Media Page/Profile Link (e.g Instagram, Twitter or Tiktok Page Link)"
             }
-            errorMsg={"Please select a religion"}
-            name={"caption"}
+            placeholder={"Enter Your Link"}
+            fullRounded={true}
+            icon={"link"}
+            note={
+              "Enter the link to your social media page or profile you want people to follow. Ensure this link points directly to your page or profile and NOT a post."
+            }
+            errorMsg={"Please input the link to your page"}
+            name={"link"}
             handleChange={handleChange}
             isError={false}
           />
-        </div>
-
-        <div className="px-4 pb-6">
-          <h2 className="text-xs font-semibold mb-2">
-            Choose one of the Advert Media Upload Below:
-          </h2>
-          <div className="flex">
-            <div
-              className={
-                "uploadAdvertMediaTab " +
-                (activeMediaUploadTab === "photo" && "active")
-              }
-              onClick={() => setActiveMediaUploadTab("photo")}
-            >
-              Upload Photo Advert
-            </div>
-            <div
-              className={
-                "uploadAdvertMediaTab " +
-                (activeMediaUploadTab === "video" && "active")
-              }
-              onClick={() => setActiveMediaUploadTab("video")}
-            >
-              Upload Video Advert
-            </div>
-          </div>
-          <p className="methodNote leading-1 mt-2">
-            Upload a {activeMediaUploadTab.toUpperCase()} of the Advert You want
-            people to post on their social media post accounts like Whatsapp,
-            Facebook, Instagram, Twitter, Tiktok etc.
-          </p>
-          <div className="flex flex-col items-center bg-gray-100 py-10 mx-3 rounded-sm mt-2 cursor-pointer border">
-            <div>
-              {activeMediaUploadTab == "photo" ? (
-                <FcAddImage size={30} />
-              ) : (
-                <FaVideo className="text-gray-600" size={30} />
-              )}
-            </div>
-            <span className="capitalize text-xs font-semibold mt-1">
-              Upload {activeMediaUploadTab}
-            </span>
-          </div>
         </div>
       </div>
 
@@ -289,4 +249,4 @@ const CreateAdvert = () => {
   );
 };
 
-export default CreateAdvert;
+export default CreateOrder;

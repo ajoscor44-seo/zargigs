@@ -34,6 +34,7 @@ import MemberPrivateRoute from "./routers/MemberPrivateRoute.jsx";
 import VerifiedMemberPrivateRoute from "./routers/VerifiedMemberPrivateRoute.jsx";
 import OrderHistory from "./pages/OrderHistory.jsx";
 import AdvertOrderDetails from "./pages/AdvertOrderDetails.jsx";
+import CreateOrder from "./pages/CreateOrder.jsx";
 
 function App() {
   axios.defaults.baseURL = "http://localhost:3000";
@@ -92,7 +93,7 @@ function App() {
               <PrivateRoute path="/invite" component={InviteFriends} />
               <PrivateRoute path="/advertise/:slug" component={CreateAdvert} />
               <PrivateRoute path="/advertise" component={Adevertise} />
-              <PrivateRoute path="/order/:slug" component={CreateAdvert} />
+              <PrivateRoute path="/order/:slug" component={CreateOrder} />
               <PrivateRoute
                 path="/order-history/:id"
                 component={AdvertOrderDetails}

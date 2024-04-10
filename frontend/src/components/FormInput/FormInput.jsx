@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaEye, FaEyeSlash, FaLock, FaUser } from "react-icons/fa6";
+import { FaEye, FaEyeSlash, FaLock, FaTag, FaUser } from "react-icons/fa6";
 import { MdEmail } from "react-icons/md";
 import { PiWarningCircle } from "react-icons/pi";
 import { TfiMenuAlt } from "react-icons/tfi";
@@ -48,6 +48,8 @@ const FormInput = ({
           <div className="text-slate-600">
             {icon == "password" ? (
               <FaLock />
+            ) : icon == "link" ? (
+              <FaTag size={20} />
             ) : icon == "email" ? (
               <MdEmail size={20} />
             ) : icon == "user" ? (
