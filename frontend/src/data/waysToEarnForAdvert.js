@@ -5,7 +5,6 @@ const waysToEarnForAds = [
     amountToEarn: 100,
     pathToPage: "/earn/post-on-facebook",
     platforms: ["Facebook"],
-    availableTasks: [],
     whatTheyDo: "post advert on facebook",
     subTasksHistory: {
       pendingTasks: [
@@ -98,7 +97,6 @@ const waysToEarnForAds = [
     amountToEarn: 100,
     pathToPage: "/earn/post-on-Instagram",
     platforms: ["Instagram"],
-    availableTasks: [],
     whatTheyDo: "post advert on instagram",
     subTasksHistory: {
       pendingTasks: [
@@ -236,7 +234,6 @@ const waysToEarnForAds = [
     amountToEarn: 100,
     pathToPage: "/earn/post-on-twitter",
     platforms: ["Twitter"],
-    availableTasks: [],
     whatTheyDo: "post advert on twitter",
     subTasksHistory: {
       pendingTasks: [],
@@ -252,7 +249,6 @@ const waysToEarnForAds = [
     amountToEarn: 100,
     pathToPage: "/earn/post-on-tiktok",
     platforms: ["Tiktok"],
-    availableTasks: [],
     whatTheyDo: "post advert on tiktok",
     subTasksHistory: {
       pendingTasks: [],
@@ -268,7 +264,6 @@ const waysToEarnForAds = [
     amountToEarn: 100,
     pathToPage: "/earn/post-on-whatsapp",
     platforms: ["WhatsApp"],
-    availableTasks: [],
     whatTheyDo: "post advert on whatsapp",
     subTasksHistory: {
       pendingTasks: [],

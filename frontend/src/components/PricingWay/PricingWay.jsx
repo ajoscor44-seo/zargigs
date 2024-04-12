@@ -141,14 +141,6 @@ const PricingWay = ({ way, addSelectBtn, wayDescription }) => {
                 )}
               </span>
             </div>
-
-            {way.uploadedTasks.length ? (
-              <div className="bg-green-500 px-1 rounded text-white">
-                {way.uploadedTasks.length} Tasks Uploaded
-              </div>
-            ) : (
-              <div></div>
-            )}
           </div>
         </div>
       </div>

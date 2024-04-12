@@ -5,7 +5,6 @@ const waysToEarnForTasks = [
     amountToEarn: 100,
     pathToPage: "/earn/earn-by-following",
     platforms: ["Facebook", "Instagram", "Tiktok"],
-    availableTasks: [310],
     whatTheyDo: "people you follow",
     subTasksHistory: {
       pendingTasks: [
@@ -143,7 +142,6 @@ const waysToEarnForTasks = [
     amountToEarn: 100,
     pathToPage: "/earn/earn-from-facebook",
     platforms: ["Facebook"],
-    availableTasks: [310],
     whatTheyDo: "pages you like",
     subTasksHistory: {
       pendingTasks: [],
@@ -173,7 +171,6 @@ const waysToEarnForTasks = [
     amountToEarn: 100,
     pathToPage: "/earn/earn-by-liking",
     platforms: ["Facebook", "Instagram", "Twitter", "Tiktok"],
-    availableTasks: [120],
     whatTheyDo: "posts you like",
     subTasksHistory: {
       pendingTasks: [],
@@ -189,7 +186,6 @@ const waysToEarnForTasks = [
     amountToEarn: 100,
     pathToPage: "/earn/earn-with-youtube",
     platforms: ["Youtube"],
-    availableTasks: [20],
     whatTheyDo: "channels you subscribe to",
     subTasksHistory: {
       pendingTasks: [],
@@ -205,7 +201,6 @@ const waysToEarnForTasks = [
     amountToEarn: 100,
     pathToPage: "/earn/earn-with-playstore",
     platforms: ["Playstore"],
-    availableTasks: [120],
     whatTheyDo: "you review",
     subTasksHistory: {
       pendingTasks: [],
@@ -221,7 +216,6 @@ const waysToEarnForTasks = [
     amountToEarn: 100,
     pathToPage: "/earn/earn-with-applestore",
     platforms: ["Applestore"],
-    availableTasks: [120],
     whatTheyDo: "you review",
     subTasksHistory: {
       pendingTasks: [],
@@ -237,7 +231,6 @@ const waysToEarnForTasks = [
     amountToEarn: 100,
     pathToPage: "/earn/earn-with-tiktok",
     platforms: ["Audiomack"],
-    availableTasks: [120],
     whatTheyDo: "audiomack profiles you follow",
     subTasksHistory: {
       pendingTasks: ["Hello"],
@@ -253,7 +246,6 @@ const waysToEarnForTasks = [
     amountToEarn: 100,
     pathToPage: "/earn/earn-with-tiktok",
     platforms: ["Youtube"],
-    availableTasks: [120],
     whatTheyDo: "videos you view and comment on",
     subTasksHistory: {
       pendingTasks: [],
@@ -269,7 +261,6 @@ const waysToEarnForTasks = [
     amountToEarn: 100,
     pathToPage: "/earn/earn-with-tiktok",
     platforms: ["Facebook", "Instagram", "Twitter", "Tiktok"],
-    availableTasks: [120],
     whatTheyDo: "posts you comment on",
     subTasksHistory: {
       pendingTasks: [],
@@ -285,7 +276,6 @@ const waysToEarnForTasks = [
     amountToEarn: 100,
     pathToPage: "/earn/earn-with-whatsap",
     platforms: ["Facebook"],
-    availableTasks: [],
     whatTheyDo: "posts you share",
     subTasksHistory: {
       pendingTasks: [],
@@ -301,7 +291,6 @@ const waysToEarnForTasks = [
     amountToEarn: 100,
     pathToPage: "/earn/earn-with-tiktok",
     platforms: ["Twitter"],
-    availableTasks: [120],
     whatTheyDo: "posts you retweet",
     subTasksHistory: {
       pendingTasks: [],
@@ -317,7 +306,6 @@ const waysToEarnForTasks = [
     amountToEarn: 100,
     pathToPage: "/earn/earn-with-whatsapp",
     platforms: ["Whatsapp"],
-    availableTasks: [10, 10],
     whatTheyDo: "Whatsapp group you join",
     subTasksHistory: {
       pendingTasks: [],
@@ -333,7 +321,6 @@ const waysToEarnForTasks = [
     amountToEarn: 100,
     pathToPage: "/earn/earn-with-whatsapp",
     platforms: ["Telegram"],
-    availableTasks: [10, 10, 10],
     whatTheyDo: "Telegram group you join",
     subTasksHistory: {
       pendingTasks: [],

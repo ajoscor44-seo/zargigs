@@ -33,7 +33,7 @@ import { SocketContextProvider } from "./context/SocketContext.jsx";
 import MemberPrivateRoute from "./routers/MemberPrivateRoute.jsx";
 import VerifiedMemberPrivateRoute from "./routers/VerifiedMemberPrivateRoute.jsx";
 import OrderHistory from "./pages/OrderHistory.jsx";
-import AdvertOrderDetails from "./pages/AdvertOrderDetails.jsx";
+import OrderDetails from "./pages/OrderDetails.jsx";
 import CreateOrder from "./pages/CreateOrder.jsx";
 
 function App() {
@@ -95,8 +95,8 @@ function App() {
               <PrivateRoute path="/advertise" component={Adevertise} />
               <PrivateRoute path="/order/:slug" component={CreateOrder} />
               <PrivateRoute
-                path="/order-history/:id"
-                component={AdvertOrderDetails}
+                path="/order-history/:slug/:id"
+                component={OrderDetails}
               />
               <PrivateRoute path="/order-history" component={OrderHistory} />
               <PrivateRoute path="/order" component={Order} />

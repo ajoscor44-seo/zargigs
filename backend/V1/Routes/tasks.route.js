@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getTotalTasks,
   getAdvertTask,
   getAdvertTasks,
   postAdvertTask,
@@ -10,11 +11,12 @@ import {
 
 const router = express.Router();
 
+router.get("/total", getTotalTasks);
 router.post("/adverts", postAdvertTask);
 router.get("/adverts/:id", getAdvertTask);
 router.get("/adverts", getAdvertTasks);
 router.post("/engagements", postEngagementTask);
-router.post("/engagements/:id", getEngagementTask);
+router.get("/engagements/:id", getEngagementTask);
 router.get("/engagements", getEngagementTasks);
 
 export default router;

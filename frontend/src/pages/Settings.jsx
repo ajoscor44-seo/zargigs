@@ -29,7 +29,7 @@ const Settings = () => {
     {
       icon: <BsCart2 size={20} />,
       name: "My Order",
-      path: "/orders",
+      path: "/order-history",
     },
     {
       icon: <PiWalletLight size={20} />,

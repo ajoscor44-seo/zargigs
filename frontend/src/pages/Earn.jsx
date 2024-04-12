@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
 import { FaHistory } from "react-icons/fa";
 import { Link } from "react-router-dom/cjs/react-router-dom";
@@ -8,15 +8,39 @@ import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import waysToEarnForTasks from "../data/waysToEarnForTasks";
 import waysToEarnForAds from "../data/waysToEarnForAdvert";
 import user from "../data/user";
+import axios from "axios";
 
 const Earn = () => {
   const [activeTab, setActiveTab] = useState("postAds");
-  const totalAdvertTasks = waysToEarnForAds.reduce((total, way) => {
-    return total + way.availableTasks.length;
-  }, 0);
-  const totalNormalTasks = waysToEarnForTasks.reduce((total, way) => {
-    return total + way.availableTasks.length;
-  }, 0);
+  const [totalAdvertTasks, setTotalAdvertTasks] = useState(0);
+  const [totalNormalTasks, setTotalNormalTasks] = useState(0);
+  // waysToEarnForAds.reduce((total, way) => {
+  //   return total + way.availableTasks.length;
+  // }, 0);
+  // const totalNormalTasks = waysToEarnForTasks.reduce((total, way) => {
+  //   return total + way.availableTasks.length;
+  // }, 0);
+
+  const getTotalEngagementTasks = async () => {
+    const data = await axios
+      .get("/api/v1/tasks/engagements?page=1&limit=0")
+      .then((response) => response.data)
+      .catch((error) => console.error(error));
+    return setTotalNormalTasks(data.total);
+  };
+
+  const getTotalAdvertTasks = async () => {
+    const data = await axios
+      .get("/api/v1/tasks/adverts?page=1&limit=0")
+      .then((response) => response.data)
+      .catch((error) => console.error(error));
+    return setTotalAdvertTasks(data.total);
+  };
+
+  useEffect(() => {
+    getTotalEngagementTasks();
+    getTotalAdvertTasks();
+  }, []);
 
   return (
     <div className="flex fullHeight">

@@ -5,93 +5,8 @@ const waysToCreateEngagementTasks = [
     amountToPay: 5,
     pathToPage: "/order/enagage-on-socials",
     platforms: ["Instagram", "Twitter", "Tiktok"],
-    uploadedTasks: [],
     description:
       "Get People to follow your social media pages. You can get any number of people to follow your social media page. No social media login details is required.",
-    subTasksHistory: {
-      pendingTasks: [
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Instagram",
-          taskPerformed: "Follow",
-          taskState: "pending",
-        },
-      ],
-      inReviewTasks: [
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Instagram",
-          taskPerformed: "Follow",
-          taskState: "in Review",
-        },
-      ],
-      failedTasks: [
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Instagram",
-          taskPerformed: "Follow",
-          taskState: "failed",
-        },
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Facebook",
-          taskPerformed: "Follow",
-          taskState: "failed",
-        },
-      ],
-      completedTasks: [
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Instagram",
-          taskPerformed: "Follow",
-          taskState: "completed",
-        },
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Facebook",
-          taskPerformed: "Follow",
-          taskState: "completed",
-        },
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Tiktok",
-          taskPerformed: "Follow",
-          taskState: "completed",
-        },
-      ],
-      cancelledTasks: [
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Instagram",
-          taskPerformed: "Follow",
-          taskState: "cancelled",
-        },
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Facebook",
-          taskPerformed: "Follow",
-          taskState: "cancelled",
-        },
-      ],
-    },
   },
   {
     title: "Get People to Like Your Social Media Posts",
@@ -99,16 +14,8 @@ const waysToCreateEngagementTasks = [
     amountToPay: 5,
     pathToPage: "/order/engage-on-posts",
     platforms: ["Facebook", "Instagram", "Twitter", "Tiktok"],
-    uploadedTasks: [],
     description:
       "Get people to like your social media posts. You can get any number of people to like your social media posts. No social media login detail is required. Simply enter your post link to get started.",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Get Real People to Like and Follow your Facebook Business Page",
@@ -116,138 +23,8 @@ const waysToCreateEngagementTasks = [
     amountToPay: 5,
     pathToPage: "/order/enagage-on-facebook",
     platforms: ["Facebook"],
-    uploadedTasks: [],
     description:
       "Get People to Like and Follow Your Facebook Business Page. You can get any number of people to like and follow your facebook page. No Facebook Login Detail is required.",
-    subTasksHistory: {
-      pendingTasks: [
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Instagram",
-          taskPerformed: "Follow",
-          taskState: "pending",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-      ],
-      inReviewTasks: [
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Instagram",
-          taskPerformed: "Follow",
-          taskState: "in Review",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-      ],
-      failedTasks: [
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Instagram",
-          taskPerformed: "Follow",
-          taskState: "failed",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Facebook",
-          taskPerformed: "Follow",
-          taskState: "failed",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-      ],
-      completedTasks: [
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Instagram",
-          taskPerformed: "Follow",
-          taskState: "completed",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Facebook",
-          taskPerformed: "Follow",
-          taskState: "completed",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Tiktok",
-          taskPerformed: "Follow",
-          taskState: "completed",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-      ],
-      cancelledTasks: [
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Instagram",
-          taskPerformed: "Follow",
-          taskState: "cancelled",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Facebook",
-          taskPerformed: "Follow",
-          taskState: "cancelled",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-      ],
-    },
   },
 
   {
@@ -256,16 +33,8 @@ const waysToCreateEngagementTasks = [
     amountToPay: 20,
     pathToPage: "/order/enagage-on-audiomack",
     platforms: ["Audiomack"],
-    uploadedTasks: [],
     description:
       "Get People to follow your Audiomack Music Channel.You can get any number of people to follow your Audiomack Channel. No Audiomack Login Detail is required.",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Get Real People to Comment on Your Social Media Posts.",
@@ -273,16 +42,8 @@ const waysToCreateEngagementTasks = [
     amountToPay: 30,
     pathToPage: "/order/engage-on-comments",
     platforms: ["Facebook", "Instagram", "Twitter", "Tiktok"],
-    uploadedTasks: [],
     description:
       "Get Real People to Comment on Your Social Media Posts. We DO NOT allow fake users or bots to comment on your post.",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Get People to Subscribe to your Youtube Channel",
@@ -290,16 +51,8 @@ const waysToCreateEngagementTasks = [
     amountToPay: 50,
     pathToPage: "/order/subscribe-on-youtube",
     platforms: ["Youtube"],
-    uploadedTasks: [],
     description:
       "Get People to Subscribe on your Youtube Channel. The users will subscribe on your channel thereby increasing your subscribers, views, comments and likes. you can get any number of persons to subscribe on your Youtube Channel. Simply enter your Youtube Channel Link to get started.",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title:
@@ -308,16 +61,8 @@ const waysToCreateEngagementTasks = [
     amountToPay: 50,
     pathToPage: "/order/engage-on-youtube",
     platforms: ["Youtube"],
-    uploadedTasks: [],
     description:
       "Get People to View and Comment on your Youtube Channel and Video. The users will watch your video, comment on the video and like the video at the same time thereby increasing your views, comments and likes. You can get any number of people to view and comment on your video. Simply enter the Youtube Video Link to get started",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Get people to Download and Review Your App on Googleplay.",
@@ -325,16 +70,8 @@ const waysToCreateEngagementTasks = [
     amountToPay: 50,
     pathToPage: "/order/review-on-playstore",
     platforms: ["Playstore"],
-    uploadedTasks: [],
     description:
       "Get People to download and review your apps on Google Play Store. You can get any number of people to download and review your app. Simply enter your App download link to get started.",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Get people to post your advert on their Tiktok Account.",
@@ -342,16 +79,8 @@ const waysToCreateEngagementTasks = [
     amountToPay: 100,
     pathToPage: "/order/share-on-facebook",
     platforms: ["Facebook"],
-    uploadedTasks: [],
     description:
       "Get People to share your Facebook Posts to their friends. You can get any number of people to share your facebook post. Simply enter your facebook post link to get started",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Get People to Retweet your Twitter Posts",
@@ -359,16 +88,8 @@ const waysToCreateEngagementTasks = [
     amountToPay: 100,
     pathToPage: "/order/retweet-on-twitter",
     platforms: ["Twitter"],
-    uploadedTasks: [],
     description:
       "Get People to Retweet your twitter posts to their own followers. You can get any number of people to retweet your twitter posts",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Get Real People to Join Your Whatsapp Group",
@@ -376,16 +97,8 @@ const waysToCreateEngagementTasks = [
     amountToPay: 100,
     pathToPage: "/order/join-on-whatsapp",
     platforms: ["Whatsapp"],
-    uploadedTasks: [],
     description:
       "Get People to Join Your Whatsapp Group today. You can get any number of people to join your Whatsapp Group. Your Whatsapp Login Details are not required. Simply enter the group link to get started.",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Get Real People to Join Your Telegram Group/Channel",
@@ -393,16 +106,8 @@ const waysToCreateEngagementTasks = [
     amountToPay: 100,
     pathToPage: "/order/join-on-telegram",
     platforms: ["Telegram"],
-    uploadedTasks: [],
     description:
       "Get Real People to Join your Telegram Group today. You can get any number of people to join your Telegram Group/channel. No telegram login details required.",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Get People to Download and Review your app on Apple Store.",
@@ -410,16 +115,8 @@ const waysToCreateEngagementTasks = [
     amountToPay: 100,
     pathToPage: "/order/review-on-applestore",
     platforms: ["Applestore"],
-    uploadedTasks: [],
     description:
       "Get people to download and review your apps on Apple Store. You can get any number of people you want to download and review your app. Simply enter the App Download Link to get started",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
 ];
 

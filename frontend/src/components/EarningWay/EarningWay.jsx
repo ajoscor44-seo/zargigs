@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BiLike } from "react-icons/bi";
 import {
   FaCommentDots,
@@ -16,8 +16,23 @@ import { IoLogoAppleAppstore } from "react-icons/io5";
 import { SiAudiomack } from "react-icons/si";
 import { SlUserFollowing } from "react-icons/sl";
 import playStoreImage from "../../assets/images/playstore-icon.png";
+import axios from "axios";
 
 const EarningWay = ({ way, addSelectBtn, wayDescription }) => {
+  const [totalTasks, setTotalTasks] = useState(0);
+
+  const getTotal = async () => {
+    return await axios
+      .get(
+        `/api/v1/tasks/total?type=engagement&platform=${way.platformName.toLowerCase()}`
+      )
+      .then((response) => setTotalTasks(response.data.total))
+      .catch((error) => console.error(error));
+  };
+
+  useEffect(() => {
+    getTotal();
+  }, [totalTasks]);
   return (
     <div className="hover:bg-slate-50 p-4 flex gap-2">
       <div className="flex flex-col items-center gap-2">
@@ -142,9 +157,9 @@ const EarningWay = ({ way, addSelectBtn, wayDescription }) => {
               </span>
             </div>
 
-            {way.availableTasks.length ? (
+            {totalTasks ? (
               <div className="bg-green-500 px-1 rounded text-white">
-                {way.availableTasks.length} Tasks Available
+                {totalTasks} Tasks Available
               </div>
             ) : (
               <div></div>

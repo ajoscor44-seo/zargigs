@@ -83,7 +83,7 @@ const TransactionHistory = () => {
           ) : (
             historyData.data?.map((data) => {
               return (
-                <Link to={`/order-history/${data.id}`}>
+                <Link to={`/order-history/${activeTab}/${data.id}`}>
                   <div
                     className="px-1 py-2 flex items-start gap-2 border-b cursor-pointer hover:bg-slate-50"
                     key={data.id}
@@ -125,7 +125,7 @@ const TransactionHistory = () => {
                       ) : data.taskPlatform.toLowerCase() === "allshare" ? (
                         <FaShare
                           size={20}
-                          className="text-white bg-white rounded-full bg-instagram-gradient"
+                          className="text-white rounded-full bg-instagram-gradient"
                         />
                       ) : data.taskPlatform.toLowerCase() === "allcomments" ? (
                         <FaCommentDots
@@ -138,7 +138,7 @@ const TransactionHistory = () => {
                           className="text-blue-400 bg-white"
                         />
                       ) : data.taskPlatform.toLowerCase() === "alllike" ? (
-                        <BiLike size={20} className="text-white bg-blue-500" />
+                        <BiLike size={20} className="bg-white text-blue-500" />
                       ) : data.taskPlatform.toLowerCase() === "youtube" ? (
                         <FaYoutube size={20} className="text-red-500" />
                       ) : data.taskPlatform.toLowerCase() === "whatsapp" ? (
@@ -165,7 +165,10 @@ const TransactionHistory = () => {
                             Pricing:{" "}
                             <span className="text-green-500 font-bold">
                               ₦{numeral(data.costPerTask).format("0,0.00")}
-                            </span>
+                            </span>{" "}
+                            {data.taskType == "advert"
+                              ? "per advert"
+                              : "per engagement"}
                           </span>
                         </div>
 

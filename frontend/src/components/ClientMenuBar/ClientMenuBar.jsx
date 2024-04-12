@@ -1,25 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaHome } from "react-icons/fa";
 import { PiWalletLight } from "react-icons/pi";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { IoCartOutline } from "react-icons/io5";
 import { FaRegUser } from "react-icons/fa6";
 import { Link } from "react-router-dom/cjs/react-router-dom";
-import waysToEarnForAds from "../../data/waysToEarnForAdvert";
-import waysToEarnForTasks from "../../data/waysToEarnForTasks";
 import Notifier from "../Notifier/Notifier";
-import user from "../../data/user";
 import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
 
 const ClientMenuBar = () => {
   const { currentUser } = useAuth();
+  const [totalNormalTask, setTotalNormalTasks] = useState(0);
+  const [totalAdvertTask, setTotalAdvertTasks] = useState(0);
 
-  const advertTasks = waysToEarnForAds.reduce((total, wayToEarn) => {
-    return total + wayToEarn.availableTasks.length;
-  }, 0);
-  const normalTasks = waysToEarnForTasks.reduce((total, wayToEarn) => {
-    return total + wayToEarn.availableTasks.length;
-  }, 0);
+  const getTotalEngagementTasks = async () => {
+    return await axios
+      .get(`/api/v1/tasks/total?type=engagement`)
+      .then((response) => setTotalNormalTasks(response.data.total))
+      .catch((error) => console.error(error));
+  };
+
+  const getTotalAdvertTasks = async () => {
+    return await axios
+      .get(`/api/v1/tasks/total?type=advert`)
+      .then((response) => setTotalAdvertTasks(response.data.total))
+      .catch((error) => console.error(error));
+  };
+
+  useEffect(() => {
+    getTotalEngagementTasks();
+    getTotalAdvertTasks();
+  }, [totalNormalTask, totalAdvertTask]);
 
   return (
     <div className="fixed bottom-0 bg-white w-full py-2 px-5 border-t flex justify-between">
@@ -39,7 +51,7 @@ const ClientMenuBar = () => {
             className="bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full p-2"
           />
           <span className="text-sm">Earn</span>
-          {advertTasks || normalTasks ? <Notifier /> : <div></div>}
+          {totalAdvertTask || totalNormalTask ? <Notifier /> : <div></div>}
         </div>
       </Link>
       <Link to="/advertise">
@@ -58,7 +70,7 @@ const ClientMenuBar = () => {
             className="bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full p-2"
           />
           <span className="text-sm">Order</span>
-          {!normalTasks ? <Notifier /> : <div></div>}
+          {!totalNormalTask ? <Notifier /> : <div></div>}
         </div>
       </Link>
       <Link to="/account-settings">
@@ -68,7 +80,7 @@ const ClientMenuBar = () => {
             className="bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full p-2"
           />
           <span className="text-sm">Me</span>
-          {normalTasks ? (
+          {totalNormalTask ? (
             <Notifier useNumber={true} number={97} />
           ) : (
             <div></div>
