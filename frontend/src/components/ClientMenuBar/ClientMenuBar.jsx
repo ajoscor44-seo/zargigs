@@ -70,7 +70,6 @@ const ClientMenuBar = () => {
             className="bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full p-2"
           />
           <span className="text-sm">Order</span>
-          {!totalNormalTask ? <Notifier /> : <div></div>}
         </div>
       </Link>
       <Link to="/account-settings">
