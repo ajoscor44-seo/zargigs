@@ -3,7 +3,6 @@ import BackNav from "../components/BackNav/BackNav";
 import { useParams } from "react-router-dom/cjs/react-router-dom";
 import waysToEarnForTasks from "../data/waysToEarnForTasks";
 import EarningWay from "../components/EarningWay/EarningWay";
-import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import InReviewSubtask from "../components/InReviewSubtask/InReviewSubtask";
 import PendingSubtask from "../components/PendingSubtask/PendingSubtask";
 import FailedSubtask from "../components/FailedSubtask/FailedSubtask";

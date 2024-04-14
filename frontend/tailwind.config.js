@@ -35,6 +35,13 @@ export default {
       animation: {
         "pulse-size": "pulse-size 2s infinite",
         "grow-and-fade": "grow-and-fade 3s infinite",
+        "scale-up": "scaleUp 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
+      },
+      keyframes: {
+        scaleUp: {
+          "0%": { transform: "scale(0.75)" },
+          "100%": { transform: "scale(1)" },
+        },
       },
     },
   },
