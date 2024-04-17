@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import Subtask from "../Subtask/Subtask";
 import NoData from "../NoData/NoData";
 import axios from "axios";
 import Modal from "../Modal/Modal";
+import PendingTaskSubtask from "../PendingtaskSubtask/PendingTaskSubtask";
 
 const PendingSubtask = ({ pendingSubtasks }) => {
   const [isOpen, setModalState] = useState(false);
   const generateNewTask = async () => {
-    return await axios.get("/");
+    return await axios.get(
+      "/api/v1/tasks/generate?type=engagement&platform=allfollow"
+    );
   };
 
   const toggleModal = () => {
@@ -19,7 +21,7 @@ const PendingSubtask = ({ pendingSubtasks }) => {
       {pendingSubtasks.length ? (
         <div className="tasks">
           {pendingSubtasks.map((pendingSubtask) => {
-            return <Subtask task={pendingSubtask} />;
+            return <PendingTaskSubtask task={pendingSubtask} />;
           })}
         </div>
       ) : (
@@ -33,7 +35,7 @@ const PendingSubtask = ({ pendingSubtasks }) => {
             <Modal
               title={"Generate New Engagement Task?"}
               content={
-                "Are you sure you want to generate your next Follow task now. You have 1 hour to perform this task. Please confirm only if you are ready to perform the task."
+                "Are you sure you want to generate your next engagement task now. You have 1 hour to perform this task. Please confirm only if you are ready to perform the task."
               }
               posBtnText={"Yes"}
               negBtnText={"No"}

@@ -1,6 +1,7 @@
 import AdvertTask from "../Models/advertTask.model.js";
 import EngagementTask from "../Models/engagementTask.js";
 import PendingTask from "../Models/pending-tasks.model.js";
+import userDetails from "../Models/user-details.model.js";
 import User from "../Models/user.model.js";
 import { ErrorHandler } from "../utils/error.js";
 
@@ -391,6 +392,9 @@ export const generateTask = async (req, res, next) => {
 
   // Checks for valid user
   const validUser = await User.findOne({ email: req.user.email });
+  const validUserDetails = await userDetails.findOne({ userId: req.user._id });
+  // const user_details = validUserDetails.toObject();
+
   if (!validUser) {
     const error = ErrorHandler(404, "There's no user with this email.");
     return res.status(404).json(error);
@@ -408,20 +412,50 @@ export const generateTask = async (req, res, next) => {
 
   const tasks = Tasks.map((Task) => {
     const {
-      createdBy,
       updatedAt,
+      __v,
+      _id,
+      allocatedTasks,
+      numberOfTasks,
       gender,
       location,
       religion,
-      caption,
-      __v,
-      _id,
       ...rest
     } = Task.toObject();
-    return { id: _id, ...rest };
-  });
 
-  const response = { tasks: tasks };
+    if (allocatedTasks.length !== numberOfTasks) {
+      return {
+        ...rest,
+      };
+    }
+  });
+  const arrayLength = tasks.length;
+  const randomIndex = Math.floor(Math.random() * arrayLength);
+  const Task = tasks[randomIndex];
+
+  const newAllocatedTask = {
+    allocatedTo: req.user._id,
+    date: new Date().toISOString(),
+    status: "pending",
+    // ...Task,
+  };
+  taskType == "advert"
+    ? await AdvertTask.findOneAndUpdate(
+        { _id: Task.id },
+        {
+          allocatedTasks: [...Task.allocatedTasks, newAllocatedTask],
+        }
+      )
+    : await EngagementTask.findOneAndUpdate(
+        { _id: Task.id },
+        {
+          allocatedTasks: [...Task.allocatedTasks, newAllocatedTask],
+        }
+      );
+
+  const response = {
+    task: newAllocatedTask,
+  };
   res.status(200).json(response);
   next();
 };

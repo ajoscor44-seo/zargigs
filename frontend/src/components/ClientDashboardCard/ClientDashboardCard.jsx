@@ -11,9 +11,6 @@ const ClientDashboardCard = ({ firstname, lastname, userBalance }) => {
         </div>
         <div className="text-white font-bold text-xl">GIGCASH</div>
       </div>
-      {/* <div className="flex justify-center items-center text-white font-semibold text-2xl">
-        019-126-092-18
-      </div> */}
       <div className="flex items-center justify-between">
         <div className="text-slate-50 text-xl">
           {firstname} {lastname}
