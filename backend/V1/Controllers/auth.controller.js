@@ -2,7 +2,7 @@ import User from "../Models/user.model.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { ErrorHandler } from "../utils/error.js";
-import Token from "../Models/Token.js";
+import Token from "../Models/Token.model.js";
 import nodemailer from "nodemailer";
 import AccessToken from "../Models/access-tokens.model.js";
 

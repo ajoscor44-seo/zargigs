@@ -1,7 +1,10 @@
 import AdvertTask from "../Models/advertTask.model.js";
-import AllocatedTask from "../Models/allocated-tasks.js";
-import CancelledTask from "../Models/cancelled-tasks.js";
+import AllocatedTask from "../Models/allocated-tasks.model.js";
+import CancelledTask from "../Models/cancelled-tasks.model.js";
+import CompletedTask from "../Models/completed-tasks.model.js";
 import EngagementTask from "../Models/engagementTask.js";
+import FailedTask from "../Models/failed-tasks.model.js";
+import InReviewTask from "../Models/in-review-tasks.model.js";
 import PendingTask from "../Models/pending-tasks.model.js";
 import userDetails from "../Models/user-details.model.js";
 import User from "../Models/user.model.js";
@@ -265,123 +268,6 @@ export const postEngagementTask = async (req, res, next) => {
   }
 };
 
-// Pending engagement task controllers
-export const getPendingEngagementTask = async (req, res, next) => {
-  try {
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
-    if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
-    }
-    const { id } = req.params;
-
-    const engagementTask = await EngagementTask.find({ _id: id });
-    const engagementtask = engagementTask.map((engagementTask) => {
-      const { createdBy, updatedAt, __v, _id, ...rest } =
-        engagementTask.toObject();
-      return { id: _id, ...rest };
-    });
-    res.status(200).json(engagementtask);
-    next();
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const getPendingEngagementTasks = async (req, res, next) => {
-  const page = parseInt(req.query.page, 10) || 1;
-  const limit = parseInt(req.query.limit, 10) || 10;
-  const taskPlatform = req.query.platform || null;
-
-  try {
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
-    if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
-    }
-
-    const baseQuery = { doneBy: req.user._id };
-    if (taskPlatform) baseQuery.taskPlatform = taskPlatform;
-
-    const pendingEngagementTasks = await PendingTask.find(baseQuery)
-      .skip((page - 1) * limit)
-      .limit(limit);
-
-    const pendingEngagementtasks = pendingEngagementTasks.map(
-      (engagementTask) => {
-        const {
-          createdBy,
-          updatedAt,
-          gender,
-          location,
-          religion,
-          caption,
-          __v,
-          _id,
-          ...rest
-        } = engagementTask.toObject();
-        return { id: _id, ...rest };
-      }
-    );
-
-    const totalCount = await PendingTask.countDocuments(baseQuery);
-    const totalPages = Math.ceil(totalCount / limit);
-
-    const response =
-      Number(req.query.limit) > 0
-        ? {
-            data: pendingEngagementtasks,
-            meta: {
-              total: totalCount,
-              pages: totalPages,
-            },
-          }
-        : {
-            total: totalCount,
-            pages: totalPages,
-          };
-    res.status(200).json(response);
-    next();
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const postPendingEngagementTask = async (req, res, next) => {
-  const { taskCreator, taskType, link, earningPerTask, taskPlatform } =
-    req.body;
-
-  try {
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
-    if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
-    }
-
-    // Create new pending task
-    const newPendingTask = new PendingTask({
-      createdBy: taskCreator,
-      doneBy: req.user._id,
-      taskType,
-      taskPlatform,
-      link,
-      earningPerTask: Number(earningPerTask),
-    });
-    await newPendingTask.save(); // Saves new engagement task
-    res.status(200).json({
-      status: 200,
-      failed: false,
-      message: "Pending Task Created successfully.",
-    });
-    next();
-  } catch (error) {
-    next(error);
-  }
-};
-
 // Gets task(s) totals
 export const getTotalTasks = async (req, res, next) => {
   const taskType = req.query.type || null;
@@ -492,6 +378,7 @@ export const generateTask = async (req, res, next) => {
     }
     const Task = tasks[randomIndex];
 
+    // Needs to check something here
     const newAllocatedTask = new AllocatedTask({
       createdBy: Task.createdBy,
       parentId: Task.id,
@@ -501,7 +388,17 @@ export const generateTask = async (req, res, next) => {
       link: Task.link,
       earningPerTask: Task.costPerTask,
     });
+    const newPendingTask = new PendingTask({
+      createdBy: Task.createdBy,
+      parentId: Task.id,
+      toBeDoneBy: req.user._id,
+      taskType: taskType,
+      taskPlatform: Task.taskPlatform,
+      link: Task.link,
+      earningPerTask: Task.costPerTask,
+    });
     await newAllocatedTask.save();
+    await newPendingTask.save();
 
     const taskQuery = { taskPlatform, taskType, _id: Task.id };
     taskType == "advert"
@@ -596,6 +493,7 @@ export const cancelGeneratedTask = async (req, res, next) => {
   }
 };
 
+// Get user's tasks list based off the status
 export const getTasks = async (req, res, next) => {
   const taskStatus = req.query.status;
 
@@ -618,6 +516,14 @@ export const getTasks = async (req, res, next) => {
         ? await AllocatedTask.find({})
         : taskStatus == "cancelled"
         ? await CancelledTask.find({})
+        : taskStatus == "pending"
+        ? await PendingTask.find({})
+        : taskStatus == "failed"
+        ? await FailedTask.find({})
+        : taskStatus == "completed"
+        ? await CompletedTask.find({})
+        : taskStatus == "in-review"
+        ? await InReviewTask.find({})
         : [];
 
     if (!Tasks.length) {
@@ -633,7 +539,6 @@ export const getTasks = async (req, res, next) => {
         ...rest,
       };
     });
-    console.log(tasks);
     return res.status(200).json(tasks);
   } catch (error) {
     next(error);

@@ -12,7 +12,7 @@ const taskSchema = new Schema(
       ref: "user",
       required: true,
     },
-    toBeDoneBy: {
+    doneBy: {
       type: String,
       required: true,
     },
@@ -32,7 +32,7 @@ const taskSchema = new Schema(
       type: Number,
       required: true,
     },
-    status: { type: String, required: false, default: "pending" },
+    status: { type: String, required: false, default: "in-review" },
   },
   {
     timestamps: true,
@@ -41,6 +41,6 @@ const taskSchema = new Schema(
 
 taskSchema.index({ createdAt: 1 }, { expireAfterSeconds: 3600000 });
 
-const PendingTask = mongoose.model("PendingTask", taskSchema);
+const InReviewTask = mongoose.model("InReviewTask", taskSchema);
 
-export default PendingTask;
+export default InReviewTask;

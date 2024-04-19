@@ -9,8 +9,6 @@ import {
   getEngagementTask,
   getEngagementTasks,
   postEngagementTask,
-  getPendingEngagementTasks,
-  postPendingEngagementTask,
   getTasks,
 } from "../Controllers/tasks.controller.js";
 
@@ -23,8 +21,6 @@ router.delete("/cancel-task", cancelGeneratedTask);
 router.post("/adverts", postAdvertTask);
 router.get("/adverts/:id", getAdvertTask);
 router.get("/adverts", getAdvertTasks);
-router.get("/engagements/pending", getPendingEngagementTasks);
-router.post("/engagements/pending", postPendingEngagementTask);
 router.get("/engagements/:id", getEngagementTask);
 router.get("/engagements", getEngagementTasks);
 router.post("/engagements", postEngagementTask);
