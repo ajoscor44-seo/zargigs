@@ -513,17 +513,17 @@ export const getTasks = async (req, res, next) => {
     // Not done yet
     const Tasks =
       taskStatus == "allocated"
-        ? await AllocatedTask.find({})
+        ? await AllocatedTask.find({ allocatedTo: req.user._id })
         : taskStatus == "cancelled"
-        ? await CancelledTask.find({})
+        ? await CancelledTask.find({ cancelledBy: req.user._id })
         : taskStatus == "pending"
-        ? await PendingTask.find({})
+        ? await PendingTask.find({ toBeDoneBy: req.user._id })
         : taskStatus == "failed"
-        ? await FailedTask.find({})
+        ? await FailedTask.find({ doneBy: req.user._id })
         : taskStatus == "completed"
-        ? await CompletedTask.find({})
+        ? await CompletedTask.find({ doneBy: req.user._id })
         : taskStatus == "in-review"
-        ? await InReviewTask.find({})
+        ? await InReviewTask.find({ doneBy: req.user._id })
         : [];
 
     if (!Tasks.length) {
