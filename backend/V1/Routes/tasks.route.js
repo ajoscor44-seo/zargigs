@@ -1,6 +1,7 @@
 import express from "express";
 import {
   generateTask,
+  cancelGeneratedTask,
   getTotalTasks,
   getAdvertTask,
   getAdvertTasks,
@@ -10,12 +11,15 @@ import {
   postEngagementTask,
   getPendingEngagementTasks,
   postPendingEngagementTask,
+  getTasks,
 } from "../Controllers/tasks.controller.js";
 
 const router = express.Router();
 
+router.get("/", getTasks);
 router.get("/total", getTotalTasks);
 router.get("/generate", generateTask);
+router.delete("/cancel-task", cancelGeneratedTask);
 router.post("/adverts", postAdvertTask);
 router.get("/adverts/:id", getAdvertTask);
 router.get("/adverts", getAdvertTasks);

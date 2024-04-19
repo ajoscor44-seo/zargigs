@@ -11,6 +11,7 @@ const taskSchema = new Schema(
     taskType: {
       type: String,
       required: true,
+      default: "advert",
     },
     taskPlatform: {
       type: String,
@@ -41,16 +42,20 @@ const taskSchema = new Schema(
       required: true,
     },
     allocatedTasks: {
-      type: Array,
+      type: Number,
       required: false,
       default: 0,
     },
     completedTasks: {
-      type: Array,
+      type: Number,
       required: false,
       default: 0,
     },
     costPerTask: {
+      type: Number,
+      required: true,
+    },
+    earningPerTask: {
       type: Number,
       required: true,
     },
