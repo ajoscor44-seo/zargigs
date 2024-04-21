@@ -6,7 +6,6 @@ import EngagementTask from "../Models/engagementTask.js";
 import FailedTask from "../Models/failed-tasks.model.js";
 import InReviewTask from "../Models/in-review-tasks.model.js";
 import PendingTask from "../Models/pending-tasks.model.js";
-import userDetails from "../Models/user-details.model.js";
 import User from "../Models/user.model.js";
 import { ErrorHandler } from "../utils/error.js";
 
@@ -91,6 +90,7 @@ export const getAdvertTasks = async (req, res, next) => {
 
 export const postAdvertTask = async (req, res, next) => {
   const {
+    title,
     taskType,
     gender,
     location,
@@ -125,6 +125,7 @@ export const postAdvertTask = async (req, res, next) => {
       completedTasks: 0,
       costPerTask: Number(costPerTask),
       status: "pending",
+      title,
     });
     await newAdvertTask.save(); // Saves new advert task
 
@@ -223,6 +224,7 @@ export const getEngagementTasks = async (req, res, next) => {
 
 export const postEngagementTask = async (req, res, next) => {
   const {
+    title,
     taskType,
     gender,
     location,
@@ -255,6 +257,7 @@ export const postEngagementTask = async (req, res, next) => {
       completedTasks: 0,
       costPerTask: Number(costPerTask),
       status: "pending",
+      title,
     });
     await newEngagementTask.save(); // Saves new engagement task
     res.status(200).json({
@@ -387,6 +390,7 @@ export const generateTask = async (req, res, next) => {
       taskPlatform: Task.taskPlatform,
       link: Task.link,
       earningPerTask: Task.costPerTask,
+      title: Task.title,
     });
     const newPendingTask = new PendingTask({
       createdBy: Task.createdBy,
@@ -396,6 +400,7 @@ export const generateTask = async (req, res, next) => {
       taskPlatform: Task.taskPlatform,
       link: Task.link,
       earningPerTask: Task.costPerTask,
+      title: Task.title
     });
     await newAllocatedTask.save();
     await newPendingTask.save();

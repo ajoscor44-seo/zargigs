@@ -28,6 +28,7 @@ const CreateOrder = () => {
 
   // Task data object
   const [taskData, setTaskData] = useState({
+    title: wayToCreateEngagement.title,
     taskType: "engagement",
     gender: undefined,
     location: undefined,

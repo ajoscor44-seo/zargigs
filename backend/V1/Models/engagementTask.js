@@ -8,6 +8,10 @@ const taskSchema = new Schema(
       ref: "user",
       required: true,
     },
+    title: {
+      type: String,
+      required: true,
+    },
     taskType: {
       type: String,
       required: true,

@@ -31,6 +31,7 @@ const CreateAdvert = () => {
 
   // Task data object
   const [taskData, setTaskData] = useState({
+    title: wayToCreateAdvert.title,
     taskType: "advert",
     gender: undefined,
     location: undefined,

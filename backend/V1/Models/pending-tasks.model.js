@@ -20,6 +20,10 @@ const taskSchema = new Schema(
       type: String,
       required: true,
     },
+    title: {
+      type: String,
+      required: true,
+    },
     taskPlatform: {
       type: String,
       required: true,
