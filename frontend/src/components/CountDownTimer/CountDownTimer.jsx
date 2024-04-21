@@ -7,19 +7,15 @@ const CountdownTimer = ({ totalSeconds }) => {
   useEffect(() => {
     // Set up the interval
     const intervalId = setInterval(() => {
-      setSecondsLeft((secondsLeft) => secondsLeft - 1);
+      if (secondsLeft > 0) {
+        return setSecondsLeft((secondsLeft) => secondsLeft - 1);
+      }
+      clearInterval(intervalId);
+      return () => setSecondsLeft(0); // Ensure the timer shows 0 and does not go negative
     }, 1000);
 
     // Clear the interval on component unmount
     return () => clearInterval(intervalId);
-  }, [secondsLeft]);
-
-  // When the timer reaches zero, stop the interval
-  useEffect(() => {
-    if (secondsLeft <= 0) {
-      clearInterval(intervalId);
-      setSecondsLeft(0); // Ensure the timer shows 0 and does not go negative
-    }
   }, [secondsLeft]);
 
   // Helper function to format seconds into hours minutes seconds

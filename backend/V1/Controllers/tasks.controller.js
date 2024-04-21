@@ -412,10 +412,10 @@ export const generateTask = async (req, res, next) => {
             allocatedTasks: 1,
           },
         });
-    const { createdBy, parentId, __v, updatedAt, ...rest } =
+    const { createdBy, parentId, __v, updatedAt, _id, ...rest } =
       newAllocatedTask.toObject();
 
-    res.status(200).json(rest);
+    res.status(200).json({ id: _id, ...rest });
     next();
   } catch (error) {
     next(error);
@@ -517,7 +517,7 @@ export const getTasks = async (req, res, next) => {
         : taskStatus == "cancelled"
         ? await CancelledTask.find({ cancelledBy: req.user._id })
         : taskStatus == "pending"
-        ? await PendingTask.find({ toBeDoneBy: req.user._id })
+        ? await PendingTask.findOne({ toBeDoneBy: req.user._id })
         : taskStatus == "failed"
         ? await FailedTask.find({ doneBy: req.user._id })
         : taskStatus == "completed"
@@ -526,20 +526,39 @@ export const getTasks = async (req, res, next) => {
         ? await InReviewTask.find({ doneBy: req.user._id })
         : [];
 
-    if (!Tasks.length) {
+    if (!Tasks.length && taskStatus !== "pending") {
       const error = ErrorHandler(404, "No data available.");
       return res.status(404).json(error);
     }
 
-    const tasks = Tasks.map((Task) => {
-      const { updatedAt, __v, _id, ...rest } = Task.toObject();
+    if (taskStatus !== "pending") {
+      const tasks = Tasks.map((Task) => {
+        const { updatedAt, __v, _id, ...rest } = Task.toObject();
 
-      return {
+        return {
+          id: _id,
+          ...rest,
+        };
+      });
+
+      // Creates the response
+      return res.status(200).json(tasks);
+    } else {
+      const { updatedAt, __v, _id, ...rest } = Tasks.toObject();
+      const currentTime = new Date();
+      const expiryTime = Tasks.expireAt;
+
+      const timeLeftMs = expiryTime - currentTime;
+
+      const task = {
         id: _id,
+        timeLeftMs,
         ...rest,
       };
-    });
-    return res.status(200).json(tasks);
+
+      // Creates the response
+      return res.status(200).json(task);
+    }
   } catch (error) {
     next(error);
   }

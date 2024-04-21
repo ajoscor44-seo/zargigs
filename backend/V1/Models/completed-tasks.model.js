@@ -39,8 +39,6 @@ const taskSchema = new Schema(
   }
 );
 
-taskSchema.index({ createdAt: 1 }, { expireAfterSeconds: 3600000 });
-
 const CompletedTask = mongoose.model("CompletedTask", taskSchema);
 
 export default CompletedTask;

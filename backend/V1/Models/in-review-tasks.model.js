@@ -39,7 +39,7 @@ const taskSchema = new Schema(
   }
 );
 
-taskSchema.index({ createdAt: 1 }, { expireAfterSeconds: 3600000 });
+taskSchema.index({ createdAt: 1 }, { expireAfterSeconds: 259200000 });
 
 const InReviewTask = mongoose.model("InReviewTask", taskSchema);
 

@@ -1,28 +1,25 @@
 import React, { useState } from "react";
 import NoData from "../NoData/NoData";
-import axios from "axios";
 import Modal from "../Modal/Modal";
 import PendingTaskSubtask from "../PendingtaskSubtask/PendingTaskSubtask";
 
-const PendingSubtask = ({ pendingSubtasks }) => {
+const PendingSubtask = ({ generatedTask, generateNewTask }) => {
   const [isOpen, setModalState] = useState(false);
-  const generateNewTask = async () => {
-    return await axios.get(
-      "/api/v1/tasks/generate?type=engagement&platform=allfollow"
-    );
-  };
 
   const toggleModal = () => {
     setModalState(!isOpen);
   };
 
+  const generateTask = async () => {
+    toggleModal();
+    await generateNewTask();
+  };
+
   return (
     <div className="font-primary">
-      {pendingSubtasks.length ? (
+      {generatedTask?.id ? (
         <div className="tasks">
-          {pendingSubtasks.map((pendingSubtask) => {
-            return <PendingTaskSubtask task={pendingSubtask} />;
-          })}
+          <PendingTaskSubtask task={generatedTask} />;
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center text-gray-300 p-2 gap-2 h-96">
@@ -40,7 +37,7 @@ const PendingSubtask = ({ pendingSubtasks }) => {
               posBtnText={"Yes"}
               negBtnText={"No"}
               onNegClick={toggleModal}
-              onPosClick={generateNewTask}
+              onPosClick={generateTask}
             />
           )}
           <button
