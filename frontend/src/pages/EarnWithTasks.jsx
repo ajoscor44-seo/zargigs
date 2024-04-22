@@ -13,11 +13,13 @@ import axios from "axios";
 import { FaSpinner } from "react-icons/fa6";
 import NoData from "../components/NoData/NoData";
 import { RiErrorWarningFill } from "react-icons/ri";
+import numeral from "numeral";
 
 const EarnWithTasks = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("pending");
+  const tabs = ["pending", "in-review", "failed", "completed", "cancelled"];
+  const [activeTab, setActiveTab] = useState(tabs[0]);
   const [generatedTask, setGeneratedTask] = useState(undefined);
   const [taskList, setTaskList] = useState(undefined);
 
@@ -35,20 +37,25 @@ const EarnWithTasks = () => {
   // Generates the task
 
   const generateNewTask = async () => {
-    const response = await axios.get(
-      `/api/v1/tasks/generate?type=engagement&platform=${wayToEarn.platformName.toLowerCase()}`
-    );
+    try {
+      const response = await axios.get(
+        `/api/v1/tasks/generate?type=engagement&platform=${wayToEarn.platformName.toLowerCase()}`
+      );
 
-    setGeneratedTask(response.data);
+      setGeneratedTask(response.data);
+    } catch (error) {
+      setError(error.response.data.message);
+    }
   };
 
   const getAllTasks = async () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `/api/v1/tasks?status=${activeTab.toLowerCase()}`
+        `/api/v1/tasks?status=${activeTab.toLowerCase()}&platform=${wayToEarn.platformName.toLowerCase()}`
       );
       setTaskList(response.data);
+      setGeneratedTask(null);
       setError(null);
       setLoading(false);
     } catch (error) {
@@ -56,6 +63,20 @@ const EarnWithTasks = () => {
     }
 
     return setLoading(false);
+  };
+
+  const getTotalTasks = async (status) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `/api/v1/tasks?status=${status.toLowerCase()}&platform=${wayToEarn.platformName.toLowerCase()}`
+      );
+      if (Array.isArray(response.data)) return response.data.length;
+      if (Array.isArray(response.data)) return response.data.length;
+      return 1;
+    } catch (error) {
+      setError(error.response.data.message);
+    }
   };
 
   useEffect(() => {
@@ -68,92 +89,32 @@ const EarnWithTasks = () => {
         <EarningWay way={wayToEarn} />
         <div className="subTaskHistory">
           <div className="flex w-full justify-between bg-blue-50">
-            <div
-              className={
-                activeTab == "pending"
-                  ? "subTaskHistoryTab gap-1 active"
-                  : "subTaskHistoryTab gap-1"
-              }
-              onClick={() => setActiveTab("pending")}
-            >
-              Pending{" "}
-              {wayToEarn.subTasksHistory.pendingTasks.length ? (
-                <span className="bg-red-500 text-white px-1 rounded">
-                  {wayToEarn.subTasksHistory.pendingTasks.length}
-                </span>
-              ) : (
-                <span></span>
-              )}
-            </div>
-            <div
-              className={
-                activeTab == "in-review"
-                  ? "subTaskHistoryTab gap-1 active"
-                  : "subTaskHistoryTab gap-1"
-              }
-              onClick={() => setActiveTab("in-review")}
-            >
-              In Review{" "}
-              {wayToEarn.subTasksHistory.inReviewTasks.length ? (
-                <span className="bg-red-500 text-white px-1 rounded">
-                  {" "}
-                  {wayToEarn.subTasksHistory.inReviewTasks.length}
-                </span>
-              ) : (
-                <span></span>
-              )}
-            </div>
-            <div
-              className={
-                activeTab == "failed"
-                  ? "subTaskHistoryTab gap-1 active"
-                  : "subTaskHistoryTab gap-1"
-              }
-              onClick={() => setActiveTab("failed")}
-            >
-              Failed{" "}
-              {wayToEarn.subTasksHistory.failedTasks.length ? (
-                <span className="bg-red-500 text-white px-1 rounded">
-                  {wayToEarn.subTasksHistory.failedTasks.length}
-                </span>
-              ) : (
-                <span></span>
-              )}
-            </div>
-            <div
-              className={
-                activeTab == "completed"
-                  ? "subTaskHistoryTab gap-1 active"
-                  : "subTaskHistoryTab gap-1"
-              }
-              onClick={() => setActiveTab("completed")}
-            >
-              Completed{" "}
-              {wayToEarn.subTasksHistory.completedTasks.length ? (
-                <span className="bg-red-500 text-white px-1 rounded">
-                  {wayToEarn.subTasksHistory.completedTasks.length}
-                </span>
-              ) : (
-                <span></span>
-              )}
-            </div>
-            <div
-              className={
-                activeTab == "cancelled"
-                  ? "subTaskHistoryTab gap-1 active"
-                  : "subTaskHistoryTab gap-1"
-              }
-              onClick={() => setActiveTab("cancelled")}
-            >
-              Cancelled{" "}
-              {wayToEarn.subTasksHistory.cancelledTasks.length ? (
-                <span className="bg-red-500 text-white px-1 rounded">
-                  {wayToEarn.subTasksHistory.cancelledTasks.length}
-                </span>
-              ) : (
-                <span></span>
-              )}
-            </div>
+            {tabs.map((tab) => {
+              return (
+                <div
+                  className={
+                    activeTab == tab.toLowerCase()
+                      ? "subTaskHistoryTab gap-1 active capitalize"
+                      : "subTaskHistoryTab gap-1 capitalize"
+                  }
+                  onClick={() => setActiveTab(tab.toLowerCase())}
+                >
+                  {tab}{" "}
+                  {taskList ? (
+                    <span className="bg-red-500 text-white px-1 rounded">
+                      {taskList && tab.toLowerCase() == "pending"
+                        ? 1
+                        : Array.isArray(taskList) &&
+                          tab.toLowerCase() !== "pending"
+                        ? numeral(taskList.length).format("0,0")
+                        : null}
+                    </span>
+                  ) : (
+                    <span></span>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {loading ? (
@@ -170,7 +131,7 @@ const EarnWithTasks = () => {
                 <PendingSubtask
                   pendingSubtasks={wayToEarn.subTasksHistory.pendingTasks}
                   generateNewTask={generateNewTask}
-                  generatedTask={taskList || generatedTask}
+                  generatedTask={generatedTask || taskList}
                 />
               ) : activeTab == "in-review" ? (
                 <InReviewSubtask
@@ -193,7 +154,7 @@ const EarnWithTasks = () => {
           ) : (
             <div className="text-red-500 flex flex-col justify-center items-center min-h-96">
               <RiErrorWarningFill size={60} />
-              <p className="text-lg font-semibold">Something went wrong.</p>
+              <p className="text-lg font-semibold">{error}</p>
             </div>
           )}
         </div>

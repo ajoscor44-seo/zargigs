@@ -40,6 +40,7 @@ const CreateAdvert = () => {
     mediaUrl: undefined,
     numberOfTasks: undefined,
     costPerTask: wayToCreateAdvert.amountToPay,
+    earningPerTask: wayToCreateAdvert.amountToEarn,
     taskPlatform: wayToCreateAdvert.platformName.toLowerCase(),
   });
 
@@ -77,6 +78,7 @@ const CreateAdvert = () => {
         return response.data;
       })
       .catch((error) => {
+        setLoading(false);
         console.error(error);
       });
   };

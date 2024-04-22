@@ -232,6 +232,7 @@ export const postEngagementTask = async (req, res, next) => {
     link,
     numberOfTasks,
     costPerTask,
+    earningPerTask,
     taskPlatform,
   } = req.body;
 
@@ -256,6 +257,7 @@ export const postEngagementTask = async (req, res, next) => {
       allocatedTasks: 0,
       completedTasks: 0,
       costPerTask: Number(costPerTask),
+      earningPerTask: Number(earningPerTask),
       status: "pending",
       title,
     });
@@ -393,6 +395,7 @@ export const generateTask = async (req, res, next) => {
       title: Task.title,
     });
     const newPendingTask = new PendingTask({
+      allocationId: newAllocatedTask._id,
       createdBy: Task.createdBy,
       parentId: Task.id,
       toBeDoneBy: req.user._id,
@@ -400,7 +403,7 @@ export const generateTask = async (req, res, next) => {
       taskPlatform: Task.taskPlatform,
       link: Task.link,
       earningPerTask: Task.costPerTask,
-      title: Task.title
+      title: Task.title,
     });
     await newAllocatedTask.save();
     await newPendingTask.save();
@@ -420,7 +423,15 @@ export const generateTask = async (req, res, next) => {
     const { createdBy, parentId, __v, updatedAt, _id, ...rest } =
       newAllocatedTask.toObject();
 
-    res.status(200).json({ id: _id, ...rest });
+    const task = {
+      id: _id,
+      timeLeftS: 3600,
+      ...rest,
+    };
+
+    // Creates the response
+    res.status(200).json(task);
+
     next();
   } catch (error) {
     next(error);
@@ -429,9 +440,7 @@ export const generateTask = async (req, res, next) => {
 
 // Cancels generated task
 export const cancelGeneratedTask = async (req, res, next) => {
-  const taskType = req.query.type || null;
-  const taskPlatform = req.query.platform || null;
-  const taskId = req.query.id || null;
+  const { type: taskType, platform: taskPlatform, id: taskId } = req.query;
 
   try {
     // Checks for valid user
@@ -455,11 +464,8 @@ export const cancelGeneratedTask = async (req, res, next) => {
       return res.status(400).json(error);
     }
 
-    const task = await AllocatedTask.findById(taskId);
-    if (!task) {
-      const error = ErrorHandler(400, "Invalid Parameters.");
-      return res.status(400).json(error);
-    }
+    await PendingTask.findOneAndDelete({ allocationId: taskId });
+    await AllocatedTask.findOneAndDelete({ _id: taskId });
 
     const { createdBy, parentId, link, earningPerTask } = task.toObject();
     const newCancelledTask = new CancelledTask({
@@ -472,7 +478,6 @@ export const cancelGeneratedTask = async (req, res, next) => {
       earningPerTask,
     });
     await newCancelledTask.save();
-    await AllocatedTask.findOneAndDelete({ _id: taskId });
 
     const taskQuery = { taskPlatform, taskType, _id: parentId };
     taskType == "advert"
@@ -500,7 +505,7 @@ export const cancelGeneratedTask = async (req, res, next) => {
 
 // Get user's tasks list based off the status
 export const getTasks = async (req, res, next) => {
-  const taskStatus = req.query.status;
+  const { status: taskStatus, platform: taskPlatform } = req.query;
 
   try {
     // Validations for user request
@@ -518,27 +523,28 @@ export const getTasks = async (req, res, next) => {
     // Not done yet
     const Tasks =
       taskStatus == "allocated"
-        ? await AllocatedTask.find({ allocatedTo: req.user._id })
+        ? await AllocatedTask.find({ allocatedTo: req.user._id, taskPlatform })
         : taskStatus == "cancelled"
-        ? await CancelledTask.find({ cancelledBy: req.user._id })
+        ? await CancelledTask.find({ cancelledBy: req.user._id, taskPlatform })
         : taskStatus == "pending"
-        ? await PendingTask.findOne({ toBeDoneBy: req.user._id })
+        ? await PendingTask.findOne({ toBeDoneBy: req.user._id, taskPlatform })
         : taskStatus == "failed"
-        ? await FailedTask.find({ doneBy: req.user._id })
+        ? await FailedTask.find({ doneBy: req.user._id, taskPlatform })
         : taskStatus == "completed"
-        ? await CompletedTask.find({ doneBy: req.user._id })
+        ? await CompletedTask.find({ doneBy: req.user._id, taskPlatform })
         : taskStatus == "in-review"
-        ? await InReviewTask.find({ doneBy: req.user._id })
+        ? await InReviewTask.find({ doneBy: req.user._id, taskPlatform })
         : [];
 
-    if (!Tasks.length && taskStatus !== "pending") {
+    if (!Tasks?.length && taskStatus !== "pending") {
       const error = ErrorHandler(404, "No data available.");
       return res.status(404).json(error);
     }
 
     if (taskStatus !== "pending") {
       const tasks = Tasks.map((Task) => {
-        const { updatedAt, __v, _id, ...rest } = Task.toObject();
+        const { updatedAt, createdBy, parentId, taskType, __v, _id, ...rest } =
+          Task?.toObject();
 
         return {
           id: _id,
@@ -549,15 +555,20 @@ export const getTasks = async (req, res, next) => {
       // Creates the response
       return res.status(200).json(tasks);
     } else {
-      const { updatedAt, __v, _id, ...rest } = Tasks.toObject();
+      if (!Tasks) {
+        return res.status(200).json(null);
+      }
+      const { updatedAt, createdBy, parentId, taskType, __v, _id, ...rest } =
+        Tasks?.toObject();
       const currentTime = new Date();
-      const expiryTime = Tasks.expireAt;
+      const expiryTime = Tasks?.expiresAt;
 
-      const timeLeftMs = expiryTime - currentTime;
+      // Gets time left in seconds for this pending task to expire
+      const timeLeftS = (expiryTime - currentTime) / 1000;
 
       const task = {
         id: _id,
-        timeLeftMs,
+        timeLeftS,
         ...rest,
       };
 

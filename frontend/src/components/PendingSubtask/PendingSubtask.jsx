@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import NoData from "../NoData/NoData";
 import Modal from "../Modal/Modal";
 import PendingTaskSubtask from "../PendingtaskSubtask/PendingTaskSubtask";
+import { FaSpinner } from "react-icons/fa6";
 
 const PendingSubtask = ({ generatedTask, generateNewTask }) => {
   const [isOpen, setModalState] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const toggleModal = () => {
     setModalState(!isOpen);
@@ -12,7 +14,9 @@ const PendingSubtask = ({ generatedTask, generateNewTask }) => {
 
   const generateTask = async () => {
     toggleModal();
+    setLoading(true);
     await generateNewTask();
+    return setLoading(false);
   };
 
   return (
@@ -44,7 +48,7 @@ const PendingSubtask = ({ generatedTask, generateNewTask }) => {
             onClick={toggleModal}
             className="bg-primaryLight text-white p-2 rounded shadow-2xl font-semibold"
           >
-            Generate A New Task
+            {loading ? <FaSpinner size={25} /> : "Generate A New Task"}
           </button>
         </div>
       )}

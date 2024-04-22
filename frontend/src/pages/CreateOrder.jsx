@@ -36,6 +36,7 @@ const CreateOrder = () => {
     link: undefined,
     numberOfTasks: undefined,
     costPerTask: wayToCreateEngagement.amountToPay,
+    earningPerTask: wayToCreateEngagement.amountToEarn,
     taskPlatform: wayToCreateEngagement.platformName.toLowerCase(),
   });
 
@@ -73,6 +74,7 @@ const CreateOrder = () => {
         return response.data;
       })
       .catch((error) => {
+        setLoading(false);
         console.error(error);
       });
   };

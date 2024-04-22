@@ -110,7 +110,7 @@ const PendingTaskSubtask = ({ task }) => {
         <span className="mt-1 text-gray-500 font-semibold text-sm">
           This task will expire in:
         </span>
-        <CountdownTimer totalSeconds={task?.timeLeftMs} />
+        <CountdownTimer totalSeconds={Math.round(task?.timeLeftS)} />
       </div>
       <div className="flex flex-col gap-2 p-2 items-center">
         <p className="text-xs text-gray-600 text-center">

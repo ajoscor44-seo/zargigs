@@ -3,6 +3,10 @@ const Schema = mongoose.Schema;
 
 const taskSchema = new Schema(
   {
+    allocationId: {
+      type: String,
+      required: true,
+    },
     parentId: {
       type: String,
       required: true,
@@ -36,6 +40,10 @@ const taskSchema = new Schema(
       type: Number,
       required: true,
     },
+    expiresAt: {
+      type: Date,
+      default: () => new Date(+new Date() + 1 * 60 * 60 * 1000),
+    },
     status: { type: String, required: false, default: "pending" },
   },
   {
@@ -43,7 +51,12 @@ const taskSchema = new Schema(
   }
 );
 
-taskSchema.index({ createdAt: 1 }, { expireAfterSeconds: 3600000 });
+taskSchema.index({ createdAt: 1 }, { expireAfterSeconds: 3600 });
+// Returns the time left before expiry as part of the data
+taskSchema.methods.timeLeftInSeconds = function () {
+  const now = new Date();
+  return (this.expiresAt.getTime() - now.getTime()) / 1000;
+};
 
 const PendingTask = mongoose.model("PendingTask", taskSchema);
 

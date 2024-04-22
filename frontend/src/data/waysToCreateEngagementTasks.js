@@ -3,6 +3,7 @@ const waysToCreateEngagementTasks = [
     title: "Get Real People to Follow Your Page on Social Media",
     platformName: "AllFollow",
     amountToPay: 5,
+    amountToEarn: 3,
     pathToPage: "/order/enagage-on-socials",
     platforms: ["Instagram", "Twitter", "Tiktok"],
     description:
@@ -12,6 +13,7 @@ const waysToCreateEngagementTasks = [
     title: "Get People to Like Your Social Media Posts",
     platformName: "AllLike",
     amountToPay: 5,
+    amountToEarn: 3,
     pathToPage: "/order/engage-on-posts",
     platforms: ["Facebook", "Instagram", "Twitter", "Tiktok"],
     description:
@@ -21,6 +23,7 @@ const waysToCreateEngagementTasks = [
     title: "Get Real People to Like and Follow your Facebook Business Page",
     platformName: "Facebook",
     amountToPay: 5,
+    amountToEarn: 3,
     pathToPage: "/order/enagage-on-facebook",
     platforms: ["Facebook"],
     description:
@@ -31,6 +34,7 @@ const waysToCreateEngagementTasks = [
     title: "Get Real People to Follow Your Audiomack Channel",
     platformName: "Audiomack",
     amountToPay: 20,
+    amountToEarn: 10,
     pathToPage: "/order/enagage-on-audiomack",
     platforms: ["Audiomack"],
     description:
@@ -40,6 +44,7 @@ const waysToCreateEngagementTasks = [
     title: "Get Real People to Comment on Your Social Media Posts.",
     platformName: "AllComments",
     amountToPay: 30,
+    amountToEarn: 15,
     pathToPage: "/order/engage-on-comments",
     platforms: ["Facebook", "Instagram", "Twitter", "Tiktok"],
     description:
@@ -49,6 +54,7 @@ const waysToCreateEngagementTasks = [
     title: "Get People to Subscribe to your Youtube Channel",
     platformName: "Youtube",
     amountToPay: 50,
+    amountToEarn: 25,
     pathToPage: "/order/subscribe-on-youtube",
     platforms: ["Youtube"],
     description:
@@ -59,6 +65,7 @@ const waysToCreateEngagementTasks = [
       "Get Real People to View and Comment on your Youtube Channel and Video",
     platformName: "Youtube",
     amountToPay: 50,
+    amountToEarn: 25,
     pathToPage: "/order/engage-on-youtube",
     platforms: ["Youtube"],
     description:
@@ -68,6 +75,7 @@ const waysToCreateEngagementTasks = [
     title: "Get people to Download and Review Your App on Googleplay.",
     platformName: "Playstore",
     amountToPay: 50,
+    amountToEarn: 25,
     pathToPage: "/order/review-on-playstore",
     platforms: ["Playstore"],
     description:
@@ -77,6 +85,7 @@ const waysToCreateEngagementTasks = [
     title: "Get people to post your advert on their Tiktok Account.",
     platformName: "AllShare",
     amountToPay: 100,
+    amountToEarn: 50,
     pathToPage: "/order/share-on-facebook",
     platforms: ["Facebook"],
     description:
@@ -86,6 +95,7 @@ const waysToCreateEngagementTasks = [
     title: "Get People to Retweet your Twitter Posts",
     platformName: "AllRetweets",
     amountToPay: 100,
+    amountToEarn: 50,
     pathToPage: "/order/retweet-on-twitter",
     platforms: ["Twitter"],
     description:
@@ -95,6 +105,7 @@ const waysToCreateEngagementTasks = [
     title: "Get Real People to Join Your Whatsapp Group",
     platformName: "Whatsapp",
     amountToPay: 100,
+    amountToEarn: 50,
     pathToPage: "/order/join-on-whatsapp",
     platforms: ["Whatsapp"],
     description:
@@ -104,6 +115,7 @@ const waysToCreateEngagementTasks = [
     title: "Get Real People to Join Your Telegram Group/Channel",
     platformName: "Telegram",
     amountToPay: 100,
+    amountToEarn: 50,
     pathToPage: "/order/join-on-telegram",
     platforms: ["Telegram"],
     description:
@@ -113,6 +125,7 @@ const waysToCreateEngagementTasks = [
     title: "Get People to Download and Review your app on Apple Store.",
     platformName: "Applestore",
     amountToPay: 100,
+    amountToEarn: 50,
     pathToPage: "/order/review-on-applestore",
     platforms: ["Applestore"],
     description:

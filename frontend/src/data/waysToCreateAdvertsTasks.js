@@ -3,6 +3,7 @@ const waysToCreateAdvertTasks = [
     title: "Get People to Post Your Adverts on their Whatsapp Status",
     platformName: "Whatsapp",
     amountToPay: 100,
+    amountToEarn: 50,
     pathToPage: "/advertise/post-on-whatsapp",
     platforms: ["Whatsapp"],
     description:
@@ -12,6 +13,7 @@ const waysToCreateAdvertTasks = [
     title: "Get People to Post Your Adverts on Facebook",
     platformName: "Facebook",
     amountToPay: 150,
+    amountToEarn: 100,
     pathToPage: "/advertise/post-on-facebook",
     platforms: ["Facebook"],
     description:
@@ -21,6 +23,7 @@ const waysToCreateAdvertTasks = [
     title: "Get People to Post Your Adverts on Instagram",
     platformName: "Instagram",
     amountToPay: 150,
+    amountToEarn: 100,
     pathToPage: "/advertise/post-on-instagram",
     platforms: ["Instagram"],
     description:
@@ -30,6 +33,7 @@ const waysToCreateAdvertTasks = [
     title: "Get People to Post Your Adverts on Twitter",
     platformName: "Twitter",
     amountToPay: 150,
+    amountToEarn: 100,
     pathToPage: "/advertise/post-on-twitter",
     platforms: ["Twitter"],
     description:
@@ -39,6 +43,7 @@ const waysToCreateAdvertTasks = [
     title: "Get people to post your advert on their Tiktok Account.",
     platformName: "Tiktok",
     amountToPay: 150,
+    amountToEarn: 100,
     pathToPage: "/advertise/post-on-tiktok",
     platforms: ["Tiktok"],
     description:
