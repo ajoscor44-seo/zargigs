@@ -440,7 +440,7 @@ export const generateTask = async (req, res, next) => {
 
 // Cancels generated task
 export const cancelGeneratedTask = async (req, res, next) => {
-  const { type: taskType, platform: taskPlatform, id: taskId } = req.query;
+  const { type: taskType, platform: taskPlatform } = req.query;
 
   try {
     // Checks for valid user
@@ -455,7 +455,7 @@ export const cancelGeneratedTask = async (req, res, next) => {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);
     }
-    if (!taskPlatform || !taskType || !taskId) {
+    if (!taskPlatform || !taskType) {
       const error = ErrorHandler(400, "Invalid Parameters.");
       return res.status(400).json(error);
     }
@@ -464,11 +464,13 @@ export const cancelGeneratedTask = async (req, res, next) => {
       return res.status(400).json(error);
     }
 
-    await PendingTask.findOneAndDelete({ allocationId: taskId });
-    await AllocatedTask.findOneAndDelete({ _id: taskId });
-
-    const { createdBy, parentId, link, earningPerTask } = task.toObject();
+    const userPendingTask = await PendingTask.findOne({
+      allocationId: taskAllocatedToUser._id,
+    });
+    const { createdBy, parentId, link, earningPerTask, title } =
+      userPendingTask.toObject();
     const newCancelledTask = new CancelledTask({
+      title,
       createdBy,
       parentId,
       cancelledBy: req.user._id,
@@ -477,6 +479,12 @@ export const cancelGeneratedTask = async (req, res, next) => {
       link,
       earningPerTask,
     });
+
+    // Does the necessary addition and removal.
+    await PendingTask.findOneAndDelete({
+      allocationId: taskAllocatedToUser._id,
+    });
+    await AllocatedTask.findOneAndDelete({ _id: taskAllocatedToUser._id });
     await newCancelledTask.save();
 
     const taskQuery = { taskPlatform, taskType, _id: parentId };
