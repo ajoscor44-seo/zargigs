@@ -19,7 +19,7 @@ import { SlUserFollowing } from "react-icons/sl";
 import CountdownTimer from "../CountDownTimer/CountDownTimer";
 import formatDate from "../../hooks/formatDate";
 
-const PendingTaskSubtask = ({ task }) => {
+const PendingTaskSubtask = ({ task, cancelTask }) => {
   return (
     <div className="border-b font-primary">
       <div className="flex items-center px-2 py-1 gap-2 font-primary">
@@ -118,7 +118,10 @@ const PendingTaskSubtask = ({ task }) => {
           another one can be generated for you. There is NO penalty for
           cancelling a task.
         </p>
-        <button className="text-white text-sm font-semibold bg-red-600 rounded-sm py-2 my-2 w-40">
+        <button
+          onClick={() => cancelTask("pending")}
+          className="text-white text-sm font-semibold bg-red-600 rounded-sm py-2 my-2 w-40"
+        >
           CANCEL THIS TASK
         </button>
       </div>

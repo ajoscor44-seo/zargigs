@@ -35,7 +35,6 @@ const EarnWithTasks = () => {
   );
 
   // Generates the task
-
   const generateNewTask = async () => {
     try {
       const response = await axios.get(
@@ -65,15 +64,21 @@ const EarnWithTasks = () => {
     return setLoading(false);
   };
 
-  const getTotalTasks = async (status) => {
+  const cancelGeneratedTask = async (status) => {
+    if (status.toLowerCase() !== "pending") return;
     setLoading(true);
     try {
-      const response = await axios.get(
-        `/api/v1/tasks?status=${status.toLowerCase()}&platform=${wayToEarn.platformName.toLowerCase()}`
+      const response = await axios.delete(
+        `/api/v1/tasks/cancel-task?type=engagement&platform=${wayToEarn.platformName.toLowerCase()}`
       );
-      if (Array.isArray(response.data)) return response.data.length;
-      if (Array.isArray(response.data)) return response.data.length;
-      return 1;
+
+      if (response.data.failed) {
+        return setError(response.data.message);
+      }
+
+      setGeneratedTask(null);
+      setTaskList(null);
+      return setLoading(false);
     } catch (error) {
       setError(error.response.data.message);
     }
@@ -132,6 +137,7 @@ const EarnWithTasks = () => {
                   pendingSubtasks={wayToEarn.subTasksHistory.pendingTasks}
                   generateNewTask={generateNewTask}
                   generatedTask={generatedTask || taskList}
+                  cancelGeneratedTask={cancelGeneratedTask}
                 />
               ) : activeTab == "in-review" ? (
                 <InReviewSubtask

@@ -4,7 +4,11 @@ import Modal from "../Modal/Modal";
 import PendingTaskSubtask from "../PendingtaskSubtask/PendingTaskSubtask";
 import { FaSpinner } from "react-icons/fa6";
 
-const PendingSubtask = ({ generatedTask, generateNewTask }) => {
+const PendingSubtask = ({
+  generatedTask,
+  generateNewTask,
+  cancelGeneratedTask,
+}) => {
   const [isOpen, setModalState] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -23,7 +27,11 @@ const PendingSubtask = ({ generatedTask, generateNewTask }) => {
     <div className="font-primary">
       {generatedTask?.id ? (
         <div className="tasks">
-          <PendingTaskSubtask task={generatedTask} />;
+          <PendingTaskSubtask
+            task={generatedTask}
+            cancelTask={cancelGeneratedTask}
+          />
+          ;
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center text-gray-300 p-2 gap-2 h-96">
