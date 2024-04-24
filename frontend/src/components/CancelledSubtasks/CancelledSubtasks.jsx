@@ -5,7 +5,7 @@ import Subtask from "../Subtask/Subtask";
 const CancelledSubtasks = ({ cancelledSubtasks }) => {
   return (
     <div className="font-primary">
-      {cancelledSubtasks.length ? (
+      {cancelledSubtasks?.length ? (
         <div className="tasks">
           {cancelledSubtasks.map((cancelledSubtask) => {
             return <Subtask task={cancelledSubtask} />;

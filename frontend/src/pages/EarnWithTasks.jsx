@@ -13,7 +13,6 @@ import axios from "axios";
 import { FaSpinner } from "react-icons/fa6";
 import NoData from "../components/NoData/NoData";
 import { RiErrorWarningFill } from "react-icons/ri";
-import numeral from "numeral";
 
 const EarnWithTasks = () => {
   const [loading, setLoading] = useState(true);
@@ -22,6 +21,7 @@ const EarnWithTasks = () => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [generatedTask, setGeneratedTask] = useState(undefined);
   const [taskList, setTaskList] = useState(undefined);
+  const [statusTotals, setStatusTotal] = useState({});
 
   const param = useParams();
   const slug = param.slug;
@@ -64,6 +64,7 @@ const EarnWithTasks = () => {
     return setLoading(false);
   };
 
+  // Cancels generated task
   const cancelGeneratedTask = async (status) => {
     if (status.toLowerCase() !== "pending") return;
     setLoading(true);
@@ -84,8 +85,26 @@ const EarnWithTasks = () => {
     }
   };
 
+  const getTasksTotalsBasedOnStatus = async () => {
+    setLoading(true);
+    const response = await axios.get(
+      `/api/v1/tasks/user-total?type=engagement&platform=${wayToEarn.platformName.toLowerCase()}`
+    );
+
+    if (response.data?.failed) {
+      return setError(response.data.message);
+    }
+    setStatusTotal(response.data);
+    return setLoading(false);
+  };
+
   useEffect(() => {
-    getAllTasks();
+    const fetchDatas = async () => {
+      await getAllTasks();
+      await getTasksTotalsBasedOnStatus();
+    };
+
+    fetchDatas();
   }, [activeTab]);
   return (
     <div>
@@ -105,14 +124,9 @@ const EarnWithTasks = () => {
                   onClick={() => setActiveTab(tab.toLowerCase())}
                 >
                   {tab}{" "}
-                  {taskList ? (
+                  {statusTotals[tab.toString()] ? (
                     <span className="bg-red-500 text-white px-1 rounded">
-                      {taskList && tab.toLowerCase() == "pending"
-                        ? 1
-                        : Array.isArray(taskList) &&
-                          tab.toLowerCase() !== "pending"
-                        ? numeral(taskList.length).format("0,0")
-                        : null}
+                      {statusTotals[tab.toString()]}
                     </span>
                   ) : (
                     <span></span>
@@ -152,9 +166,7 @@ const EarnWithTasks = () => {
                   completedSubtasks={wayToEarn.subTasksHistory.completedTasks}
                 />
               ) : (
-                <CancelledSubtasks
-                  cancelledSubtasks={wayToEarn.subTasksHistory.cancelledTasks}
-                />
+                <CancelledSubtasks cancelledSubtasks={taskList} />
               )}
             </div>
           ) : (
