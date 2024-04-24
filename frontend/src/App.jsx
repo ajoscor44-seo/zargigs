@@ -35,6 +35,7 @@ import VerifiedMemberPrivateRoute from "./routers/VerifiedMemberPrivateRoute.jsx
 import OrderHistory from "./pages/OrderHistory.jsx";
 import OrderDetails from "./pages/OrderDetails.jsx";
 import CreateOrder from "./pages/CreateOrder.jsx";
+import TaskDetails from "./pages/TaskDetails.jsx";
 
 function App() {
   axios.defaults.baseURL = "http://localhost:3000";
@@ -103,6 +104,10 @@ function App() {
               <MemberPrivateRoute
                 path="/become-a-member"
                 component={BecomeAMember}
+              />
+              <VerifiedMemberPrivateRoute
+                path="/earn/:slug/:id"
+                component={TaskDetails}
               />
               <VerifiedMemberPrivateRoute
                 path="/earn/:slug"

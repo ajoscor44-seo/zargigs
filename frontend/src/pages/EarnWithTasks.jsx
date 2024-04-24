@@ -22,9 +22,8 @@ const EarnWithTasks = () => {
   const [generatedTask, setGeneratedTask] = useState(undefined);
   const [taskList, setTaskList] = useState(undefined);
   const [statusTotals, setStatusTotal] = useState({});
-
-  const param = useParams();
-  const slug = param.slug;
+  // Gets route parameter
+  const { slug } = useParams();
 
   const waysToEarn = slug.startsWith("earn")
     ? waysToEarnForTasks
@@ -152,21 +151,25 @@ const EarnWithTasks = () => {
                   generateNewTask={generateNewTask}
                   generatedTask={generatedTask || taskList}
                   cancelGeneratedTask={cancelGeneratedTask}
+                  slug={slug}
                 />
               ) : activeTab == "in-review" ? (
                 <InReviewSubtask
                   inReviewSubtasks={wayToEarn.subTasksHistory.inReviewTasks}
+                  slug={slug}
                 />
               ) : activeTab == "failed" ? (
                 <FailedSubtask
                   failedSubtasks={wayToEarn.subTasksHistory.failedTasks}
+                  slug={slug}
                 />
               ) : activeTab == "completed" ? (
                 <CompletedSubtask
                   completedSubtasks={wayToEarn.subTasksHistory.completedTasks}
+                  slug={slug}
                 />
               ) : (
-                <CancelledSubtasks cancelledSubtasks={taskList} />
+                <CancelledSubtasks cancelledSubtasks={taskList} slug={slug} />
               )}
             </div>
           ) : (

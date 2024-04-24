@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { BiLike, BiSolidCheckCircle } from "react-icons/bi";
 import {
   FaCommentDots,
@@ -18,8 +18,9 @@ import { SiAudiomack } from "react-icons/si";
 import { SlUserFollowing } from "react-icons/sl";
 import CountdownTimer from "../CountDownTimer/CountDownTimer";
 import formatDate from "../../hooks/formatDate";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 
-const PendingTaskSubtask = ({ task, cancelTask }) => {
+const PendingTaskSubtask = ({ task, cancelTask, slug }) => {
   return (
     <div className="border-b font-primary">
       <div className="flex items-center px-2 py-1 gap-2 font-primary">
@@ -94,14 +95,16 @@ const PendingTaskSubtask = ({ task, cancelTask }) => {
             </span>
           </div>
           <div>
-            <button
-              className={
-                "capitalize p-1 text-sm rounded text-green-500 flex items-center border"
-              }
-            >
-              <BiSolidCheckCircle size={20} />
-              <span className="font-semibold">Do now</span>
-            </button>
+            <Link to={`/earn/${slug}/${task?.id}`}>
+              <button
+                className={
+                  "capitalize p-1 text-sm rounded text-green-500 flex items-center border"
+                }
+              >
+                <BiSolidCheckCircle size={20} />
+                <span className="font-semibold">Do now</span>
+              </button>
+            </Link>
           </div>
         </div>
       </div>

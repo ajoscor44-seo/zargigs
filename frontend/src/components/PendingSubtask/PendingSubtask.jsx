@@ -8,6 +8,7 @@ const PendingSubtask = ({
   generatedTask,
   generateNewTask,
   cancelGeneratedTask,
+  slug,
 }) => {
   const [isOpen, setModalState] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -30,6 +31,7 @@ const PendingSubtask = ({
           <PendingTaskSubtask
             task={generatedTask}
             cancelTask={cancelGeneratedTask}
+            slug={slug}
           />
           ;
         </div>

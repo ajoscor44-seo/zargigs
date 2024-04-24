@@ -16,8 +16,9 @@ import playStoreImage from "../../assets/images/playstore-icon.png";
 import { IoLogoAppleAppstore } from "react-icons/io5";
 import { SiAudiomack } from "react-icons/si";
 import { SlUserFollowing } from "react-icons/sl";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 
-const Subtask = ({ task }) => {
+const Subtask = ({ task, slug }) => {
   const btnBgColor =
     task.status?.replace(/\s+/g, "")?.toLowerCase() == "pending"
       ? "bg-orange-400"
@@ -102,13 +103,15 @@ const Subtask = ({ task }) => {
           </span>
         </div>
         <div>
-          <button
-            className={
-              btnBgColor + " capitalize p-1 text-sm text-white rounded"
-            }
-          >
-            {task?.status}
-          </button>
+          <Link to={`/earn/${slug}/${task?.id}`}>
+            <button
+              className={
+                btnBgColor + " capitalize p-1 text-sm text-white rounded"
+              }
+            >
+              {task?.status}
+            </button>
+          </Link>
         </div>
       </div>
     </div>

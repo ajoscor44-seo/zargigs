@@ -2,13 +2,13 @@ import React from "react";
 import Subtask from "../Subtask/Subtask";
 import NoData from "../NoData/NoData";
 
-const InReviewSubtask = ({ inReviewSubtasks }) => {
+const InReviewSubtask = ({ inReviewSubtasks, slug }) => {
   return (
     <div className="font-primary">
       {inReviewSubtasks.length ? (
         <div className="tasks">
           {inReviewSubtasks.map((inReviewSubtask) => {
-            return <Subtask task={inReviewSubtask} />;
+            return <Subtask task={inReviewSubtask} slug={slug} />;
           })}
         </div>
       ) : (
