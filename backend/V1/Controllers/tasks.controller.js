@@ -275,8 +275,7 @@ export const postEngagementTask = async (req, res, next) => {
 
 // Gets task(s) totals
 export const getTotalTasks = async (req, res, next) => {
-  const taskType = req.query.type || null;
-  const taskPlatform = req.query.platform || null;
+  const { type: taskType, platform: taskPlatform } = req.query;
 
   try {
     // Checks for valid user
@@ -314,6 +313,67 @@ export const getTotalTasks = async (req, res, next) => {
     const response = { total: total };
     res.status(200).json(response);
     next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUserTotalTasks = async (req, res, next) => {
+  const { type: taskType, platform: taskPlatform } = req.query;
+
+  try {
+    // Validations for user request
+    const validUser = await User.findOne({ email: req.user.email });
+
+    if (!validUser) {
+      const error = ErrorHandler(404, "There's no user with this email.");
+      return res.status(404).json(error);
+    }
+    if (!taskType || !taskPlatform) {
+      const error = ErrorHandler(400, "Invalid Parameters.");
+      return res.status(400).json(error);
+    }
+
+    const baseQuery = {};
+    if (taskPlatform) baseQuery.taskPlatform = taskPlatform;
+    if (taskType) baseQuery.taskType = taskType;
+
+    const allocatedTasks = await AllocatedTask.find({
+      allocatedTo: req.user._id,
+      ...baseQuery,
+    });
+    const cancelledTasks = await CancelledTask.find({
+      cancelledBy: req.user._id,
+      ...baseQuery,
+    });
+    const pendingTask = await PendingTask.findOne({
+      toBeDoneBy: req.user._id,
+      ...baseQuery,
+    });
+    const failedTasks = await FailedTask.find({
+      doneBy: req.user._id,
+      ...baseQuery,
+    });
+    const completedTasks = await CompletedTask.find({
+      doneBy: req.user._id,
+      ...baseQuery,
+    });
+    const inReviewTasks = await InReviewTask.find({
+      doneBy: req.user._id,
+      ...baseQuery,
+    });
+
+    const response = {
+      allocated: allocatedTasks.length,
+      cancelled: cancelledTasks.length,
+      pending: pendingTask ? 1 : 0,
+      failed: failedTasks.length,
+      completed: completedTasks.length,
+    };
+    response["in-review"] = inReviewTasks.length;
+
+    // Creates the response
+    return res.status(200).json(response);
   } catch (error) {
     next(error);
   }
@@ -528,7 +588,6 @@ export const getTasks = async (req, res, next) => {
       return res.status(400).json(error);
     }
 
-    // Not done yet
     const Tasks =
       taskStatus == "allocated"
         ? await AllocatedTask.find({ allocatedTo: req.user._id, taskPlatform })

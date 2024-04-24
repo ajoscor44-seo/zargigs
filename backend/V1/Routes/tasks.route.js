@@ -3,6 +3,7 @@ import {
   generateTask,
   cancelGeneratedTask,
   getTotalTasks,
+  getUserTotalTasks,
   getAdvertTask,
   getAdvertTasks,
   postAdvertTask,
@@ -16,6 +17,7 @@ const router = express.Router();
 
 router.get("/", getTasks);
 router.get("/total", getTotalTasks);
+router.get("/user-total", getUserTotalTasks);
 router.get("/generate", generateTask);
 router.delete("/cancel-task", cancelGeneratedTask);
 router.post("/adverts", postAdvertTask);
