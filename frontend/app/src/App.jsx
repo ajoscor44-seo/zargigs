@@ -48,9 +48,9 @@ function App() {
     <>
       <Router>
         {/* Landing Page */}
-        <Route exact path="/">
+        {/* <Route exact path="/">
           <Home />
-        </Route>
+        </Route> */}
 
         {/* App Routes */}
         <AuthProvider>
@@ -81,7 +81,7 @@ function App() {
               />
 
               {/* Client Page Layout */}
-              <PrivateRoute path="/dashboard" component={ClientDashboard} />
+              <PrivateRoute path="/" component={ClientDashboard} />
               <PrivateRoute path="/help-support" component={HelpSupport} />
               <PrivateRoute path="/notifications" component={Notifications} />
               <PrivateRoute path="/user-details" component={UserDetails} />
