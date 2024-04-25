@@ -573,7 +573,11 @@ export const cancelGeneratedTask = async (req, res, next) => {
 
 // Get user's tasks list based off the status
 export const getTasks = async (req, res, next) => {
-  const { status: taskStatus, platform: taskPlatform } = req.query;
+  const {
+    status: taskStatus,
+    platform: taskPlatform,
+    type: taskType,
+  } = req.query;
 
   try {
     // Validations for user request
@@ -583,7 +587,7 @@ export const getTasks = async (req, res, next) => {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);
     }
-    if (!taskStatus) {
+    if (!taskStatus || !taskPlatform || !taskType) {
       const error = ErrorHandler(400, "Invalid Parameters.");
       return res.status(400).json(error);
     }
@@ -610,8 +614,17 @@ export const getTasks = async (req, res, next) => {
 
     if (taskStatus !== "pending") {
       const tasks = Tasks.map((Task) => {
-        const { updatedAt, createdBy, parentId, taskType, __v, _id, ...rest } =
-          Task?.toObject();
+        const {
+          updatedAt,
+          createdBy,
+          parentId,
+          taskType,
+          expiresAt,
+          toBeDoneBy,
+          __v,
+          _id,
+          ...rest
+        } = Task?.toObject();
 
         return {
           id: _id,
@@ -625,8 +638,17 @@ export const getTasks = async (req, res, next) => {
       if (!Tasks) {
         return res.status(200).json(null);
       }
-      const { updatedAt, createdBy, parentId, taskType, __v, _id, ...rest } =
-        Tasks?.toObject();
+      const {
+        updatedAt,
+        createdBy,
+        parentId,
+        taskType,
+        expiresAt,
+        toBeDoneBy,
+        __v,
+        _id,
+        ...rest
+      } = Tasks?.toObject();
       const currentTime = new Date();
       const expiryTime = Tasks?.expiresAt;
 
@@ -641,6 +663,129 @@ export const getTasks = async (req, res, next) => {
 
       // Creates the response
       return res.status(200).json(task);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getTask = async (req, res, next) => {
+  const { id } = req.params;
+  const {
+    status: taskStatus,
+    platform: taskPlatform,
+    type: taskType,
+  } = req.query;
+
+  try {
+    // Validations for user request
+    const validUser = await User.findOne({ email: req.user.email });
+
+    if (!validUser) {
+      const error = ErrorHandler(404, "There's no user with this email.");
+      return res.status(404).json(error);
+    }
+    if (!taskStatus || !taskPlatform || !taskType) {
+      const error = ErrorHandler(400, "Invalid Parameters.");
+      return res.status(400).json(error);
+    }
+
+    const task =
+      taskStatus == "allocated"
+        ? await AllocatedTask.findOne({
+            allocatedTo: req.user._id,
+            taskPlatform,
+            taskType,
+            _id: id,
+          })
+        : taskStatus == "cancelled"
+        ? await CancelledTask.findOne({
+            cancelledBy: req.user._id,
+            taskPlatform,
+            taskType,
+            _id: id,
+          })
+        : taskStatus == "pending"
+        ? await PendingTask.findOne({
+            toBeDoneBy: req.user._id,
+            taskPlatform,
+            taskType,
+            _id: id,
+          })
+        : taskStatus == "failed"
+        ? await FailedTask.findOne({
+            doneBy: req.user._id,
+            taskPlatform,
+            taskType,
+            _id: id,
+          })
+        : taskStatus == "completed"
+        ? await CompletedTask.findOne({
+            doneBy: req.user._id,
+            taskPlatform,
+            taskType,
+            _id: id,
+          })
+        : taskStatus == "in-review"
+        ? await InReviewTask.findOne({
+            doneBy: req.user._id,
+            taskPlatform,
+            taskType,
+            _id: id,
+          })
+        : [];
+
+    if (!task) {
+      const error = ErrorHandler(404, "No data available.");
+      return res.status(404).json(error);
+    }
+
+    if (taskStatus !== "pending") {
+      const {
+        updatedAt,
+        createdBy,
+        parentId,
+        taskType,
+        expiresAt,
+        toBeDoneBy,
+        __v,
+        _id,
+        ...rest
+      } = task._doc;
+
+      const responseObj = {
+        id: _id,
+        ...rest,
+      };
+
+      // Creates the response
+      return res.status(200).json(responseObj);
+    } else {
+      const {
+        updatedAt,
+        createdBy,
+        parentId,
+        taskType,
+        expiresAt,
+        toBeDoneBy,
+        __v,
+        _id,
+        ...rest
+      } = task._doc;
+      const currentTime = new Date();
+      const expiryTime = task?.expiresAt;
+
+      // Gets time left in seconds for this pending task to expire
+      const timeLeftS = (expiryTime - currentTime) / 1000;
+
+      const responseObj = {
+        id: _id,
+        timeLeftS,
+        ...rest,
+      };
+
+      // Creates the response
+      return res.status(200).json(responseObj);
     }
   } catch (error) {
     next(error);

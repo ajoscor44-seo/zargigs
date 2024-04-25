@@ -11,11 +11,13 @@ import {
   getEngagementTasks,
   postEngagementTask,
   getTasks,
+  getTask,
 } from "../Controllers/tasks.controller.js";
 
 const router = express.Router();
 
 router.get("/", getTasks);
+router.get("/task/:id", getTask);
 router.get("/total", getTotalTasks);
 router.get("/user-total", getUserTotalTasks);
 router.get("/generate", generateTask);

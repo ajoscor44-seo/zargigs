@@ -27,7 +27,10 @@ const PORT = process.env.PORT || 5000;
 
 // Configure CORS
 const corsOptions = {
-  origin: process.env.CLIENT_URL,
+  origin:
+    process.env.NODE_ENV !== "production"
+      ? process.env.DEV_CLIENT_URL
+      : process.env.PROD_CLIENT_URL,
   credentials: true,
 };
 app.use(cors(corsOptions));
