@@ -38,7 +38,10 @@ import CreateOrder from "./pages/CreateOrder.jsx";
 import TaskDetails from "./pages/TaskDetails.jsx";
 
 function App() {
-  axios.defaults.baseURL = "http://localhost:3000";
+  axios.defaults.baseURL =
+    import.meta.env.VITE_NODE_ENV !== "production"
+      ? import.meta.env.VITE_DEV_SERVER_BASE_URL
+      : import.meta.env.VITE_PROD_SERVER_BASE_URL;
   axios.defaults.withCredentials = true;
 
   return (
@@ -106,7 +109,7 @@ function App() {
                 component={BecomeAMember}
               />
               <VerifiedMemberPrivateRoute
-                path="/earn/:slug/:id"
+                path="/earn/:slug/:platform/:status/:id"
                 component={TaskDetails}
               />
               <VerifiedMemberPrivateRoute

@@ -6,6 +6,7 @@ import {
   FaInstagram,
   FaRetweet,
   FaShare,
+  FaSpinner,
   FaTelegram,
   FaTiktok,
   FaTwitter,
@@ -20,7 +21,14 @@ import CountdownTimer from "../CountDownTimer/CountDownTimer";
 import formatDate from "../../hooks/formatDate";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
-const PendingTaskSubtask = ({ task, cancelTask, slug }) => {
+const PendingTaskSubtask = ({
+  task,
+  cancelTask,
+  slug,
+  platform,
+  status,
+  hideBtn,
+}) => {
   return (
     <div className="border-b font-primary">
       <div className="flex items-center px-2 py-1 gap-2 font-primary">
@@ -95,16 +103,20 @@ const PendingTaskSubtask = ({ task, cancelTask, slug }) => {
             </span>
           </div>
           <div>
-            <Link to={`/earn/${slug}/${task?.id}`}>
-              <button
-                className={
-                  "capitalize p-1 text-sm rounded text-green-500 flex items-center border"
-                }
-              >
-                <BiSolidCheckCircle size={20} />
-                <span className="font-semibold">Do now</span>
-              </button>
-            </Link>
+            {hideBtn ? (
+              <FaSpinner className="text-orange-500 my-1 mx-2" />
+            ) : (
+              <Link to={`/earn/${slug}/${platform}/${status}/${task?.id}`}>
+                <button
+                  className={
+                    "capitalize p-1 text-sm rounded text-green-500 flex items-center border"
+                  }
+                >
+                  <BiSolidCheckCircle size={20} />
+                  <span className="font-semibold">Do now</span>
+                </button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -115,7 +127,7 @@ const PendingTaskSubtask = ({ task, cancelTask, slug }) => {
         </span>
         <CountdownTimer totalSeconds={Math.round(task?.timeLeftS)} />
       </div>
-      <div className="flex flex-col gap-2 p-2 items-center">
+      <div className="flex flex-col gap-2 p-2 items-center bg-gray-200 mx-5 rounded-sm border">
         <p className="text-xs text-gray-600 text-center">
           Don't want to perform this task? You can cancel this task so that
           another one can be generated for you. There is NO penalty for
@@ -128,12 +140,16 @@ const PendingTaskSubtask = ({ task, cancelTask, slug }) => {
           CANCEL THIS TASK
         </button>
       </div>
-      <div className="flex flex-col bg-slate-100 gap-2 p-3 items-center">
-        <p className="text-xs text-gray-600 text-center font-semibold">
-          You can only generate a task at a time. You have to do pending task
-          before it expires so that another one can be generated for you.
-        </p>
-      </div>
+      {hideBtn ? (
+        <div></div>
+      ) : (
+        <div className="flex flex-col bg-slate-100 gap-2 p-3 items-center">
+          <p className="text-xs text-gray-600 text-center font-semibold">
+            You can only generate a task at a time. You have to do pending task
+            before it expires so that another one can be generated for you.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

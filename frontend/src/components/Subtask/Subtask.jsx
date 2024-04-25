@@ -18,7 +18,7 @@ import { SiAudiomack } from "react-icons/si";
 import { SlUserFollowing } from "react-icons/sl";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
-const Subtask = ({ task, slug }) => {
+const Subtask = ({ task, slug, platform, status, hideBtn }) => {
   const btnBgColor =
     task.status?.replace(/\s+/g, "")?.toLowerCase() == "pending"
       ? "bg-orange-400"
@@ -103,7 +103,11 @@ const Subtask = ({ task, slug }) => {
           </span>
         </div>
         <div>
-          <Link to={`/earn/${slug}/${task?.id}`}>
+          <Link
+            to={
+              hideBtn ? "#" : `/earn/${slug}/${platform}/${status}/${task?.id}`
+            }
+          >
             <button
               className={
                 btnBgColor + " capitalize p-1 text-sm text-white rounded"

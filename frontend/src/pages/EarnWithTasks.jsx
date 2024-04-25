@@ -50,7 +50,7 @@ const EarnWithTasks = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `/api/v1/tasks?status=${activeTab.toLowerCase()}&platform=${wayToEarn.platformName.toLowerCase()}`
+        `/api/v1/tasks?type=engagement&status=${activeTab.toLowerCase()}&platform=${wayToEarn.platformName.toLowerCase()}`
       );
       setTaskList(response.data);
       setGeneratedTask(null);
@@ -147,29 +147,41 @@ const EarnWithTasks = () => {
             <div>
               {activeTab == "pending" ? (
                 <PendingSubtask
-                  pendingSubtasks={wayToEarn.subTasksHistory.pendingTasks}
                   generateNewTask={generateNewTask}
-                  generatedTask={generatedTask || taskList}
+                  tasks={generatedTask || taskList}
                   cancelGeneratedTask={cancelGeneratedTask}
                   slug={slug}
+                  platform={wayToEarn.platformName.toLowerCase()}
+                  status={activeTab}
                 />
               ) : activeTab == "in-review" ? (
                 <InReviewSubtask
-                  inReviewSubtasks={wayToEarn.subTasksHistory.inReviewTasks}
+                  inReviewSubtasks={taskList}
                   slug={slug}
+                  platform={wayToEarn.platformName.toLowerCase()}
+                  status={activeTab}
                 />
               ) : activeTab == "failed" ? (
                 <FailedSubtask
-                  failedSubtasks={wayToEarn.subTasksHistory.failedTasks}
+                  failedSubtasks={taskList}
                   slug={slug}
+                  platform={wayToEarn.platformName.toLowerCase()}
+                  status={activeTab}
                 />
               ) : activeTab == "completed" ? (
                 <CompletedSubtask
-                  completedSubtasks={wayToEarn.subTasksHistory.completedTasks}
+                  completedSubtasks={taskList}
                   slug={slug}
+                  platform={wayToEarn.platformName.toLowerCase()}
+                  status={activeTab}
                 />
               ) : (
-                <CancelledSubtasks cancelledSubtasks={taskList} slug={slug} />
+                <CancelledSubtasks
+                  cancelledSubtasks={taskList}
+                  slug={slug}
+                  platform={wayToEarn.platformName.toLowerCase()}
+                  status={activeTab}
+                />
               )}
             </div>
           ) : (

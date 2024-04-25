@@ -2,13 +2,20 @@ import React from "react";
 import NoData from "../NoData/NoData";
 import Subtask from "../Subtask/Subtask";
 
-const CancelledSubtasks = ({ cancelledSubtasks, slug }) => {
+const CancelledSubtasks = ({ cancelledSubtasks, slug, platform, status }) => {
   return (
     <div className="font-primary">
       {cancelledSubtasks?.length ? (
         <div className="tasks">
           {cancelledSubtasks.map((cancelledSubtask) => {
-            return <Subtask task={cancelledSubtask} slug={slug} />;
+            return (
+              <Subtask
+                task={cancelledSubtask}
+                slug={slug}
+                platform={platform}
+                status={status}
+              />
+            );
           })}
         </div>
       ) : (

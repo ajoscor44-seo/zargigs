@@ -5,10 +5,12 @@ import PendingTaskSubtask from "../PendingtaskSubtask/PendingTaskSubtask";
 import { FaSpinner } from "react-icons/fa6";
 
 const PendingSubtask = ({
-  generatedTask,
+  tasks,
   generateNewTask,
   cancelGeneratedTask,
   slug,
+  platform,
+  status,
 }) => {
   const [isOpen, setModalState] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -26,12 +28,14 @@ const PendingSubtask = ({
 
   return (
     <div className="font-primary">
-      {generatedTask?.id ? (
+      {tasks?.id ? (
         <div className="tasks">
           <PendingTaskSubtask
-            task={generatedTask}
+            task={tasks}
             cancelTask={cancelGeneratedTask}
             slug={slug}
+            platform={platform}
+            status={status}
           />
           ;
         </div>

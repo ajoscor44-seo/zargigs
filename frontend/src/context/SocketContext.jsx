@@ -15,12 +15,17 @@ export const SocketContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (currentUser) {
-      const socket = io("http://localhost:3000", {
-        withCredentials: true,
-        query: {
-          userId: currentUser.id,
-        },
-      });
+      const socket = io(
+        import.meta.env.VITE_NODE_ENV !== "production"
+          ? import.meta.env.VITE_DEV_SERVER_BASE_URL
+          : import.meta.env.VITE_PROD_SERVER_BASE_URL,
+        {
+          withCredentials: true,
+          query: {
+            userId: currentUser.id,
+          },
+        }
+      );
 
       setSocket(socket);
 
