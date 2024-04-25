@@ -75,7 +75,7 @@ function App() {
               />
 
               {/* Client Page Layout */}
-              <PrivateRoute path="/" component={ClientDashboard} />
+              <PrivateRoute exact path="/" component={ClientDashboard} />
               <PrivateRoute path="/help-support" component={HelpSupport} />
               <PrivateRoute path="/notifications" component={Notifications} />
               <PrivateRoute path="/user-details" component={UserDetails} />
