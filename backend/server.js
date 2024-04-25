@@ -15,7 +15,7 @@ import { app, server } from "./V1/socket/socket.js";
 
 // Connects to db
 mongoose
-  .connect(process.env.MONGO)
+  .connect(process.env.DATABASE_URI)
   .then(() => {
     console.log("Connected to database");
   })
