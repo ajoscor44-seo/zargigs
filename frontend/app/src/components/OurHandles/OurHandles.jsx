@@ -1,0 +1,66 @@
+import React from "react";
+import { Link } from "react-router-dom/cjs/react-router-dom";
+import { FaFacebook } from "react-icons/fa6";
+import { FaTwitter } from "react-icons/fa6";
+import { FaSquareInstagram } from "react-icons/fa6";
+
+const OurHandles = () => {
+  return (
+    <div className="bg-slate-50 px-4 py-10">
+      <div className="flex items-center flex-col">
+        <h2 className="text-xl font-bold text-center font-mono">
+          Advertise and Earn With Your Social Media Account
+        </h2>
+        <p className="font-primary text-center text-md my-3">
+          Join thousands of people using GigsFlix to advertise and earn steady
+          income with their social media accounts. Get started today for free.
+        </p>
+        <div className="flex justify-center gap-5 mt-3">
+          <Link to="/signup">
+            <button className="btn bg-primary text-white rounded-sm">
+              CREATE ACCOUNT
+            </button>
+          </Link>
+          <Link to="/login">
+            <button className="btn text-primary border border-primary rounded-sm">
+              LOGIN
+            </button>
+          </Link>
+        </div>
+      </div>
+      <div className="flex items-center flex-col mt-5">
+        <h2 className="text-lg font-primary font-bold text-center">
+          Follow Us
+        </h2>
+        <span className="h-1 w-10 rounded-full bg-primaryLight"></span>
+      </div>
+
+      <div className="flex justify-center mt-4 gap-10 py-3">
+        <div className="flex flex-col items-center gap-3">
+          <div className="service_icon border p-4 rounded-full">
+            <FaFacebook size={25} className="text-blue-600" />
+          </div>
+
+          <p className="font-bold text-lg font-primary">Facebook</p>
+        </div>
+        <div className="flex flex-col items-center gap-3">
+          <div className="service_icon border p-4 rounded-full">
+            <FaTwitter size={25} className="text-blue-400" />
+          </div>
+
+          <p className="font-bold text-lg font-primary">Twitter</p>
+        </div>
+
+        <div className="flex flex-col items-center gap-3">
+          <div className="service_icon border p-4 rounded-full">
+            <FaSquareInstagram size={25} className="text-purple-900" />
+          </div>
+
+          <p className="font-bold text-lg font-primary">Instagram</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default OurHandles;

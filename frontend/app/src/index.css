@@ -1,0 +1,167 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
+
+:root {
+  --danger: #dc143c;
+  --warning: #ffa500;
+  --light: #ffffff;
+  --success: #049e04;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.nav_text {
+  @apply font-primary text-sm font-semibold text-gray-500 cursor-pointer px-1 py-3 lg:py-0 border-b-2 border-white hover:bg-gray-100 lg:hover:bg-slate-50 lg:hover:border-primaryLight  rounded-sm transition duration-300;
+}
+
+.btn {
+  @apply py-2 px-3 font-medium shadow-sm tracking-wider text-sm font-primary hover:opacity-70 whitespace-nowrap transition-colors duration-500;
+}
+
+.footer_head {
+  @apply font-medium text-xl font-primary mb-3;
+}
+
+.footer_list {
+  @apply text-sm flex flex-col gap-2 mb-5 font-primary font-medium;
+}
+
+.footer_list-item {
+  @apply hover:text-primary hover:underline cursor-pointer;
+}
+
+.dashboardCard {
+  background-image: linear-gradient(135deg, #fff200, #1c933f);
+}
+
+.clientEarning {
+  @apply text-sm font-primary font-semibold flex justify-center items-center text-center border px-4 py-2;
+  font-size: 12px;
+}
+
+.moneyTrans {
+  @apply flex items-center gap-1 font-semibold text-slate-500 text-sm p-2 border transition-all duration-200 hover:border-none hover:text-slate-100 rounded;
+  transition: all ease-in-out linear 1.5s;
+}
+
+.moneyTrans:hover {
+  background-image: linear-gradient(135deg, yellow, #05d005, green);
+}
+
+.earningMethod {
+  @apply p-3 bg-white shadow-2xl rounded-md flex flex-col justify-between;
+}
+
+.methodInfo {
+  @apply py-1 font-primary;
+}
+
+.methodNote {
+  font-size: 10px;
+}
+
+.startTask {
+  @apply text-slate-700 font-bold rounded font-primary p-2;
+  font-size: 12px;
+}
+
+.startTask:hover {
+  @apply text-transparent font-semibold;
+  background-image: linear-gradient(135deg, yellow, #05d005, green);
+  background-clip: text;
+}
+
+.recentActivities {
+  @apply flex flex-col;
+}
+
+.recentactivities {
+  margin-bottom: 60px;
+}
+
+.undernav {
+  margin-top: 70px;
+}
+
+.disclaimerMsg {
+  font-size: 12px;
+}
+
+.underBackNav {
+  padding-top: 61px;
+}
+
+.subTaskHistoryTab {
+  @apply flex items-center p-2 methodNote;
+}
+
+.subTaskHistoryTab.active {
+  @apply flex items-center p-2 methodNote bg-blue-100;
+}
+
+.uploadAdvertMediaTab {
+  @apply uppercase text-xs font-semibold bg-slate-100 hover:bg-slate-200 flex-1 text-center py-2;
+}
+
+.uploadAdvertMediaTab.active {
+  @apply bg-slate-300 transition-colors duration-500;
+}
+
+.fullHeight {
+  min-height: 100vh;
+}
+
+.menuNotifier {
+  top: 5px;
+  right: -2px;
+}
+
+.highBase {
+  margin-bottom: 150px;
+}
+
+.disabledBtn {
+  opacity: 0.5;
+}
+
+.hideDropIcon {
+  -webkit-appearance: none; /* Removes default styling for select on WebKit browsers */
+  -moz-appearance: none; /* Removes default styling for select on Mozilla browsers */
+  appearance: none;
+}
+
+.numberInputWithoutControl,
+.numberInputWithoutControl::-webkit-inner-spin-button,
+.numberInputWithoutControl::-webkit-outer-spin-button {
+  /* Chrome, Safari, Edge, Opera */
+  -webkit-appearance: none;
+  margin: 0;
+
+  /* Firefox */
+  -moz-appearance: textfield;
+}
+
+@keyframes pulse-size {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes grow-and-fade {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 0;
+  }
+}
