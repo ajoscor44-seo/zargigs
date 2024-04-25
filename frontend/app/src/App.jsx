@@ -1,4 +1,3 @@
-import Home from "./pages/Home";
 import {
   BrowserRouter as Router,
   Switch,
@@ -47,11 +46,6 @@ function App() {
   return (
     <>
       <Router>
-        {/* Landing Page */}
-        {/* <Route exact path="/">
-          <Home />
-        </Route> */}
-
         {/* App Routes */}
         <AuthProvider>
           <SocketContextProvider>
