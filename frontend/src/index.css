@@ -31,28 +31,6 @@
   @apply hover:text-primary hover:underline cursor-pointer;
 }
 
-.dashboardCard {
-  background-image: linear-gradient(135deg, #fff200, #1c933f);
-}
-
-.clientEarning {
-  @apply text-sm font-primary font-semibold flex justify-center items-center text-center border px-4 py-2;
-  font-size: 12px;
-}
-
-.moneyTrans {
-  @apply flex items-center gap-1 font-semibold text-slate-500 text-sm p-2 border transition-all duration-200 hover:border-none hover:text-slate-100 rounded;
-  transition: all ease-in-out linear 1.5s;
-}
-
-.moneyTrans:hover {
-  background-image: linear-gradient(135deg, yellow, #05d005, green);
-}
-
-.earningMethod {
-  @apply p-3 bg-white shadow-2xl rounded-md flex flex-col justify-between;
-}
-
 .methodInfo {
   @apply py-1 font-primary;
 }
@@ -61,60 +39,12 @@
   font-size: 10px;
 }
 
-.startTask {
-  @apply text-slate-700 font-bold rounded font-primary p-2;
-  font-size: 12px;
-}
-
-.startTask:hover {
-  @apply text-transparent font-semibold;
-  background-image: linear-gradient(135deg, yellow, #05d005, green);
-  background-clip: text;
-}
-
-.recentActivities {
-  @apply flex flex-col;
-}
-
-.recentactivities {
-  margin-bottom: 60px;
-}
-
 .undernav {
   margin-top: 70px;
 }
 
-.disclaimerMsg {
-  font-size: 12px;
-}
-
-.underBackNav {
-  padding-top: 61px;
-}
-
-.subTaskHistoryTab {
-  @apply flex items-center p-2 methodNote;
-}
-
-.subTaskHistoryTab.active {
-  @apply flex items-center p-2 methodNote bg-blue-100;
-}
-
-.uploadAdvertMediaTab {
-  @apply uppercase text-xs font-semibold bg-slate-100 hover:bg-slate-200 flex-1 text-center py-2;
-}
-
-.uploadAdvertMediaTab.active {
-  @apply bg-slate-300 transition-colors duration-500;
-}
-
 .fullHeight {
   min-height: 100vh;
-}
-
-.menuNotifier {
-  top: 5px;
-  right: -2px;
 }
 
 .highBase {
@@ -123,12 +53,6 @@
 
 .disabledBtn {
   opacity: 0.5;
-}
-
-.hideDropIcon {
-  -webkit-appearance: none; /* Removes default styling for select on WebKit browsers */
-  -moz-appearance: none; /* Removes default styling for select on Mozilla browsers */
-  appearance: none;
 }
 
 .numberInputWithoutControl,
@@ -140,28 +64,4 @@
 
   /* Firefox */
   -moz-appearance: textfield;
-}
-
-@keyframes pulse-size {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-}
-
-@keyframes grow-and-fade {
-  0% {
-    transform: scale(0.5);
-    opacity: 1;
-  }
-  80% {
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1.1);
-    opacity: 0;
-  }
 }

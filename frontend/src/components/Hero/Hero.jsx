@@ -55,16 +55,16 @@ const Hero = () => {
               })}
             </ul>
             <div className="gap-3 lg:hidden flex justify-center px-3 mt-2">
-              <Link to="/login">
+              <a href="https://app.gigsflix.com/login" target="_blank">
                 <button className="btn border border-primaryLight text-primaryLight rounded-md hover:bg-primaryLight hover:text-white">
                   Log In
                 </button>
-              </Link>
-              <Link to="/signup">
+              </a>
+              <a to="https://app.gigsflix.com/signup" target="_blank">
                 <button className="btn bg-primaryLight rounded-md text-white hover:bg-white hover:text-primaryLight">
                   Create Account
                 </button>
-              </Link>
+              </a>
             </div>
           </nav>
         )}

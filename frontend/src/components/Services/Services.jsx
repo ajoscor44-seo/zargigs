@@ -87,11 +87,11 @@ const Services = () => {
             </div>
           </div>
           <div className="flex items-start">
-            <Link to="/signup">
+            <a href="https://app.gigsflix.com/signup" target="_blank">
               <button className="btn bg-primaryLight rounded-sm text-white">
                 Get Started
               </button>
-            </Link>
+            </a>
           </div>
         </div>
       </div>

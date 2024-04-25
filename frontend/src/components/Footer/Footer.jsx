@@ -18,12 +18,12 @@ const Footer = () => {
       <div>
         <h2 className="footer_head">Quick Links</h2>
         <ul className="footer_list">
-          <Link to="/signup">
+          <a href="https://app.gigsflix.com/signup" target="_blank">
             <li className="footer_list-item">Create Account</li>
-          </Link>
-          <Link to="/login">
+          </a>
+          <a href="https://app.gigsflix.com/login" target="_blank">
             <li className="footer_list-item">Login</li>
-          </Link>
+          </a>
           <li className="footer_list-item">Terms</li>
           <li className="footer_list-item">Pricing</li>
           <li className="footer_list-item">Earnings</li>

@@ -43,16 +43,16 @@ const NavBar = ({
       </div>
 
       <div className="gap-5 hidden lg:flex">
-        <Link to="/login">
+        <a href="https://app.gigsflix.com/login" target="_blank">
           <button className="btn border border-primaryLight text-primaryLight rounded-md hover:bg-primaryLight hover:text-white">
             Log In
           </button>
-        </Link>
-        <Link to="/signup">
+        </a>
+        <a href="https://app.gigsflix.com/signup" target="_blank">
           <button className="btn bg-primaryLight rounded-md text-white hover:bg-white hover:text-primaryLight">
             Create Account
           </button>
-        </Link>
+        </a>
       </div>
       <div className="block lg:hidden">
         {!menuOpen ? (

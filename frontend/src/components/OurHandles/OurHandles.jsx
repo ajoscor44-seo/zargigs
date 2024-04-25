@@ -16,16 +16,16 @@ const OurHandles = () => {
           income with their social media accounts. Get started today for free.
         </p>
         <div className="flex justify-center gap-5 mt-3">
-          <Link to="/signup">
+          <a href="https://app.gigsflix.com/signup" target="_blank">
             <button className="btn bg-primary text-white rounded-sm">
               CREATE ACCOUNT
             </button>
-          </Link>
-          <Link to="/login">
+          </a>
+          <a href="https://app.gigsflix.com/login" target="_blank">
             <button className="btn text-primary border border-primary rounded-sm">
               LOGIN
             </button>
-          </Link>
+          </a>
         </div>
       </div>
       <div className="flex items-center flex-col mt-5">
