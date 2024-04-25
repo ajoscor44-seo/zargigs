@@ -5,8 +5,8 @@ import { MdOutlineLogin } from "react-icons/md";
 import logo from "../assets/png/logo-color.png";
 import loginIllustration from "../assets/images/login-illustration-png.png";
 import googleIcon from "../assets/png/google-icon.png";
-import { useAuth } from "../context/AuthContext";
 import FormInput from "../components/FormInput/FormInput";
+import { useAuth } from "../context/AuthContext";
 
 const Login = ({ setNotVerified }) => {
   const [email, setEmail] = useState(null);

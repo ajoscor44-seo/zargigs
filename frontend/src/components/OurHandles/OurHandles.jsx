@@ -5,6 +5,11 @@ import { FaTwitter } from "react-icons/fa6";
 import { FaSquareInstagram } from "react-icons/fa6";
 
 const OurHandles = () => {
+  const app_url =
+    import.meta.env.VITE_NODE_ENV !== "production"
+      ? import.meta.env.VITE_DEV_APP_URL
+      : import.meta.env.VITE_PROD_APP_URL;
+
   return (
     <div className="bg-slate-50 px-4 py-10">
       <div className="flex items-center flex-col">
@@ -16,12 +21,12 @@ const OurHandles = () => {
           income with their social media accounts. Get started today for free.
         </p>
         <div className="flex justify-center gap-5 mt-3">
-          <a href="https://app.gigsflix.com/signup" target="_blank">
+          <a href={`${app_url}/signup`} target="_blank">
             <button className="btn bg-primary text-white rounded-sm">
               CREATE ACCOUNT
             </button>
           </a>
-          <a href="https://app.gigsflix.com/login" target="_blank">
+          <a href={`${app_url}/login`} target="_blank">
             <button className="btn text-primary border border-primary rounded-sm">
               LOGIN
             </button>

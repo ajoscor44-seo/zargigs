@@ -10,6 +10,11 @@ const NavBar = ({
   tabs,
   scrollTo,
 }) => {
+  const app_url =
+    import.meta.env.VITE_NODE_ENV !== "production"
+      ? import.meta.env.VITE_DEV_APP_URL
+      : import.meta.env.VITE_PROD_APP_URL;
+
   return (
     <div className="flex justify-between px-5 pb-5 lg:px-40 pt-5 items-center bg-white mb-5 shadow-sm lg:shadow-none fixed w-full">
       <div className="flex items-end gap-10 w-full">
@@ -43,12 +48,12 @@ const NavBar = ({
       </div>
 
       <div className="gap-5 hidden lg:flex">
-        <a href="https://app.gigsflix.com/login" target="_blank">
+        <a href={`${app_url}/login`} target="_blank">
           <button className="btn border border-primaryLight text-primaryLight rounded-md hover:bg-primaryLight hover:text-white">
             Log In
           </button>
         </a>
-        <a href="https://app.gigsflix.com/signup" target="_blank">
+        <a href={`${app_url}/signup`} target="_blank">
           <button className="btn bg-primaryLight rounded-md text-white hover:bg-white hover:text-primaryLight">
             Create Account
           </button>

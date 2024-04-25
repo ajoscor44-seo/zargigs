@@ -4,6 +4,10 @@ import NavBar from "../NavBar/NavBar";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const Hero = () => {
+  const app_url =
+    import.meta.env.VITE_NODE_ENV !== "production"
+      ? import.meta.env.VITE_DEV_APP_URL
+      : import.meta.env.VITE_PROD_APP_URL;
   const [activeTab, setActiveTab] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
   const tabs = [
@@ -55,12 +59,12 @@ const Hero = () => {
               })}
             </ul>
             <div className="gap-3 lg:hidden flex justify-center px-3 mt-2">
-              <a href="https://app.gigsflix.com/login" target="_blank">
+              <a href={`${app_url}/login`} target="_blank">
                 <button className="btn border border-primaryLight text-primaryLight rounded-md hover:bg-primaryLight hover:text-white">
                   Log In
                 </button>
               </a>
-              <a to="https://app.gigsflix.com/signup" target="_blank">
+              <a to={`${app_url}/signup`} target="_blank">
                 <button className="btn bg-primaryLight rounded-md text-white hover:bg-white hover:text-primaryLight">
                   Create Account
                 </button>
@@ -85,7 +89,7 @@ const Hero = () => {
             social media account.
           </p>
 
-          <Link to="/signup">
+          <a href={`${app_url}/signup`} target="_blank">
             <button className="btn bg-primaryLight text-white mt-5 font-bold rounded-full">
               Get Started{" "}
               <svg
@@ -103,15 +107,15 @@ const Hero = () => {
                 />
               </svg>
             </button>
-          </Link>
+          </a>
           <div className="mt-5 text-gray-600 font-medium">
             Already A User?,{" "}
-            <Link to="/login">
+            <a href={`${app_url}/login`} target="_blank">
               <span className="text-primaryLight cursor-pointer hover:underline font-primary font-bold">
                 {" "}
                 Login{" "}
               </span>
-            </Link>
+            </a>
           </div>
         </div>
         <div className="col-span-2 flex justify-center items-center overflow-hidden">

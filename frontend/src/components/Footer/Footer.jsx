@@ -1,8 +1,12 @@
 import React from "react";
 import { MdMail } from "react-icons/md";
-import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const Footer = () => {
+  const app_url =
+    import.meta.env.VITE_NODE_ENV !== "production"
+      ? import.meta.env.VITE_DEV_APP_URL
+      : import.meta.env.VITE_PROD_APP_URL;
+
   return (
     <div className="bg-white p-5 lg:flex lg:justify-center gap-20">
       <div>
@@ -18,10 +22,10 @@ const Footer = () => {
       <div>
         <h2 className="footer_head">Quick Links</h2>
         <ul className="footer_list">
-          <a href="https://app.gigsflix.com/signup" target="_blank">
+          <a href={`${app_url}/signup`} target="_blank">
             <li className="footer_list-item">Create Account</li>
           </a>
-          <a href="https://app.gigsflix.com/login" target="_blank">
+          <a href={`${app_url}/login`} target="_blank">
             <li className="footer_list-item">Login</li>
           </a>
           <li className="footer_list-item">Terms</li>

@@ -4,6 +4,11 @@ import postAdvertImg from "../../assets/png/post-advert.png";
 import man_member from "../../assets/images/businessman-talking-phone-2.png";
 
 const WhatYouDo = () => {
+  const app_url =
+    import.meta.env.VITE_NODE_ENV !== "production"
+      ? import.meta.env.VITE_DEV_APP_URL
+      : import.meta.env.VITE_PROD_APP_URL;
+
   return (
     <div className="bg-white px-4 py-10 grid lg:grid-cols-2 lg:pt-20 lg:px-72 lg:justify-center lg:items-start">
       <div className="lg:order-2">
@@ -90,7 +95,7 @@ const WhatYouDo = () => {
             </div>
           </div>
           <div className="flex items-start">
-            <a href="https://app.gigsflix.com/signup" target="_blank">
+            <a href={`${app_url}/signup`} target="_blank">
               <button className="btn bg-primaryLight rounded-sm text-white">
                 Get Started
               </button>
