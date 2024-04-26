@@ -250,8 +250,8 @@ export const verifyEmail = async (req, res, next) => {
 
 export const signout = (req, res, next) => {
   try {
-    res.cookie("access_token", "", { maxAge: 0 });
-    res.status(200).json({ message: "Logged out successfully" });
+    res.clearCookie("access_token");
+    res.status(200).send("Logged out!");
   } catch (error) {
     next(error);
   }
