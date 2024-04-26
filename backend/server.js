@@ -30,6 +30,7 @@ const corsOptions = {
       : process.env.PROD_CLIENT_URL,
   credentials: true,
 };
+console.log("CORS allowed origin:", process.env.PROD_CLIENT_URL);
 
 // CORS configuration
 app.use(cors(corsOptions));
