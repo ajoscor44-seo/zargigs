@@ -63,68 +63,70 @@ const ClientDashboard = () => {
   return (
     <div className="clientDashboard bg-slate-50">
       <ClientNavbar />
-      <div>
-        {currentUser.isMember ? (
-          <div className="block">
-            <ClientWelcomeMsg username={currentUser.username} />
-            {announcement ? (
-              <div className="flex justify-center items-center bg-orange-100 text-orange-400 my-2 mx-4 ps-2 pe-3 rounded-full">
-                <span className="pe-2">
-                  <GiSpeaker size={25} />
-                </span>
-                <marquee
-                  style={{ maxHeight: "80px" }}
-                  className="font-semibold text-sm py-1"
-                >
-                  {announcement.message}
-                </marquee>
+      <div className="mb-10">
+        <div>
+          {currentUser.isMember ? (
+            <div className="block">
+              <ClientWelcomeMsg username={currentUser.username} />
+              {announcement ? (
+                <div className="flex justify-center items-center bg-orange-100 text-orange-400 my-2 mx-4 ps-2 pe-3 rounded-full">
+                  <span className="pe-2">
+                    <GiSpeaker size={25} />
+                  </span>
+                  <marquee
+                    style={{ maxHeight: "80px" }}
+                    className="font-semibold text-sm py-1"
+                  >
+                    {announcement.message}
+                  </marquee>
+                </div>
+              ) : (
+                <div></div>
+              )}
+              <ClientDashboardCard
+                firstname={currentUser.firstname}
+                lastname={currentUser.lastname}
+                userBalance={currentUser.balance}
+              />
+              <MoneyTransaction />
+              <ClientsEarnings
+                totalEarnings={currentUser.totalEarnings}
+                pendingEarnings={currentUser.pendingEarnings}
+                amountWithdrawn={currentUser.amountWithdrawn}
+                amountSpent={currentUser.amountSpent}
+              />
+              <EarningMethods />
+            </div>
+          ) : (
+            <div className="underBackNav bg-white flex flex-col py-12 px-12 font-primary">
+              <div className="mt-5 text-center py-5">
+                <h2 className="font-extrabold text-2xl">Welcome to Gigsflix</h2>
+                <p className="text-xs">
+                  Please select what you want to do on Gigsflix today
+                </p>
               </div>
-            ) : (
-              <div></div>
-            )}
-            <ClientDashboardCard
-              firstname={currentUser.firstname}
-              lastname={currentUser.lastname}
-              userBalance={currentUser.balance}
-            />
-            <MoneyTransaction />
-            <ClientsEarnings
-              totalEarnings={currentUser.totalEarnings}
-              pendingEarnings={currentUser.pendingEarnings}
-              amountWithdrawn={currentUser.amountWithdrawn}
-              amountSpent={currentUser.amountSpent}
-            />
-            <EarningMethods />
-          </div>
-        ) : (
-          <div className="underBackNav bg-white flex flex-col py-12 px-12 font-primary">
-            <div className="mt-5 text-center py-5">
-              <h2 className="font-extrabold text-2xl">Welcome to Gigsflix</h2>
-              <p className="text-xs">
-                Please select what you want to do on Gigsflix today
-              </p>
-            </div>
 
-            <div className="flex flex-col gap-10">
-              {possibleActions.map((action) => {
-                return (
-                  <WhatTheyCanDo
-                    key={action.personnel}
-                    btnText={action.btnText}
-                    actionDesription={action.description}
-                    actionPersonnel={action.personnel}
-                    actionTitle={action.title}
-                    pathTo={action.path}
-                  />
-                );
-              })}
+              <div className="flex flex-col gap-10">
+                {possibleActions.map((action) => {
+                  return (
+                    <WhatTheyCanDo
+                      key={action.personnel}
+                      btnText={action.btnText}
+                      actionDesription={action.description}
+                      actionPersonnel={action.personnel}
+                      actionTitle={action.title}
+                      pathTo={action.path}
+                    />
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
+        </div>
+        {recentActivities.length && (
+          <RecentActivities recentActivities={recentActivities} />
         )}
       </div>
-      {recentActivities.length && (
-        <RecentActivities recentActivities={recentActivities} />
-      )}
       <ClientMenuBar />
     </div>
   );

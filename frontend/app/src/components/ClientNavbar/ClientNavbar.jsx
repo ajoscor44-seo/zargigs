@@ -25,7 +25,7 @@ const ClientNavbar = () => {
   }, [currentUser]);
 
   return (
-    <div className="bg-white border fixed w-full top-0 lg:hidden p-4 flex items-center justify-between">
+    <div className="bg-white border fixed w-full top-0 lg:hidden p-4 flex items-center justify-between z-30">
       <Link to="#">
         <div className="flex items-center gap-2">
           <img className="w-8 rounded" src={logo} />
