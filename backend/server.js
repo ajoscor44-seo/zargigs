@@ -1,17 +1,12 @@
 import express from "express";
 import mongoose from "mongoose";
+import { app, server } from "./api/V1/socket/socket.js";
 import dotenv from "dotenv";
-import userRoutes from "./api/V1/Routes/user.route.js";
-import activityRoutes from "./api/V1/Routes/recent-activities.route.js";
-import notificationRoutes from "./api/V1/Routes/notification.route.js";
-import tasksRoutes from "./api/V1/Routes/tasks.route.js";
-import authRoutes from "./api/V1/Routes/auth.route.js";
+import v1Routes from "./api/V1/Routes/index.js";
 dotenv.config();
 import cors from "cors";
-import authenticateToken from "./api/V1/Middleware/authenticate.js";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
-import { app, server } from "./api/V1/socket/socket.js";
 
 // Connects to db
 mongoose
@@ -40,17 +35,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("tiny"));
 
-//Public Client authentication route
-app.use("/api/v1/auth", authRoutes);
-
-// Authenticate User with token
-app.use(authenticateToken);
-
 //Protected Routes
-app.use("/api/v1/user", userRoutes);
-app.use("/api/v1/activities", activityRoutes);
-app.use("/api/v1/notifications", notificationRoutes);
-app.use("/api/v1/tasks", tasksRoutes);
+app.use("/api/v1", v1Routes);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
