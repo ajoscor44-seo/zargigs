@@ -61,7 +61,7 @@ const Login = ({ setNotVerified }) => {
         sessionStorage.removeItem("auth-user-email");
         resetForm();
         await fetchUserData();
-        return history.push("/dashboard");
+        return history.push("/");
       }
     }
   };

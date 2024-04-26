@@ -9,7 +9,10 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL,
+    origin:
+      process.env.NODE_ENV !== "production"
+        ? process.env.DEV_CLIENT_URL
+        : process.env.PROD_CLIENT_URL,
     methods: ["GET", "POST", "PUT", "HEAD", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,

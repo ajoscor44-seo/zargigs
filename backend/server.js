@@ -2,11 +2,13 @@ import express from "express";
 import mongoose from "mongoose";
 import { app, server } from "./api/V1/socket/socket.js";
 import dotenv from "dotenv";
+import authRoutes from "../backend/api/V1/Routes/auth.route.js";
 import v1Routes from "./api/V1/Routes/index.js";
 dotenv.config();
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
+import authenticateToken from "./api/V1/Middleware/authenticate.js";
 
 // Connects to db
 mongoose
@@ -28,12 +30,20 @@ const corsOptions = {
       : process.env.PROD_CLIENT_URL,
   credentials: true,
 };
+
+// CORS configuration
 app.use(cors(corsOptions));
 
 // Parses json bodies
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("tiny"));
+
+// Authentication route
+app.use("/api/auth/", authRoutes);
+
+// Authenticate User with token
+app.use(authenticateToken);
 
 //Protected Routes
 app.use("/api/v1", v1Routes);

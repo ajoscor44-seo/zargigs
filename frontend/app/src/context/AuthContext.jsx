@@ -42,7 +42,7 @@ const AuthProvider = ({ children }) => {
         password,
       };
 
-      const response = await axios.post("/api/v1/auth/login", formData);
+      const response = await axios.post("/api/auth/login", formData);
 
       const data = response.data;
       return data;
@@ -53,7 +53,7 @@ const AuthProvider = ({ children }) => {
 
   const signupUser = async (formData) => {
     try {
-      const response = await axios.post("/api/v1/auth/signup", formData);
+      const response = await axios.post("/api/auth/signup", formData);
 
       const data = response.data;
       return data;
@@ -64,7 +64,7 @@ const AuthProvider = ({ children }) => {
 
   const OAuthUser = async (cred) => {
     try {
-      const res = await axios.post("/api/v1/auth/google", {
+      const res = await axios.post("/api/auth/google", {
         name: cred.user.displayName,
         email: cred.user.email,
         isEmailVerified: cred.user.emailVerified,
