@@ -35,6 +35,7 @@ import OrderHistory from "./pages/OrderHistory.jsx";
 import OrderDetails from "./pages/OrderDetails.jsx";
 import CreateOrder from "./pages/CreateOrder.jsx";
 import TaskDetails from "./pages/TaskDetails.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 function App() {
   axios.defaults.baseURL =
@@ -116,6 +117,7 @@ function App() {
                 path="/transaction-history"
                 component={TransactionHistory}
               />
+              <Route component={NotFound} />
             </Switch>
           </SocketContextProvider>
         </AuthProvider>
