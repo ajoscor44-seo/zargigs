@@ -1,17 +1,17 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import userRoutes from "./V1/Routes/user.route.js";
-import activityRoutes from "./V1/Routes/recent-activities.route.js";
-import notificationRoutes from "./V1/Routes/notification.route.js";
-import tasksRoutes from "./V1/Routes/tasks.route.js";
-import authRoutes from "./V1/Routes/auth.route.js";
+import userRoutes from "./api/V1/Routes/user.route.js";
+import activityRoutes from "./api/V1/Routes/recent-activities.route.js";
+import notificationRoutes from "./api/V1/Routes/notification.route.js";
+import tasksRoutes from "./api/V1/Routes/tasks.route.js";
+import authRoutes from "./api/V1/Routes/auth.route.js";
 dotenv.config();
 import cors from "cors";
-import authenticateToken from "./V1/Middleware/authenticate.js";
+import authenticateToken from "./api/V1/Middleware/authenticate.js";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
-import { app, server } from "./V1/socket/socket.js";
+import { app, server } from "./api/V1/socket/socket.js";
 
 // Connects to db
 mongoose
