@@ -25,8 +25,8 @@ const OAuth = ({ setError }) => {
       }
       setDisabledBtn(false);
       setError(null);
-      await fetchUserData()
-      history.push("/dashboard");
+      await fetchUserData();
+      history.push("/");
     } catch (error) {
       return error;
     }

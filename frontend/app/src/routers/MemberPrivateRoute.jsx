@@ -17,7 +17,7 @@ const MemberPrivateRoute = ({ component: Component, ...rest }) => {
         ) : currentUser &&
           currentUser.isEmailVerified &&
           currentUser.isMember ? (
-          <Redirect to="/dashboard" />
+          <Redirect to="/" />
         ) : currentUser && !currentUser.isEmailVerified ? (
           <Redirect to="/login" />
         ) : (

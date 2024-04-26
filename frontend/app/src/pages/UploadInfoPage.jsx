@@ -136,12 +136,12 @@ const UploadInfoPage = () => {
       if (data.failed) {
         if (data.message == "User's details already exists.") {
           await fetchUserData();
-          return history.push("/dashboard");
+          return history.push("/");
         }
         return setError(data.message);
       }
       await fetchUserData();
-      return history.push("/dashboard");
+      return history.push("/");
     } catch (error) {
       return console.error(error);
     }

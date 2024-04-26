@@ -109,7 +109,7 @@ const Settings = () => {
 
   return (
     <div>
-      <BackNav pageName={"Settings"} pathToGo={"/dashboard"} usePath={true} />
+      <BackNav pageName={"Settings"} pathToGo={"/"} usePath={true} />
       <div
         onClick={logout}
         className="py-2 px-3 bg-red-500 rounded-full flex justify-center items-center gap-1 text-white fixed top-3 z-20 right-2 font-bold font-primary"

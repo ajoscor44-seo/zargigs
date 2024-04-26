@@ -12,7 +12,7 @@ const Adevertise = () => {
       <BackNav
         pageName={"Advertise On Social Media"}
         usePath={true}
-        pathToGo={"/dashboard"}
+        pathToGo={"/"}
       />
       <div className="underBackNav">
         <Link to="/order-history">

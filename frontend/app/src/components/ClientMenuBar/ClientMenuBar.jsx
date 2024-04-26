@@ -35,7 +35,7 @@ const ClientMenuBar = () => {
 
   return (
     <div className="fixed bottom-0 bg-white w-full py-2 px-5 border-t flex justify-between">
-      <Link to="/dashboard">
+      <Link to="/">
         <div className="flex flex-col justify-between items-center cursor-pointer relative">
           <FaHome
             size={25}

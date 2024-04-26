@@ -18,7 +18,7 @@ const UploadProfilePrivateRoute = ({ component: Component, ...rest }) => {
           currentUser.isEmailVerified &&
           currentUser.location &&
           currentUser.religion ? (
-          <Redirect to="/dashboard" />
+          <Redirect to="/" />
         ) : (
           <Redirect to="/signup" />
         );
