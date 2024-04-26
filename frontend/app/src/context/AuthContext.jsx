@@ -51,6 +51,17 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const logoutUser = async () => {
+    try {
+      const response = await axios.get("/api/auth/logout");
+
+      const data = response.data;
+      return data;
+    } catch (error) {
+      return error;
+    }
+  };
+
   const signupUser = async (formData) => {
     try {
       const response = await axios.post("/api/auth/signup", formData);
@@ -100,6 +111,7 @@ const AuthProvider = ({ children }) => {
     currentUser,
     fetchUserData,
     loginUser,
+    logoutUser,
     signupUser,
     OAuthUser,
     verifyUserEmail,

@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import userImage from "../assets/images/user-image.png";
 import Setting from "../components/Setting/Setting";
-import { Link } from "react-router-dom/cjs/react-router-dom";
+import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import { FaEye } from "react-icons/fa6";
 import { BsCart2 } from "react-icons/bs";
 import { BiMoneyWithdraw } from "react-icons/bi";
@@ -24,7 +24,9 @@ import { FcAbout } from "react-icons/fc";
 import { useAuth } from "../context/AuthContext";
 
 const Settings = () => {
-  const { currentUser } = useAuth();
+  const [error, setError] = useState(null);
+  const history = useHistory();
+  const { currentUser, logoutUser } = useAuth();
   const settings = [
     {
       icon: <BsCart2 size={20} />,
@@ -97,11 +99,21 @@ const Settings = () => {
       path: "#",
     },
   ];
+  const logout = async () => {
+    const logoutRes = await logoutUser();
+
+    if (logoutRes.failed) setError(logoutRes.message);
+
+    return history.push("/login");
+  };
 
   return (
     <div>
       <BackNav pageName={"Settings"} pathToGo={"/dashboard"} usePath={true} />
-      <div className="py-2 px-3 bg-red-500 rounded-full flex justify-center items-center gap-1 text-white fixed top-3 z-20 right-2 font-bold font-primary">
+      <div
+        onClick={logout}
+        className="py-2 px-3 bg-red-500 rounded-full flex justify-center items-center gap-1 text-white fixed top-3 z-20 right-2 font-bold font-primary"
+      >
         <span className="text-sm">Logout</span>
         <CiLogout size={20} />
       </div>
@@ -135,6 +147,7 @@ const Settings = () => {
                 path={setting.path}
                 settingName={setting.name}
                 icon={setting.icon}
+                logout={logout}
               />
             );
           })}

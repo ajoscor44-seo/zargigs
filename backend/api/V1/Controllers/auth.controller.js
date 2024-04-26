@@ -251,7 +251,7 @@ export const verifyEmail = async (req, res, next) => {
 export const signout = (req, res, next) => {
   try {
     res.clearCookie("access_token");
-    res.status(200).send("Logged out!");
+    res.status(200).send({ message: "Logged Out!!", failed: false });
   } catch (error) {
     next(error);
   }
