@@ -5,7 +5,7 @@ const Teams = () => {
     <div className="bg-white px-4 py-10">
       <div className="flex items-center flex-col">
         <h2 className="text-2xl font-primary font-bold">Teams</h2>
-        <span className="h-1 w-10 rounded-full bg-primaryLight"></span>
+        <span className="h-1 w-10 rounded-full bg-green-500"></span>
       </div>
 
       <div className="flex flex-col items-center mt-5 gap-10 py-3">
@@ -17,7 +17,7 @@ const Teams = () => {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="w-12 h-12 text-primaryLight transition duration-500 hover:rotate-180"
+              className="w-12 h-12 text-green-500 transition duration-500 hover:rotate-180"
             >
               <path
                 strokeLinecap="round"
@@ -40,7 +40,7 @@ const Teams = () => {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="w-12 h-12 text-primaryLight transition duration-500 hover:rotate-180"
+              className="w-12 h-12 text-green-500 transition duration-500 hover:rotate-180"
             >
               <path
                 strokeLinecap="round"
@@ -64,7 +64,7 @@ const Teams = () => {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="w-12 h-12 text-primaryLight transition duration-500 hover:rotate-180"
+              className="w-12 h-12 text-green-500 transition duration-500 hover:rotate-180"
             >
               <path
                 strokeLinecap="round"

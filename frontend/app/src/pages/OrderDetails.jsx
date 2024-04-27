@@ -175,7 +175,7 @@ const OrderDetails = () => {
                       Allocated Tasks:
                     </span>
                     <h3 className="text-xs font-semibold">
-                      {numeral(Number(details.allocatedTasks.length)).format()}
+                      {numeral(Number(details.allocatedTasks)).format()}
                     </h3>
                   </div>
                   <div className="flex flex-col">
@@ -228,7 +228,7 @@ const OrderDetails = () => {
                       Completed Tasks:
                     </span>
                     <h3 className="text-xs font-semibold">
-                      {numeral(Number(details.completedTasks.length)).format()}
+                      {numeral(Number(details.completedTasks)).format()}
                     </h3>
                   </div>
                 </div>

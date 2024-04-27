@@ -13,7 +13,7 @@ const ContactUs = () => {
     <div className="bg-white px-4 py-10">
       <div className="flex items-center flex-col">
         <h2 className="text-2xl font-primary font-bold">Contact Us</h2>
-        <span className="h-1 w-10 rounded-full bg-primaryLight"></span>
+        <span className="h-1 w-10 rounded-full bg-green-500"></span>
       </div>
 
       <form
@@ -27,7 +27,7 @@ const ContactUs = () => {
           <input
             type="text"
             placeholder="Your Name"
-            className="border p-3 rounded outline-primaryLight"
+            className="border p-3 rounded outline-green-500"
           />
         </div>
         <div className="flex flex-col">
@@ -37,7 +37,7 @@ const ContactUs = () => {
           <input
             type="email"
             placeholder="example@example.com"
-            className="border p-3 rounded outline-primaryLight"
+            className="border p-3 rounded outline-green-500"
           />
         </div>
         <div className="flex flex-col">
@@ -46,7 +46,7 @@ const ContactUs = () => {
           </span>
           <textarea
             placeholder="Short Message..."
-            className="border p-3 rounded outline-primaryLight"
+            className="border p-3 rounded outline-green-500"
           ></textarea>
         </div>
         <div className="flex gap-4 justify-end">

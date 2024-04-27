@@ -1,18 +1,23 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import CopyToClipboard from "../../hooks/CopyToClipboard";
-import { useAuth } from "../../context/AuthContext";
+import { FaCopy, FaFileCircleCheck } from "react-icons/fa6";
 
 const ReferAndEarn = ({ username }) => {
-  const { currentUser } = useAuth();
   const inputRef = useRef(null);
-  const referralLink = `https://gigsflix.com/ref/${currentUser.username.toLowerCase()}`;
+  const [textIsCopied, setTextIsCopied] = useState(false);
+  const referralLink = `https://gigsflix.com/ref/${username}`;
 
   const copyToClipboard = (inputRef) => {
     const textIsCopied = CopyToClipboard(inputRef);
 
-    alert("Copied: " + textIsCopied);
+    if (textIsCopied) setTextIsCopied(true);
+
+    const timeToReset = setTimeout(() => {
+      setTextIsCopied(false);
+      return clearTimeout(timeToReset);
+    }, 5000);
   };
 
   return (
@@ -23,7 +28,7 @@ const ReferAndEarn = ({ username }) => {
           <GiTakeMyMoney size={25} className="text-primary" />
         </h2>
         <Link to="/invite">
-          <div className="rounded-full bg-primaryLight text-white text-center text-xs px-2 py-1 cursor-pointer">
+          <div className="rounded-full bg-green-500 text-white text-center text-xs px-2 py-1 cursor-pointer">
             INVITE FRIENDS
           </div>
         </Link>
@@ -34,19 +39,21 @@ const ReferAndEarn = ({ username }) => {
           <div className="p-2 border bg-slate-200 rounded-s">
             {referralLink}
           </div>
-          {false && (
-            <textarea
-              ref={inputRef}
-              rows={25}
-              className="p-2 border bg-slate-200 rounded-s"
-              defaultValue={referralLink}
-            ></textarea>
-          )}
+          <textarea
+            ref={inputRef}
+            rows={25}
+            className="p-2 border bg-slate-200 rounded-s hidden"
+            defaultValue={referralLink}
+          ></textarea>
           <button
             onClick={() => copyToClipboard(inputRef)}
-            className="text-white cursor-pointer rounded-r py-2 px-3 bg-primaryLight"
+            className="text-white cursor-pointer rounded-r py-2 px-3 bg-green-500"
           >
-            COPY
+            {textIsCopied ? (
+              <FaFileCircleCheck size={20} />
+            ) : (
+              <FaCopy size={20} />
+            )}
           </button>
         </div>
         <p className="text-xs mt-2 text-center">

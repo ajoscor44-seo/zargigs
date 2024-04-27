@@ -45,7 +45,7 @@ To get started, simply visit https://gigsflix.ng/#/ref/${username} to register o
       />
       <button
         onClick={() => copyToClipboard(messageRef)}
-        className="absolute z-20 flex right-3 top-4 items-center gap-2 px-2 py-1 rounded-full text-white bg-primaryLight"
+        className="absolute z-20 flex right-3 top-4 items-center gap-2 px-2 py-1 rounded-full text-white bg-green-500"
       >
         <span className="font-semibold text-sm">Copy Message</span>
         <BsCopy />

@@ -78,6 +78,12 @@ const TaskDetails = () => {
     return setTaskDetails(response.data);
   };
 
+  const uploadTaskForReview = async () => {
+    const response = await axios.post("/api/v1/tasks/request-review");
+
+    console.log(response.data);
+  };
+
   useEffect(() => {
     getTaskDetails();
   }, []);

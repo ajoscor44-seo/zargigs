@@ -60,7 +60,7 @@ const PendingSubtask = ({
           )}
           <button
             onClick={toggleModal}
-            className="bg-primaryLight text-white p-2 rounded shadow-2xl font-semibold"
+            className="bg-green-500 text-white p-2 rounded shadow-2xl font-semibold"
           >
             {loading ? <FaSpinner size={25} /> : "Generate A New Task"}
           </button>

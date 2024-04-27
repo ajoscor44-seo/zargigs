@@ -34,13 +34,13 @@ const ClientNavbar = () => {
       </Link>
       <div className="font-primary flex items-center gap-3">
         <Link to="/help-support">
-          <div className=" hover:text-primaryLight">
+          <div className=" hover:text-green-500">
             <TfiHelpAlt size={25} />
           </div>
         </Link>
 
         <Link to="/notifications">
-          <div className=" hover:text-primaryLight relative p-2">
+          <div className=" hover:text-green-500 relative p-2">
             <IoNotificationsOutline
               size={25}
               className="transition-colors duration-500"

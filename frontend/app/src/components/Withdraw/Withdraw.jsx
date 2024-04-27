@@ -47,7 +47,7 @@ const Withdraw = () => {
           </span>
           <span>
             <span>
-              <FaEdit className="text-primaryLight" size={15} />
+              <FaEdit className="text-green-500" size={15} />
             </span>
           </span>
         </div>
@@ -105,7 +105,7 @@ const Withdraw = () => {
           </div>
 
           <div className="flex flex-col mt-2 gap-2">
-            <button className="bg-primaryLight py-3 text-xs rounded text-white font-bold hover:bg-opacity-90">
+            <button className="bg-green-500 py-3 text-xs rounded text-white font-bold hover:bg-opacity-90">
               WITHDRAW
             </button>
             <Link to="/transaction-history">

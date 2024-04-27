@@ -31,7 +31,7 @@ const FundWallet = () => {
               type="number"
               placeholder="Input amount..."
             />
-            <button className="text-xs bg-primaryLight text-white font-semibold px-3 rounded-e-md">
+            <button className="text-xs bg-green-500 text-white font-semibold px-3 rounded-e-md">
               FUND WALLET
             </button>
           </div>

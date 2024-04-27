@@ -12,7 +12,7 @@ const ClientsEarnings = ({
       <div className="clientEarning">
         <div>
           <div>Total Earnings</div>
-          <div className="text-lg text-primaryLight font-bold">
+          <div className="text-lg text-green-500 font-bold">
             ₦{numeral(totalEarnings).format("0,0.00")}
           </div>
         </div>
@@ -20,7 +20,7 @@ const ClientsEarnings = ({
       <div className="clientEarning">
         <div>
           <div>Pending Earnings</div>
-          <div className="text-lg text-primaryLight font-bold">
+          <div className="text-lg text-green-500 font-bold">
             ₦{numeral(pendingEarnings).format("0,0.00")}
           </div>
         </div>
@@ -28,7 +28,7 @@ const ClientsEarnings = ({
       <div className="clientEarning">
         <div>
           <div>Amount Withdrawn</div>
-          <div className="text-lg text-primaryLight font-bold">
+          <div className="text-lg text-green-500 font-bold">
             ₦{numeral(amountWithdrawn).format("0,0.00")}
           </div>
         </div>
@@ -36,7 +36,7 @@ const ClientsEarnings = ({
       <div className="clientEarning">
         <div>
           <div>Amount Spent</div>
-          <div className="text-lg text-primaryLight font-bold">
+          <div className="text-lg text-green-500 font-bold">
             ₦{numeral(amountSpent).format("0,0.00")}
           </div>
         </div>

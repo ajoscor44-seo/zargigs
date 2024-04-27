@@ -15,7 +15,7 @@ const PayAmountBar = ({ feeTitle, fee, btnText, handleClick, disable }) => {
         onClick={handleClick}
         disabled={disable}
         className={
-          "uppercase text-xs bg-primaryLight py-2 px-4 rounded-sm text-white font-semibold" +
+          "uppercase text-xs bg-green-500 py-2 px-4 rounded-sm text-white font-semibold" +
           (disable ? " opacity-50" : "")
         }
       >

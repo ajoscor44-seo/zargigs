@@ -30,7 +30,7 @@ const NavBar = ({
                   key={tab.name}
                   className={
                     activeTab == tab.name.toLowerCase()
-                      ? "nav_text text-primaryLight border-primary"
+                      ? "nav_text text-green-500 border-primary"
                       : "nav_text"
                   }
                   onClick={() => {
@@ -49,12 +49,12 @@ const NavBar = ({
 
       <div className="gap-5 hidden lg:flex">
         <a href={`${app_url}/login`} target="_blank">
-          <button className="btn border border-primaryLight text-primaryLight rounded-md hover:bg-primaryLight hover:text-white">
+          <button className="btn border border-green-500 text-green-500 rounded-md hover:bg-green-500 hover:text-white">
             Log In
           </button>
         </a>
         <a href={`${app_url}/signup`} target="_blank">
-          <button className="btn bg-primaryLight rounded-md text-white hover:bg-white hover:text-primaryLight">
+          <button className="btn bg-green-500 rounded-md text-white hover:bg-white hover:text-green-500">
             Create Account
           </button>
         </a>
@@ -83,7 +83,7 @@ const NavBar = ({
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-10 h-10 text-primaryLight"
+            className="w-10 h-10 text-green-500"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             <path

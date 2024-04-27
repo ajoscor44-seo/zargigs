@@ -14,7 +14,7 @@ const WhatTheyCanDo = ({
       <h2 className="font-bold text-md mt-3 leading-5">{actionTitle}</h2>
       <p className="mt-5 text-sm leading-5">{actionDesription}</p>
       <Link to={pathTo}>
-        <button className="bg-primaryLight rounded-sm font-semibold py-3 px-4 text-white mt-4 uppercase text-xs">
+        <button className="bg-green-500 rounded-sm font-semibold py-3 px-4 text-white mt-4 uppercase text-xs">
           {btnText}
         </button>
       </Link>

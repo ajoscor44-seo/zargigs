@@ -6,7 +6,7 @@ const Chat = () => {
     <button className="fixed bottom-20 right-3 cursor-pointer">
       <IoChatbubbles
         size={25}
-        className="text-primaryLight shadow-2xl bg-transparent w-14 h-14"
+        className="text-green-500 shadow-2xl bg-transparent w-14 h-14"
       />
     </button>
   );

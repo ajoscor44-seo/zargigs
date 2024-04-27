@@ -5,7 +5,7 @@ import NoData from "../NoData/NoData";
 const InReviewSubtask = ({ inReviewSubtasks, slug }) => {
   return (
     <div className="font-primary">
-      {inReviewSubtasks.length ? (
+      {inReviewSubtasks?.length ? (
         <div className="tasks">
           {inReviewSubtasks.map((inReviewSubtask) => {
             return <Subtask task={inReviewSubtask} slug={slug} />;

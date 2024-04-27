@@ -6,6 +6,7 @@ import EngagementTask from "../Models/engagementTask.js";
 import FailedTask from "../Models/failed-tasks.model.js";
 import InReviewTask from "../Models/in-review-tasks.model.js";
 import PendingTask from "../Models/pending-tasks.model.js";
+import ProofOfWork from "../Models/proof-of-work.model.js";
 import User from "../Models/user.model.js";
 import { ErrorHandler } from "../utils/error.js";
 
@@ -308,7 +309,7 @@ export const getTotalTasks = async (req, res, next) => {
     });
 
     const total = tasks.reduce((total, task) => {
-      return total + task.numberOfTasks;
+      return total + task.numberOfTasks - task.allocatedTasks;
     }, 0);
     const response = { total: total };
     res.status(200).json(response);
@@ -451,7 +452,7 @@ export const generateTask = async (req, res, next) => {
       taskType: taskType,
       taskPlatform: Task.taskPlatform,
       link: Task.link,
-      earningPerTask: Task.costPerTask,
+      earningPerTask: Task.earningPerTask,
       title: Task.title,
     });
     const newPendingTask = new PendingTask({
@@ -741,17 +742,8 @@ export const getTask = async (req, res, next) => {
     }
 
     if (taskStatus !== "pending") {
-      const {
-        updatedAt,
-        createdBy,
-        parentId,
-        taskType,
-        expiresAt,
-        toBeDoneBy,
-        __v,
-        _id,
-        ...rest
-      } = task._doc;
+      const { updatedAt, taskType, expiresAt, toBeDoneBy, __v, _id, ...rest } =
+        task._doc;
 
       const responseObj = {
         id: _id,
@@ -761,17 +753,8 @@ export const getTask = async (req, res, next) => {
       // Creates the response
       return res.status(200).json(responseObj);
     } else {
-      const {
-        updatedAt,
-        createdBy,
-        parentId,
-        taskType,
-        expiresAt,
-        toBeDoneBy,
-        __v,
-        _id,
-        ...rest
-      } = task._doc;
+      const { updatedAt, taskType, expiresAt, toBeDoneBy, __v, _id, ...rest } =
+        task._doc;
       const currentTime = new Date();
       const expiryTime = task?.expiresAt;
 
@@ -787,6 +770,43 @@ export const getTask = async (req, res, next) => {
       // Creates the response
       return res.status(200).json(responseObj);
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const requestForReview = async (req, res, next) => {
+  try {
+    const {
+      username,
+      image,
+      id,
+      type: taskType,
+      platform: taskPlatform,
+      parentId,
+      createdBy,
+    } = req.body;
+
+    const newProofOfWork = new ProofOfWork({
+      user: req.user._id,
+      username,
+      imageUrl: image,
+      taskType,
+      taskPlatform,
+      parentId: id,
+    });
+    const newInReviewTask = new InReviewTask({
+      parentId: id,
+      taskType,
+      taskPlatform,
+      createdBy: req.user._id,
+    });
+    await newProofOfWork.save();
+    await newInReviewTask.save();
+
+    // Deletes the allocation and pending task.
+    await PendingTask.findOneAndDelete({ allocationId: id });
+    await AllocatedTask.findOneAndDelete({ _id: id });
   } catch (error) {
     next(error);
   }

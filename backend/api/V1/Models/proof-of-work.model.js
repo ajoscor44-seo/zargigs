@@ -1,22 +1,21 @@
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
-const taskSchema = new Schema(
+const proofOfWorkSchema = new Schema(
   {
+    user: {
+      type: String,
+      required: true,
+    },
     parentId: {
       type: String,
       required: true,
     },
-    createdBy: {
-      type: String,
-      ref: "user",
-      required: true,
-    },
-    doneBy: {
+    username: {
       type: String,
       required: true,
     },
-    title: {
+    imageUrl: {
       type: String,
       required: true,
     },
@@ -28,21 +27,12 @@ const taskSchema = new Schema(
       type: String,
       required: true,
     },
-    link: {
-      type: String,
-      required: false,
-    },
-    earningPerTask: {
-      type: Number,
-      required: true,
-    },
-    status: { type: String, required: false, default: "in-review" },
   },
   {
     timestamps: true,
   }
 );
 
-const InReviewTask = mongoose.model("InReviewTask", taskSchema);
+const ProofOfWork = mongoose.model("ProofOfWork", proofOfWorkSchema);
 
-export default InReviewTask;
+export default ProofOfWork;

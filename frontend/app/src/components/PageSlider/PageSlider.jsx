@@ -99,7 +99,7 @@ const PageSlider = ({
           <button
             disabled={isLoading}
             onClick={nextPage}
-            className={`bg-primaryLight text-white py-2 px-4 rounded outline-none flex items-center gap-1 ${
+            className={`bg-green-500 text-white py-2 px-4 rounded outline-none flex items-center gap-1 ${
               isLoading ? "disabledBtn" : ""
             }`}
           >

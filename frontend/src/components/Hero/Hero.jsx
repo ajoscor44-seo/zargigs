@@ -37,14 +37,14 @@ const Hero = () => {
           scrollTo={scrollTo}
         />
         {menuOpen && (
-          <nav className="block lg:hidden pb-5 fixed right-0 bg-white text-center w-full shadow-lg top-20 border-t border-primaryLight">
+          <nav className="block lg:hidden pb-5 fixed right-0 bg-white text-center w-full shadow-lg top-20 border-t border-green-500">
             <ul className="flex lg:gap-5 flex-col lg:flex-row">
               {tabs.map((tab) => {
                 return (
                   <li
                     className={
                       activeTab == tab.name.toLowerCase()
-                        ? "nav_text text-primaryLight border-primary"
+                        ? "nav_text text-green-500 border-primary"
                         : "nav_text"
                     }
                     onClick={() => {
@@ -60,12 +60,12 @@ const Hero = () => {
             </ul>
             <div className="gap-3 lg:hidden flex justify-center px-3 mt-2">
               <a href={`${app_url}/login`} target="_blank">
-                <button className="btn border border-primaryLight text-primaryLight rounded-md hover:bg-primaryLight hover:text-white">
+                <button className="btn border border-green-500 text-green-500 rounded-md hover:bg-green-500 hover:text-white">
                   Log In
                 </button>
               </a>
               <a href={`${app_url}/signup`} target="_blank">
-                <button className="btn bg-primaryLight rounded-md text-white hover:bg-white hover:text-primaryLight">
+                <button className="btn bg-green-500 rounded-md text-white hover:bg-white hover:text-green-500">
                   Create Account
                 </button>
               </a>
@@ -76,7 +76,7 @@ const Hero = () => {
       <div className="grid grid-flow-col lg:flex-row lg:pt-20 md:0 lg:px-72 lg:justify-center">
         <div className="flex flex-col justify-center items-center px-5 py-20 lg:py-0 col-span-1">
           <div className="flex flex-col items-center text-center text-gray-700 text-3xl mt-10 pt-10 lg:pt-0 pb-5 font-extrabold">
-            <span className="text-primaryLight mb-5 md:text-4xl px-4 lg:text-start">
+            <span className="text-green-500 mb-5 md:text-4xl px-4 lg:text-start">
               Ready To Increase Your Income?
             </span>
             <span className="font-sans px-5 py-3 lg:text-start">
@@ -90,7 +90,7 @@ const Hero = () => {
           </p>
 
           <a href={`${app_url}/signup`} target="_blank">
-            <button className="btn bg-primaryLight text-white mt-5 font-bold rounded-full">
+            <button className="btn bg-green-500 text-white mt-5 font-bold rounded-full">
               Get Started{" "}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -111,7 +111,7 @@ const Hero = () => {
           <div className="mt-5 text-gray-600 font-medium">
             Already A User?,{" "}
             <a href={`${app_url}/login`} target="_blank">
-              <span className="text-primaryLight cursor-pointer hover:underline font-primary font-bold">
+              <span className="text-green-500 cursor-pointer hover:underline font-primary font-bold">
                 {" "}
                 Login{" "}
               </span>

@@ -32,7 +32,7 @@ const BecomeAMember = () => {
               by following, liking, commenting, sharing, retweeting or posting
               adverts for businesses on your social media. Click{" "}
               <Link to="/earn">
-                <span className="text-primaryLight hover:underline">here </span>
+                <span className="text-green-500 hover:underline">here </span>
               </Link>
               to see what you will earn when you perform social tasks
             </li>
@@ -42,7 +42,7 @@ const BecomeAMember = () => {
               </span>{" "}
               when you refer someone to become a member on Hawkit. The more you
               refer, the more you earn. Click{" "}
-              <span className="text-primaryLight hover:underline">here</span> to
+              <span className="text-green-500 hover:underline">here</span> to
               learn how referral works.
             </li>
             <li className="text-xs font-semibold leading-5 mb-5">
@@ -51,7 +51,7 @@ const BecomeAMember = () => {
               </span>{" "}
               when you refer someone to Buy Likes, Followers, Comments, Shares,
               Whatsapp Post Views etc. Click{" "}
-              <span className="text-primaryLight hover:underline">here</span> to
+              <span className="text-green-500 hover:underline">here</span> to
               learn how referral works.
             </li>
           </ul>

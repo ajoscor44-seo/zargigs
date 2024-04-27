@@ -73,7 +73,7 @@ const Login = ({ setNotVerified }) => {
           <img className="w-10 rounded" src={logo} />
           <div className="flex items-start flex-col">
             <h2 className="text-2xl font-primary font-bold">GigsFlix</h2>
-            <span className="h-1 w-6 rounded-full bg-primaryLight"></span>
+            <span className="h-1 w-6 rounded-full bg-green-500"></span>
           </div>
         </div>
         <div className="col-span-2 hidden lg:flex lg:justify-center">
@@ -135,7 +135,7 @@ const Login = ({ setNotVerified }) => {
             </button>
             <button
               disabled={isLoading}
-              className="btn rounded bg-primaryLight text-white font-primary font-bold flex items-center"
+              className="btn rounded bg-green-500 text-white font-primary font-bold flex items-center"
               onClick={submitForm}
             >
               <MdOutlineLogin size={15} className="me-2" />
@@ -149,14 +149,14 @@ const Login = ({ setNotVerified }) => {
             <span className="text-xl text-dark">Continue With Google</span>
           </div>
           <Link to="/forgot-password">
-            <p className="flex justify-center text-primary hover:text-primaryLight">
+            <p className="flex justify-center text-primary hover:text-green-500">
               Forgot Password
             </p>
           </Link>
           <p className="flex justify-center">
             Dont have an account?
             <Link to="/signup">
-              <span className="text-primary hover:text-primaryLight ms-1">
+              <span className="text-primary hover:text-green-500 ms-1">
                 {" "}
                 Sign Up
               </span>

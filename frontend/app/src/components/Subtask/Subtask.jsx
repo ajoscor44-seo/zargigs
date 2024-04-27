@@ -28,7 +28,7 @@ const Subtask = ({ task, slug, platform, status, hideBtn }) => {
       ? "bg-red-400"
       : task.status?.replace(/\s+/g, "")?.toLowerCase() == "cancelled"
       ? "bg-red-500"
-      : "bg-primaryLight";
+      : "bg-green-500";
 
   return (
     <div className="flex items-center px-2 py-1 border-b gap-2 font-primary">

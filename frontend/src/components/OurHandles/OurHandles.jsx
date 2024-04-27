@@ -37,7 +37,7 @@ const OurHandles = () => {
         <h2 className="text-lg font-primary font-bold text-center">
           Follow Us
         </h2>
-        <span className="h-1 w-10 rounded-full bg-primaryLight"></span>
+        <span className="h-1 w-10 rounded-full bg-green-500"></span>
       </div>
 
       <div className="flex justify-center mt-4 gap-10 py-3">

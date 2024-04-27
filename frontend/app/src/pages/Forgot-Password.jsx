@@ -9,7 +9,7 @@ const ForgotPassword = () => {
         <h2>Forgot Password</h2>
         <p>Input your email address into the field below.</p>
         <div className="flex flex-col">
-          <span className="text-primaryLight text-lg mb-1 font-primary font-medium">
+          <span className="text-green-500 text-lg mb-1 font-primary font-medium">
             Email:
           </span>
           <input
@@ -17,7 +17,7 @@ const ForgotPassword = () => {
             placeholder="example@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border p-3 rounded outline-primaryLight"
+            className="border p-3 rounded outline-green-500"
           />
         </div>
       </div>

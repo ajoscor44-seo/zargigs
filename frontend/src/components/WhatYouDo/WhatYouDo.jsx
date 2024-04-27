@@ -17,7 +17,7 @@ const WhatYouDo = () => {
       <div>
         <div className="flex items-center flex-col">
           <h2 className="text-3xl font-primary font-bold">For Members</h2>
-          <span className="h-1 w-10 rounded-full bg-primaryLight"></span>
+          <span className="h-1 w-10 rounded-full bg-green-500"></span>
         </div>
 
         <div className="flex flex-col items-center mt-5 gap-10 py-3">
@@ -96,7 +96,7 @@ const WhatYouDo = () => {
           </div>
           <div className="flex items-start">
             <a href={`${app_url}/signup`} target="_blank">
-              <button className="btn bg-primaryLight rounded-sm text-white">
+              <button className="btn bg-green-500 rounded-sm text-white">
                 Get Started
               </button>
             </a>

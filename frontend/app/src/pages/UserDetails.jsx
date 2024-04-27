@@ -31,7 +31,7 @@ const UserDetails = () => {
   const amountWithdrawn = currentUser.amountWithdrawn;
   const amountSpent = currentUser.amountSpent;
   const isOnline = onlineUsers.includes(currentUser.id);
-  const badgeColor = isOnline ? "primaryLight" : "slate-300";
+  const badgeColor = isOnline ? "green-500" : "slate-300";
   const balance = totalEarnings - amountWithdrawn;
   const userPeoples = {
     referrals: currentUser.referrals.length || 0,
@@ -47,15 +47,11 @@ const UserDetails = () => {
 
   return (
     <div>
-      <BackNav
-        pageName={"User Details"}
-        pathToGo={"/"}
-        usePath={true}
-      />
+      <BackNav pageName={"User Details"} pathToGo={"/"} usePath={true} />
       <div className="underBackNav mb-20 bg-slate-100">
         <div className="font-primary pt-5 bg-white">
           <Link to="/account-settings">
-            <div className="py-2 px-3 transition-colors duration-300 hover:bg-slate-100 rounded-full w-12 h-12 flex justify-center items-center text-primaryLight fixed top-2 z-20 right-2">
+            <div className="py-2 px-3 transition-colors duration-300 hover:bg-slate-100 rounded-full w-12 h-12 flex justify-center items-center text-green-500 fixed top-2 z-20 right-2">
               <IoSettingsOutline size={25} />
             </div>
           </Link>
@@ -75,7 +71,7 @@ const UserDetails = () => {
               </span>
               <Link to="/update-location">
                 <div className="flex">
-                  <FaLocationDot className="text-primaryLight" />
+                  <FaLocationDot className="text-green-500" />
                   <span className="text-sm">
                     {location.LGA +
                       ", " +
