@@ -106,3 +106,35 @@ export const updateUserDetails = async (req, res, next) => {
   res.status(200).json("newUserDetails");
   next();
 };
+
+// Updates user details
+export const becomeAMember = async (req, res, next) => {
+  const { verificationId } = req.body;
+
+  // Checks for valid user
+  const validUser = await User.findOne({ email: req.user.email });
+  if (!validUser) {
+    const error = ErrorHandler(404, "There's no user with this email.");
+    return res.status(404).json(error);
+  }
+
+  // Verifies Payment
+  //
+  //
+  //
+
+  // Makes user a member
+  await User.findOneAndUpdate(
+    { userId: req.user._id },
+    {
+      isMember: true,
+    }
+  );
+
+  // Response
+  res.status(200).json({
+    message: "You are now a member",
+    failed: false,
+  });
+  next();
+};

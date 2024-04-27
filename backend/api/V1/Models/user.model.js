@@ -5,12 +5,10 @@ const userSchema = new mongoose.Schema(
     firstname: {
       type: String,
       required: true,
-      unique: false,
     },
     lastname: {
       type: String,
       required: true,
-      unique: false,
     },
     username: {
       type: String,
@@ -25,37 +23,30 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      unique: false,
     },
     referredBy: {
       type: String,
       required: true,
-      unique: false,
     },
     referrals: {
       type: Array,
       required: false,
-      unique: false,
     },
     role: {
       type: String,
       required: true,
-      unique: false,
     },
     isEmailVerified: {
       type: Boolean,
       required: true,
-      unique: false,
     },
     isMember: {
       type: Boolean,
       required: true,
-      unique: false,
     },
     image: {
       type: String,
       required: false,
-      unique: false,
       default:
         "https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg",
     },

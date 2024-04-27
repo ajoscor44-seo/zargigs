@@ -1,12 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import adminData from "../data/adminData";
 import numeral from "numeral";
-import { Link } from "react-router-dom/cjs/react-router-dom";
+import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import PayAmountBar from "../components/PayAmountBar/PayAmountBar";
+import axios from "axios";
 
 const BecomeAMember = () => {
+  const history = useHistory();
+  const [disableBtn, setDisableBtn] = useState(false);
+  const [error, setError] = useState(null);
+
+  const initiatePayment = async () => {
+    //
+  };
+
+  const becomeAMember = async () => {
+    try {
+      setDisableBtn(true);
+      const response = await axios.put("/api/v1/user/become-a-member");
+
+      if (response.failed) setError(response.message);
+
+      setError(null);
+      setDisableBtn(false);
+      return history.push("/earn");
+    } catch (error) {
+      return error;
+    }
+  };
   return (
     <div className="flex fullHeight">
       <BackNav pageName={"Perform Social Tasks And Earn"} />
@@ -68,6 +91,8 @@ const BecomeAMember = () => {
           feeTitle={"Membership Fee"}
           fee={adminData.membershipFee}
           btnText={"Click Here To Pay Now"}
+          handleClick={becomeAMember}
+          disable={disableBtn}
         />
       </div>
       <ClientMenuBar />
