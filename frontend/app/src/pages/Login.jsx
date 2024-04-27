@@ -7,6 +7,7 @@ import loginIllustration from "../assets/images/login-illustration-png.png";
 import googleIcon from "../assets/png/google-icon.png";
 import FormInput from "../components/FormInput/FormInput";
 import { useAuth } from "../context/AuthContext";
+import OAuth from "../components/OAuth/OAuth";
 
 const Login = ({ setNotVerified }) => {
   const [email, setEmail] = useState(null);
@@ -144,10 +145,7 @@ const Login = ({ setNotVerified }) => {
           </div>
         </div>
         <div className="flex flex-col gap-4 px-4">
-          <div className="btn rounded-sm flex justify-center items-center gap-2 font-primary text-red-600 border mt-3">
-            <img src={googleIcon} className="w-8" />
-            <span className="text-xl text-dark">Continue With Google</span>
-          </div>
+          <OAuth />
           <Link to="/forgot-password">
             <p className="flex justify-center text-primary hover:text-green-500">
               Forgot Password
