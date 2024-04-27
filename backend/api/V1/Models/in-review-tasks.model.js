@@ -12,7 +12,7 @@ const taskSchema = new Schema(
       ref: "user",
       required: true,
     },
-    doneBy: {
+    toBeReviewedBy: {
       type: String,
       required: true,
     },

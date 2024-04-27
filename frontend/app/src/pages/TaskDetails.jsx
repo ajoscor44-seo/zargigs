@@ -114,7 +114,7 @@ const TaskDetails = () => {
             <div className="mx-2 py-3 flex flex-col gap-1">
               <span className="font-semibold text-sm">Task Link</span>
               <div className="flex">
-                <span className="flex-1 flex items-center bg-gray-200 px-2 rounded-s-sm text-sm">
+                <span className="flex-1 flex items-center bg-gray-200 px-2 rounded-s-sm text-sm truncate pe-2">
                   {taskDetails?.link}
                 </span>
                 <a
