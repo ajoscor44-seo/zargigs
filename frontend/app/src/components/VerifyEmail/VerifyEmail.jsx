@@ -7,8 +7,9 @@ import { BiSolidCheckCircle } from "react-icons/bi";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
-  const { currentUser, verifyUserEmail } = useAuth();
+  const { verifyUserEmail } = useAuth();
   const [otp, setOtp] = useState(Array(4).fill(""));
+  const email = sessionStorage.getItem("auth-user-email");
   const [emailVerified, setEmailVerified] = useState(false);
   const [error, setError] = useState(null);
 
@@ -20,7 +21,6 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
   };
 
   const verifyEmail = async () => {
-    const email = sessionStorage.getItem("auth-user-email");
     const res = await verifyUserEmail(email, otp.join(""));
 
     if (res.failed) {
@@ -66,7 +66,7 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
               <p className="text-center text-sm">
                 To continue using Gigsflix, please verify your email address by
                 entering the two factor code sent to your registered email
-                address: <span className="font-bold">{currentUser.email}</span>
+                address: <span className="font-bold">{email}</span>
               </p>
             </div>
             <p className="text-center font-semibold text-xs text-sky-600 bg-sky-100 p-2 rounded-sm">

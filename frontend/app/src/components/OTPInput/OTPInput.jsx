@@ -25,7 +25,9 @@ function OtpInput({ otp, setOtp, error }) {
   };
 
   return (
-    <div className={`grid ${"grid-cols-" + (otp.length || 4)} gap-2`}>
+    <div
+      className={`grid ${"grid-cols-4 grid-cols-" + (otp.length || 4)} gap-2`}
+    >
       {otp.map((digit, index) => (
         <input
           key={index}
@@ -34,7 +36,7 @@ function OtpInput({ otp, setOtp, error }) {
           maxLength={1}
           value={digit}
           onChange={(event) => handleChange(event, index)}
-          className={`border py-1 px-2 rounded outline-${
+          className={`border py-1 px-2 rounded outline-green-500 outline-${
             error ? "red" : "green"
           }-500 text-2xl font-bold text-center numberInputWithoutControl`}
         />

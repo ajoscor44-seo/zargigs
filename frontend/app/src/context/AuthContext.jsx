@@ -19,7 +19,7 @@ const AuthProvider = ({ children }) => {
         return response.data;
       })
       .catch((error) => {
-        console.error(error);
+        return error;
       });
   };
 
@@ -27,7 +27,7 @@ const AuthProvider = ({ children }) => {
     setLoading(true);
     const user = await getCurrentUser();
     setLoading(false);
-    if (user.failed) return setCurrentUser(null);
+    if (!user || user?.failed) return setCurrentUser(null);
     return setCurrentUser(user);
   };
 
@@ -98,7 +98,7 @@ const AuthProvider = ({ children }) => {
         email,
         otp,
       };
-      const response = await axios.post("/api/v1/auth/verifyWithOTP", formData);
+      const response = await axios.post("/api/auth/verifyWithOTP", formData);
       const data = response.data;
 
       return data;
