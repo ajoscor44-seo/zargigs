@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
+import deviceNotAllowedImg from "../assets/png/device_not_allowed.png";
 
 const AuthContext = createContext();
 
@@ -124,7 +125,31 @@ const AuthProvider = ({ children }) => {
           <Spinner size={25} />
         </div>
       ) : (
-        children
+        <div className="font-primary">
+          <div className="hide-on-large-screen">{children}</div>
+          <div className="hidden bg-white h-screen w-full lg:flex justify-center items-center show-on-large-screen">
+            <div
+              className="flex flex-col gap-1 justify-center items-center p-3 shadow-2xl rounded"
+              style={{ maxWidth: "400px" }}
+            >
+              <img
+                src={deviceNotAllowedImg}
+                alt="Not Found Img"
+                className="w-52"
+              />
+              <h3 className="text-red-500 font-bold">Device Not Allowed!</h3>
+              <p className="text-gray-400 text-sm text-center">
+                This device size is not allowed to view this app.{" "}
+              </p>
+              <span className="text-xs text-orange-500 font-semibold">
+                ONLY MOBILE DEVICES ARE ALLOWED TO VIEW THIS APP
+              </span>
+              <div className="flex justify-end italic font-bold w-full">
+                <h3 className="text-green-500 text-sm">GigsFlix</h3>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </AuthContext.Provider>
   );
