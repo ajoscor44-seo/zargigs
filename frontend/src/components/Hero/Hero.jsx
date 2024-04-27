@@ -64,7 +64,7 @@ const Hero = () => {
                   Log In
                 </button>
               </a>
-              <a to={`${app_url}/signup`} target="_blank">
+              <a href={`${app_url}/signup`} target="_blank">
                 <button className="btn bg-primaryLight rounded-md text-white hover:bg-white hover:text-primaryLight">
                   Create Account
                 </button>
