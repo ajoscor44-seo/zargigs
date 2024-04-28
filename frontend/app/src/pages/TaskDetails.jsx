@@ -126,9 +126,9 @@ const TaskDetails = () => {
   useEffect(() => {
     getTaskDetails();
     if (status == "in-review") {
-      return setImage(taskDetails.proof.imageUrl);
+      return setImage(taskDetails?.proof?.imageUrl);
     }
-  }, []);
+  }, [image]);
 
   return (
     <div className="font-primary">
