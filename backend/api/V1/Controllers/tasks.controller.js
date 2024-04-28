@@ -360,7 +360,7 @@ export const getUserTotalTasks = async (req, res, next) => {
       ...baseQuery,
     });
     const inReviewTasks = await InReviewTask.find({
-      doneBy: req.user._id,
+      createdBy: req.user._id,
       ...baseQuery,
     });
 
@@ -605,7 +605,7 @@ export const getTasks = async (req, res, next) => {
         : taskStatus == "completed"
         ? await CompletedTask.find({ doneBy: req.user._id, taskPlatform })
         : taskStatus == "in-review"
-        ? await InReviewTask.find({ doneBy: req.user._id, taskPlatform })
+        ? await InReviewTask.find({ createdBy: req.user._id, taskPlatform })
         : [];
 
     if (!Tasks?.length && taskStatus !== "pending") {
@@ -729,7 +729,7 @@ export const getTask = async (req, res, next) => {
           })
         : taskStatus == "in-review"
         ? await InReviewTask.findOne({
-            doneBy: req.user._id,
+            createdBy: req.user._id,
             taskPlatform,
             taskType,
             _id: id,
@@ -741,26 +741,7 @@ export const getTask = async (req, res, next) => {
       return res.status(404).json(error);
     }
 
-    if (taskStatus !== "pending") {
-      const {
-        updatedAt,
-        taskType,
-        expiresAt,
-        toBeDoneBy,
-        createdBy,
-        __v,
-        _id,
-        ...rest
-      } = task._doc;
-
-      const responseObj = {
-        id: _id,
-        ...rest,
-      };
-
-      // Creates the response
-      return res.status(200).json(responseObj);
-    } else {
+    if (taskStatus == "pending") {
       const {
         updatedAt,
         taskType,
@@ -785,6 +766,57 @@ export const getTask = async (req, res, next) => {
 
       // Creates the response
       return res.status(200).json(responseObj);
+    } else if (taskStatus == "in-review") {
+      const {
+        updatedAt,
+        taskType,
+        expiresAt,
+        toBeDoneBy,
+        createdBy,
+        __v,
+        _id,
+        ...rest
+      } = task?._doc;
+      const proofOfWork = await ProofOfWork.findOne({
+        parentId: _id,
+      });
+
+      const {
+        __v: proofV,
+        updatedAt: proofUpdatedAt,
+        parentId: proofParentId,
+        createdBy: proofCreatedBy,
+        _id: proofId,
+        ...proofDetails
+      } = proofOfWork._doc;
+
+      const responseObj = {
+        id: _id,
+        proof: proofDetails,
+        ...rest,
+      };
+
+      // Creates the response
+      return res.status(200).json(responseObj);
+    } else {
+      const {
+        updatedAt,
+        taskType,
+        expiresAt,
+        toBeDoneBy,
+        createdBy,
+        __v,
+        _id,
+        ...rest
+      } = task?._doc;
+
+      const responseObj = {
+        id: _id,
+        ...rest,
+      };
+
+      // Creates the response
+      return res.status(200).json(responseObj);
     }
   } catch (error) {
     next(error);
@@ -797,9 +829,12 @@ export const requestForReview = async (req, res, next) => {
       username,
       image,
       id,
-      type: taskType,
-      platform: taskPlatform,
+      type,
+      platform,
       parentId,
+      title,
+      link,
+      earningPerTask,
     } = req.body;
 
     // Creates new task for review
@@ -807,8 +842,8 @@ export const requestForReview = async (req, res, next) => {
       parentId,
       createdBy: req.user._id,
       title,
-      taskType,
-      taskPlatform,
+      taskType: type,
+      taskPlatform: platform,
       link,
       earningPerTask,
     });
@@ -817,8 +852,6 @@ export const requestForReview = async (req, res, next) => {
       createdBy: req.user._id,
       username,
       imageUrl: image,
-      taskType,
-      taskPlatform,
       parentId: newInReviewTask._id,
     });
     await newProofOfWork.save();
@@ -827,6 +860,10 @@ export const requestForReview = async (req, res, next) => {
     // Deletes the allocation and pending task.
     await PendingTask.findOneAndDelete({ allocationId: id });
     await AllocatedTask.findOneAndDelete({ _id: id });
+    return res.status(200).send({
+      failed: false,
+      message: "Task uploaded for review.",
+    });
   } catch (error) {
     next(error);
   }

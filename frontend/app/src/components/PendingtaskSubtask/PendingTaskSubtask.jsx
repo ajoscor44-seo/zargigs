@@ -26,6 +26,7 @@ const PendingTaskSubtask = ({
   cancelTask,
   slug,
   platform,
+  type,
   status,
   hideBtn,
 }) => {
@@ -106,7 +107,7 @@ const PendingTaskSubtask = ({
             {hideBtn ? (
               <FaSpinner className="text-orange-500 my-1 mx-2" />
             ) : (
-              <Link to={`/earn/${slug}/${platform}/${status}/${task?.id}`}>
+              <Link to={`/earn/${type}/${slug}/${platform}/${status}/${task?.id}`}>
                 <button
                   className={
                     "capitalize p-1 text-sm rounded text-green-500 flex items-center border"

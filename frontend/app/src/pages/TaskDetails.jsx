@@ -9,13 +9,15 @@ import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import { BsCamera } from "react-icons/bs";
 import { storage } from "../config/firebase.config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import formatDate from "../hooks/formatDate";
 
 const TaskDetails = () => {
   const history = useHistory();
-  const { slug, platform, status, id } = useParams();
+  const { slug, platform, status, id, type } = useParams();
   const [taskDetails, setTaskDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [uploadError, setUploadError] = useState(null);
   const [username, setUsername] = useState(null);
   const fileInputRef = useRef();
   const [image, setImage] = useState(null);
@@ -24,6 +26,9 @@ const TaskDetails = () => {
 
   // Selects Profile Picture
   const selectProfilePic = () => {
+    if (status !== "pending") {
+      return;
+    }
     fileInputRef.current.click();
   };
 
@@ -86,37 +91,43 @@ const TaskDetails = () => {
 
   const uploadTaskForReview = async () => {
     try {
-      if (!username)
-        setError(
-          "Please input your social media username you used to perform the task."
-        );
-      if (!image) setError("Please upload your proof of work.");
-
+      if (!username) {
+        return setUploadError("Please input your social media username.");
+      }
+      if (!image) {
+        return setUploadError("Please upload your proof of work.");
+      }
       setLoading(true);
       const response = await axios.post("/api/v1/tasks/request-review", {
         username,
         image,
-        id: taskDetails?.id,
-        taskType: taskDetails?.taskType,
-        taskPlatform: taskDetails?.taskPlatform,
+        id: taskDetails?.allocationId,
+        type,
+        platform: taskDetails?.taskPlatform,
         parentId: taskDetails?.parentId,
+        title: taskDetails.title,
+        link: taskDetails.link,
+        earningPerTask: taskDetails.earningPerTask,
       });
 
       if (response.data.failed) {
-        setError(response.data.message);
+        setUploadError(response.data.message);
         setLoading(false);
         return setTaskDetails({});
       }
-      setError(null);
+      setUploadError(null);
       setLoading(false);
-      return history.push("/earn");
+      return history.push(`/earn/${slug}`);
     } catch (error) {
-      return setError(error);
+      return setUploadError(error);
     }
   };
 
   useEffect(() => {
     getTaskDetails();
+    if (status == "in-review") {
+      return setImage(taskDetails.proof.imageUrl);
+    }
   }, []);
 
   return (
@@ -202,9 +213,12 @@ const TaskDetails = () => {
                 </div>
               </div>
 
-              {status == "pending" ? (
+              {status == "pending" || "in-review" ? (
                 <div className="mt-2">
                   <p className="font-bold text-xs">Upload Proof of Work:</p>
+                  <p className="methodeNote text-red-500 font-bold text-center">
+                    {uploadError && uploadError}
+                  </p>
                   <div className="flex mt-2 gap-2 text-gray-500">
                     <div>
                       {image ? (
@@ -238,15 +252,35 @@ const TaskDetails = () => {
                         </span>
                         .
                       </p>
+                      <h2
+                        className="font-bold mb-0"
+                        hidden={status !== "in-review"}
+                      >
+                        Username:{" "}
+                        <span className="text-green-500">
+                          {taskDetails.proof.username}
+                        </span>
+                      </h2>
+                      <span
+                        className="text-xs font-bold text-gray-400"
+                        hidden={status !== "in-review"}
+                      >
+                        Submitted At:{" "}
+                        <span className="text-gray-300">
+                          {formatDate(taskDetails.proof.createdAt)}
+                        </span>
+                      </span>
                       <input
                         type="text"
                         name="taskPerformerUsername"
+                        hidden={status !== "pending"}
                         onChange={(e) => setUsername(e.target.value)}
                         placeholder="Enter your social media username here"
                         className="border w-full p-2 outline-none placeholder:text-xs mt-1"
                       />
                       <button
                         onClick={uploadTaskForReview}
+                        hidden={status !== "pending"}
                         className="border px-2 py-1 mt-1 bg-green-500 text-white rounded text-xs"
                       >
                         Upload Proof

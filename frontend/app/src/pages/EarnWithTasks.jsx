@@ -153,6 +153,7 @@ const EarnWithTasks = () => {
                   slug={slug}
                   platform={wayToEarn.platformName.toLowerCase()}
                   status={activeTab}
+                  type={"engagement"}
                 />
               ) : activeTab == "in-review" ? (
                 <InReviewSubtask
@@ -160,6 +161,7 @@ const EarnWithTasks = () => {
                   slug={slug}
                   platform={wayToEarn.platformName.toLowerCase()}
                   status={activeTab}
+                  type={"engagement"}
                 />
               ) : activeTab == "failed" ? (
                 <FailedSubtask
@@ -167,6 +169,7 @@ const EarnWithTasks = () => {
                   slug={slug}
                   platform={wayToEarn.platformName.toLowerCase()}
                   status={activeTab}
+                  type={"engagement"}
                 />
               ) : activeTab == "completed" ? (
                 <CompletedSubtask
@@ -174,11 +177,13 @@ const EarnWithTasks = () => {
                   slug={slug}
                   platform={wayToEarn.platformName.toLowerCase()}
                   status={activeTab}
+                  type={"engagement"}
                 />
               ) : (
                 <CancelledSubtasks
                   cancelledSubtasks={taskList}
                   slug={slug}
+                  type={"engagement"}
                   platform={wayToEarn.platformName.toLowerCase()}
                   status={activeTab}
                 />

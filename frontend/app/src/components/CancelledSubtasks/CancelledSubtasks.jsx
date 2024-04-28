@@ -2,7 +2,13 @@ import React from "react";
 import NoData from "../NoData/NoData";
 import Subtask from "../Subtask/Subtask";
 
-const CancelledSubtasks = ({ cancelledSubtasks, slug, platform, status }) => {
+const CancelledSubtasks = ({
+  cancelledSubtasks,
+  slug,
+  platform,
+  status,
+  type,
+}) => {
   return (
     <div className="font-primary">
       {cancelledSubtasks?.length ? (
@@ -14,6 +20,7 @@ const CancelledSubtasks = ({ cancelledSubtasks, slug, platform, status }) => {
                 slug={slug}
                 platform={platform}
                 status={status}
+                type={type}
               />
             );
           })}

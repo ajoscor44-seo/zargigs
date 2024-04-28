@@ -11,6 +11,7 @@ const PendingSubtask = ({
   slug,
   platform,
   status,
+  type,
 }) => {
   const [isOpen, setModalState] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -36,6 +37,7 @@ const PendingSubtask = ({
             slug={slug}
             platform={platform}
             status={status}
+            type={type}
           />
           ;
         </div>

@@ -104,7 +104,7 @@ function App() {
                 component={BecomeAMember}
               />
               <VerifiedMemberPrivateRoute
-                path="/earn/:slug/:platform/:status/:id"
+                path="/earn/:type/:slug/:platform/:status/:id"
                 component={TaskDetails}
               />
               <VerifiedMemberPrivateRoute

@@ -6,6 +6,7 @@ import {
   FaInstagram,
   FaRetweet,
   FaShare,
+  FaSpinner,
   FaTelegram,
   FaTiktok,
   FaTwitter,
@@ -18,7 +19,7 @@ import { SiAudiomack } from "react-icons/si";
 import { SlUserFollowing } from "react-icons/sl";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
-const Subtask = ({ task, slug, platform, status, hideBtn }) => {
+const Subtask = ({ task, slug, platform, status, hideBtn, type }) => {
   const btnBgColor =
     task.status?.replace(/\s+/g, "")?.toLowerCase() == "pending"
       ? "bg-orange-400"
@@ -105,15 +106,22 @@ const Subtask = ({ task, slug, platform, status, hideBtn }) => {
         <div>
           <Link
             to={
-              hideBtn ? "#" : `/earn/${slug}/${platform}/${status}/${task?.id}`
+              hideBtn
+                ? "#"
+                : `/earn/${type}/${slug}/${platform}/${status}/${task?.id}`
             }
           >
             <button
               className={
-                btnBgColor + " capitalize p-1 text-sm text-white rounded"
+                btnBgColor +
+                " capitalize p-1 text-sm text-nowrap text-white rounded me-1"
               }
             >
-              {task?.status}
+              {task?.status == "in-review" ? (
+                <FaSpinner size={20} />
+              ) : (
+                task?.status
+              )}
             </button>
           </Link>
         </div>

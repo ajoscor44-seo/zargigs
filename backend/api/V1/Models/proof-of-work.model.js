@@ -19,14 +19,6 @@ const proofOfWorkSchema = new Schema(
       type: String,
       required: true,
     },
-    taskType: {
-      type: String,
-      required: true,
-    },
-    taskPlatform: {
-      type: String,
-      required: true,
-    },
   },
   {
     timestamps: true,
