@@ -11,11 +11,23 @@ const proofOfWorkSchema = new Schema(
       type: String,
       required: true,
     },
+    requestFrom: {
+      type: String,
+      required: true,
+    },
     username: {
       type: String,
       required: true,
     },
     imageUrl: {
+      type: String,
+      required: true,
+    },
+    taskType: {
+      type: String,
+      required: true,
+    },
+    taskPlatform: {
       type: String,
       required: true,
     },

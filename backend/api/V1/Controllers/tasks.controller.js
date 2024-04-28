@@ -824,18 +824,27 @@ export const getTask = async (req, res, next) => {
 };
 
 export const requestForReview = async (req, res, next) => {
+  const {
+    username,
+    image,
+    id,
+    type,
+    platform,
+    parentId,
+    title,
+    link,
+    earningPerTask,
+  } = req.body;
+
   try {
-    const {
-      username,
-      image,
-      id,
-      type,
-      platform,
-      parentId,
-      title,
-      link,
-      earningPerTask,
-    } = req.body;
+    // Validations for user request
+    const validUser = await User.findOne({ email: req.user.email });
+
+    if (!validUser) {
+      const error = ErrorHandler(404, "There's no user with this email.");
+      return res.status(404).json(error);
+    }
+    const approverId = "Hello";
 
     // Creates new task for review
     const newInReviewTask = new InReviewTask({
@@ -853,6 +862,9 @@ export const requestForReview = async (req, res, next) => {
       username,
       imageUrl: image,
       parentId: newInReviewTask._id,
+      taskPlatform: platform,
+      taskType: type,
+      requestFrom: approverId,
     });
     await newProofOfWork.save();
     await newInReviewTask.save();
@@ -864,6 +876,22 @@ export const requestForReview = async (req, res, next) => {
       failed: false,
       message: "Task uploaded for review.",
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getProofsOfWork = async () => {
+  try {
+    // Validations for user request
+    const validUser = await User.findOne({ email: req.user.email });
+
+    if (!validUser) {
+      const error = ErrorHandler(404, "There's no user with this email.");
+      return res.status(404).json(error);
+    }
+
+    const proofs = await ProofOfWork.find({ parentId });
   } catch (error) {
     next(error);
   }

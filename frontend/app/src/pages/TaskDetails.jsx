@@ -125,10 +125,13 @@ const TaskDetails = () => {
 
   useEffect(() => {
     getTaskDetails();
+  }, []);
+
+  useEffect(() => {
     if (status == "in-review") {
       return setImage(taskDetails?.proof?.imageUrl);
     }
-  }, [image]);
+  }, [taskDetails]);
 
   return (
     <div className="font-primary">
@@ -216,8 +219,11 @@ const TaskDetails = () => {
               {status == "pending" || "in-review" ? (
                 <div className="mt-2">
                   <p className="font-bold text-xs">Upload Proof of Work:</p>
+                  <p className="methodeNote text-green-500 font-bold text-center">
+                    {imagePercentage}
+                  </p>
                   <p className="methodeNote text-red-500 font-bold text-center">
-                    {uploadError && uploadError}
+                    {uploadError || imageError}
                   </p>
                   <div className="flex mt-2 gap-2 text-gray-500">
                     <div>
