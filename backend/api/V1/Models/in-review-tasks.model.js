@@ -12,10 +12,6 @@ const taskSchema = new Schema(
       ref: "user",
       required: true,
     },
-    toBeReviewedBy: {
-      type: String,
-      required: true,
-    },
     title: {
       type: String,
       required: true,

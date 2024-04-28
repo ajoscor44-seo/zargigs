@@ -6,8 +6,12 @@ import { FaCopy, FaFileCircleCheck } from "react-icons/fa6";
 
 const ReferAndEarn = ({ username }) => {
   const inputRef = useRef(null);
+  const app_url =
+    import.meta.env.VITE_NODE_ENV !== "production"
+      ? import.meta.env.VITE_DEV_APP_URL
+      : import.meta.env.VITE_PROD_APP_URL;
   const [textIsCopied, setTextIsCopied] = useState(false);
-  const referralLink = `https://gigsflix.com/ref/${username}`;
+  const referralLink = `${app_url}/ref/${username}`;
 
   const copyToClipboard = (inputRef) => {
     const textIsCopied = CopyToClipboard(inputRef);

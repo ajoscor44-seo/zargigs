@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import hero_img from "../../assets/images/girl-pointing.png";
 import NavBar from "../NavBar/NavBar";
-import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const Hero = () => {
   const app_url =
@@ -84,9 +83,8 @@ const Hero = () => {
             </span>
           </div>
           <p className="text-center font-semibold font-primary text-lg lg:text-start px-4">
-            Earn daily income by reselling products, posting adverts and
-            performing simple social tasks for top businesses and brands on your
-            social media account.
+            Earn daily income by posting adverts and performing simple social
+            tasks for top businesses and brands on your social media account.
           </p>
 
           <a href={`${app_url}/signup`} target="_blank">

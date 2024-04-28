@@ -742,8 +742,16 @@ export const getTask = async (req, res, next) => {
     }
 
     if (taskStatus !== "pending") {
-      const { updatedAt, taskType, expiresAt, toBeDoneBy, __v, _id, ...rest } =
-        task._doc;
+      const {
+        updatedAt,
+        taskType,
+        expiresAt,
+        toBeDoneBy,
+        createdBy,
+        __v,
+        _id,
+        ...rest
+      } = task._doc;
 
       const responseObj = {
         id: _id,
@@ -753,8 +761,16 @@ export const getTask = async (req, res, next) => {
       // Creates the response
       return res.status(200).json(responseObj);
     } else {
-      const { updatedAt, taskType, expiresAt, toBeDoneBy, __v, _id, ...rest } =
-        task._doc;
+      const {
+        updatedAt,
+        taskType,
+        expiresAt,
+        toBeDoneBy,
+        createdBy,
+        __v,
+        _id,
+        ...rest
+      } = task._doc;
       const currentTime = new Date();
       const expiryTime = task?.expiresAt;
 
@@ -784,22 +800,26 @@ export const requestForReview = async (req, res, next) => {
       type: taskType,
       platform: taskPlatform,
       parentId,
-      createdBy,
     } = req.body;
 
+    // Creates new task for review
+    const newInReviewTask = new InReviewTask({
+      parentId,
+      createdBy: req.user._id,
+      title,
+      taskType,
+      taskPlatform,
+      link,
+      earningPerTask,
+    });
+    // Creates new proof of work
     const newProofOfWork = new ProofOfWork({
-      user: req.user._id,
+      createdBy: req.user._id,
       username,
       imageUrl: image,
       taskType,
       taskPlatform,
-      parentId: id,
-    });
-    const newInReviewTask = new InReviewTask({
-      parentId: id,
-      taskType,
-      taskPlatform,
-      createdBy: req.user._id,
+      parentId: newInReviewTask._id,
     });
     await newProofOfWork.save();
     await newInReviewTask.save();

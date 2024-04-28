@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const proofOfWorkSchema = new Schema(
   {
-    user: {
+    createdBy: {
       type: String,
       required: true,
     },

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom/cjs/react-router-dom";
+import { useHistory, useParams } from "react-router-dom/cjs/react-router-dom";
 import BackNav from "../components/BackNav/BackNav";
 import axios from "axios";
 import PendingTaskSubtask from "../components/PendingtaskSubtask/PendingTaskSubtask";
@@ -11,10 +11,12 @@ import { storage } from "../config/firebase.config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 const TaskDetails = () => {
+  const history = useHistory();
   const { slug, platform, status, id } = useParams();
   const [taskDetails, setTaskDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [username, setUsername] = useState(null);
   const fileInputRef = useRef();
   const [image, setImage] = useState(null);
   const [imageError, setImageError] = useState(null);
@@ -63,25 +65,54 @@ const TaskDetails = () => {
   };
 
   const getTaskDetails = async () => {
-    setLoading(true);
-    const response = await axios.get(
-      `/api/v1/tasks/task/${id}?type=engagement&platform=${platform}&status=${status}`
-    );
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `/api/v1/tasks/task/${id}?type=engagement&platform=${platform}&status=${status}`
+      );
 
-    if (response.data.failed) {
-      setError(response.data.message);
+      if (response.data.failed) {
+        setError(response.data.message);
+        setLoading(false);
+        return setTaskDetails({});
+      }
+
       setLoading(false);
-      return setTaskDetails({});
+      return setTaskDetails(response.data);
+    } catch (error) {
+      return setError(error);
     }
-
-    setLoading(false);
-    return setTaskDetails(response.data);
   };
 
   const uploadTaskForReview = async () => {
-    const response = await axios.post("/api/v1/tasks/request-review");
+    try {
+      if (!username)
+        setError(
+          "Please input your social media username you used to perform the task."
+        );
+      if (!image) setError("Please upload your proof of work.");
 
-    console.log(response.data);
+      setLoading(true);
+      const response = await axios.post("/api/v1/tasks/request-review", {
+        username,
+        image,
+        id: taskDetails?.id,
+        taskType: taskDetails?.taskType,
+        taskPlatform: taskDetails?.taskPlatform,
+        parentId: taskDetails?.parentId,
+      });
+
+      if (response.data.failed) {
+        setError(response.data.message);
+        setLoading(false);
+        return setTaskDetails({});
+      }
+      setError(null);
+      setLoading(false);
+      return history.push("/earn");
+    } catch (error) {
+      return setError(error);
+    }
   };
 
   useEffect(() => {
@@ -210,10 +241,14 @@ const TaskDetails = () => {
                       <input
                         type="text"
                         name="taskPerformerUsername"
+                        onChange={(e) => setUsername(e.target.value)}
                         placeholder="Enter your social media username here"
                         className="border w-full p-2 outline-none placeholder:text-xs mt-1"
                       />
-                      <button className="border px-2 py-1 mt-1 bg-green-500 text-white rounded text-xs">
+                      <button
+                        onClick={uploadTaskForReview}
+                        className="border px-2 py-1 mt-1 bg-green-500 text-white rounded text-xs"
+                      >
                         Upload Proof
                       </button>
                     </div>
