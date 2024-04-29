@@ -35,12 +35,19 @@ const OrderDetails = () => {
       setDetails(response.data[0]);
       return setLoading(false);
     } catch (error) {
-      console.error(error);
+      return error;
     }
+  };
+
+  const getProofsOfWork = async () => {
+    const response = await axios.get("/api/v1/tasks/proofs-of-work");
+
+    console.log(response);
   };
 
   useEffect(() => {
     getTaskDetails();
+    getProofsOfWork();
   }, []);
 
   return (

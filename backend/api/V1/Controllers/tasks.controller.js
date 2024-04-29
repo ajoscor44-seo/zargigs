@@ -360,7 +360,7 @@ export const getUserTotalTasks = async (req, res, next) => {
       ...baseQuery,
     });
     const inReviewTasks = await InReviewTask.find({
-      createdBy: req.user._id,
+      doneBy: req.user._id,
       ...baseQuery,
     });
 
@@ -605,7 +605,7 @@ export const getTasks = async (req, res, next) => {
         : taskStatus == "completed"
         ? await CompletedTask.find({ doneBy: req.user._id, taskPlatform })
         : taskStatus == "in-review"
-        ? await InReviewTask.find({ createdBy: req.user._id, taskPlatform })
+        ? await InReviewTask.find({ doneBy: req.user._id, taskPlatform })
         : [];
 
     if (!Tasks?.length && taskStatus !== "pending") {
@@ -729,7 +729,7 @@ export const getTask = async (req, res, next) => {
           })
         : taskStatus == "in-review"
         ? await InReviewTask.findOne({
-            createdBy: req.user._id,
+            doneBy: req.user._id,
             taskPlatform,
             taskType,
             _id: id,
@@ -742,16 +742,8 @@ export const getTask = async (req, res, next) => {
     }
 
     if (taskStatus == "pending") {
-      const {
-        updatedAt,
-        taskType,
-        expiresAt,
-        toBeDoneBy,
-        createdBy,
-        __v,
-        _id,
-        ...rest
-      } = task._doc;
+      const { updatedAt, taskType, expiresAt, toBeDoneBy, __v, _id, ...rest } =
+        task._doc;
       const currentTime = new Date();
       const expiryTime = task?.expiresAt;
 
@@ -767,16 +759,8 @@ export const getTask = async (req, res, next) => {
       // Creates the response
       return res.status(200).json(responseObj);
     } else if (taskStatus == "in-review") {
-      const {
-        updatedAt,
-        taskType,
-        expiresAt,
-        toBeDoneBy,
-        createdBy,
-        __v,
-        _id,
-        ...rest
-      } = task?._doc;
+      const { updatedAt, taskType, expiresAt, toBeDoneBy, __v, _id, ...rest } =
+        task?._doc;
       const proofOfWork = await ProofOfWork.findOne({
         parentId: _id,
       });
@@ -799,16 +783,8 @@ export const getTask = async (req, res, next) => {
       // Creates the response
       return res.status(200).json(responseObj);
     } else {
-      const {
-        updatedAt,
-        taskType,
-        expiresAt,
-        toBeDoneBy,
-        createdBy,
-        __v,
-        _id,
-        ...rest
-      } = task?._doc;
+      const { updatedAt, taskType, expiresAt, toBeDoneBy, __v, _id, ...rest } =
+        task?._doc;
 
       const responseObj = {
         id: _id,
@@ -831,6 +807,7 @@ export const requestForReview = async (req, res, next) => {
     type,
     platform,
     parentId,
+    createdBy,
     title,
     link,
     earningPerTask,
@@ -844,12 +821,12 @@ export const requestForReview = async (req, res, next) => {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);
     }
-    const approverId = "Hello";
 
     // Creates new task for review
     const newInReviewTask = new InReviewTask({
       parentId,
-      createdBy: req.user._id,
+      createdBy,
+      doneBy: req.user._id,
       title,
       taskType: type,
       taskPlatform: platform,
@@ -864,7 +841,7 @@ export const requestForReview = async (req, res, next) => {
       parentId: newInReviewTask._id,
       taskPlatform: platform,
       taskType: type,
-      requestFrom: approverId,
+      requestFrom: createdBy,
     });
     await newProofOfWork.save();
     await newInReviewTask.save();
@@ -881,7 +858,7 @@ export const requestForReview = async (req, res, next) => {
   }
 };
 
-export const getProofsOfWork = async () => {
+export const getProofsOfWork = async (req, res, next) => {
   try {
     // Validations for user request
     const validUser = await User.findOne({ email: req.user.email });
@@ -891,7 +868,27 @@ export const getProofsOfWork = async () => {
       return res.status(404).json(error);
     }
 
-    const proofs = await ProofOfWork.find({ parentId });
+    const proofs = await ProofOfWork.find({ requestFrom: req.user._id });
+    const proofObjects = proofs.map((proof) => {
+      const {
+        updatedAt,
+        createdBy,
+        parentId,
+        taskType,
+        taskPlatform,
+        requestFrom,
+        __v,
+        _id,
+        ...rest
+      } = proof?.toObject();
+
+      return {
+        id: _id,
+        ...rest,
+      };
+    });
+
+    res.status(200).json(proofObjects);
   } catch (error) {
     next(error);
   }

@@ -13,6 +13,7 @@ import {
   getTasks,
   getTask,
   requestForReview,
+  getProofsOfWork,
 } from "../Controllers/tasks.controller.js";
 
 const router = express.Router();
@@ -22,6 +23,7 @@ router.get("/task/:id", getTask);
 router.get("/total", getTotalTasks);
 router.get("/user-total", getUserTotalTasks);
 router.get("/generate", generateTask);
+router.get("/proofs-of-work", getProofsOfWork);
 router.post("/request-review", requestForReview);
 router.delete("/cancel-task", cancelGeneratedTask);
 router.post("/adverts", postAdvertTask);

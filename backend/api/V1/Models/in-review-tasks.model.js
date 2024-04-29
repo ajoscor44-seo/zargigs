@@ -12,6 +12,10 @@ const taskSchema = new Schema(
       ref: "user",
       required: true,
     },
+    doneBy: {
+      type: String,
+      required: true,
+    },
     title: {
       type: String,
       required: true,

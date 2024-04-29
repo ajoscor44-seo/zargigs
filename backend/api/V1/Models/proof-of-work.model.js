@@ -11,10 +11,6 @@ const proofOfWorkSchema = new Schema(
       type: String,
       required: true,
     },
-    requestFrom: {
-      type: String,
-      required: true,
-    },
     username: {
       type: String,
       required: true,
@@ -28,6 +24,10 @@ const proofOfWorkSchema = new Schema(
       required: true,
     },
     taskPlatform: {
+      type: String,
+      required: true,
+    },
+    requestFrom: {
       type: String,
       required: true,
     },

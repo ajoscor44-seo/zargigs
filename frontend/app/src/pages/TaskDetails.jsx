@@ -102,6 +102,7 @@ const TaskDetails = () => {
         username,
         image,
         id: taskDetails?.allocationId,
+        createdBy: taskDetails?.createdBy,
         type,
         platform: taskDetails?.taskPlatform,
         parentId: taskDetails?.parentId,
@@ -264,7 +265,7 @@ const TaskDetails = () => {
                       >
                         Username:{" "}
                         <span className="text-green-500">
-                          {taskDetails.proof.username}
+                          {taskDetails?.proof?.username}
                         </span>
                       </h2>
                       <span
@@ -273,7 +274,7 @@ const TaskDetails = () => {
                       >
                         Submitted At:{" "}
                         <span className="text-gray-300">
-                          {formatDate(taskDetails.proof.createdAt)}
+                          {formatDate(taskDetails?.proof?.createdAt)}
                         </span>
                       </span>
                       <input
