@@ -7,6 +7,10 @@ const proofOfWorkSchema = new Schema(
       type: String,
       required: true,
     },
+    grandParentId: {
+      type: String,
+      required: true,
+    },
     parentId: {
       type: String,
       required: true,
@@ -30,6 +34,10 @@ const proofOfWorkSchema = new Schema(
     requestFrom: {
       type: String,
       required: true,
+    },
+    status: {
+      type: String,
+      default: "pending",
     },
   },
   {

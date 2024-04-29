@@ -137,7 +137,7 @@ const TaskDetails = () => {
   return (
     <div className="font-primary">
       <BackNav
-        pageName={`Task ${id}`}
+        pageName={"Task Details"}
         pathToGo={`/earn/${slug}`}
         usePath={true}
       />

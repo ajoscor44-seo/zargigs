@@ -23,10 +23,14 @@ import { IoLogoAppleAppstore, IoShareSocialOutline } from "react-icons/io5";
 import { BiLike } from "react-icons/bi";
 import numeral from "numeral";
 import formatDate from "../hooks/formatDate";
+import ProofOfWork from "../components/ProofOfWork/ProofOfWork";
 
 const OrderDetails = () => {
   const [loading, setLoading] = useState(true);
+  const [proofLoading, setProofLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [details, setDetails] = useState({});
+  const [proofs, setProofs] = useState([]);
   const { slug, id } = useParams();
 
   const getTaskDetails = async () => {
@@ -40,15 +44,24 @@ const OrderDetails = () => {
   };
 
   const getProofsOfWork = async () => {
-    const response = await axios.get("/api/v1/tasks/proofs-of-work");
-
-    console.log(response);
+    const response = await axios.get(
+      `/api/v1/tasks/proofs-of-work?type=${details?.taskType}&platform=${details?.taskPlatform}&id=${details?.id}`
+    );
+    if (response.data.failed) {
+      setProofLoading(false);
+      return setError(response.data.message);
+    }
+    setProofLoading(false);
+    return setProofs(response.data);
   };
 
   useEffect(() => {
     getTaskDetails();
-    getProofsOfWork();
   }, []);
+
+  useEffect(() => {
+    getProofsOfWork();
+  }, [details]);
 
   return (
     <div>
@@ -309,18 +322,22 @@ const OrderDetails = () => {
                 performed by the users below.
               </p>
             </div>
-            {details.allocatedTasks.length ? (
-              <div>result</div>
-            ) : !details.allocatedTasks.length ? (
+            {proofs.length && !proofLoading ? (
+              <div>
+                {proofs.map((proof) => (
+                  <ProofOfWork proof={proof} key={proof.id} />
+                ))}
+              </div>
+            ) : !proofs.length ? (
               <div className="py-5">
-                <NoData textBelow={"No Task Allocated Yet."} />
+                <NoData textBelow={"No Task Allocated Yet"} />
+              </div>
+            ) : proofLoading ? (
+              <div className="py-5 h-40 flex justify-center items-center">
+                <FaSpinner size={20} />
               </div>
             ) : (
-              <div className="py-5">
-                {details.allocatedTasks.map((allocation) => {
-                  return allocation;
-                })}
-              </div>
+              <div className="py-5">An error occurred</div>
             )}
           </div>
         </div>

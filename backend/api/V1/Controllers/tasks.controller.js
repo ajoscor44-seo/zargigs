@@ -743,7 +743,7 @@ export const getTask = async (req, res, next) => {
 
     if (taskStatus == "pending") {
       const { updatedAt, taskType, expiresAt, toBeDoneBy, __v, _id, ...rest } =
-        task._doc;
+        task?._doc;
       const currentTime = new Date();
       const expiryTime = task?.expiresAt;
 
@@ -765,6 +765,11 @@ export const getTask = async (req, res, next) => {
         parentId: _id,
       });
 
+      if (!proofOfWork) {
+        const error = ErrorHandler(400, "No proof of work for this task.");
+        return res.status(400).json(error);
+      }
+
       const {
         __v: proofV,
         updatedAt: proofUpdatedAt,
@@ -772,7 +777,7 @@ export const getTask = async (req, res, next) => {
         createdBy: proofCreatedBy,
         _id: proofId,
         ...proofDetails
-      } = proofOfWork._doc;
+      } = proofOfWork?._doc;
 
       const responseObj = {
         id: _id,
@@ -838,6 +843,7 @@ export const requestForReview = async (req, res, next) => {
       createdBy: req.user._id,
       username,
       imageUrl: image,
+      grandParentId: parentId,
       parentId: newInReviewTask._id,
       taskPlatform: platform,
       taskType: type,
@@ -859,6 +865,8 @@ export const requestForReview = async (req, res, next) => {
 };
 
 export const getProofsOfWork = async (req, res, next) => {
+  const { type, platform, id } = req.query;
+
   try {
     // Validations for user request
     const validUser = await User.findOne({ email: req.user.email });
@@ -868,27 +876,46 @@ export const getProofsOfWork = async (req, res, next) => {
       return res.status(404).json(error);
     }
 
-    const proofs = await ProofOfWork.find({ requestFrom: req.user._id });
-    const proofObjects = proofs.map((proof) => {
-      const {
-        updatedAt,
-        createdBy,
-        parentId,
-        taskType,
-        taskPlatform,
-        requestFrom,
-        __v,
-        _id,
-        ...rest
-      } = proof?.toObject();
-
-      return {
-        id: _id,
-        ...rest,
-      };
+    const proofs = await ProofOfWork.find({
+      requestFrom: req.user._id,
+      taskPlatform: platform,
+      taskType: type,
+      grandParentId: id,
     });
 
-    res.status(200).json(proofObjects);
+    if (!proofs) {
+      const error = ErrorHandler(404, "No proof of work for this task.");
+      return res.status(404).json(error);
+    }
+
+    const proofObject = await Promise.all(
+      proofs.map(async (proof) => {
+        const {
+          updatedAt,
+          createdBy,
+          parentId,
+          grandParentId,
+          taskType,
+          taskPlatform,
+          requestFrom,
+          __v,
+          _id,
+          ...rest
+        } = proof?.toObject();
+
+        const proofPoster = await User.findOne({ _id: createdBy });
+        const { image, username, ...posterRest } = proofPoster.toObject();
+
+        return {
+          id: _id,
+          posterUsername: username,
+          posterImage: image,
+          ...rest,
+        };
+      })
+    );
+
+    res.status(200).json(proofObject);
   } catch (error) {
     next(error);
   }
