@@ -52,14 +52,24 @@ const ProofOfWork = ({ proof }) => {
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-end bg-red-500 py-1 px-2 text-white rounded-sm cursor-pointer">
-            Disapprove
-          </span>
+        {proof?.status == "pending" ? (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-end bg-red-500 py-1 px-2 text-white rounded-sm cursor-pointer">
+              Disapprove
+            </span>
+            <span className="text-xs text-end bg-green-500 py-1 px-2 text-white rounded-sm cursor-pointer">
+              Approve
+            </span>
+          </div>
+        ) : proof?.status == "approved" ? (
           <span className="text-xs text-end bg-green-500 py-1 px-2 text-white rounded-sm cursor-pointer">
-            Approve
+            Approved
           </span>
-        </div>
+        ) : (
+          <span className="text-xs text-end bg-red-500 py-1 px-2 text-white rounded-sm cursor-pointer">
+            Disapproved
+          </span>
+        )}
       </div>
       {isOpen && (
         <Modal
