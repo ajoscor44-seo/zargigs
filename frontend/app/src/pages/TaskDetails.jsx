@@ -129,7 +129,7 @@ const TaskDetails = () => {
   }, []);
 
   useEffect(() => {
-    if (status == "in-review") {
+    if (status == "in-review" || status == "completed") {
       return setImage(taskDetails?.proof?.imageUrl);
     }
   }, [taskDetails]);
@@ -217,7 +217,9 @@ const TaskDetails = () => {
                 </div>
               </div>
 
-              {status == "pending" || "in-review" ? (
+              {status == "pending" ||
+              status == "in-review" ||
+              status == "completed" ? (
                 <div className="mt-2">
                   <p className="font-bold text-xs">Upload Proof of Work:</p>
                   <p className="methodeNote text-green-500 font-bold text-center">
@@ -251,7 +253,7 @@ const TaskDetails = () => {
                       )}
                     </div>
                     <div className="flex-1">
-                      <p className="methodNote">
+                      <p className="methodNote" hidden={status !== "pending"}>
                         Please enter the username of the social media account
                         you used to perform the task.{" "}
                         <span className="font-bold text-orange-400">
@@ -259,9 +261,19 @@ const TaskDetails = () => {
                         </span>
                         .
                       </p>
+                      <p className="methodNote" hidden={status == "pending"}>
+                        This is the social media username you used to perform
+                        this task.{" "}
+                        <span className="font-bold text-red-400">
+                          NOTE: THIS USERNAME CANNOT BE EDITED
+                        </span>
+                        .
+                      </p>
                       <h2
-                        className="font-bold mb-0"
-                        hidden={status !== "in-review"}
+                        className="font-bold mb-0 text-sm"
+                        hidden={
+                          status !== "in-review" && status !== "completed"
+                        }
                       >
                         Username:{" "}
                         <span className="text-green-500">
@@ -270,7 +282,9 @@ const TaskDetails = () => {
                       </h2>
                       <span
                         className="text-xs font-bold text-gray-400"
-                        hidden={status !== "in-review"}
+                        hidden={
+                          status !== "in-review" && status !== "completed"
+                        }
                       >
                         Submitted At:{" "}
                         <span className="text-gray-300">

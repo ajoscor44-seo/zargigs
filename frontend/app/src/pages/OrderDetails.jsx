@@ -330,6 +330,7 @@ const OrderDetails = () => {
                     proof={proof}
                     key={proof.id}
                     setChange={setDataChanged}
+                    setError={setError}
                   />
                 ))}
               </div>

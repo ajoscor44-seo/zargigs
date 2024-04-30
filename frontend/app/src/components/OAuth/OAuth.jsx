@@ -33,7 +33,7 @@ const OAuth = ({ setError }) => {
   };
 
   return (
-    <button disabled={disabledBtn} className={disabledBtn && "opacity-50"}>
+    <button disabled={disabledBtn} className={disabledBtn ? "opacity-50" : ""}>
       <div
         onClick={handleOAuth}
         className="btn cursor-pointer rounded-sm flex justify-center items-center gap-2 font-primary text-red-600 border mt-3"

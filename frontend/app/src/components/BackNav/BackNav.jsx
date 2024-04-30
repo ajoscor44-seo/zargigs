@@ -14,7 +14,7 @@ const BackNav = ({ pageName, pathToGo, usePath }) => {
 
   return (
     <div className="bg-white z-10 py-3 px-4 flex fixed w-full items-center gap-3 border-b">
-      <Link to={pathToGo}>
+      <Link to={pathToGo ? pathToGo : ""}>
         <div className="hover:bg-slate-100 p-2 rounded-full">
           <IoIosArrowBack size={20} onClick={goBack} />
         </div>

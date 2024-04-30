@@ -50,6 +50,7 @@ const Order = () => {
               <Link to={way.pathToPage} key={way.pathToPage}>
                 <PricingWay
                   way={way}
+                  key={way.pathToPage}
                   addSelectBtn={true}
                   wayDescription={`${way.description}`}
                 />

@@ -83,7 +83,7 @@ const TransactionHistory = () => {
           ) : (
             historyData.data?.map((data) => {
               return (
-                <Link to={`/order-history/${activeTab}/${data.id}`}>
+                <Link to={`/order-history/${activeTab}/${data.id}`} key={data.id}>
                   <div
                     className="px-1 py-2 flex items-start gap-2 border-b cursor-pointer hover:bg-slate-50"
                     key={data.id}

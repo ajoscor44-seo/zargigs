@@ -5,8 +5,6 @@ import { Link } from "react-router-dom/cjs/react-router-dom";
 import EarnWithAds from "../components/EarnWithAds/EarnWithAds";
 import EarnWithTasks from "../components/EarnWithTasks/EarnWithTasks";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
-import waysToEarnForTasks from "../data/waysToEarnForTasks";
-import waysToEarnForAds from "../data/waysToEarnForAdvert";
 import user from "../data/user";
 import axios from "axios";
 
@@ -14,12 +12,6 @@ const Earn = () => {
   const [activeTab, setActiveTab] = useState("postAds");
   const [totalAdvertTasks, setTotalAdvertTasks] = useState(0);
   const [totalNormalTasks, setTotalNormalTasks] = useState(0);
-  // waysToEarnForAds.reduce((total, way) => {
-  //   return total + way.availableTasks.length;
-  // }, 0);
-  // const totalNormalTasks = waysToEarnForTasks.reduce((total, way) => {
-  //   return total + way.availableTasks.length;
-  // }, 0);
 
   const getTotalEngagementTasks = async () => {
     const data = await axios

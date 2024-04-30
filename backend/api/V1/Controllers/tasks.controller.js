@@ -787,6 +787,35 @@ export const getTask = async (req, res, next) => {
 
       // Creates the response
       return res.status(200).json(responseObj);
+    } else if (taskStatus == "completed") {
+      const { updatedAt, taskType, expiresAt, toBeDoneBy, __v, _id, ...rest } =
+        task?._doc;
+      const proofOfWork = await ProofOfWork.findOne({
+        parentId: task?.proofParentId,
+      });
+
+      if (!proofOfWork) {
+        const error = ErrorHandler(400, "No proof of work for this task.");
+        return res.status(400).json(error);
+      }
+
+      const {
+        __v: proofV,
+        updatedAt: proofUpdatedAt,
+        parentId: proofParentId,
+        createdBy: proofCreatedBy,
+        _id: proofId,
+        ...proofDetails
+      } = proofOfWork?._doc;
+
+      const responseObj = {
+        id: _id,
+        proof: proofDetails,
+        ...rest,
+      };
+
+      // Creates the response
+      return res.status(200).json(responseObj);
     } else {
       const { updatedAt, taskType, expiresAt, toBeDoneBy, __v, _id, ...rest } =
         task?._doc;
@@ -893,7 +922,8 @@ export const getProofsOfWork = async (req, res, next) => {
         const {
           updatedAt,
           createdBy,
-          parentId,
+          taskType,
+          taskPlatform,
           grandParentId,
           requestFrom,
           __v,
@@ -920,7 +950,7 @@ export const getProofsOfWork = async (req, res, next) => {
 };
 
 export const sanctionTask = async (req, res, next) => {
-  const { id, type, platform, sanction } = req.query;
+  const { id, sanction, parentId } = req.query;
 
   try {
     // Validates user
@@ -930,14 +960,45 @@ export const sanctionTask = async (req, res, next) => {
       return res.status(404).json(error);
     }
 
+    const taskInReview = await InReviewTask.findOneAndDelete({ _id: parentId });
+    if (!taskInReview) {
+      const error = ErrorHandler(400, "No task in review.");
+      return res.status(400).json(error);
+    }
+    if (sanction == 1) {
+      const newTaskCompleted = new CompletedTask({
+        parentId: taskInReview?.parentId,
+        proofParentId: taskInReview?._id,
+        doneBy: taskInReview?.doneBy,
+        title: taskInReview?.title,
+        createdBy: req.user._id,
+        taskType: taskInReview?.taskType,
+        taskPlatform: taskInReview?.taskPlatform,
+        link: taskInReview?.link,
+        earningPerTask: taskInReview?.earningPerTask,
+      });
+      await newTaskCompleted.save();
+    } else {
+      const newTaskFailed = new FailedTask({
+        parentId: taskInReview?.parentId,
+        doneBy: taskInReview?.doneBy,
+        title: taskInReview?.title,
+        createdBy: req.user._id,
+        taskType: taskInReview?.taskType,
+        taskPlatform: taskInReview?.taskPlatform,
+        link: taskInReview?.link,
+        earningPerTask: taskInReview?.earningPerTask,
+      });
+      await newTaskFailed.save();
+    }
+
+    // Update proof to based on sanction
     const proof = await ProofOfWork.findOneAndUpdate(
       {
-        taskPlatform: platform,
-        taskType: type,
         _id: id,
       },
       {
-        status: sanction,
+        status: sanction ? "approved" : "disapproved",
       }
     );
 

@@ -27,7 +27,7 @@ const EarningWay = ({ way, addSelectBtn, wayDescription }) => {
         `/api/v1/tasks/total?type=engagement&platform=${way.platformName.toLowerCase()}`
       )
       .then((response) => setTotalTasks(response.data.total))
-      .catch((error) => console.error(error));
+      .catch((error) => error);
   };
 
   useEffect(() => {

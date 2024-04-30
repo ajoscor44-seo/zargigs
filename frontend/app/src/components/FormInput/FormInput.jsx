@@ -92,8 +92,7 @@ const FormInput = ({
                 className="w-full outline-none placeholder:text-sm"
                 type={icon == "password" && showPassword ? "text" : type}
                 placeholder={placeholder}
-                defaultValue={value}
-                value={value}
+                value={value ? value : ""}
                 disabled={icon == "referrer" && value}
                 name={name}
                 onChange={(e) => handleChange(e)}

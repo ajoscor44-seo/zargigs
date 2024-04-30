@@ -3,7 +3,7 @@ import formatDate from "../../hooks/formatDate";
 import Modal from "../Modal/Modal";
 import axios from "axios";
 
-const ProofOfWork = ({ proof, setChange }) => {
+const ProofOfWork = ({ proof, setChange, setError }) => {
   const [isOpen, setIsOpen] = useState(false);
   const textColor =
     proof?.status == "pending"
@@ -18,15 +18,14 @@ const ProofOfWork = ({ proof, setChange }) => {
 
   const sanctionTask = async (sanction) => {
     const response = await axios.put(
-      `/api/v1/tasks/sanction-task?sanction=${sanction}&platform=${proof?.taskPlatform}&type=${proof?.taskType}&id=${proof?.id}`
+      `/api/v1/tasks/sanction-task?sanction=${sanction}&id=${proof?.id}&parentId=${proof?.parentId}`
     );
 
     if (response.data.failed) {
-      return console.log(response.data.message);
+      return setError(response.data.message);
     }
 
-    setChange(new Date.now());
-    return console.log(response.data.message);
+    return setChange(Date.now());
   };
   return (
     <div className="bg-white shadow-2xl mx-2 font-bold p-2 rounded mb-5 flex gap-2">
@@ -69,13 +68,13 @@ const ProofOfWork = ({ proof, setChange }) => {
         {proof?.status == "pending" ? (
           <div className="flex items-center gap-2">
             <span
-              onClick={() => sanctionTask("disapproved")}
+              onClick={() => sanctionTask(0)}
               className="text-xs text-end bg-red-500 py-1 px-2 text-white rounded-sm cursor-pointer"
             >
               Disapprove
             </span>
             <span
-              onClick={() => sanctionTask("approved")}
+              onClick={() => sanctionTask(1)}
               className="text-xs text-end bg-green-500 py-1 px-2 text-white rounded-sm cursor-pointer"
             >
               Approve

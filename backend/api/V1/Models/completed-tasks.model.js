@@ -7,6 +7,10 @@ const taskSchema = new Schema(
       type: String,
       required: true,
     },
+    proofParentId: {
+      type: String,
+      required: true,
+    },
     createdBy: {
       type: String,
       ref: "user",
