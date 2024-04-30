@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import formatDate from "../../hooks/formatDate";
 import Modal from "../Modal/Modal";
+import axios from "axios";
 
-const ProofOfWork = ({ proof }) => {
+const ProofOfWork = ({ proof, setChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const textColor =
     proof?.status == "pending"
@@ -13,6 +14,19 @@ const ProofOfWork = ({ proof }) => {
 
   const toggleProof = () => {
     return setIsOpen(!isOpen);
+  };
+
+  const sanctionTask = async (sanction) => {
+    const response = await axios.put(
+      `/api/v1/tasks/sanction-task?sanction=${sanction}&platform=${proof?.taskPlatform}&type=${proof?.taskType}&id=${proof?.id}`
+    );
+
+    if (response.data.failed) {
+      return console.log(response.data.message);
+    }
+
+    setChange(new Date.now());
+    return console.log(response.data.message);
   };
   return (
     <div className="bg-white shadow-2xl mx-2 font-bold p-2 rounded mb-5 flex gap-2">
@@ -54,26 +68,38 @@ const ProofOfWork = ({ proof }) => {
 
         {proof?.status == "pending" ? (
           <div className="flex items-center gap-2">
-            <span className="text-xs text-end bg-red-500 py-1 px-2 text-white rounded-sm cursor-pointer">
+            <span
+              onClick={() => sanctionTask("disapproved")}
+              className="text-xs text-end bg-red-500 py-1 px-2 text-white rounded-sm cursor-pointer"
+            >
               Disapprove
             </span>
-            <span className="text-xs text-end bg-green-500 py-1 px-2 text-white rounded-sm cursor-pointer">
+            <span
+              onClick={() => sanctionTask("approved")}
+              className="text-xs text-end bg-green-500 py-1 px-2 text-white rounded-sm cursor-pointer"
+            >
               Approve
             </span>
           </div>
         ) : proof?.status == "approved" ? (
-          <span className="text-xs text-end bg-green-500 py-1 px-2 text-white rounded-sm cursor-pointer">
+          <span className="text-xs text-end bg-green-500 py-1 px-2 text-white rounded cursor-pointer w-fit self-end">
             Approved
           </span>
         ) : (
-          <span className="text-xs text-end bg-red-500 py-1 px-2 text-white rounded-sm cursor-pointer">
+          <span className="text-xs text-end bg-red-500 py-1 px-2 text-white rounded cursor-pointer w-fit self-end">
             Disapproved
           </span>
         )}
       </div>
       {isOpen && (
         <Modal
-          content={<img src={proof?.imageUrl} />}
+          content={
+            <img
+              alt="Proof Screenshot"
+              style={{ maxHeight: "800px" }}
+              src={proof?.imageUrl}
+            />
+          }
           posBtnText={"Ok"}
           negBtnText={"Close"}
           onPosClick={toggleProof}

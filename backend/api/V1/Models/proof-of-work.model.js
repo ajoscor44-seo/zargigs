@@ -37,6 +37,7 @@ const proofOfWorkSchema = new Schema(
     },
     status: {
       type: String,
+      enum: ["pending", "approved", "disapproved"],
       default: "pending",
     },
   },

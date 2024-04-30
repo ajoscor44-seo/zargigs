@@ -895,8 +895,6 @@ export const getProofsOfWork = async (req, res, next) => {
           createdBy,
           parentId,
           grandParentId,
-          taskType,
-          taskPlatform,
           requestFrom,
           __v,
           _id,
@@ -916,6 +914,42 @@ export const getProofsOfWork = async (req, res, next) => {
     );
 
     res.status(200).json(proofObject);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const sanctionTask = async (req, res, next) => {
+  const { id, type, platform, sanction } = req.query;
+
+  try {
+    // Validates user
+    const validUser = await User.findOne({ email: req.user.email });
+    if (!validUser) {
+      const error = ErrorHandler(404, "There's no user with this email.");
+      return res.status(404).json(error);
+    }
+
+    const proof = await ProofOfWork.findOneAndUpdate(
+      {
+        taskPlatform: platform,
+        taskType: type,
+        _id: id,
+      },
+      {
+        status: sanction,
+      }
+    );
+
+    if (!proof) {
+      const error = ErrorHandler(404, "No proof of work for this task.");
+      return res.status(404).json(error);
+    }
+
+    return res.status(200).json({
+      failed: false,
+      message: `Task ${sanction}`,
+    });
   } catch (error) {
     next(error);
   }

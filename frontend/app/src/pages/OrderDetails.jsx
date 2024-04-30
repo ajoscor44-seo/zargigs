@@ -27,6 +27,7 @@ import ProofOfWork from "../components/ProofOfWork/ProofOfWork";
 
 const OrderDetails = () => {
   const [loading, setLoading] = useState(true);
+  const [dataChanged, setDataChanged] = useState(false);
   const [proofLoading, setProofLoading] = useState(true);
   const [error, setError] = useState(null);
   const [details, setDetails] = useState({});
@@ -61,7 +62,7 @@ const OrderDetails = () => {
 
   useEffect(() => {
     getProofsOfWork();
-  }, [details]);
+  }, [details, dataChanged]);
 
   return (
     <div>
@@ -325,7 +326,11 @@ const OrderDetails = () => {
             {proofs.length && !proofLoading ? (
               <div>
                 {proofs.map((proof) => (
-                  <ProofOfWork proof={proof} key={proof.id} />
+                  <ProofOfWork
+                    proof={proof}
+                    key={proof.id}
+                    setChange={setDataChanged}
+                  />
                 ))}
               </div>
             ) : !proofs.length ? (

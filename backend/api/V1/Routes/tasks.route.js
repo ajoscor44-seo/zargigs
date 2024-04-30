@@ -14,6 +14,7 @@ import {
   getTask,
   requestForReview,
   getProofsOfWork,
+  sanctionTask,
 } from "../Controllers/tasks.controller.js";
 
 const router = express.Router();
@@ -26,6 +27,7 @@ router.get("/generate", generateTask);
 router.get("/proofs-of-work", getProofsOfWork);
 router.post("/request-review", requestForReview);
 router.delete("/cancel-task", cancelGeneratedTask);
+router.put("/sanction-task", sanctionTask);
 router.post("/adverts", postAdvertTask);
 router.get("/adverts/:id", getAdvertTask);
 router.get("/adverts", getAdvertTasks);
