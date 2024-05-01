@@ -12,7 +12,7 @@ import allStates from "../data/states";
 import religions from "../data/religions";
 import axios from "axios";
 import ToastNotification from "../components/ToastNotification/ToastNotification";
-import { ref, uploadBytesResumable } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../config/firebase.config";
 // import payWithMonicredit from "../hooks/PayWithMonicredit";
 
@@ -306,7 +306,7 @@ const CreateAdvert = () => {
             </span>{" "}
             of the Advert Media Upload Below:
           </h2>
-          <div className="flex">
+          <div className="flex" hidden={taskData.mediaUrl}>
             <div
               className={
                 "uploadAdvertMediaTab " +
@@ -338,7 +338,8 @@ const CreateAdvert = () => {
           )}
           <div
             onClick={selectMedia}
-            className="flex flex-col items-center bg-gray-100 py-10 mx-3 rounded-sm mt-2 cursor-pointer border"
+            className="flex flex-col items-center bg-gray-100 mx-3 rounded-sm mt-2 cursor-pointer border overflow-hidden"
+            style={{ maxHeight: "200px" }}
           >
             <input
               type="file"
@@ -348,16 +349,36 @@ const CreateAdvert = () => {
               style={{ display: "none" }}
             />
 
-            <div>
+            <div className="max-w-full max-h-full">
               {activeMediaUploadTab == "photo" ? (
-                <FcAddImage size={30} />
+                <div>
+                  {taskData.mediaUrl ? (
+                    <img
+                      className="object-cover"
+                      src={taskData.mediaUrl}
+                      style={{ maxHeight: "200px" }}
+                    />
+                  ) : (
+                    <FcAddImage className="mt-10" size={30} />
+                  )}
+                </div>
               ) : (
-                <FaVideo className="text-gray-600" size={30} />
+                <div>
+                  {taskData.mediaUrl ? (
+                    <video src={taskData.mediaUrl}></video>
+                  ) : (
+                    <FaVideo className="text-gray-600 mt-10" size={30} />
+                  )}
+                </div>
               )}
             </div>
-            <span className="capitalize text-xs font-semibold mt-1">
-              Upload {activeMediaUploadTab}
-            </span>
+            {taskData.mediaUrl ? (
+              <span></span>
+            ) : (
+              <span className="capitalize text-xs font-semibold mt-1 mb-10">
+                Upload {activeMediaUploadTab}
+              </span>
+            )}
           </div>
         </div>
       </div>

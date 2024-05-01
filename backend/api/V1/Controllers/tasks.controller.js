@@ -100,6 +100,7 @@ export const postAdvertTask = async (req, res, next) => {
     mediaUrl,
     numberOfTasks,
     costPerTask,
+    earningPerTask,
     taskPlatform,
   } = req.body;
 
@@ -125,6 +126,7 @@ export const postAdvertTask = async (req, res, next) => {
       allocatedTasks: 0,
       completedTasks: 0,
       costPerTask: Number(costPerTask),
+      earningPerTask: Number(earningPerTask),
       status: "pending",
       title,
     });
