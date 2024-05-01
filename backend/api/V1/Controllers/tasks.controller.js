@@ -787,7 +787,7 @@ export const getTask = async (req, res, next) => {
 
       // Creates the response
       return res.status(200).json(responseObj);
-    } else if (taskStatus == "completed") {
+    } else if (taskStatus == "completed" || taskStatus == "failed") {
       const { updatedAt, taskType, expiresAt, toBeDoneBy, __v, _id, ...rest } =
         task?._doc;
       const proofOfWork = await ProofOfWork.findOne({
@@ -966,6 +966,7 @@ export const sanctionTask = async (req, res, next) => {
       return res.status(400).json(error);
     }
     if (sanction == 1) {
+      // Creates a completed task if task is approved
       const newTaskCompleted = new CompletedTask({
         parentId: taskInReview?.parentId,
         proofParentId: taskInReview?._id,
@@ -979,6 +980,7 @@ export const sanctionTask = async (req, res, next) => {
       });
       await newTaskCompleted.save();
     } else {
+      // Creates a failed task if task is disapproved
       const newTaskFailed = new FailedTask({
         parentId: taskInReview?.parentId,
         doneBy: taskInReview?.doneBy,
@@ -998,7 +1000,7 @@ export const sanctionTask = async (req, res, next) => {
         _id: id,
       },
       {
-        status: sanction ? "approved" : "disapproved",
+        status: sanction == 1 ? "approved" : "disapproved",
       }
     );
 
@@ -1009,7 +1011,7 @@ export const sanctionTask = async (req, res, next) => {
 
     return res.status(200).json({
       failed: false,
-      message: `Task ${sanction}`,
+      message: sanction,
     });
   } catch (error) {
     next(error);

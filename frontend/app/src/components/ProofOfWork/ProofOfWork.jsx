@@ -91,19 +91,21 @@ const ProofOfWork = ({ proof, setChange, setError }) => {
         )}
       </div>
       {isOpen && (
-        <Modal
-          content={
-            <img
-              alt="Proof Screenshot"
-              style={{ maxHeight: "800px" }}
-              src={proof?.imageUrl}
-            />
-          }
-          posBtnText={"Ok"}
-          negBtnText={"Close"}
-          onPosClick={toggleProof}
-          onNegClick={toggleProof}
-        />
+        <div className="fixed top-0 left-0 h-screen w-screen">
+          <Modal
+            content={
+              <img
+                alt="Proof Screenshot"
+                style={{ maxHeight: "800px" }}
+                src={proof?.imageUrl}
+              />
+            }
+            posBtnText={"Ok"}
+            negBtnText={"Close"}
+            onPosClick={toggleProof}
+            onNegClick={toggleProof}
+          />
+        </div>
       )}
     </div>
   );

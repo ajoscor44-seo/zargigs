@@ -272,7 +272,9 @@ const TaskDetails = () => {
                       <h2
                         className="font-bold mb-0 text-sm"
                         hidden={
-                          status !== "in-review" && status !== "completed"
+                          status !== "in-review" &&
+                          status !== "completed" &&
+                          status !== "failed"
                         }
                       >
                         Username:{" "}
@@ -283,7 +285,9 @@ const TaskDetails = () => {
                       <span
                         className="text-xs font-bold text-gray-400"
                         hidden={
-                          status !== "in-review" && status !== "completed"
+                          status !== "in-review" &&
+                          status !== "completed" &&
+                          status !== "failed"
                         }
                       >
                         Submitted At:{" "}
