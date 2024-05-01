@@ -123,9 +123,11 @@ const TaskDetails = () => {
         type,
         platform: taskDetails?.taskPlatform,
         parentId: taskDetails?.parentId,
-        title: taskDetails.title,
-        link: taskDetails.link,
-        earningPerTask: taskDetails.earningPerTask,
+        title: taskDetails?.title,
+        link: taskDetails?.link,
+        earningPerTask: taskDetails?.earningPerTask,
+        caption: taskDetails?.caption,
+        mediaUrl: taskDetails?.mediaUrl,
       });
 
       if (response.data.failed) {
@@ -139,6 +141,25 @@ const TaskDetails = () => {
     } catch (error) {
       return setUploadError(error);
     }
+  };
+
+  const getMediaType = (mediaUrl) => {
+    const extension = mediaUrl.split(".").pop().toLowerCase();
+    if (extension == "jpg" || extension == "jpeg") {
+      return "image";
+    } else if (extension == "mp4" || extension == "mp3") {
+      return "video";
+    } else {
+      return null;
+    }
+  };
+
+  const downloadMedia = (mediaType) => {
+    const mediaType = getMediaType(taskDetails?.mediaUrl);
+    const anchor = document.createElement("a");
+    anchor.href = taskDetails?.mediaUrl;
+    anchor.download = `media.${mediaType}`;
+    anchor.click();
   };
 
   useEffect(() => {
@@ -189,7 +210,7 @@ const TaskDetails = () => {
                     {taskDetails?.caption}
                   </span>
                   <button
-                    target="_blank"
+                    onClick={downloadMedia}
                     className="bg-green-500 outline-none py-2 text-center px-3 font-semibold rounded-e-sm text-sm cursor-pointer text-white"
                   >
                     Download Media

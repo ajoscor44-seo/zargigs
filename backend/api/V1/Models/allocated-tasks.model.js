@@ -32,6 +32,14 @@ const taskSchema = new Schema(
       type: String,
       required: false,
     },
+    caption: {
+      type: String,
+      required: false,
+    },
+    mediaUrl: {
+      type: String,
+      required: false,
+    },
     earningPerTask: {
       type: Number,
       required: true,

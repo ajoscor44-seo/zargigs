@@ -452,6 +452,8 @@ export const generateTask = async (req, res, next) => {
       link: Task.link,
       earningPerTask: Task.earningPerTask,
       title: Task.title,
+      caption: Task.caption,
+      mediaUrl: Task.mediaUrl,
     });
     const newPendingTask = new PendingTask({
       allocationId: newAllocatedTask._id,
@@ -463,6 +465,8 @@ export const generateTask = async (req, res, next) => {
       link: Task.link,
       earningPerTask: Task.costPerTask,
       title: Task.title,
+      caption: Task.caption,
+      mediaUrl: Task.mediaUrl,
     });
     await newAllocatedTask.save();
     await newPendingTask.save();
@@ -526,8 +530,15 @@ export const cancelGeneratedTask = async (req, res, next) => {
     const userPendingTask = await PendingTask.findOne({
       allocationId: taskAllocatedToUser._id,
     });
-    const { createdBy, parentId, link, earningPerTask, title } =
-      userPendingTask.toObject();
+    const {
+      createdBy,
+      parentId,
+      link,
+      earningPerTask,
+      title,
+      caption,
+      mediaUrl,
+    } = userPendingTask.toObject();
     const newCancelledTask = new CancelledTask({
       title,
       createdBy,
@@ -537,6 +548,8 @@ export const cancelGeneratedTask = async (req, res, next) => {
       taskPlatform,
       link,
       earningPerTask,
+      caption,
+      mediaUrl,
     });
 
     // Does the necessary addition and removal.
@@ -843,6 +856,8 @@ export const requestForReview = async (req, res, next) => {
     title,
     link,
     earningPerTask,
+    caption,
+    mediaUrl,
   } = req.body;
 
   try {
@@ -864,6 +879,8 @@ export const requestForReview = async (req, res, next) => {
       taskPlatform: platform,
       link,
       earningPerTask,
+      caption,
+      mediaUrl,
     });
     // Creates new proof of work
     const newProofOfWork = new ProofOfWork({
@@ -975,6 +992,8 @@ export const sanctionTask = async (req, res, next) => {
         taskPlatform: taskInReview?.taskPlatform,
         link: taskInReview?.link,
         earningPerTask: taskInReview?.earningPerTask,
+        caption: taskInReview.caption,
+        mediaUrl: taskInReview.mediaUrl,
       });
       await newTaskCompleted.save();
     } else {
@@ -988,6 +1007,8 @@ export const sanctionTask = async (req, res, next) => {
         taskPlatform: taskInReview?.taskPlatform,
         link: taskInReview?.link,
         earningPerTask: taskInReview?.earningPerTask,
+        caption: taskInReview.caption,
+        mediaUrl: taskInReview.mediaUrl,
       });
       await newTaskFailed.save();
     }
