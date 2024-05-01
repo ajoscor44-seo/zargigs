@@ -332,10 +332,6 @@ export const getUserTotalTasks = async (req, res, next) => {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);
     }
-    if (!taskType || !taskPlatform) {
-      const error = ErrorHandler(400, "Invalid Parameters.");
-      return res.status(400).json(error);
-    }
 
     const baseQuery = {};
     if (taskPlatform) baseQuery.taskPlatform = taskPlatform;

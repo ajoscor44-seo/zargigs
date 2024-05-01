@@ -90,7 +90,7 @@ const TaskDetails = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `/api/v1/tasks/task/${id}?type=engagement&platform=${platform}&status=${status}`
+        `/api/v1/tasks/task/${id}?type=${type}&platform=${platform}&status=${status}`
       );
 
       if (response.data.failed) {
@@ -175,22 +175,57 @@ const TaskDetails = () => {
               )}
             </div>
             <div className="mx-2 py-3 flex flex-col gap-1">
-              <span className="font-semibold text-sm">Task Link</span>
-              <div className="flex">
-                <span className="flex-1 flex items-center bg-gray-200 px-2 rounded-s-sm text-sm truncate pe-2">
-                  {taskDetails?.link}
-                </span>
-                <a
-                  target="_blank"
-                  href={taskDetails?.link}
-                  className="bg-yellow-500 py-2 flex justify-center items-center px-3 font-semibold rounded-e-sm text-sm cursor-pointer"
+              <span className="font-semibold text-sm" hidden={type == "advert"}>
+                Task Link
+              </span>
+
+              {type == "advert" ? (
+                <div
+                  className="flex"
+                  hidden={type == "advert"}
+                  style={{ display: "none" }}
                 >
-                  Visit Link
-                </a>
-              </div>
-              <p className="text-xs text-gray-400 font-semibold">
+                  <span className="flex-1 flex items-center bg-gray-200 px-2 rounded-s-sm text-sm truncate pe-2">
+                    {taskDetails?.caption}
+                  </span>
+                  <button
+                    target="_blank"
+                    className="bg-green-500 outline-none py-2 text-center px-3 font-semibold rounded-e-sm text-sm cursor-pointer text-white"
+                  >
+                    Download Media
+                  </button>
+                </div>
+              ) : (
+                <div
+                  className="flex"
+                  hidden={type == "advert"}
+                  style={{ display: "none" }}
+                >
+                  <span className="flex-1 flex items-center bg-gray-200 px-2 rounded-s-sm text-sm truncate pe-2">
+                    {taskDetails?.link}
+                  </span>
+                  <a
+                    target="_blank"
+                    href={taskDetails?.link}
+                    className="bg-yellow-500 py-2 flex justify-center items-center px-3 font-semibold rounded-e-sm text-sm cursor-pointer text-white"
+                  >
+                    Visit Link
+                  </a>
+                </div>
+              )}
+              <p
+                hidden={type == "advert"}
+                className="text-xs text-gray-400 font-semibold"
+              >
                 The task you are given is to engage this accounts on social
                 media pages.
+              </p>
+              <p
+                hidden={type !== "advert"}
+                className="text-xs text-gray-400 font-semibold"
+              >
+                The task you are given is to post this advert on {platform}{" "}
+                using the social media account linked to Gigsflix .
               </p>
 
               <div className="mt-2">
@@ -221,7 +256,7 @@ const TaskDetails = () => {
                     screenshot of the page that shows that you have performed
                     the task and upload the screenshot as a proof under Proof of
                     Work Form below. You are also required to enter your social
-                    media account username whcih ypu used to perform the task.
+                    media account username whcih you used to perform the task.
                   </p>
                 </div>
                 <div className="text-orange-400 font-semibold bg-orange-100 rounded text-xs p-3 mt-2">

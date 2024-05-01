@@ -28,6 +28,7 @@ const EarnWithTasks = () => {
   const waysToEarn = slug.startsWith("earn")
     ? waysToEarnForTasks
     : waysToEarnForAds;
+  const taskType = slug.startsWith("earn") ? "engagement" : "advert";
 
   const wayToEarn = waysToEarn.find(
     (way) => way.pathToPage === "/earn/" + slug
@@ -37,7 +38,7 @@ const EarnWithTasks = () => {
   const generateNewTask = async () => {
     try {
       const response = await axios.get(
-        `/api/v1/tasks/generate?type=engagement&platform=${wayToEarn.platformName.toLowerCase()}`
+        `/api/v1/tasks/generate?type=${taskType}&platform=${wayToEarn.platformName.toLowerCase()}`
       );
 
       setGeneratedTask(response.data);
@@ -50,7 +51,7 @@ const EarnWithTasks = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `/api/v1/tasks?type=engagement&status=${activeTab.toLowerCase()}&platform=${wayToEarn.platformName.toLowerCase()}`
+        `/api/v1/tasks?type=${taskType}&status=${activeTab.toLowerCase()}&platform=${wayToEarn.platformName.toLowerCase()}`
       );
       setTaskList(response.data);
       setGeneratedTask(null);
@@ -69,7 +70,7 @@ const EarnWithTasks = () => {
     setLoading(true);
     try {
       const response = await axios.delete(
-        `/api/v1/tasks/cancel-task?type=engagement&platform=${wayToEarn.platformName.toLowerCase()}`
+        `/api/v1/tasks/cancel-task?type=${taskType}&platform=${wayToEarn.platformName.toLowerCase()}`
       );
 
       if (response.data.failed) {
@@ -87,7 +88,7 @@ const EarnWithTasks = () => {
   const getTasksTotalsBasedOnStatus = async () => {
     setLoading(true);
     const response = await axios.get(
-      `/api/v1/tasks/user-total?type=engagement&platform=${wayToEarn.platformName.toLowerCase()}`
+      `/api/v1/tasks/user-total?type=${taskType}&platform=${wayToEarn.platformName.toLowerCase()}`
     );
 
     if (response.data?.failed) {
@@ -153,7 +154,7 @@ const EarnWithTasks = () => {
                   slug={slug}
                   platform={wayToEarn.platformName.toLowerCase()}
                   status={activeTab}
-                  type={"engagement"}
+                  type={taskType}
                 />
               ) : activeTab == "in-review" ? (
                 <InReviewSubtask
@@ -161,7 +162,7 @@ const EarnWithTasks = () => {
                   slug={slug}
                   platform={wayToEarn.platformName.toLowerCase()}
                   status={activeTab}
-                  type={"engagement"}
+                  type={taskType}
                 />
               ) : activeTab == "failed" ? (
                 <FailedSubtask
@@ -169,7 +170,7 @@ const EarnWithTasks = () => {
                   slug={slug}
                   platform={wayToEarn.platformName.toLowerCase()}
                   status={activeTab}
-                  type={"engagement"}
+                  type={taskType}
                 />
               ) : activeTab == "completed" ? (
                 <CompletedSubtask
@@ -177,13 +178,13 @@ const EarnWithTasks = () => {
                   slug={slug}
                   platform={wayToEarn.platformName.toLowerCase()}
                   status={activeTab}
-                  type={"engagement"}
+                  type={taskType}
                 />
               ) : (
                 <CancelledSubtasks
                   cancelledSubtasks={taskList}
                   slug={slug}
-                  type={"engagement"}
+                  type={taskType}
                   platform={wayToEarn.platformName.toLowerCase()}
                   status={activeTab}
                 />

@@ -18,7 +18,7 @@ const NotFound = () => {
           incorrectly.
         </p>
         <Link
-          href="/"
+          to="/"
           className="text-green-500 hover:opacity-50 text-lg flex items-center justify-center gap-1 transition duration-100"
         >
           <span>

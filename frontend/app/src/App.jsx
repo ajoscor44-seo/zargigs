@@ -21,6 +21,7 @@ import EarnWithTasks from "./pages/EarnWithTasks";
 import BecomeAMember from "./pages/BecomeAMember";
 import Adevertise from "./pages/Advertise";
 import Order from "./pages/Order";
+import TaskHistory from "./pages/TaskHistory";
 import CreateAdvert from "./pages/CreateAdvert";
 import AuthProvider from "./context/AuthContext.jsx";
 import PrivateRoute from "./routers/PrivateRoutes.jsx";
@@ -110,6 +111,10 @@ function App() {
               <VerifiedMemberPrivateRoute
                 path="/earn/:slug"
                 component={EarnWithTasks}
+              />
+              <VerifiedMemberPrivateRoute
+                path="/tasks-history"
+                component={TaskHistory}
               />
               <PrivateRoute path="/earn" component={Earn} />
               <PrivateRoute path="/account-settings" component={Settings} />

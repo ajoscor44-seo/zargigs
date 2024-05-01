@@ -5,13 +5,25 @@ import { Link } from "react-router-dom/cjs/react-router-dom";
 import EarnWithAds from "../components/EarnWithAds/EarnWithAds";
 import EarnWithTasks from "../components/EarnWithTasks/EarnWithTasks";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
-import user from "../data/user";
 import axios from "axios";
 
 const Earn = () => {
   const [activeTab, setActiveTab] = useState("postAds");
+  const [loading, setLoading] = useState(true);
+  const [statusTotal, setStatusTotal] = useState({});
   const [totalAdvertTasks, setTotalAdvertTasks] = useState(0);
   const [totalNormalTasks, setTotalNormalTasks] = useState(0);
+
+  const getTasksTotalsBasedOnStatus = async () => {
+    setLoading(true);
+    const response = await axios.get("/api/v1/tasks/user-total");
+
+    if (response.data?.failed) {
+      return setError(response.data.message);
+    }
+    setStatusTotal(response.data);
+    return setLoading(false);
+  };
 
   const getTotalEngagementTasks = async () => {
     const data = await axios
@@ -30,6 +42,7 @@ const Earn = () => {
   };
 
   useEffect(() => {
+    getTasksTotalsBasedOnStatus();
     getTotalEngagementTasks();
     getTotalAdvertTasks();
   }, []);
@@ -51,10 +64,10 @@ const Earn = () => {
         </p>
         <div className="bg-blue-200 p-3 rounded mx-4">
           <p className="text-blue-500 text-xs">
-            You have {user.uploadedTasks.length} Uploaded{" "}
-            {user.uploadedTasks.length > 1 ? "Tasks" : "Task"} that you have
-            done but still IN REVIEW. Please be patient while your task is being
-            reviewed. Click{" "}
+            You have {statusTotal["in-review"] ? statusTotal["in-review"] : 0}{" "}
+            Uploaded {statusTotal["in-review"] > 1 ? "Tasks" : "Task"} that you
+            have done but still IN REVIEW. Please be patient while your task is
+            being reviewed. Click{" "}
             <Link
               to="/tasks-history"
               className="font-bold text-blue-700 hover:underline"
