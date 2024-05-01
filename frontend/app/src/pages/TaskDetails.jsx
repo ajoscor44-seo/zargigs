@@ -34,8 +34,25 @@ const TaskDetails = () => {
 
   // Handles File Input
   const handleFileInputChange = (event) => {
-    const file = event.target.files[0];
-    return uploadProfilePic(file);
+    const file = e.target.files[0];
+    if (!file) {
+      alert("No file chosen.");
+      return;
+    }
+
+    if (file.type.startsWith("image") && file.size > 2097152) {
+      // 2 MB for images
+      alert("The photo is too large. Maximum size is 2 MB.");
+      e.target.value = ""; // Reset the input
+    } else if (file.type.startsWith("video")) {
+      // 100 MB for videos
+      alert("You cannot upload this file type.");
+      e.target.value = ""; // Reset the input
+    } else {
+      alert("File is accepted.");
+      // Handle the file upload process here
+      return uploadProfilePic(file);
+    }
   };
 
   // Upload Profile Picture

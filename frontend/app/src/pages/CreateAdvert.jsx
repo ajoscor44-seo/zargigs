@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
 import { useHistory, useParams } from "react-router-dom/cjs/react-router-dom";
 import waysToCreateAdvertTasks from "../data/waysToCreateAdvertsTasks";
@@ -12,9 +12,12 @@ import allStates from "../data/states";
 import religions from "../data/religions";
 import axios from "axios";
 import ToastNotification from "../components/ToastNotification/ToastNotification";
+import { ref, uploadBytesResumable } from "firebase/storage";
+import { storage } from "../config/firebase.config";
 // import payWithMonicredit from "../hooks/PayWithMonicredit";
 
 const CreateAdvert = () => {
+  const fileInputRef = useRef();
   const [toastNotifications, setToastNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const history = useHistory();
@@ -28,6 +31,8 @@ const CreateAdvert = () => {
       return wayToCreateAdvertTasks.pathToPage == "/advertise/" + slug;
     }
   );
+  const [mediaError, setMediaError] = useState(null);
+  const [mediaPercentage, setMediaPercentage] = useState(null);
 
   // Task data object
   const [taskData, setTaskData] = useState({
@@ -100,6 +105,9 @@ const CreateAdvert = () => {
     if (!taskData.caption) {
       return setError("Input A Caption.");
     }
+    if (!taskData.mediaUrl) {
+      return alert("Are you sure you don't want to upload an advert media.");
+    }
     setError(null);
     setLoading(true);
     const paymentProcessed = await processPayment();
@@ -126,6 +134,69 @@ const CreateAdvert = () => {
         errorType: "danger",
       });
     }
+    return;
+  };
+
+  // Selects Profile Picture
+  const selectMedia = () => {
+    return fileInputRef.current.click();
+  };
+
+  const handleFileInputChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      alert("No file chosen.");
+      return;
+    }
+
+    if (file.type.startsWith("image") && file.size > 2097152) {
+      // 2 MB for images
+      alert("The photo is too large. Maximum size is 2 MB.");
+      e.target.value = ""; // Reset the input
+    } else if (file.type.startsWith("video") && file.size > 104857600) {
+      // 100 MB for videos
+      alert(
+        "The video is too large. Maximum size for a video is approximately 100 MB."
+      );
+      e.target.value = ""; // Reset the input
+    } else {
+      alert("File is accepted.");
+      // Handle the file upload process here
+      return uploadMedia(file);
+    }
+  };
+
+  const uploadMedia = (image) => {
+    setMediaPercentage(null);
+    setMediaError(null);
+    const fileName = new Date().getTime() + image.name;
+    const storageRef = ref(storage, fileName);
+    const uploadTask = uploadBytesResumable(storageRef, image);
+
+    // Returns the progress of the image
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        setMediaPercentage(progress);
+      },
+      (error) => {
+        setMediaPercentage(null);
+        return setMediaError(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
+          setTaskData({
+            ...taskData,
+            mediaUrl: downloadUrl,
+          });
+          setMediaError(null);
+          setMediaPercentage(null);
+        });
+      }
+    );
     return;
   };
 
@@ -172,6 +243,7 @@ const CreateAdvert = () => {
             useSelect={true}
             selections={[
               "Select Gender",
+              "All Genders",
               "Male",
               "Female",
               "Transgender",
@@ -228,7 +300,11 @@ const CreateAdvert = () => {
 
         <div className="px-4 pb-6">
           <h2 className="text-xs font-semibold mb-2">
-            Choose one of the Advert Media Upload Below:
+            Choose{" "}
+            <span className={"uppercase font-semibold text-orange-500"}>
+              one
+            </span>{" "}
+            of the Advert Media Upload Below:
           </h2>
           <div className="flex">
             <div
@@ -255,7 +331,23 @@ const CreateAdvert = () => {
             people to post on their social media post accounts like Whatsapp,
             Facebook, Instagram, Twitter, Tiktok etc.
           </p>
-          <div className="flex flex-col items-center bg-gray-100 py-10 mx-3 rounded-sm mt-2 cursor-pointer border">
+          {mediaError ? (
+            <p className="text-center text-sm">{mediaError}</p>
+          ) : (
+            <p className="text-center text-sm">{mediaPercentage}</p>
+          )}
+          <div
+            onClick={selectMedia}
+            className="flex flex-col items-center bg-gray-100 py-10 mx-3 rounded-sm mt-2 cursor-pointer border"
+          >
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileInputChange}
+              accept="image/*,video/*"
+              style={{ display: "none" }}
+            />
+
             <div>
               {activeMediaUploadTab == "photo" ? (
                 <FcAddImage size={30} />
