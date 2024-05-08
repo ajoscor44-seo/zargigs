@@ -11,8 +11,8 @@ const io = new Server(server, {
   cors: {
     origin:
       process.env.NODE_ENV !== "production"
-        ? process.env.DEV_CLIENT_URL
-        : process.env.PROD_CLIENT_URL,
+        ? [process.env.DEV_CLIENT_URL, process.env.DEV_ADMIN_URL]
+        : [process.env.PROD_CLIENT_URL, process.env.PROD_ADMIN_URL],
     methods: ["GET", "POST", "PUT", "HEAD", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
