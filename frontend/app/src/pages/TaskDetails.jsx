@@ -4,25 +4,41 @@ import BackNav from "../components/BackNav/BackNav";
 import axios from "axios";
 import PendingTaskSubtask from "../components/PendingtaskSubtask/PendingTaskSubtask";
 import Subtask from "../components/Subtask/Subtask";
-import { FaSpinner } from "react-icons/fa6";
+import { FaCopy, FaFileCircleCheck, FaSpinner } from "react-icons/fa6";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import { BsCamera } from "react-icons/bs";
 import { storage } from "../config/firebase.config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import formatDate from "../hooks/formatDate";
+import CopyToClipboard from "../hooks/CopyToClipboard";
+import { FaFileDownload } from "react-icons/fa";
 
 const TaskDetails = () => {
   const history = useHistory();
   const { slug, platform, status, id, type } = useParams();
   const [taskDetails, setTaskDetails] = useState({});
   const [loading, setLoading] = useState(true);
+  const [textIsCopied, setTextIsCopied] = useState(false);
   const [error, setError] = useState(null);
   const [uploadError, setUploadError] = useState(null);
   const [username, setUsername] = useState(null);
   const fileInputRef = useRef();
+  const captionRef = useRef();
   const [image, setImage] = useState(null);
   const [imageError, setImageError] = useState(null);
   const [imagePercentage, setImagePercentage] = useState(null);
+
+  // Copies caption
+  const copyToClipboard = (inputRef) => {
+    const textIsCopied = CopyToClipboard(inputRef);
+
+    if (textIsCopied) setTextIsCopied(true);
+
+    const timeToReset = setTimeout(() => {
+      setTextIsCopied(false);
+      return clearTimeout(timeToReset);
+    }, 5000);
+  };
 
   // Selects Profile Picture
   const selectProfilePic = () => {
@@ -143,23 +159,51 @@ const TaskDetails = () => {
     }
   };
 
-  const getMediaType = (mediaUrl) => {
-    const extension = mediaUrl.split(".").pop().toLowerCase();
-    if (extension == "jpg" || extension == "jpeg") {
-      return "image";
-    } else if (extension == "mp4" || extension == "mp3") {
-      return "video";
-    } else {
-      return null;
+  const getMediaExtension = (mediaUrl) => {
+    // Find the last dot before the query string starts
+    const lastDotIndex = mediaUrl.lastIndexOf(".");
+    const queryStartIndex = mediaUrl.indexOf("?");
+    let extension;
+
+    if (lastDotIndex === -1) {
+      return null; // No extension found
     }
+
+    extension =
+      queryStartIndex === -1
+        ? mediaUrl.substring(lastDotIndex + 1).toLowerCase()
+        : mediaUrl.substring(lastDotIndex + 1, queryStartIndex).toLowerCase();
+
+    const validExtensions = new Set(["jpg", "jpeg", "png", "mp4", "mp3"]);
+    return validExtensions.has(extension) ? extension : null;
   };
 
-  const downloadMedia = (mediaType) => {
-    const mediaType = getMediaType(taskDetails?.mediaUrl);
-    const anchor = document.createElement("a");
-    anchor.href = taskDetails?.mediaUrl;
-    anchor.download = `media.${mediaType}`;
-    anchor.click();
+  const downloadMedia = () => {
+    try {
+      const mediaUrl = taskDetails?.mediaUrl;
+      if (!mediaUrl) {
+        alert("Media URL is missing.");
+        return;
+      }
+
+      const mediaExtension = getMediaExtension(mediaUrl);
+      if (mediaExtension) {
+        const anchor = document.createElement("a");
+        anchor.href = mediaUrl;
+        anchor.setAttribute(
+          "download",
+          `${taskDetails?.id}_advert_media.${mediaExtension}`
+        );
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+      } else {
+        alert("Unsupported media type, file must be an image or video");
+      }
+    } catch (error) {
+      alert("An error occurred while attempting to download the media.");
+      return "Error downloading the media:", error;
+    }
   };
 
   useEffect(() => {
@@ -201,27 +245,35 @@ const TaskDetails = () => {
               </span>
 
               {type == "advert" ? (
-                <div
-                  className="flex"
-                  hidden={type == "advert"}
-                  style={{ display: "none" }}
-                >
+                <div className="flex" hidden={type == "advert"}>
                   <span className="flex-1 flex items-center bg-gray-200 px-2 rounded-s-sm text-sm truncate pe-2">
                     {taskDetails?.caption}
                   </span>
+                  <textarea
+                    ref={captionRef}
+                    rows={25}
+                    className="p-2 border bg-slate-200 rounded-s absolute opacity-0 h-0 w-0"
+                    defaultValue={taskDetails?.caption}
+                  ></textarea>
+                  <span
+                    className="w-fit flex justify-center items-center px-2 text-green-500 bg-green-100"
+                    onClick={() => copyToClipboard(captionRef)}
+                  >
+                    {textIsCopied ? (
+                      <FaFileCircleCheck size={20} />
+                    ) : (
+                      <FaCopy size={20} />
+                    )}
+                  </span>
                   <button
                     onClick={downloadMedia}
-                    className="bg-green-500 outline-none py-2 text-center px-3 font-semibold rounded-e-sm text-sm cursor-pointer text-white"
+                    className="bg-green-500 flex items-center gap-1 outline-none py-2 text-center px-3 font-semibold rounded-e-sm text-sm cursor-pointer text-white"
                   >
-                    Download Media
+                    <span>Download</span> <FaFileDownload size={20} />
                   </button>
                 </div>
               ) : (
-                <div
-                  className="flex"
-                  hidden={type == "advert"}
-                  style={{ display: "none" }}
-                >
+                <div className="flex" hidden={type == "advert"}>
                   <span className="flex-1 flex items-center bg-gray-200 px-2 rounded-s-sm text-sm truncate pe-2">
                     {taskDetails?.link}
                   </span>

@@ -10,6 +10,7 @@ import axios from "axios";
 const Earn = () => {
   const [activeTab, setActiveTab] = useState("postAds");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [statusTotal, setStatusTotal] = useState({});
   const [totalAdvertTasks, setTotalAdvertTasks] = useState(0);
   const [totalNormalTasks, setTotalNormalTasks] = useState(0);

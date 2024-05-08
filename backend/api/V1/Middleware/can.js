@@ -1,3 +1,3 @@
-export const can = (slug) => {
+export const aut = (slug) => {
   console.log(slug);
 };

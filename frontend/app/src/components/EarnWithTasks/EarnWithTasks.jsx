@@ -34,6 +34,7 @@ const EarnWithTasks = ({ setActiveTab }) => {
             >
               <EarningWay
                 way={way}
+                type={"engagement"}
                 addSelectBtn={true}
                 wayDescription={`${way.title}. The more ${way.whatTheyDo}, the more you earn.`}
               />

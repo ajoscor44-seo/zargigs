@@ -37,6 +37,7 @@ const EarnWithAds = ({ setActiveTab }) => {
             >
               <EarningWay
                 way={way}
+                type={"advert"}
                 addSelectBtn={true}
                 wayDescription={`Post adverts of various businesses and top brands on your
                       ${way.platformName} Page and earn N100 per advert post. The

@@ -116,6 +116,7 @@ const EarnWithTasks = () => {
             {tabs.map((tab) => {
               return (
                 <div
+                  key={tab.toLowerCase()}
                   className={
                     activeTab == tab.toLowerCase()
                       ? "subTaskHistoryTab gap-1 active capitalize"

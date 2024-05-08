@@ -18,13 +18,13 @@ import { SlUserFollowing } from "react-icons/sl";
 import playStoreImage from "../../assets/images/playstore-icon.png";
 import axios from "axios";
 
-const EarningWay = ({ way, addSelectBtn, wayDescription }) => {
+const EarningWay = ({ way, addSelectBtn, wayDescription, type }) => {
   const [totalTasks, setTotalTasks] = useState(0);
 
   const getTotal = async () => {
     return await axios
       .get(
-        `/api/v1/tasks/total?type=engagement&platform=${way.platformName.toLowerCase()}`
+        `/api/v1/tasks/total?type=${type}&platform=${way.platformName.toLowerCase()}`
       )
       .then((response) => setTotalTasks(response.data.total))
       .catch((error) => error);
