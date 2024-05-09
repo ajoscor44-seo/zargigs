@@ -15,11 +15,23 @@ import { GiSpeaker } from "react-icons/gi";
 
 const ClientDashboard = () => {
   const { currentUser } = useAuth();
+  const [announcements, setAnnouncements] = useState(null);
   const [recentActivities, setRecentActivities] = useState([]);
-  const announcement = {
-    message: "Welcome to gigsflix.....Please to have you here.",
-  };
   useListenRecentActivity(setRecentActivities, recentActivities);
+
+  const getAnnouncements = async () => {
+    try {
+      const response = await axios.get("/api/v1/admin/announcement");
+
+      if (response.data.failed) {
+        return error;
+      }
+
+      return setAnnouncements(response.data.data);
+    } catch (error) {
+      return error;
+    }
+  };
 
   // Fetches the recent activities
   const fetchRecentActivities = async () => {
@@ -38,6 +50,7 @@ const ClientDashboard = () => {
   };
 
   useEffect(() => {
+    getAnnouncements();
     fetchRecentActivities();
   }, []);
 
@@ -68,18 +81,22 @@ const ClientDashboard = () => {
           {currentUser.isMember ? (
             <div className="block">
               <ClientWelcomeMsg username={currentUser.username} />
-              {announcement ? (
-                <div className="flex justify-center items-center bg-orange-100 text-orange-400 my-2 mx-4 ps-2 pe-3 rounded-full">
-                  <span className="pe-2">
-                    <GiSpeaker size={25} />
-                  </span>
-                  <marquee
-                    style={{ maxHeight: "80px" }}
-                    className="font-semibold text-sm py-1"
-                  >
-                    {announcement.message}
-                  </marquee>
-                </div>
+              {announcements ? (
+                announcements.map((announcement) => {
+                  return (
+                    <div className="flex justify-center items-center bg-orange-100 text-orange-400 my-2 mx-4 ps-2 pe-3 rounded-full">
+                      <span className="pe-2">
+                        <GiSpeaker size={25} />
+                      </span>
+                      <marquee
+                        style={{ maxHeight: "80px" }}
+                        className="font-semibold text-sm py-1"
+                      >
+                        {announcement.announcement}
+                      </marquee>
+                    </div>
+                  );
+                })
               ) : (
                 <div></div>
               )}
