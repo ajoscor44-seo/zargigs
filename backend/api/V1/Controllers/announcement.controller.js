@@ -38,9 +38,19 @@ export const getAnnouncement = async (req, res, next) => {
 
     const announcements = await Announcement.find();
 
+    const announcements_ = announcements.map((announcement) => {
+      const { updatedAt, createdBy, createdAt, __v, _id, ...rest } =
+        announcement?.toObject();
+
+      return {
+        id: _id,
+        ...rest,
+      };
+    });
+
     return res.status(200).json({
       failed: false,
-      data: announcements,
+      data: announcements_,
     });
   } catch (error) {
     next(error);
