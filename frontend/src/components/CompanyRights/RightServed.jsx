@@ -4,7 +4,7 @@ const RightServed = () => {
   return (
     <div className="bg-slate-50 flex flex-col items-center gap-2 p-4">
       <h3 className="font-medium font-primary">
-        GigsFlix was created by -{" "}
+        GigsFlix was developed by -{" "}
         <a
           className="text-green-500 hover:underline cursor-pointer"
           href="https://twitter.com/__LeeMao"
