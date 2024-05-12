@@ -63,8 +63,8 @@ const BecomeAMember = () => {
               <span className="font-extrabold">
                 Earn an Instant Referral Commission of ₦500
               </span>{" "}
-              when you refer someone to become a member on Hawkit. The more you
-              refer, the more you earn. Click{" "}
+              when you refer someone to become a member on Gigsflix. The more
+              you refer, the more you earn. Click{" "}
               <span className="text-green-500 hover:underline">here</span> to
               learn how referral works.
             </li>
