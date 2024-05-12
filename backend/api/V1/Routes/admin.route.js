@@ -7,6 +7,7 @@ import { getAUser, getAllUsers } from "../Controllers/users.controller.js";
 import {
   getAllComplaint,
   postComplaint,
+  resolveComplaint,
 } from "../Controllers/complaint.controller.js";
 
 const router = express.Router();
@@ -22,5 +23,6 @@ router.get("/announcement", getAnnouncement);
 // Complaints Routes
 router.post("/complaints", postComplaint);
 router.get("/complaints", getAllComplaint);
+router.put("/complaint", resolveComplaint);
 
 export default router;
