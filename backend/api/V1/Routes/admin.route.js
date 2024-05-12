@@ -4,6 +4,10 @@ import {
   postAnnouncement,
 } from "../Controllers/announcement.controller.js";
 import { getAUser, getAllUsers } from "../Controllers/users.controller.js";
+import {
+  getAllComplaint,
+  postComplaint,
+} from "../Controllers/complaint.controller.js";
 
 const router = express.Router();
 
@@ -16,7 +20,7 @@ router.post("/announcement", postAnnouncement);
 router.get("/announcement", getAnnouncement);
 
 // Complaints Routes
-// router.post("/complaints", postAnnouncement);
-// router.get("/complaints", getAnnouncement);
+router.post("/complaints", postComplaint);
+router.get("/complaints", getAllComplaint);
 
 export default router;
