@@ -142,6 +142,10 @@
   -moz-appearance: textfield;
 }
 
+.modal_bg {
+  background-color: rgba(54, 54, 54, 0.214);
+}
+
 /* Hide content on screens more than 1024px wide */
 @media (min-width: 1025px) {
   .hide-on-large-screen {
