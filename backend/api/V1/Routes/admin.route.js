@@ -9,6 +9,7 @@ import {
   postComplaint,
   resolveComplaint,
 } from "../Controllers/complaint.controller.js";
+import { updateUserStatus } from "../Controllers/update_status.controller.js";
 
 const router = express.Router();
 
@@ -24,5 +25,8 @@ router.get("/announcement", getAnnouncement);
 router.post("/complaints", postComplaint);
 router.get("/complaints", getAllComplaint);
 router.put("/complaint", resolveComplaint);
+
+// Update user status
+router.put("/update-status", updateUserStatus);
 
 export default router;

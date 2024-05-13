@@ -71,7 +71,7 @@ export const getAUser = async (req, res, next) => {
 
     return res.status(200).json({
       failed: false,
-      data: { ...rest, ...detailsRest },
+      data: { id: _id, ...rest, ...detailsRest },
     });
   } catch (error) {
     next(error);
