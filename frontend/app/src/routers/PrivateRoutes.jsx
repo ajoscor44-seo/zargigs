@@ -9,9 +9,9 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     <Route
       {...rest}
       render={(props) => {
-        return currentUser &&
-          currentUser.isEmailVerified &&
-          currentUser.gender ? (
+        return currentUser.isBanned ? (
+          <Redirect to="/login" />
+        ) : currentUser && currentUser.isEmailVerified && currentUser.gender ? (
           <Component {...props} />
         ) : currentUser &&
           currentUser.isEmailVerified &&

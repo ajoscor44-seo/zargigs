@@ -9,7 +9,9 @@ const VerifiedMemberPrivateRoute = ({ component: Component, ...rest }) => {
     <Route
       {...rest}
       render={(props) => {
-        return currentUser &&
+        return currentUser.isBanned ? (
+          <Redirect to="/login" />
+        ) : currentUser &&
           currentUser.isEmailVerified &&
           currentUser.gender &&
           currentUser.isMember ? (
