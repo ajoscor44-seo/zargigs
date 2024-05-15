@@ -49,7 +49,7 @@ const TaskDetails = () => {
   };
 
   // Handles File Input
-  const handleFileInputChange = (event) => {
+  const handleFileInputChange = (e) => {
     const file = e.target.files[0];
     if (!file) {
       alert("No file chosen.");

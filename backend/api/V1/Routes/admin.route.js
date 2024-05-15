@@ -10,8 +10,18 @@ import {
   resolveComplaint,
 } from "../Controllers/complaint.controller.js";
 import { updateUserStatus } from "../Controllers/update_status.controller.js";
+import {
+  getAdminData,
+  setAdminData,
+  updateAdminData,
+} from "../Controllers/admin.controller.js";
 
 const router = express.Router();
+
+// Admin Data Routes
+router.get("/", getAdminData);
+router.post("/", setAdminData);
+router.put("/", updateAdminData);
 
 // Users Routes
 router.get("/users", getAllUsers);
@@ -26,7 +36,7 @@ router.post("/complaints", postComplaint);
 router.get("/complaints", getAllComplaint);
 router.put("/complaint", resolveComplaint);
 
-// Update user status
+// Update user status - (Ban user and Lift ban on user)
 router.put("/update-status", updateUserStatus);
 
 export default router;
