@@ -1,6 +1,8 @@
 import React from "react";
+import { useAuth } from "../../../app/src/context/AuthContext";
 
 const AboutUs = () => {
+  const { adminData } = useAuth();
   return (
     <div className="bg-white px-4 py-10">
       <div className="flex items-center flex-col">
@@ -10,12 +12,14 @@ const AboutUs = () => {
 
       <div className="flex flex-col items-center mt-5 gap-3">
         <p className="font-primary text-center text-md">
-          Welcome to <span className="font-bold text-primary">GigsFlix</span>,
+          Welcome to{" "}
+          <span className="font-bold text-primary">{adminData?.appName}</span>,
           your go-to platform for monetizing your social media presence!.
         </p>
         <p className="font-primary text-center text-md">
-          At <span className="font-bold text-primary">GigsFlix</span>, we
-          believe in the power of social media and the potential it holds for
+          At{" "}
+          <span className="font-bold text-primary">{adminData?.appName}</span>,
+          we believe in the power of social media and the potential it holds for
           earning opportunities.
         </p>
         <span className="font-primary text-center text-md font-extrabold">

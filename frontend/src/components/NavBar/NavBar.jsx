@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import logo from "../../assets/png/logo-color.png";
 import { Link } from "react-router-dom/cjs/react-router-dom";
+import { useAuth } from "../../../app/src/context/AuthContext";
 
 const NavBar = ({
   menuOpen,
@@ -14,13 +15,16 @@ const NavBar = ({
     import.meta.env.VITE_NODE_ENV !== "production"
       ? import.meta.env.VITE_DEV_APP_URL
       : import.meta.env.VITE_PROD_APP_URL;
+  const { adminData } = useAuth();
 
   return (
     <div className="flex justify-between px-5 pb-5 lg:px-40 pt-5 items-center bg-white mb-5 shadow-sm lg:shadow-none fixed w-full">
       <div className="flex items-end gap-10 w-full">
         <div className="flex items-center gap-2">
-          <img className="w-10 rounded" src={logo} />
-          <span className="text-3xl font-semibold font-primary">GIGSFLIX.</span>
+          <img className="w-10 rounded" src={adminData?.appLogo} />
+          <span className="text-3xl font-semibold font-primary uppercase">
+            {adminData?.appName}.
+          </span>
         </div>
         <nav className="hidden lg:block mb-1 absolute lg:relative lg:top-0 right-0 bg-white text-center lg:w-fit lg:border-none">
           <ul className="flex gap-5 flex-col lg:flex-row">

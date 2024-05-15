@@ -1,10 +1,12 @@
 import React from "react";
+import { useAuth } from "../../../app/src/context/AuthContext";
 
 const RightServed = () => {
+  const { adminData } = useAuth();
   return (
     <div className="bg-slate-50 flex flex-col items-center gap-2 p-4">
       <h3 className="font-medium font-primary">
-        GigsFlix was developed by -{" "}
+        {adminData?.appName} was developed by -{" "}
         <a
           className="text-green-500 hover:underline cursor-pointer"
           href="https://twitter.com/__LeeMao"

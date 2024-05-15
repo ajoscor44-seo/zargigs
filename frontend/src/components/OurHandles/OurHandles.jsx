@@ -3,8 +3,10 @@ import { Link } from "react-router-dom/cjs/react-router-dom";
 import { FaFacebook } from "react-icons/fa6";
 import { FaTwitter } from "react-icons/fa6";
 import { FaSquareInstagram } from "react-icons/fa6";
+import { useAuth } from "../../../app/src/context/AuthContext";
 
 const OurHandles = () => {
+  const { adminData } = useAuth();
   const app_url =
     import.meta.env.VITE_NODE_ENV !== "production"
       ? import.meta.env.VITE_DEV_APP_URL
@@ -17,8 +19,9 @@ const OurHandles = () => {
           Advertise and Earn With Your Social Media Account
         </h2>
         <p className="font-primary text-center text-md my-3">
-          Join thousands of people using GigsFlix to advertise and earn steady
-          income with their social media accounts. Get started today for free.
+          Join thousands of people using {adminData?.appName} to advertise and
+          earn steady income with their social media accounts. Get started today
+          for free.
         </p>
         <div className="flex justify-center gap-5 mt-3">
           <a href={`${app_url}/signup`} target="_blank">

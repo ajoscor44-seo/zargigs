@@ -46,7 +46,7 @@ const Footer = () => {
         <ul className="footer_list">
           <li className="footer_list-item flex items-center gap-2">
             <MdMail size={20} />
-            <span>gigsflix@gmail.com</span>
+            <span>gigsflixtechnologies@gmail.com</span>
           </li>
         </ul>
       </div>

@@ -4,8 +4,10 @@ import { FaUsers, FaMoneyBillTrendUp } from "react-icons/fa6";
 import { MdAddReaction } from "react-icons/md";
 import postAdvertImg from "../../assets/png/post-advert.png";
 import lady_advertiser from "../../assets/images/lady-advertiser.jpg";
+import { useAuth } from "../../../app/src/context/AuthContext";
 
 const Services = () => {
+  const { adminData } = useAuth();
   const app_url =
     import.meta.env.VITE_NODE_ENV !== "production"
       ? import.meta.env.VITE_DEV_APP_URL
@@ -86,8 +88,8 @@ const Services = () => {
               </p>
               <p className="font-medium text-sm font-primary mt-2 pr-2">
                 Enjoy flexible advertising solutions tailored to your budget.
-                With GigsFlix, you pay only for genuine interactions, ensuring
-                your investment brings maximum returns.
+                With {adminData?.appName}, you pay only for genuine
+                interactions, ensuring your investment brings maximum returns.
               </p>
             </div>
           </div>
