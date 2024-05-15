@@ -13,7 +13,7 @@ const SetLocation = ({
   setSelectedGender,
   statesData,
 }) => {
-  const { currentUser } = useAuth();
+  const { currentUser, adminData } = useAuth();
 
   // Selects Data
   const genders = [
@@ -82,7 +82,7 @@ const SetLocation = ({
               <BiSolidCheckCircle size={55} className="text-green-500" />
             </div>
             <h1 className="text-center text-xl font-extrabold">
-              Welcome to Gigsflix!
+              Welcome to {adminData?.appName}!
             </h1>
             <p className="text-center text-xs">
               Congratulations {currentUser.lastname}, your email{" "}

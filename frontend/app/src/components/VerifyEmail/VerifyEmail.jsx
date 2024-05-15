@@ -7,7 +7,7 @@ import { BiSolidCheckCircle } from "react-icons/bi";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
-  const { verifyUserEmail } = useAuth();
+  const { verifyUserEmail, adminData } = useAuth();
   const [otp, setOtp] = useState(Array(4).fill(""));
   const email = sessionStorage.getItem("auth-user-email");
   const [emailVerified, setEmailVerified] = useState(false);
@@ -55,7 +55,7 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
       ) : (
         <div className="bg-white rounded shadow-2xl">
           <span className="flex justify-between items-center px-3 py-2 border-b text-sm">
-            <h2 className="font-bold">Welcome to Gigsflix</h2>{" "}
+            <h2 className="font-bold">Welcome to {adminData?.appName}</h2>{" "}
           </span>
 
           <div className="p-3 flex flex-col gap-2">
@@ -64,9 +64,9 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
                 Verify Your Email Address
               </h1>
               <p className="text-center text-sm">
-                To continue using Gigsflix, please verify your email address by
-                entering the two factor code sent to your registered email
-                address: <span className="font-bold">{email}</span>
+                To continue using {adminData?.appName}, please verify your email
+                address by entering the two factor code sent to your registered
+                email address: <span className="font-bold">{email}</span>
               </p>
             </div>
             <p className="text-center font-semibold text-xs text-sky-600 bg-sky-100 p-2 rounded-sm">

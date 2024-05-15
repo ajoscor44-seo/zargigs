@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
-import adminData from "../data/adminData";
 import numeral from "numeral";
 import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import PayAmountBar from "../components/PayAmountBar/PayAmountBar";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 const BecomeAMember = () => {
+  const { adminData } = useAuth();
   const history = useHistory();
   const [disableBtn, setDisableBtn] = useState(false);
   const [error, setError] = useState(null);
@@ -41,12 +42,12 @@ const BecomeAMember = () => {
         <p className="text-xs leading-5 font-semibold py-2 px-4">
           Do you know you can earn daily income by performing social media tasks
           such as likes, follows, comments, shares, retweets etc. That is one of
-          the many benefits of becoming a member on Gigsflix.
+          the many benefits of becoming a member on {adminData?.appName}.
         </p>
         <div>
           <h3 className="text-xs mb-5 mt-3 px-4 leading-5">
             When you activate your account with a one-time membership fee of ₦
-            {numeral(adminData.membershipFee).format("0,0")}, you get lifetime
+            {numeral(adminData?.membershipFee).format("0,0")}, you get lifetime
             access to enjoy the following benefits:
           </h3>
           <ul className="list-disc pl-12 pr-4">
@@ -63,8 +64,8 @@ const BecomeAMember = () => {
               <span className="font-extrabold">
                 Earn an Instant Referral Commission of ₦500
               </span>{" "}
-              when you refer someone to become a member on Gigsflix. The more
-              you refer, the more you earn. Click{" "}
+              when you refer someone to become a member on {adminData?.appName}.
+              The more you refer, the more you earn. Click{" "}
               <span className="text-green-500 hover:underline">here</span> to
               learn how referral works.
             </li>
@@ -89,7 +90,7 @@ const BecomeAMember = () => {
         </div>
         <PayAmountBar
           feeTitle={"Membership Fee"}
-          fee={adminData.membershipFee}
+          fee={adminData?.membershipFee}
           btnText={"Click Here To Pay Now"}
           handleClick={becomeAMember}
           disable={disableBtn}

@@ -11,7 +11,7 @@ import OAuth from "../components/OAuth/OAuth";
 const Login = ({ setNotVerified }) => {
   const [email, setEmail] = useState(null);
   const [formData, setFormData] = useState({});
-  const { loginUser, fetchUserData } = useAuth();
+  const { loginUser, fetchUserData, adminData } = useAuth();
   const [password, setPassword] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -72,7 +72,9 @@ const Login = ({ setNotVerified }) => {
         <div className="flex items-center gap-2 px-4">
           <img className="w-10 rounded" src={logo} />
           <div className="flex items-start flex-col">
-            <h2 className="text-2xl font-primary font-bold">GigsFlix</h2>
+            <h2 className="text-2xl font-primary font-bold">
+              {adminData?.appName}
+            </h2>
             <span className="h-1 w-6 rounded-full bg-green-500"></span>
           </div>
         </div>

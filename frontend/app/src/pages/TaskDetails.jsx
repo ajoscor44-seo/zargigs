@@ -12,8 +12,10 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import formatDate from "../hooks/formatDate";
 import CopyToClipboard from "../hooks/CopyToClipboard";
 import { FaFileDownload } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
 
 const TaskDetails = () => {
+  const { adminData } = useAuth()
   const history = useHistory();
   const { slug, platform, status, id, type } = useParams();
   const [taskDetails, setTaskDetails] = useState({});
@@ -298,7 +300,7 @@ const TaskDetails = () => {
                 className="text-xs text-gray-400 font-semibold"
               >
                 The task you are given is to post this advert on {platform}{" "}
-                using the social media account linked to Gigsflix .
+                using the social media account linked to {adminData?.appName} .
               </p>
 
               <div className="mt-2">
@@ -335,7 +337,7 @@ const TaskDetails = () => {
                 <div className="text-orange-400 font-semibold bg-orange-100 rounded text-xs p-3 mt-2">
                   You must{" "}
                   <span className="font-bold text-orange-500">NOT UNDO</span>{" "}
-                  any task you perform as it may result to your Gigsflix account
+                  any task you perform as it may result to your {adminData?.appName} account
                   getting banned. You will not be able to perform any task if
                   you <span className="font-bold text-orange-500">UNDO</span>{" "}
                   any task performed

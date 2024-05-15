@@ -11,6 +11,7 @@ export const useAuth = () => {
 
 const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [adminData, setAdminData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const getCurrentUser = async () => {
@@ -24,6 +25,21 @@ const AuthProvider = ({ children }) => {
       });
   };
 
+  // Gets admin data
+  const getAdminData = async () => {
+    try {
+      const response = await axios.get("/api/v1/admin");
+
+      if (response.data.failed) {
+        return error;
+      }
+
+      return setAdminData(response.data[0]);
+    } catch (error) {
+      return error;
+    }
+  };
+
   const fetchUserData = async () => {
     setLoading(true);
     const user = await getCurrentUser();
@@ -34,6 +50,7 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     fetchUserData();
+    getAdminData();
   }, []);
 
   const loginUser = async (email, password) => {
@@ -110,6 +127,7 @@ const AuthProvider = ({ children }) => {
 
   const AuthValue = {
     currentUser,
+    adminData,
     fetchUserData,
     loginUser,
     logoutUser,
@@ -145,7 +163,7 @@ const AuthProvider = ({ children }) => {
                 ONLY MOBILE DEVICES ARE ALLOWED TO VIEW THIS APP
               </span>
               <div className="flex justify-end italic font-bold w-full">
-                <h3 className="text-green-500 text-sm">GigsFlix</h3>
+                <h3 className="text-green-500 text-sm">{adminData?.appName}</h3>
               </div>
             </div>
           </div>

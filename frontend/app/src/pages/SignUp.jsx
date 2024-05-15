@@ -5,7 +5,7 @@ import PageSlider from "../components/PageSlider/PageSlider";
 import { useAuth } from "../context/AuthContext";
 
 const SignUp = ({ setSignedIn }) => {
-  const { signupUser } = useAuth();
+  const { signupUser, adminData } = useAuth();
   const params = useParams();
   const history = useHistory();
   const [formData, setFormData] = useState({
@@ -16,7 +16,7 @@ const SignUp = ({ setSignedIn }) => {
   const pagesData = [
     {
       bgColor: "bg-white",
-      title: "Sign Up on Gigsflix",
+      title: `Sign Up on ${adminData?.appName}`,
       info: "Registration is simple, fast and free!",
       formInputs: [
         {
@@ -43,7 +43,7 @@ const SignUp = ({ setSignedIn }) => {
         },
         {
           label: "Referrer's Username (Optional)",
-          note: "Please enter the username of the person who referred you to Gigsflix. You can leave this empty if you wish.",
+          note: `Please enter the username of the person who referred you to ${adminData?.appName}. You can leave this empty if you wish.`,
           placeholder: "Enter Your Referrer's Username",
           icon: "referrer",
           type: "text",

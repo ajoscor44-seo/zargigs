@@ -26,7 +26,7 @@ import { useAuth } from "../context/AuthContext";
 const Settings = () => {
   const [error, setError] = useState(null);
   const history = useHistory();
-  const { currentUser, logoutUser } = useAuth();
+  const { currentUser, logoutUser, adminData } = useAuth();
   const settings = [
     {
       icon: <BsCart2 size={20} />,
@@ -85,7 +85,7 @@ const Settings = () => {
     },
     {
       icon: <FcAbout size={20} />,
-      name: "About Gigsflix",
+      name: `About ${adminData?.appName}`,
       path: "/about-us",
     },
     {

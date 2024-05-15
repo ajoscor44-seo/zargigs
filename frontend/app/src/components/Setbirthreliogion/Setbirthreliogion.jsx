@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import FormInput from "../FormInput/FormInput";
 import religions from "../../data/religions";
 import { IoArrowForward } from "react-icons/io5";
+import { useAuth } from "../../context/AuthContext";
 
 const SetBirthReligion = ({
   setActivePage,
@@ -14,6 +15,8 @@ const SetBirthReligion = ({
   days,
   uploadUserDetails,
 }) => {
+  const { adminData } = useAuth();
+
   // Handles change in religion selection
   const handleChange = (e) => {
     return setSelectedReligion(e.target.value);
@@ -50,7 +53,7 @@ const SetBirthReligion = ({
             </button>
             <p className="text-sm font-semibold">
               Let's know about you so we can personalise your experience on
-              GigsFlix
+              {adminData?.appName}
             </p>
 
             <span className="flex flex-col gap-2">

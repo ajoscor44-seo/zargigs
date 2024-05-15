@@ -8,11 +8,11 @@ import Chat from "../components/Chat/Chat";
 import axios from "axios";
 import { IoClose } from "react-icons/io5";
 import { FaSpinner } from "react-icons/fa6";
+import { useAuth } from "../context/AuthContext";
 
 const HelpSupport = () => {
-  const disclaimerMsg =
-    "Please disregard any social media platform or Facebook Groups posing as Gigsflix. We do not have any Whatsapp Group or Telegram Group. Beware of Fraudsters posing as Gigsflix agents or customer supports telling you to pay any amount of money into their personal accounts or into any OPAY/PALMPAY account. We DO NOT have an OPAY/PALMPAY account number.";
-
+  const { adminData } = useAuth();
+  const disclaimerMsg = `Please disregard any social media platform or Facebook Groups posing as ${adminData?.appName}. We do not have any Whatsapp Group or Telegram Group. Beware of Fraudsters posing as ${adminData?.appName} agents or customer supports telling you to pay any amount of money into their personal accounts or into any OPAY/PALMPAY account. We DO NOT have an OPAY/PALMPAY account number.`;
   const [visible, setVisibility] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [error, setError] = useState(null);
@@ -70,7 +70,7 @@ const HelpSupport = () => {
               style={{ maxWidth: "400px" }}
             >
               <h1 className="font-bold italic">
-                Having Any Problem With Gigsflix?
+                Having Any Problem With {adminData?.appName}?
               </h1>
               <span
                 disabled={isAdding}

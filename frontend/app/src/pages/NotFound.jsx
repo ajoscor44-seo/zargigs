@@ -2,8 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import notFound from "../assets/png/not_found.png";
 import { FaArrowLeft } from "react-icons/fa6";
+import { useAuth } from "../context/AuthContext";
 
 const NotFound = () => {
+  const { adminData } = useAuth();
+
   return (
     <div className="flex justify-center items-center h-screen px-3 bg-slate-100 font-primary">
       <div className="shadow-2xl bg-white p-4 rounded flex flex-col">
@@ -27,7 +30,7 @@ const NotFound = () => {
           Back to Dashboard
         </Link>
         <div className="flex justify-end items-center italic font-bold">
-          <h3 className="text-green-500">GigsFlix</h3>
+          <h3 className="text-green-500">{adminData?.appName}</h3>
         </div>
       </div>
     </div>

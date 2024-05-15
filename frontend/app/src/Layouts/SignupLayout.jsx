@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import logo from "../assets/png/logo-color.png";
 import { Link } from "react-router-dom/cjs/react-router-dom";
-import googleIcon from "../assets/png/google-icon.png";
 import OAuth from "../components/OAuth/OAuth";
+import { useAuth } from "../context/AuthContext";
 
 const SignupLayout = ({ children }) => {
+  const { adminData } = useAuth();
+
   return (
     <div
       className="flex flex-col rounded p-4"
@@ -13,7 +15,9 @@ const SignupLayout = ({ children }) => {
       <div className="flex items-center gap-2 mb-4">
         <img className="w-10 rounded" src={logo} />
         <div className="flex items-start flex-col">
-          <h2 className="text-2xl font-primary font-bold">GigsFlix</h2>
+          <h2 className="text-2xl font-primary font-bold">
+            {adminData?.appName}
+          </h2>
           <span className="h-1 w-6 rounded-full bg-green-500"></span>
         </div>
       </div>
@@ -30,7 +34,7 @@ const SignupLayout = ({ children }) => {
         </p>
         <div className="flex items-center gap-2">
           <p className="text-sm font-semibold text-slate-600">
-            Already have an account on Gigsflix?
+            Already have an account on {adminData?.appName}?
           </p>
           <Link to="/login">
             <span className="text-green-500 text-xs font-semibold hover:underline">

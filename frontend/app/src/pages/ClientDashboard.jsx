@@ -14,7 +14,7 @@ import useListenRecentActivity from "../hooks/useListenRecentActivity";
 import { GiSpeaker } from "react-icons/gi";
 
 const ClientDashboard = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, adminData } = useAuth();
   const [announcements, setAnnouncements] = useState(null);
   const [recentActivities, setRecentActivities] = useState([]);
   useListenRecentActivity(setRecentActivities, recentActivities);
@@ -117,9 +117,12 @@ const ClientDashboard = () => {
           ) : (
             <div className="underBackNav bg-white flex flex-col py-12 px-12 font-primary">
               <div className="mt-5 text-center py-5">
-                <h2 className="font-extrabold text-2xl">Welcome to Gigsflix</h2>
+                <h2 className="font-extrabold text-2xl">
+                  Welcome to {adminData?.appName}
+                </h2>
                 <p className="text-xs">
-                  Please select what you want to do on Gigsflix today
+                  Please select what you want to do on {adminData?.appName}{" "}
+                  today
                 </p>
               </div>
 
