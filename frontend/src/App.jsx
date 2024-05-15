@@ -4,6 +4,7 @@ import {
   Route,
 } from "react-router-dom/cjs/react-router-dom.min";
 import axios from "axios";
+import AuthProvider from "./context/LandingContext";
 
 function App() {
   axios.defaults.baseURL =
@@ -14,12 +15,14 @@ function App() {
 
   return (
     <>
-      <Router>
-        {/* Landing Page */}
-        <Route exact path="/">
-          <Home />
-        </Route>
-      </Router>
+      <AuthProvider>
+        <Router>
+          {/* Landing Page */}
+          <Route exact path="/">
+            <Home />
+          </Route>
+        </Router>
+      </AuthProvider>
     </>
   );
 }

@@ -4,7 +4,7 @@ import { FaUsers, FaMoneyBillTrendUp } from "react-icons/fa6";
 import { MdAddReaction } from "react-icons/md";
 import postAdvertImg from "../../assets/png/post-advert.png";
 import lady_advertiser from "../../assets/images/lady-advertiser.jpg";
-import { useAuth } from "../../../app/src/context/AuthContext";
+import { useAuth } from "../../context/LandingContext";
 
 const Services = () => {
   const { adminData } = useAuth();

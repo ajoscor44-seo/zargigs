@@ -1,7 +1,5 @@
-import React, { useState } from "react";
-import logo from "../../assets/png/logo-color.png";
-import { Link } from "react-router-dom/cjs/react-router-dom";
-import { useAuth } from "../../../app/src/context/AuthContext";
+import React from "react";
+import { useAuth } from "../../context/LandingContext";
 
 const NavBar = ({
   menuOpen,
@@ -11,11 +9,11 @@ const NavBar = ({
   tabs,
   scrollTo,
 }) => {
+  const { adminData } = useAuth();
   const app_url =
     import.meta.env.VITE_NODE_ENV !== "production"
       ? import.meta.env.VITE_DEV_APP_URL
       : import.meta.env.VITE_PROD_APP_URL;
-  const { adminData } = useAuth();
 
   return (
     <div className="flex justify-between px-5 pb-5 lg:px-40 pt-5 items-center bg-white mb-5 shadow-sm lg:shadow-none fixed w-full">

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom/cjs/react-router-dom";
 import { FaFacebook } from "react-icons/fa6";
 import { FaTwitter } from "react-icons/fa6";
 import { FaSquareInstagram } from "react-icons/fa6";
-import { useAuth } from "../../../app/src/context/AuthContext";
+import { useAuth } from "../../context/LandingContext";
 
 const OurHandles = () => {
   const { adminData } = useAuth();

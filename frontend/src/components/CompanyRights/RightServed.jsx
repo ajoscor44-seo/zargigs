@@ -1,5 +1,5 @@
 import React from "react";
-import { useAuth } from "../../../app/src/context/AuthContext";
+import { useAuth } from "../../context/LandingContext";
 
 const RightServed = () => {
   const { adminData } = useAuth();
