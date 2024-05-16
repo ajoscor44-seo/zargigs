@@ -88,13 +88,6 @@ export const updateAdminData = async (req, res, next) => {
 
 export const getAdminData = async (req, res, next) => {
   try {
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
-    if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
-    }
-
     const adminData = await Admin.find();
 
     if (!adminData) {

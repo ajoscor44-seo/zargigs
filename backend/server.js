@@ -9,6 +9,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import authenticateToken from "./api/V1/Middleware/authenticate.js";
+import { getAdminData } from "./api/V1/Controllers/admin.controller.js";
 
 // Connects to db
 mongoose
@@ -49,6 +50,8 @@ app.options("*", cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("tiny"));
+
+app.get("/api/v1/admin-data", getAdminData);
 
 // Authentication route
 app.use("/api/auth/", authRoutes);

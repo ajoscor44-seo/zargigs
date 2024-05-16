@@ -19,7 +19,6 @@ import {
 const router = express.Router();
 
 // Admin Data Routes
-router.get("/", getAdminData);
 router.post("/", setAdminData);
 router.put("/", updateAdminData);
 
