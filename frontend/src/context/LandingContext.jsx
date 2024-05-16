@@ -8,7 +8,7 @@ export const useAuth = () => {
 };
 
 const AuthProvider = ({ children }) => {
-  const [adminData, setAdminData] = useState(null);
+  const [adminData, setAdminData] = useState({});
   const [loading, setLoading] = useState(true);
 
   // Gets admin data
