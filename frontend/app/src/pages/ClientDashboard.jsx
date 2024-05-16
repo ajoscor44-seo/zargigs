@@ -144,7 +144,10 @@ const ClientDashboard = () => {
           )}
         </div>
         {recentActivities.length && (
-          <RecentActivities recentActivities={recentActivities} />
+          <RecentActivities
+            key={recentActivities.id}
+            recentActivities={recentActivities}
+          />
         )}
       </div>
       <ClientMenuBar />

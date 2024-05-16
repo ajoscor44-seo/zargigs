@@ -1,12 +1,12 @@
 import React from "react";
 import BackNav from "../BackNav/BackNav";
 import numeral from "numeral";
-import ClientMenuBar from "../ClientMenuBar/ClientMenuBar";
-import user from "../../data/user";
 import fundings from "../../data/fundings";
+import { useAuth } from "../../context/AuthContext";
 
 const FundWallet = () => {
-  const balance = user.balance;
+  const { currentUser } = useAuth();
+  const balance = currentUser.userEarnings.balance;
 
   return (
     <div>
@@ -36,6 +36,7 @@ const FundWallet = () => {
             </button>
           </div>
         </div>
+        <button onClick={postData}>Post Data</button>
 
         <div className="flex flex-col p-3 font-primary mb-10">
           <p className="text-xs text-primary">

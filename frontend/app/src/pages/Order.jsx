@@ -4,9 +4,11 @@ import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import PricingWay from "../components/PricingWay/PricingWay";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import { FaHistory } from "react-icons/fa";
-import waysToCreateEngagementTasks from "../data/waysToCreateEngagementTasks";
+import { useAuth } from "../context/AuthContext";
 
 const Order = () => {
+  const { engagementCreator } = useAuth();
+
   return (
     <div className="font-primary">
       <BackNav
@@ -45,7 +47,7 @@ const Order = () => {
         </div>
 
         <div className="py-4 flex flex-col gap-2 mb-12">
-          {waysToCreateEngagementTasks.map((way) => {
+          {engagementCreator.map((way) => {
             return (
               <Link to={way.pathToPage} key={way.pathToPage}>
                 <PricingWay

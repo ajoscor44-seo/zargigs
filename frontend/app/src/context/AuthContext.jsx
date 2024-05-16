@@ -12,6 +12,8 @@ export const useAuth = () => {
 const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [adminData, setAdminData] = useState(null);
+  const [advertCreator, setAdvertCreator] = useState([]);
+  const [engagementCreator, setEngagementCreator] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const getCurrentUser = async () => {
@@ -40,6 +42,36 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  // Gets advert creator data
+  const getAdvertCreator = async () => {
+    try {
+      const response = await axios.get("/api/v1/creator/create-advert");
+
+      if (response.data.failed) {
+        return error;
+      }
+
+      return setAdvertCreator(response.data.data);
+    } catch (error) {
+      return error;
+    }
+  };
+
+  // Gets engagement creator data
+  const getEngagementCreator = async () => {
+    try {
+      const response = await axios.get("/api/v1/creator/create-engagement");
+
+      if (response.data.failed) {
+        return error;
+      }
+
+      return setEngagementCreator(response.data.data);
+    } catch (error) {
+      return error;
+    }
+  };
+
   const fetchUserData = async () => {
     setLoading(true);
     const user = await getCurrentUser();
@@ -51,6 +83,8 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     fetchUserData();
     getAdminData();
+    getAdvertCreator();
+    getEngagementCreator();
   }, []);
 
   const loginUser = async (email, password) => {
@@ -128,6 +162,8 @@ const AuthProvider = ({ children }) => {
   const AuthValue = {
     currentUser,
     adminData,
+    advertCreator,
+    engagementCreator,
     fetchUserData,
     loginUser,
     logoutUser,

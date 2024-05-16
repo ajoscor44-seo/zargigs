@@ -1,7 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
 import { useHistory, useParams } from "react-router-dom/cjs/react-router-dom";
-import waysToCreateAdvertTasks from "../data/waysToCreateAdvertsTasks";
 import PricingWay from "../components/PricingWay/PricingWay";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import FormInput from "../components/FormInput/FormInput";
@@ -14,9 +13,11 @@ import axios from "axios";
 import ToastNotification from "../components/ToastNotification/ToastNotification";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../config/firebase.config";
+import { useAuth } from "../context/AuthContext";
 // import payWithMonicredit from "../hooks/PayWithMonicredit";
 
 const CreateAdvert = () => {
+  const { advertCreator } = useAuth();
   const fileInputRef = useRef();
   const [toastNotifications, setToastNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -26,17 +27,15 @@ const CreateAdvert = () => {
   const [error, setError] = useState(null);
   const params = useParams();
   const slug = params.slug;
-  const wayToCreateAdvert = waysToCreateAdvertTasks.find(
-    (wayToCreateAdvertTasks) => {
-      return wayToCreateAdvertTasks.pathToPage == "/advertise/" + slug;
-    }
-  );
+  const wayToCreateAdvert = advertCreator?.find((wayToCreateAdvertTasks) => {
+    return wayToCreateAdvertTasks.pathToPage == "/advertise/" + slug;
+  });
   const [mediaError, setMediaError] = useState(null);
   const [mediaPercentage, setMediaPercentage] = useState(null);
 
   // Task data object
   const [taskData, setTaskData] = useState({
-    title: wayToCreateAdvert.title,
+    title: wayToCreateAdvert?.title,
     taskType: "advert",
     gender: undefined,
     location: undefined,
@@ -44,9 +43,9 @@ const CreateAdvert = () => {
     caption: undefined,
     mediaUrl: undefined,
     numberOfTasks: undefined,
-    costPerTask: wayToCreateAdvert.amountToPay,
-    earningPerTask: wayToCreateAdvert.amountToEarn,
-    taskPlatform: wayToCreateAdvert.platformName.toLowerCase(),
+    costPerTask: wayToCreateAdvert?.amountToPay,
+    earningPerTask: wayToCreateAdvert?.amountToEarn,
+    taskPlatform: wayToCreateAdvert?.platformName.toLowerCase(),
   });
 
   // Toast Notification
@@ -203,14 +202,14 @@ const CreateAdvert = () => {
   return (
     <div>
       <BackNav
-        pageName={"Post Advert on " + wayToCreateAdvert.platformName}
+        pageName={"Post Advert on " + wayToCreateAdvert?.platformName}
         usePath={true}
         pathToGo={"/advertise"}
       />
       <div className="underBackNav font-primary mb-28">
         <PricingWay
           way={wayToCreateAdvert}
-          wayDescription={wayToCreateAdvert.description}
+          wayDescription={wayToCreateAdvert?.description}
         />
         {error && (
           <p className="fixed top-12 z-10 w-full text-center bg-red-200 text-red-500 rounded py-1 font-semibold">
@@ -221,9 +220,9 @@ const CreateAdvert = () => {
           <FormInput
             type={"number"}
             fullRounded={true}
-            placeholder={`No. Of ${wayToCreateAdvert.platformName} Advert Posts`}
-            label={`Number of ${wayToCreateAdvert.platformName} Advert Posts You Want`}
-            note={`This is the desired Number of ${wayToCreateAdvert.platformName} Advert Posts you want us to get for you.`}
+            placeholder={`No. Of ${wayToCreateAdvert?.platformName} Advert Posts`}
+            label={`Number of ${wayToCreateAdvert?.platformName} Advert Posts You Want`}
+            note={`This is the desired Number of ${wayToCreateAdvert?.platformName} Advert Posts you want us to get for you.`}
             errorMsg={"Please input a valid number"}
             isError={false}
             name={"numberOfTasks"}
@@ -233,7 +232,7 @@ const CreateAdvert = () => {
                 [e.target.name]: e.target.value,
               });
               setAmountToPay(
-                Number(e.target.value) * Number(wayToCreateAdvert.amountToPay)
+                Number(e.target.value) * Number(wayToCreateAdvert?.amountToPay)
               );
             }}
           />

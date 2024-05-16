@@ -4,9 +4,10 @@ import { Link } from "react-router-dom/cjs/react-router-dom";
 import { FaHistory } from "react-icons/fa";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import PricingWay from "../components/PricingWay/PricingWay";
-import waysToCreateAdvertTasks from "../data/waysToCreateAdvertsTasks";
 
 const Adevertise = () => {
+  const { advertCreator } = useAuth();
+
   return (
     <div className="font-primary">
       <BackNav
@@ -46,7 +47,7 @@ const Adevertise = () => {
         </div>
 
         <div className="py-4 flex flex-col gap-2 mb-12">
-          {waysToCreateAdvertTasks.map((way) => {
+          {advertCreator.map((way) => {
             return (
               <Link to={way.pathToPage} key={way.pathToPage}>
                 <PricingWay

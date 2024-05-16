@@ -1,20 +1,19 @@
 import React, { useState } from "react";
 import BackNav from "../BackNav/BackNav";
-import ClientMenuBar from "../ClientMenuBar/ClientMenuBar";
 import numeral from "numeral";
 import { FaEdit, FaLock } from "react-icons/fa";
 import { CiBank } from "react-icons/ci";
 import { TfiMenuAlt } from "react-icons/tfi";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { Link } from "react-router-dom/cjs/react-router-dom";
-import user from "../../data/user";
-import adminData from "../../data/adminData";
+import { useAuth } from "../../context/AuthContext";
 
 const Withdraw = () => {
+  const { adminData, currentUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const balance = user.balance;
-  const charges = adminData.chargeForWithdrawal;
-  const amountWithdrawable = balance - charges;
+  const balance = currentUser.userEarnings.balance;
+  const charges = adminData.withdrawalCharges;
+  const amountWithdrawable = balance ? balance - charges : 0;
 
   return (
     <div>
@@ -39,10 +38,15 @@ const Withdraw = () => {
         <div className="flex justify-between items-center border-b p-2 px-4">
           <span>
             <p className="text-sm text-primary">Bank Details:</p>
-            <h2 className="font-bold">{user.bankDetails.accountName}</h2>
+            <h2 className="font-bold">
+              {currentUser.bankDetails.accountName || "No account name"}
+            </h2>
             <span className="font-normal text-sm flex items-center gap-1">
-              <span>{user.bankDetails.accountNumber}</span> <CiBank size={15} />{" "}
-              <span>{user.bankDetails.bankName}</span>
+              <span>
+                {currentUser.bankDetails.accountNumber || "No account no."}
+              </span>{" "}
+              <CiBank size={15} />{" "}
+              <span>{currentUser.bankDetails.bankName || "No bank name"}</span>
             </span>
           </span>
           <span>

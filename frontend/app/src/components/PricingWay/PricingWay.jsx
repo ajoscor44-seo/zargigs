@@ -103,40 +103,65 @@ const PricingWay = ({ way, addSelectBtn, wayDescription }) => {
               <span className="flex items-center gap-1">
                 {way.platforms.map((platform) =>
                   platform.toLowerCase() === "facebook" ? (
-                    <FaFacebook className="text-blue-600" size={15} />
+                    <FaFacebook
+                      key={platform}
+                      className="text-blue-600"
+                      size={15}
+                    />
                   ) : platform.toLowerCase() === "instagram" ? (
                     <FaInstagram
                       size={15}
+                      key={platform}
                       className="text-white bg-instagram-gradient rounded"
                     />
                   ) : platform.toLowerCase() === "whatsapp" ? (
-                    <FaWhatsapp size={15} className="text-green-500 rounded" />
+                    <FaWhatsapp
+                      size={15}
+                      key={platform}
+                      className="text-green-500 rounded"
+                    />
                   ) : platform.toLowerCase() === "tiktok" ? (
                     <FaTiktok
                       size={15}
+                      key={platform}
                       className="text-white bg-black rounded p-1"
                     />
                   ) : platform.toLowerCase() === "audiomack" ? (
                     <SiAudiomack
                       size={15}
+                      key={platform}
                       className="text-orange-500 bg-black rounded"
                     />
                   ) : platform.toLowerCase() === "applestore" ? (
                     <IoLogoAppleAppstore
                       size={15}
+                      key={platform}
                       className="text-blue-500 bg-white rounded-full"
                     />
                   ) : platform.toLowerCase() === "playstore" ? (
                     <img
                       src={playStoreImage}
+                      key={platform}
                       className="w-5 h-5 object-cover"
                     />
                   ) : platform.toLowerCase() === "youtube" ? (
-                    <FaYoutube size={15} className="text-red-500" />
+                    <FaYoutube
+                      size={15}
+                      key={platform}
+                      className="text-red-500"
+                    />
                   ) : platform.toLowerCase() === "telegram" ? (
-                    <FaTelegram size={15} className="text-blue-400 bg-white" />
+                    <FaTelegram
+                      size={15}
+                      key={platform}
+                      className="text-blue-400 bg-white"
+                    />
                   ) : (
-                    <FaTwitter className="text-blue-400" size={15} />
+                    <FaTwitter
+                      key={platform}
+                      className="text-blue-400"
+                      size={15}
+                    />
                   )
                 )}
               </span>

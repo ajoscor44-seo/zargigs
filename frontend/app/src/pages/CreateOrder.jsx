@@ -9,10 +9,11 @@ import allStates from "../data/states";
 import religions from "../data/religions";
 import axios from "axios";
 import ToastNotification from "../components/ToastNotification/ToastNotification";
-import waysToCreateEngagementTasks from "../data/waysToCreateEngagementTasks";
+import { useAuth } from "../context/AuthContext";
 // import payWithMonicredit from "../hooks/PayWithMonicredit";
 
 const CreateOrder = () => {
+  const { engagementCreator } = useAuth();
   const [toastNotifications, setToastNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const history = useHistory();
@@ -20,7 +21,7 @@ const CreateOrder = () => {
   const [error, setError] = useState(null);
   const params = useParams();
   const slug = params.slug;
-  const wayToCreateEngagement = waysToCreateEngagementTasks.find(
+  const wayToCreateEngagement = engagementCreator.find(
     (wayToCreateEngagementTask) => {
       return wayToCreateEngagementTask.pathToPage == "/order/" + slug;
     }

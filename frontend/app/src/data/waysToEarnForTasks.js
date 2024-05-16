@@ -6,135 +6,6 @@ const waysToEarnForTasks = [
     pathToPage: "/earn/earn-by-following",
     platforms: ["Facebook", "Instagram", "Tiktok"],
     whatTheyDo: "people you follow",
-    subTasksHistory: {
-      pendingTasks: [
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Instagram",
-          taskPerformed: "Follow",
-          taskState: "pending",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-      ],
-      inReviewTasks: [
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Instagram",
-          taskPerformed: "Follow",
-          taskState: "in Review",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-      ],
-      failedTasks: [
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Instagram",
-          taskPerformed: "Follow",
-          taskState: "failed",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Facebook",
-          taskPerformed: "Follow",
-          taskState: "failed",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-      ],
-      completedTasks: [
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Instagram",
-          taskPerformed: "Follow",
-          taskState: "completed",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Facebook",
-          taskPerformed: "Follow",
-          taskState: "completed",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Tiktok",
-          taskPerformed: "Follow",
-          taskState: "completed",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-      ],
-      cancelledTasks: [
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Instagram",
-          taskPerformed: "Follow",
-          taskState: "cancelled",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Facebook",
-          taskPerformed: "Follow",
-          taskState: "cancelled",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-      ],
-    },
   },
   {
     title: "Like and Follow Facebook Business Pages",
@@ -143,27 +14,6 @@ const waysToEarnForTasks = [
     pathToPage: "/earn/earn-from-facebook",
     platforms: ["Facebook"],
     whatTheyDo: "pages you like",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [
-        {
-          date: "Feb 25th 2024 3:27 pm",
-          title: "Follow People & Pages",
-          earning: 3,
-          platformName: "Facebook",
-          taskPerformed: "Follow",
-          taskState: "pending",
-          postedBy: {
-            username: "Gbabia",
-            firstname: "Gbabua",
-            lastname: "Pabz",
-          },
-        },
-      ],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Like Posts on Social Media",
@@ -172,13 +22,6 @@ const waysToEarnForTasks = [
     pathToPage: "/earn/earn-by-liking",
     platforms: ["Facebook", "Instagram", "Twitter", "Tiktok"],
     whatTheyDo: "posts you like",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Subscribe on Youtube Channels",
@@ -187,13 +30,6 @@ const waysToEarnForTasks = [
     pathToPage: "/earn/earn-with-youtube",
     platforms: ["Youtube"],
     whatTheyDo: "channels you subscribe to",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Google Play App Download and Review",
@@ -202,13 +38,6 @@ const waysToEarnForTasks = [
     pathToPage: "/earn/earn-with-playstore",
     platforms: ["Playstore"],
     whatTheyDo: "you review",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Download and Review Apps on Apple Store",
@@ -217,13 +46,6 @@ const waysToEarnForTasks = [
     pathToPage: "/earn/earn-with-applestore",
     platforms: ["Applestore"],
     whatTheyDo: "you review",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Follow an account on Audiomack",
@@ -232,13 +54,6 @@ const waysToEarnForTasks = [
     pathToPage: "/earn/earn-with-tiktok",
     platforms: ["Audiomack"],
     whatTheyDo: "audiomack profiles you follow",
-    subTasksHistory: {
-      pendingTasks: ["Hello"],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "View, Like and Comment on Youtube",
@@ -247,13 +62,6 @@ const waysToEarnForTasks = [
     pathToPage: "/earn/earn-with-tiktok",
     platforms: ["Youtube"],
     whatTheyDo: "videos you view and comment on",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Post Comments",
@@ -262,13 +70,6 @@ const waysToEarnForTasks = [
     pathToPage: "/earn/earn-with-tiktok",
     platforms: ["Facebook", "Instagram", "Twitter", "Tiktok"],
     whatTheyDo: "posts you comment on",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Share Posts on Facebook",
@@ -277,13 +78,6 @@ const waysToEarnForTasks = [
     pathToPage: "/earn/earn-with-whatsap",
     platforms: ["Facebook"],
     whatTheyDo: "posts you share",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Retweet on Twitter",
@@ -292,13 +86,6 @@ const waysToEarnForTasks = [
     pathToPage: "/earn/earn-with-tiktok",
     platforms: ["Twitter"],
     whatTheyDo: "posts you retweet",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Join a Whatsapp Group",
@@ -307,13 +94,6 @@ const waysToEarnForTasks = [
     pathToPage: "/earn/earn-with-whatsapp",
     platforms: ["Whatsapp"],
     whatTheyDo: "Whatsapp group you join",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: [],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
   {
     title: "Join a Telegram Group/Channel",
@@ -322,13 +102,6 @@ const waysToEarnForTasks = [
     pathToPage: "/earn/earn-with-whatsapp",
     platforms: ["Telegram"],
     whatTheyDo: "Telegram group you join",
-    subTasksHistory: {
-      pendingTasks: [],
-      inReviewTasks: ["Hello"],
-      failedTasks: [],
-      completedTasks: [],
-      cancelledTasks: [],
-    },
   },
 ];
 
