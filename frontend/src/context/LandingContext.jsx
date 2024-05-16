@@ -15,7 +15,7 @@ const AuthProvider = ({ children }) => {
   const getAdminData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("/api/v1/admin");
+      const response = await axios.get("/api/v1/admin-data");
 
       if (response.data.failed) {
         return response.data.message;
