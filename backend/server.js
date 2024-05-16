@@ -42,6 +42,9 @@ const corsOptions = {
 // CORS configuration
 app.use(cors(corsOptions));
 
+// Handle preflight requests
+app.options("*", cors(corsOptions));
+
 // Parses json bodies
 app.use(express.json());
 app.use(cookieParser());
