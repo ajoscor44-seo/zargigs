@@ -11,10 +11,13 @@ import {
 } from "../Controllers/complaint.controller.js";
 import { updateUserStatus } from "../Controllers/update_status.controller.js";
 import {
-  getAdminData,
   setAdminData,
   updateAdminData,
 } from "../Controllers/admin.controller.js";
+import {
+  postAdvertCreator,
+  updateAdvertCreator,
+} from "../Controllers/create-task.controller.js";
 
 const router = express.Router();
 
@@ -25,6 +28,14 @@ router.put("/", updateAdminData);
 // Users Routes
 router.get("/users", getAllUsers);
 router.get("/user", getAUser);
+
+// Advert Creator Routes
+router.put("/create-advert", updateAdvertCreator);
+router.post("/create-advert", postAdvertCreator);
+
+// Engagement Creator Routes
+router.put("/create-advert", updateAdvertCreator);
+router.post("/create-advert", postAdvertCreator);
 
 // Announcement Routes
 router.post("/announcement", postAnnouncement);
