@@ -16,8 +16,16 @@ import {
 } from "../Controllers/admin.controller.js";
 import {
   postAdvertCreator,
+  postEngagementCreator,
   updateAdvertCreator,
+  updateEngagementCreator,
 } from "../Controllers/create-task.controller.js";
+import {
+  postAdvertEarner,
+  postEngagementEarner,
+  updateAdvertEarner,
+  updateEngagementEarner,
+} from "../Controllers/earn-task.controller.js";
 
 const router = express.Router();
 
@@ -34,8 +42,16 @@ router.put("/create-advert", updateAdvertCreator);
 router.post("/create-advert", postAdvertCreator);
 
 // Engagement Creator Routes
-router.put("/create-advert", updateAdvertCreator);
-router.post("/create-advert", postAdvertCreator);
+router.put("/create-engagement", updateEngagementCreator);
+router.post("/create-engagement", postEngagementCreator);
+
+// Advert Earner Routes
+router.put("/earn-advert", updateAdvertEarner);
+router.post("/earn-advert", postAdvertEarner);
+
+// Engagement Earner Routes
+router.put("/earn-engagement", updateEngagementEarner);
+router.post("/earn-engagement", postEngagementEarner);
 
 // Announcement Routes
 router.post("/announcement", postAnnouncement);
