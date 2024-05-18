@@ -14,6 +14,8 @@ const AuthProvider = ({ children }) => {
   const [adminData, setAdminData] = useState(null);
   const [advertCreator, setAdvertCreator] = useState([]);
   const [engagementCreator, setEngagementCreator] = useState([]);
+  const [advertEarner, setAdvertEarner] = useState([]);
+  const [engagementEarner, setEngagementEarner] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const getCurrentUser = async () => {
@@ -30,6 +32,7 @@ const AuthProvider = ({ children }) => {
   // Gets admin data
   const getAdminData = async () => {
     try {
+      setLoading(true);
       const response = await axios.get("/api/v1/admin-data");
 
       if (response.data.failed) {
@@ -72,6 +75,36 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  // Gets advert earners data
+  const getAdvertEarners = async () => {
+    try {
+      const response = await axios.get("/api/v1/earner/earn-advert");
+
+      if (response.data.failed) {
+        return error;
+      }
+
+      return setAdvertEarner(response.data.data);
+    } catch (error) {
+      return error;
+    }
+  };
+
+  // Gets engagement earners data
+  const getEngagementEarners = async () => {
+    try {
+      const response = await axios.get("/api/v1/earner/earn-engagement");
+
+      if (response.data.failed) {
+        return error;
+      }
+
+      return setEngagementEarner(response.data.data);
+    } catch (error) {
+      return error;
+    }
+  };
+
   const fetchUserData = async () => {
     setLoading(true);
     const user = await getCurrentUser();
@@ -85,6 +118,8 @@ const AuthProvider = ({ children }) => {
     getAdminData();
     getAdvertCreator();
     getEngagementCreator();
+    getEngagementEarners();
+    getAdvertEarners();
   }, []);
 
   const loginUser = async (email, password) => {
@@ -162,7 +197,9 @@ const AuthProvider = ({ children }) => {
   const AuthValue = {
     currentUser,
     adminData,
+    advertEarner,
     advertCreator,
+    engagementEarner,
     engagementCreator,
     fetchUserData,
     loginUser,

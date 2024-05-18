@@ -1,11 +1,10 @@
 import React from "react";
-import waysToEarnForAds from "../../data/waysToEarnForAdvert";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import EarningWay from "../EarningWay/EarningWay";
 import { useAuth } from "../../context/AuthContext";
 
 const EarnWithAds = ({ setActiveTab }) => {
-  const { currentUser } = useAuth();
+  const { currentUser, advertEarner } = useAuth();
 
   return (
     <div className="py-4">
@@ -29,7 +28,7 @@ const EarnWithAds = ({ setActiveTab }) => {
       </p>
 
       <div className="py-4 flex flex-col gap-2 mb-6">
-        {waysToEarnForAds.map((way) => {
+        {advertEarner.map((way) => {
           return (
             <Link
               to={currentUser.isMember ? way.pathToPage : "/become-a-member"}

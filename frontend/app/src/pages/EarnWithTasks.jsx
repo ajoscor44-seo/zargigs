@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
 import { useParams } from "react-router-dom/cjs/react-router-dom";
-import waysToEarnForTasks from "../data/waysToEarnForTasks";
 import EarningWay from "../components/EarningWay/EarningWay";
 import InReviewSubtask from "../components/InReviewSubtask/InReviewSubtask";
 import PendingSubtask from "../components/PendingSubtask/PendingSubtask";
 import FailedSubtask from "../components/FailedSubtask/FailedSubtask";
 import CompletedSubtask from "../components/CompletedSubtask/CompletedSubtask";
 import CancelledSubtasks from "../components/CancelledSubtasks/CancelledSubtasks";
-import waysToEarnForAds from "../data/waysToEarnForAdvert";
 import axios from "axios";
 import { FaSpinner } from "react-icons/fa6";
 import NoData from "../components/NoData/NoData";
 import { RiErrorWarningFill } from "react-icons/ri";
+import { useAuth } from "../context/AuthContext";
 
 const EarnWithTasks = () => {
+  const { advertEarner, engagementEarner } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const tabs = ["pending", "in-review", "failed", "completed", "cancelled"];
@@ -25,9 +25,7 @@ const EarnWithTasks = () => {
   // Gets route parameter
   const { slug } = useParams();
 
-  const waysToEarn = slug.startsWith("earn")
-    ? waysToEarnForTasks
-    : waysToEarnForAds;
+  const waysToEarn = slug.startsWith("earn") ? engagementEarner : advertEarner;
   const taskType = slug.startsWith("earn") ? "engagement" : "advert";
 
   const wayToEarn = waysToEarn.find(
