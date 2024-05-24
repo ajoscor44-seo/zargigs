@@ -5,6 +5,9 @@ import { ErrorHandler } from "../utils/error.js";
 
 export const getAdvertEarners = async (req, res, next) => {
   try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+
     // Checks for valid user
     const validUser = await User.findOne({ email: req.user.email });
     if (!validUser) {
@@ -12,7 +15,9 @@ export const getAdvertEarners = async (req, res, next) => {
       return res.status(404).json(error);
     }
 
-    const advert_earners = await EarnAdvert.find({});
+    const advert_earners = await EarnAdvert.find()
+      .skip((page - 1) * limit)
+      .limit(limit);
 
     const advert_earners_ = advert_earners.map((advert_earner) => {
       const { updatedAt, createdAt, __v, _id, ...rest } =
@@ -24,9 +29,16 @@ export const getAdvertEarners = async (req, res, next) => {
       };
     });
 
+    const totalCount = await EarnAdvert.countDocuments();
+    const totalPages = Math.ceil(totalCount / limit);
+
     return res.status(200).json({
       failed: false,
       data: advert_earners_,
+      meta: {
+        total: totalCount,
+        pages: totalPages,
+      },
     });
   } catch (error) {
     next(error);
@@ -43,14 +55,8 @@ export const postAdvertEarner = async (req, res, next) => {
 
 export const updateAdvertEarner = async (req, res, next) => {
   try {
-    //
-  } catch (error) {
-    next(error);
-  }
-};
+    const { id: earnerId, amount } = req.query;
 
-export const getEngagementEarners = async (req, res, next) => {
-  try {
     // Checks for valid user
     const validUser = await User.findOne({ email: req.user.email });
     if (!validUser) {
@@ -58,7 +64,39 @@ export const getEngagementEarners = async (req, res, next) => {
       return res.status(404).json(error);
     }
 
-    const engagement_earners = await EarnEngagement.find({});
+    const earnEngagement = await EarnAdvert.findByIdAndUpdate(earnerId, {
+      amountToEarn: amount,
+    });
+
+    if (!earnEngagement) {
+      const error = ErrorHandler(404, "Earning way not found");
+      return res.status(404).json(error);
+    }
+
+    return res.status(200).json({
+      failed: false,
+      message: "Amount Updated",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getEngagementEarners = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+
+    // Checks for valid user
+    const validUser = await User.findOne({ email: req.user.email });
+    if (!validUser) {
+      const error = ErrorHandler(404, "There's no user with this email.");
+      return res.status(404).json(error);
+    }
+
+    const engagement_earners = await EarnEngagement.find()
+      .skip((page - 1) * limit)
+      .limit(limit);
 
     const engagement_earners_ = engagement_earners.map((engagement_earner) => {
       const { updatedAt, createdAt, __v, _id, ...rest } =
@@ -70,9 +108,16 @@ export const getEngagementEarners = async (req, res, next) => {
       };
     });
 
+    const totalCount = await EarnEngagement.countDocuments();
+    const totalPages = Math.ceil(totalCount / limit);
+
     return res.status(200).json({
       failed: false,
       data: engagement_earners_,
+      meta: {
+        total: totalCount,
+        pages: totalPages,
+      },
     });
   } catch (error) {
     next(error);
@@ -89,7 +134,28 @@ export const postEngagementEarner = async (req, res, next) => {
 
 export const updateEngagementEarner = async (req, res, next) => {
   try {
-    //
+    const { id: earnerId, amount } = req.query;
+
+    // Checks for valid user
+    const validUser = await User.findOne({ email: req.user.email });
+    if (!validUser) {
+      const error = ErrorHandler(404, "There's no user with this email.");
+      return res.status(404).json(error);
+    }
+
+    const earnEngagement = await EarnEngagement.findByIdAndUpdate(earnerId, {
+      amountToEarn: amount,
+    });
+
+    if (!earnEngagement) {
+      const error = ErrorHandler(404, "Earning way not found");
+      return res.status(404).json(error);
+    }
+
+    return res.status(200).json({
+      failed: false,
+      message: "Amount Updated",
+    });
   } catch (error) {
     next(error);
   }
