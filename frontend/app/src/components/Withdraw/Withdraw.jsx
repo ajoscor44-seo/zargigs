@@ -5,19 +5,72 @@ import { FaEdit, FaLock } from "react-icons/fa";
 import { CiBank } from "react-icons/ci";
 import { TfiMenuAlt } from "react-icons/tfi";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
-import { Link } from "react-router-dom/cjs/react-router-dom";
+import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
+import { Alert, Spinner } from "react-bootstrap";
+import { IoCloseCircle } from "react-icons/io5";
 
 const Withdraw = () => {
+  const history = useHistory();
   const { adminData, currentUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [amount, setAmount] = useState(false);
+  const [withdrawalError, setWithdrawalError] = useState(undefined);
+  const [makingWithdrawal, setMakingWithdrawal] = useState(false);
+  const [password, setPassword] = useState(false);
   const balance = currentUser.userEarnings.balance;
   const charges = adminData.withdrawalCharges;
   const amountWithdrawable = balance ? balance - charges : 0;
 
+  const makeWithdrawal = async () => {
+    try {
+      if (!amount || !password) {
+        return setWithdrawalError("Some inputs are yet to be filled.");
+      }
+      if (Number(balance) - Number(amount) - Number(charges) <= 0) {
+        return setWithdrawalError("Insufficient balance.");
+      }
+      const withdrawal_data = {
+        id: currentUser?.id,
+        withdrawalAmount: Number(amount) - Number(charges),
+        charges,
+        password,
+      };
+      setMakingWithdrawal(true);
+      await axios.post("/api/v1/withdraw/request", withdrawal_data);
+
+      setMakingWithdrawal(false);
+      setWithdrawalError(null);
+      return window.location.reload();
+    } catch (error) {
+      if (error.response.data.failed) {
+        setMakingWithdrawal(false);
+        return setWithdrawalError(error.response.data.message);
+      }
+    }
+  };
+
   return (
     <div>
       <BackNav pageName={"Withdraw"} />
+      <div
+        style={{
+          display: withdrawalError ? "block" : "none",
+        }}
+        onClick={() => setWithdrawalError(null)}
+        className="bg-red-50 text-red-500 font-semibold text-center fixed z-10 w-full top-14 border-red-400 border-y-2 flex flex-col"
+      >
+        <span className="flex justify-end">
+          <IoCloseCircle
+            size={30}
+            className="hover:bg-red-100 rounded-full p-1"
+          />
+        </span>
+        {withdrawalError && (
+          <p className="mb-3">{withdrawalError.toString()}</p>
+        )}
+      </div>
       <div className="underBackNav font-primary">
         <div className="flex justify-between items-center border-b p-2 px-4">
           <span>
@@ -67,6 +120,8 @@ const Withdraw = () => {
                 type="number"
                 className="border outline-none p-3 rounded-e-sm flex-1"
                 placeholder="Enter Amount"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
               />
             </div>
             <span className="text-xs">
@@ -85,6 +140,7 @@ const Withdraw = () => {
                 type={showPassword ? "text" : "password"}
                 className="border border-r-0 outline-none p-3 flex-1"
                 placeholder="Enter Password"
+                onChange={(e) => setPassword(e.target.value)}
               />
               <span className="border border-l-0 flex justify-center items-center px-3 rounded-e">
                 {!showPassword ? (
@@ -109,12 +165,27 @@ const Withdraw = () => {
           </div>
 
           <div className="flex flex-col mt-2 gap-2">
-            <button className="bg-green-500 py-3 text-xs rounded text-white font-bold hover:bg-opacity-90">
-              WITHDRAW
+            <button
+              onClick={makeWithdrawal}
+              disabled={makingWithdrawal}
+              className="bg-green-500 py-3 text-xs rounded text-white font-bold hover:bg-opacity-90"
+            >
+              {makingWithdrawal ? (
+                <Spinner size={25} variant="light" />
+              ) : (
+                "WITHDRAW"
+              )}
             </button>
             <Link to="/transaction-history">
-              <div className="bg-white py-3 text-center cursor-pointer text-xs border rounded hover:opacity-80 transition-colors duration-500">
-                WITHDRAWAL HISTORY
+              <div
+                hidden={makingWithdrawal}
+                className="bg-white py-3 text-center cursor-pointer text-xs border rounded hover:opacity-80 transition-colors duration-500"
+              >
+                {makingWithdrawal ? (
+                  <Spinner size={25} variant="light" />
+                ) : (
+                  "WITHDRAWAL HISTORY"
+                )}
               </div>
             </Link>
           </div>

@@ -106,7 +106,7 @@ const EarnWithTasks = () => {
   }, [activeTab]);
   return (
     <div>
-      <BackNav pageName={wayToEarn.title} usePath={true} pathToGo={"/earn"} />
+      <BackNav pageName={wayToEarn?.title} usePath={true} pathToGo={"/earn"} />
       <div className="underBackNav font-primary">
         <EarningWay way={wayToEarn} />
         <div className="subTaskHistory">

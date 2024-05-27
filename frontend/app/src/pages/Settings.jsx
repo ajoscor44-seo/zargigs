@@ -120,7 +120,13 @@ const Settings = () => {
       <div className="underBackNav font-primary">
         <div className="p-2 flex border bg-slate-50">
           <div className="flex items-center justify-center">
-            <img src={currentUser.image} className="object-cover w-16 h-16" />
+            <img
+              src={
+                currentUser?.image ||
+                "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+              }
+              className="object-cover w-16 h-16 me-2"
+            />
           </div>
           <div className="flex flex-1 items-center justify-between">
             <div>

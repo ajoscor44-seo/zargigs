@@ -103,14 +103,14 @@ const ClientDashboard = () => {
               <ClientDashboardCard
                 firstname={currentUser.firstname}
                 lastname={currentUser.lastname}
-                userBalance={currentUser.balance}
+                userBalance={currentUser.userEarnings.balance}
               />
               <MoneyTransaction />
               <ClientsEarnings
-                totalEarnings={currentUser.totalEarnings}
-                pendingEarnings={currentUser.pendingEarnings}
-                amountWithdrawn={currentUser.amountWithdrawn}
-                amountSpent={currentUser.amountSpent}
+                totalEarnings={currentUser.userEarnings.totalEarnings}
+                pendingEarnings={currentUser.userEarnings.pendingEarnings}
+                amountWithdrawn={currentUser.userEarnings.amountWithdrawn}
+                amountSpent={currentUser.userEarnings.amountSpent}
               />
               <EarningMethods />
             </div>

@@ -26,15 +26,15 @@ const UserDetails = () => {
   }, [currentUser]);
 
   const [show, setShow] = useState(false);
-  const totalEarnings = currentUser.totalEarnings;
-  const pendingEarnings = currentUser.pendingEarnings;
-  const amountWithdrawn = currentUser.amountWithdrawn;
-  const amountSpent = currentUser.amountSpent;
+  const totalEarnings = currentUser.userEarnings.totalEarnings;
+  const pendingEarnings = currentUser.userEarnings.pendingEarnings;
+  const amountWithdrawn = currentUser.userEarnings.amountWithdrawn;
+  const amountSpent = currentUser.userEarnings.amountSpent;
   const isOnline = onlineUsers.includes(currentUser.id);
   const badgeColor = isOnline ? "green-500" : "slate-300";
-  const balance = totalEarnings - amountWithdrawn;
+  const balance = currentUser.userEarnings.balance;
   const userPeoples = {
-    referrals: currentUser.referrals.length || 0,
+    referrals: currentUser?.referrals?.length || 0,
     followers: currentUser?.followers?.length || 0,
     following: currentUser?.followers?.length || 0,
   };
@@ -43,7 +43,6 @@ const UserDetails = () => {
     ...currentUser.location,
     country: "Nigeria",
   };
-  const referralLink = `https://gigsflix.com/ref/${currentUser.username.toLowerCase()}`;
 
   return (
     <div>
@@ -125,10 +124,7 @@ const UserDetails = () => {
           <MoneyTransaction />
         </div>
 
-        <ReferAndEarn
-          referralLink={referralLink}
-          username={currentUser.username}
-        />
+        <ReferAndEarn username={currentUser.username} />
       </div>
       <ClientMenuBar />
     </div>
