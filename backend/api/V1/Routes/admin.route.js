@@ -26,6 +26,10 @@ import {
   updateAdvertEarner,
   updateEngagementEarner,
 } from "../Controllers/earn-task.controller.js";
+import {
+  getAllWithdrawalRequests,
+  updateWithdrawalRequests,
+} from "../Controllers/withdrawal_requests.controller.js";
 
 const router = express.Router();
 
@@ -64,5 +68,9 @@ router.put("/complaint", resolveComplaint);
 
 // Update user status - (Ban user and Lift ban on user)
 router.put("/update-status", updateUserStatus);
+
+// Update withdrawal status - (Approve withdrawal and Disapprove withdrawal)
+router.get("/withdrawal-request", getAllWithdrawalRequests);
+router.put("/withdrawal-request", updateWithdrawalRequests);
 
 export default router;
