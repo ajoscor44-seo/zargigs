@@ -20,17 +20,49 @@ export const getAllWithdrawalRequests = async (req, res, next) => {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    const allWithdrawalRequests_ = allWithdrawalRequests.map(
-      (withdrawalRequest) => {
-        const { updatedAt, createdAt, __v, _id, ...rest } =
+    const allWithdrawalRequests_ = await Promise.all(
+      allWithdrawalRequests.map(async (withdrawalRequest) => {
+        const { updatedAt, userId, createdAt, __v, _id, ...rest } =
           withdrawalRequest?.toObject();
+        const user_details = await userDetails.findOne({
+          userId,
+        });
+        const {
+          __v: detailsV,
+          _id: detailsUId,
+          location,
+          gender,
+          userId: detailsId,
+          updatedAt: detailsUA,
+          createdAt: detailsCA,
+          dateOfBirth,
+          religion,
+          ...details_rest
+        } = user_details._doc;
+        const user = await User.findById(userId);
+        const {
+          __v: userV,
+          _id: userUId,
+          updatedAt: userUA,
+          createdAt: userCA,
+          role,
+          referrals,
+          isMember,
+          isBanned,
+          isEmailVerified,
+          password,
+          ...user_rest
+        } = user._doc;
 
         return {
           id: _id,
           ...rest,
+          ...details_rest,
+          ...user_rest,
         };
-      }
+      })
     );
+
     const totalCount = await WithdrawalRequests.countDocuments();
     const totalPages = Math.ceil(totalCount / limit);
 
@@ -130,9 +162,35 @@ export const postWithdrawalRequests = async (req, res, next) => {
   }
 };
 
-export const updateWithdrawalRequests = async (req, res, next) => {
+export const approveWithdrawalRequests = async (req, res, next) => {
   try {
-    //
+    const { withdrawalAmount, charges, bankDetails, userEarnings, id } =
+      req.body;
+
+    // Monicredit validations
+
+    // Monicredit withdrawal
+
+    // Updating our own withdrawal request
+    await WithdrawalRequests.findByIdAndUpdate(id, {
+      $set: { status: "approved" },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const disapproveWithdrawalRequests = async (req, res, next) => {
+  try {
+    const { withdrawalAmount, charges, bankDetails, userEarnings, id } =
+      req.body;
+
+    // Update the user earnings
+
+    // Updating our own withdrawal request
+    await WithdrawalRequests.findByIdAndUpdate(id, {
+      $set: { status: "disapproved" },
+    });
   } catch (error) {
     next(error);
   }

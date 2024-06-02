@@ -5,7 +5,7 @@ import userImage from "../assets/images/user-image.png";
 import Setting from "../components/Setting/Setting";
 import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import { FaEye } from "react-icons/fa6";
-import { BsCart2 } from "react-icons/bs";
+import { BsCart2, BsChat } from "react-icons/bs";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { TfiMenuAlt } from "react-icons/tfi";
 import { PiWalletLight } from "react-icons/pi";
@@ -59,22 +59,7 @@ const Settings = () => {
       path: "/edit-profile",
     },
     {
-      icon: <CiLock size={20} />,
-      name: "Update Password",
-      path: "/update-password",
-    },
-    {
-      icon: <IoLocationOutline size={20} />,
-      name: "Update Location",
-      path: "/update-location",
-    },
-    {
-      icon: <CiBank size={20} />,
-      name: "Update Bank Details",
-      path: "/update-bank-details",
-    },
-    {
-      icon: <IoLocationOutline size={20} />,
+      icon: <BsChat size={20} />,
       name: "Chat With Support",
       path: "/help-support",
     },

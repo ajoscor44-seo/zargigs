@@ -50,6 +50,8 @@ export const updateAdminData = async (req, res, next) => {
       minimumFollowers,
     } = req.body;
 
+    // const adminMonicreditData = axios.post()
+
     // Checks for valid user
     const validUser = await User.findOne({ email: req.user.email });
     if (!validUser) {

@@ -37,6 +37,7 @@ import OrderDetails from "./pages/OrderDetails.jsx";
 import CreateOrder from "./pages/CreateOrder.jsx";
 import TaskDetails from "./pages/TaskDetails.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import EditProfile from "./pages/EditProfile.jsx";
 
 function App() {
   axios.defaults.baseURL =
@@ -90,6 +91,7 @@ function App() {
                 path="/update-location"
                 component={UpdateLocation}
               />
+              <PrivateRoute path="/edit-profile" component={EditProfile} />
               <PrivateRoute path="/invite" component={InviteFriends} />
               <PrivateRoute path="/advertise/:slug" component={CreateAdvert} />
               <PrivateRoute path="/advertise" component={Adevertise} />

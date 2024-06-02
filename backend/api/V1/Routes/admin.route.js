@@ -27,8 +27,9 @@ import {
   updateEngagementEarner,
 } from "../Controllers/earn-task.controller.js";
 import {
+  approveWithdrawalRequests,
+  disapproveWithdrawalRequests,
   getAllWithdrawalRequests,
-  updateWithdrawalRequests,
 } from "../Controllers/withdrawal_requests.controller.js";
 
 const router = express.Router();
@@ -71,6 +72,7 @@ router.put("/update-status", updateUserStatus);
 
 // Update withdrawal status - (Approve withdrawal and Disapprove withdrawal)
 router.get("/withdrawal-request", getAllWithdrawalRequests);
-router.put("/withdrawal-request", updateWithdrawalRequests);
+router.put("/withdrawal-request", approveWithdrawalRequests);
+router.patch("/withdrawal-request", disapproveWithdrawalRequests);
 
 export default router;

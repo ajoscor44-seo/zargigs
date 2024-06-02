@@ -1,26 +1,40 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState();
+  const [mailSent, setMailSent] = useState(false);
+  const forgotPassword = async () => {
+    try {
+      const response = await axios.post("/forgot-password");
+      return setMailSent(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center border py-10">
-      <div className="flex flex-col shadow mx-5 p-3 border rounded bg-white">
-        <h2>Forgot Password</h2>
-        <p>Input your email address into the field below.</p>
-        <div className="flex flex-col">
-          <span className="text-green-500 text-lg mb-1 font-primary font-medium">
-            Email:
-          </span>
-          <input
-            type="email"
-            placeholder="example@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border p-3 rounded outline-green-500"
-          />
+      {mailSent ? (
+        <p>A reset link has been sent to your mail</p>
+      ) : (
+        <div className="flex flex-col shadow mx-5 p-3 border rounded bg-white">
+          <h2>Forgot Password</h2>
+          <p>Input your email address into the field below.</p>
+          <div className="flex flex-col">
+            <span className="text-green-500 text-lg mb-1 font-primary font-medium">
+              Email:
+            </span>
+            <input
+              type="email"
+              placeholder="example@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="border p-3 rounded outline-green-500"
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
