@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import useragent from "express-useragent";
 import { app, server } from "./api/V1/socket/socket.js";
 import dotenv from "dotenv";
 import authRoutes from "../backend/api/V1/Routes/auth.route.js";
@@ -45,6 +46,22 @@ app.use(cors(corsOptions));
 
 // Handle preflight requests
 app.options("*", cors(corsOptions));
+
+app.use(useragent.express());
+
+const blockDesktopsMiddleware = (req, res, next) => {
+  const source = req.useragent;
+
+  if (source.isDesktop) {
+    return res
+      .status(403)
+      .json({ message: "Access denied for desktop devices." });
+  }
+
+  next();
+};
+
+app.use(blockDesktopsMiddleware);
 
 // Parses json bodies
 app.use(express.json());
