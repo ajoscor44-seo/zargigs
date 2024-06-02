@@ -1,16 +1,26 @@
 import React, { useEffect, useState } from "react";
 import BackNav from "../BackNav/BackNav";
 import numeral from "numeral";
-import fundings from "../../data/fundings";
+import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 import { BiInfoCircle } from "react-icons/bi";
+import NoData from "../NoData/NoData";
+import { FaSpinner } from "react-icons/fa6";
+import formatDate from "../../hooks/formatDate";
 
 const FundWallet = () => {
+  const [fundings, setFundings] = useState([]);
+  const [meta, setMeta] = useState({});
+  const [limit, setLimit] = useState(10);
+  const [fundingResponse, setFundingResponse] = useState(10);
+  const [page, setPage] = useState(1);
   const [showBankDetails, setShowDetails] = useState(
     sessionStorage.getItem("showdetails")
   );
+  const [update, setUpdate] = useState(null);
   const [amount, setAmount] = useState(undefined);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { currentUser } = useAuth();
   const balance = currentUser.userEarnings.balance;
   const accountDetails = currentUser.bankDetails;
@@ -27,9 +37,34 @@ const FundWallet = () => {
     }
   };
 
+  const fundWallet = async () => {
+    try {
+      const body = {
+        date: new Date(),
+        amount,
+        paymentGateway: "Autocredit",
+        paymentMethod: "Bank transfer",
+      };
+
+      const response = await axios.post("/api/v1/fundings/fund-wallet", body);
+      setFundingResponse(response.data.message);
+      return setUpdate(new Date().getTime());
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const getFundings = async () => {
     try {
-      //
+      const response = await axios.get(
+        `/api/v1/fundings?limit=${limit}&page=${page}`
+      );
+
+      console.log(response.data);
+      setFundings(response.data.data);
+      setMeta(response.data.meta);
+      setError(null);
+      return setLoading(false);
     } catch (error) {
       console.error(error);
     }
@@ -37,7 +72,7 @@ const FundWallet = () => {
 
   useEffect(() => {
     getFundings();
-  }, []);
+  }, [update]);
 
   return (
     <div>
@@ -88,7 +123,7 @@ const FundWallet = () => {
                 setAmount(null);
                 setError(null);
                 sessionStorage.removeItem("showdetails");
-                window.location.reload();
+                return fundWallet();
               }}
               className="bg-green-500 my-3 text-white px-3 py-1 rounded-sm"
             >
@@ -137,80 +172,90 @@ const FundWallet = () => {
             <div className="py-5 flex flex-col gap-2">
               <h1 className="font-semibold text-xl">Funding History</h1>
 
-              <table className="border-red-500 rounded-md">
-                <thead className="text-sm border-red-100">
-                  <tr>
-                    <th className="text-center font-bold border">S/N</th>
-                    <th className="text-center font-bold border">Date</th>
-                    <th className="text-center font-bold border">Amount</th>
-                    <th className="text-center font-bold border">
-                      Payment Gateway
-                    </th>
-                    <th className="text-center font-bold border">Status</th>
-                    <th className="text-center font-bold border">Action</th>
-                  </tr>
-                </thead>
+              {loading ? (
+                <div className="h-64 flex justify-center items-center">
+                  <FaSpinner size={30} color="green" />
+                </div>
+              ) : !fundings.length && !loading ? (
+                <div className="h-64 flex justify-center items-center">
+                  <NoData textBelow={"No funding history"} />
+                </div>
+              ) : (
+                <table className="border-red-500 rounded-md">
+                  <thead className="text-sm border-red-100">
+                    <tr>
+                      <th className="text-center font-bold border">S/N</th>
+                      <th className="text-center font-bold border">Date</th>
+                      <th className="text-center font-bold border">Amount</th>
+                      <th className="text-center font-bold border">
+                        Payment Gateway
+                      </th>
+                      <th className="text-center font-bold border">Status</th>
+                      <th className="text-center font-bold border">Action</th>
+                    </tr>
+                  </thead>
 
-                <tbody className="text-xs">
-                  {fundings.map((funding) => {
-                    const statusColor =
-                      funding.status.toLowerCase() == "failed"
-                        ? "red"
-                        : funding.status.toLowerCase() == "pending"
-                        ? "orange"
-                        : "green";
-                    const actionText =
-                      funding.status.toLowerCase() == "failed"
-                        ? "Retry"
-                        : funding.status.toLowerCase() == "pending"
-                        ? "View"
-                        : "View";
+                  <tbody className="text-xs">
+                    {fundings.map((funding) => {
+                      const statusColor =
+                        funding.status.toLowerCase() == "failed"
+                          ? "red"
+                          : funding.status.toLowerCase() == "pending"
+                          ? "orange"
+                          : "green";
+                      const actionText =
+                        funding.status.toLowerCase() == "failed"
+                          ? "Retry"
+                          : funding.status.toLowerCase() == "pending"
+                          ? "View"
+                          : "View";
 
-                    return (
-                      <tr key={funding.sn + new Date().getTime()}>
-                        <td className="text-center font-semibold border">
-                          {funding.sn}.
-                        </td>
-                        <td className="text-center font-semibold border">
-                          {funding.date}
-                        </td>
-                        <td className="text-center font-semibold border">
-                          ₦{numeral(funding.amount).format("0,0.00")}
-                        </td>
-                        <td className="text-center font-semibold border">
-                          {funding.gateway}
-                        </td>
-                        <td
-                          className={`text-center text-${statusColor}-500 font-semibold border`}
-                        >
-                          {funding.status}
-                        </td>
-                        <td className="text-center font-semibold border">
-                          {funding.status.toLowerCase() == "failed" ? (
-                            <span
-                              className={`bg-red-500 text-white p-1 rounded-sm cursor-pointer`}
-                            >
-                              {actionText}
-                            </span>
-                          ) : funding.status.toLowerCase() == "pending" ? (
-                            <span
-                              className={`bg-orange-500 text-white p-1 rounded-sm cursor-pointer`}
-                            >
-                              {actionText}
-                            </span>
-                          ) : (
-                            <span
-                              className={`bg-green-500 text-white p-1 rounded-sm cursor-pointer`}
-                            >
-                              {actionText}
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                      return (
+                        <tr key={funding.sn + new Date().getTime()}>
+                          <td className="text-center font-semibold border">
+                            {funding.sn}.
+                          </td>
+                          <td className="text-center font-semibold border">
+                            {formatDate(funding.date)}
+                          </td>
+                          <td className="text-center font-semibold border">
+                            ₦{numeral(funding.amount).format("0,0.00")}
+                          </td>
+                          <td className="text-center font-semibold border">
+                            {funding.payment_gateway}
+                          </td>
+                          <td
+                            className={`text-center text-${statusColor}-500 font-semibold border capitalize`}
+                          >
+                            {funding.status}
+                          </td>
+                          <td className="text-center font-semibold border">
+                            {funding.status.toLowerCase() == "failed" ? (
+                              <span
+                                className={`bg-red-500 text-white p-1 rounded-sm cursor-pointer`}
+                              >
+                                {actionText}
+                              </span>
+                            ) : funding.status.toLowerCase() == "pending" ? (
+                              <span
+                                className={`bg-orange-500 text-white p-1 rounded-sm cursor-pointer`}
+                              >
+                                {actionText}
+                              </span>
+                            ) : (
+                              <span
+                                className={`bg-green-500 text-white p-1 rounded-sm cursor-pointer`}
+                              >
+                                {actionText}
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         </div>

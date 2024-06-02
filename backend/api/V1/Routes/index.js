@@ -7,6 +7,7 @@ import withdrawalsRoutes from "./withdrawal.route.js";
 import adminRoutes from "./admin.route.js";
 import creatorRoutes from "./create-task.route.js";
 import earnerRoutes from "./earn-task.route.js";
+import fundingRoutes from "./funding.route.js";
 import authorizeAdmin from "../Middleware/authorization.js";
 
 const router = express.Router();
@@ -18,6 +19,7 @@ router.use("/tasks", tasksRoutes);
 router.use("/withdraw", withdrawalsRoutes);
 router.use("/creator", creatorRoutes);
 router.use("/earner", earnerRoutes);
+router.use("/fundings", fundingRoutes);
 router.use("/admin", authorizeAdmin, adminRoutes);
 
 export default router;
