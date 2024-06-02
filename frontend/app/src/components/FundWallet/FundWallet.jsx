@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BackNav from "../BackNav/BackNav";
 import numeral from "numeral";
 import fundings from "../../data/fundings";
@@ -6,7 +6,9 @@ import { useAuth } from "../../context/AuthContext";
 import { BiInfoCircle } from "react-icons/bi";
 
 const FundWallet = () => {
-  const [showBankDetails, setShowDetails] = useState(false);
+  const [showBankDetails, setShowDetails] = useState(
+    sessionStorage.getItem("showdetails")
+  );
   const [amount, setAmount] = useState(undefined);
   const [error, setError] = useState(null);
   const { currentUser } = useAuth();
@@ -18,11 +20,24 @@ const FundWallet = () => {
       if (!amount) {
         return setError("Please input an amount.");
       }
+      sessionStorage.setItem("showdetails", true);
       return setShowDetails(true);
     } catch (error) {
       console.error(error);
     }
   };
+
+  const getFundings = async () => {
+    try {
+      //
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getFundings();
+  }, []);
 
   return (
     <div>
@@ -72,6 +87,7 @@ const FundWallet = () => {
                 setShowDetails(false);
                 setAmount(null);
                 setError(null);
+                sessionStorage.removeItem("showdetails");
                 window.location.reload();
               }}
               className="bg-green-500 my-3 text-white px-3 py-1 rounded-sm"
@@ -99,7 +115,6 @@ const FundWallet = () => {
               <input
                 className="border border-l-0 flex-1 p-3 outline-none"
                 type="number"
-                value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="Input amount..."
               />
