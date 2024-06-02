@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import useragent from "express-useragent";
+import blockDesktopsMiddleware from "./api/V1/Middleware/blockDesktops.middleware.js";
 import { app, server } from "./api/V1/socket/socket.js";
 import dotenv from "dotenv";
 import authRoutes from "../backend/api/V1/Routes/auth.route.js";
@@ -11,6 +12,7 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import authenticateToken from "./api/V1/Middleware/authenticate.js";
 import { getAdminData } from "./api/V1/Controllers/admin.controller.js";
+import limiter from "./api/V1/Middleware/limiter.middleware.js";
 
 // Connects to db
 mongoose
@@ -47,21 +49,12 @@ app.use(cors(corsOptions));
 // Handle preflight requests
 app.options("*", cors(corsOptions));
 
+// Blocks desktop devices
 app.use(useragent.express());
-
-const blockDesktopsMiddleware = (req, res, next) => {
-  const source = req.useragent;
-
-  if (source.isDesktop) {
-    return res
-      .status(403)
-      .json({ message: "Access denied for desktop devices." });
-  }
-
-  next();
-};
-
 app.use(blockDesktopsMiddleware);
+
+// Rate limits user
+app.use(limiter);
 
 // Parses json bodies
 app.use(express.json());
