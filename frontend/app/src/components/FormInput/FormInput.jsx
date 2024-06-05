@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { FaEye, FaEyeSlash, FaLock, FaTag, FaUser } from "react-icons/fa6";
+import {
+  FaEye,
+  FaEyeSlash,
+  FaLock,
+  FaPhone,
+  FaTag,
+  FaUser,
+} from "react-icons/fa6";
 import { MdEmail } from "react-icons/md";
 import { PiWarningCircle } from "react-icons/pi";
 import { TfiMenuAlt } from "react-icons/tfi";
@@ -21,6 +28,7 @@ const FormInput = ({
   name,
   handleChange,
   hideDropIcon,
+  maxLength,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -52,6 +60,8 @@ const FormInput = ({
               <FaTag size={20} />
             ) : icon == "email" ? (
               <MdEmail size={20} />
+            ) : icon == "phone" ? (
+              <FaPhone size={20} />
             ) : icon == "user" ? (
               <FaUser size={20} />
             ) : icon == "referrer" ? (
@@ -94,6 +104,7 @@ const FormInput = ({
                 placeholder={placeholder}
                 disabled={icon == "referrer" && value}
                 name={name}
+                maxLength={maxLength}
                 onChange={(e) => handleChange(e)}
               />
             )}

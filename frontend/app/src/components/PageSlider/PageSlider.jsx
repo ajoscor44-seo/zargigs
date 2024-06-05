@@ -42,16 +42,16 @@ const PageSlider = ({
         }}
         className="transition-transform duration-500"
       >
-        <div className="grid grid-cols-2" style={{ minWidth: "200%" }}>
+        <div className="grid grid-cols-3" style={{ minWidth: "300%" }}>
           {pages.map((page, index) => (
             <div key={index} className={`${page.bgColor} flex flex-col`}>
               <h2
                 className="text-2xl text-center mb-1 font-semibold"
-                style={{ width: "50%" }}
+                style={{ width: "33%" }}
               >
                 {page.title}
               </h2>
-              <p className="text-sm text-center" style={{ width: "50%" }}>
+              <p className="text-sm text-center" style={{ width: "33%" }}>
                 {page.info}
               </p>
               <div
@@ -67,12 +67,13 @@ const PageSlider = ({
                         note={formInput.note}
                         fullRounded={true}
                         type={formInput.type}
-                        icon={formInput.icon}
-                        isError={formInput.isError}
-                        errorMsg={formInput.error}
-                        value={formInput.value}
-                        name={formInput.name}
+                        icon={formInput?.icon}
+                        isError={formInput?.isError}
+                        errorMsg={formInput?.error}
+                        value={formInput?.value}
+                        name={formInput?.name}
                         handleChange={handleChange}
+                        maxLength={formInput?.maxLength}
                       />
                     </div>
                   );

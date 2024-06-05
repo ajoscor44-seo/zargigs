@@ -156,7 +156,7 @@ const AuthProvider = ({ children }) => {
       const data = response.data;
       return data;
     } catch (error) {
-      return error;
+      return { failed: true, message: error.message };
     }
   };
 
@@ -167,6 +167,7 @@ const AuthProvider = ({ children }) => {
         email: cred.user.email,
         isEmailVerified: cred.user.emailVerified,
         image: cred.user.photoURL,
+        phone: cred.user.phone,
         referredBy: "admin",
         role: "user",
         isMember: false,

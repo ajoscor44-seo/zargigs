@@ -84,7 +84,10 @@ const ClientDashboard = () => {
               {announcements ? (
                 announcements.map((announcement) => {
                   return (
-                    <div className="flex justify-center items-center bg-orange-100 text-orange-400 my-2 mx-4 ps-2 pe-3 rounded-full">
+                    <div
+                      key={announcement?.id}
+                      className="flex justify-center items-center bg-orange-100 text-orange-400 my-2 mx-4 ps-2 pe-3 rounded-full"
+                    >
                       <span className="pe-2">
                         <GiSpeaker size={25} />
                       </span>
@@ -92,7 +95,7 @@ const ClientDashboard = () => {
                         style={{ maxHeight: "80px" }}
                         className="font-semibold text-sm py-1"
                       >
-                        {announcement.announcement}
+                        {announcement?.announcement}
                       </marquee>
                     </div>
                   );

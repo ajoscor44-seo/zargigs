@@ -36,6 +36,7 @@ export const getAllWithdrawalRequests = async (req, res, next) => {
           updatedAt: detailsUA,
           createdAt: detailsCA,
           dateOfBirth,
+          bankDetails,
           religion,
           ...details_rest
         } = user_details._doc;
@@ -145,6 +146,7 @@ export const postWithdrawalRequests = async (req, res, next) => {
       withdrawalAmount,
       charges,
       status: "pending",
+      bankDetails: validUserDetails.bankDetails,
     });
     await newWithdrawalRequests.save();
 

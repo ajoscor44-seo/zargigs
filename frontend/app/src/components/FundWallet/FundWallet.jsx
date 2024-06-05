@@ -191,7 +191,6 @@ const FundWallet = () => {
                         Payment Gateway
                       </th>
                       <th className="text-center font-bold border">Status</th>
-                      <th className="text-center font-bold border">Action</th>
                     </tr>
                   </thead>
 
@@ -203,13 +202,6 @@ const FundWallet = () => {
                           : funding.status.toLowerCase() == "pending"
                           ? "orange"
                           : "green";
-                      const actionText =
-                        funding.status.toLowerCase() == "failed"
-                          ? "Retry"
-                          : funding.status.toLowerCase() == "pending"
-                          ? "View"
-                          : "View";
-
                       return (
                         <tr key={funding.sn + new Date().getTime()}>
                           <td className="text-center font-semibold border">
@@ -228,27 +220,6 @@ const FundWallet = () => {
                             className={`text-center text-${statusColor}-500 font-semibold border capitalize`}
                           >
                             {funding.status}
-                          </td>
-                          <td className="text-center font-semibold border">
-                            {funding.status.toLowerCase() == "failed" ? (
-                              <span
-                                className={`bg-red-500 text-white p-1 rounded-sm cursor-pointer`}
-                              >
-                                {actionText}
-                              </span>
-                            ) : funding.status.toLowerCase() == "pending" ? (
-                              <span
-                                className={`bg-orange-500 text-white p-1 rounded-sm cursor-pointer`}
-                              >
-                                {actionText}
-                              </span>
-                            ) : (
-                              <span
-                                className={`bg-green-500 text-white p-1 rounded-sm cursor-pointer`}
-                              >
-                                {actionText}
-                              </span>
-                            )}
                           </td>
                         </tr>
                       );

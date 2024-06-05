@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const withdrawalRequestsSchema = new mongoose.Schema(
   {
+    sn: {
+      type: Number,
+      required: true,
+    },
     userId: {
       type: String,
       required: true,
@@ -18,7 +22,11 @@ const withdrawalRequestsSchema = new mongoose.Schema(
       type: String,
       required: true,
       default: "pending",
-      env: ["pending", "approved", "declined"],
+      enum: ["pending", "approved", "declined"],
+    },
+    bankDetails: {
+      type: Object,
+      required: true,
     },
   },
   { timestamps: true }

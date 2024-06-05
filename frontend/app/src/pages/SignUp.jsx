@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import SignupLayout from "../Layouts/SignupLayout";
-import { useHistory, useParams } from "react-router-dom/cjs/react-router-dom";
+import { useParams } from "react-router-dom/cjs/react-router-dom";
 import PageSlider from "../components/PageSlider/PageSlider";
 import { useAuth } from "../context/AuthContext";
 
 const SignUp = ({ setSignedIn }) => {
   const { signupUser, adminData } = useAuth();
   const params = useParams();
-  const history = useHistory();
   const [formData, setFormData] = useState({
     isMember: false,
     isEmailVerified: false,
@@ -60,7 +59,7 @@ const SignUp = ({ setSignedIn }) => {
     {
       bgColor: "bg-white",
       title: "Almost Done!",
-      info: "Make your account solely yours.",
+      info: "Make your account unique.",
       formInputs: [
         {
           label: "Username",
@@ -85,6 +84,25 @@ const SignUp = ({ setSignedIn }) => {
           name: "email",
         },
         {
+          label: "Phone No",
+          note: "Please input your registered phone.",
+          placeholder: "8012345678",
+          icon: "phone",
+          type: "number",
+          error: "An error occurred here",
+          isError: false,
+          value: formData.phone && formData.phone,
+          name: "phone",
+          maxLength: 10,
+        },
+      ],
+    },
+    {
+      bgColor: "bg-white",
+      title: "Last Lap!",
+      info: "Make your account solely yours.",
+      formInputs: [
+        {
           label: "Password",
           note: "Password must contain atleast 6 Characters",
           placeholder: "Password",
@@ -94,6 +112,17 @@ const SignUp = ({ setSignedIn }) => {
           isError: false,
           value: formData.password && formData.password,
           name: "password",
+        },
+        {
+          label: "Confirm Password",
+          note: "Password must contain atleast 6 Characters",
+          placeholder: "Confirm Password",
+          icon: "password",
+          type: "password",
+          error: "An error occurred here",
+          isError: false,
+          value: formData.confirmPassword && formData.confirmPassword,
+          name: "confirmPassword",
         },
       ],
     },
@@ -117,7 +146,7 @@ const SignUp = ({ setSignedIn }) => {
       }
     }
 
-    if (currentPage == pages.length - 1) {
+    if (currentPage == 1) {
       if (!formData.username) {
         setError("Please input username");
         return true;
@@ -126,8 +155,19 @@ const SignUp = ({ setSignedIn }) => {
         setError("Please input an email");
         return true;
       }
+      if (formData.phone.toString().length !== 10) {
+        setError("Phone number must not be more than 10 characters.");
+        return true;
+      }
+    }
+
+    if (currentPage == pages.length - 1) {
       if (!formData.password) {
         setError("Please input a password");
+        return true;
+      }
+      if (formData.password !== formData.confirmPassword) {
+        setError("Passwords do not match");
         return true;
       }
     }
@@ -142,11 +182,10 @@ const SignUp = ({ setSignedIn }) => {
       setIsLoading(true);
       const res = await signupUser(formData);
       setIsLoading(false);
-      if (res.statusCode == 500) {
-        return setError("An error occurred. Please try again later.");
-      }
       if (res.failed) {
-        return setError(res.message);
+        return setError(
+          res.message || "An error occurred. Please try again later."
+        );
       } else {
         setError(null);
         setPages(pagesData);

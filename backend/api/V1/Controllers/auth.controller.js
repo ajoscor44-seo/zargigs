@@ -17,6 +17,7 @@ export const signup = async (req, res, next) => {
     role,
     isEmailVerified,
     isMember,
+    phone,
   } = req.body;
   const hashedPassword = password && bcryptjs.hashSync(password, 10);
   const newUser = new User({
@@ -24,6 +25,7 @@ export const signup = async (req, res, next) => {
     lastname,
     username: username.toLowerCase(),
     email,
+    phone,
     password: hashedPassword,
     referredBy: referredBy.toLowerCase(),
     role: role || "user",
@@ -126,8 +128,16 @@ export const login = async (req, res, next) => {
 };
 
 export const google = async (req, res, next) => {
-  const { name, email, isEmailVerified, image, referredBy, role, isMember } =
-    req.body;
+  const {
+    name,
+    email,
+    isEmailVerified,
+    image,
+    referredBy,
+    role,
+    isMember,
+    phone,
+  } = req.body;
 
   try {
     const fullName = name.split(" ");
@@ -158,6 +168,7 @@ export const google = async (req, res, next) => {
           name.split(" ").join("").toLowerCase() +
           Math.floor(Math.random() * 10000).toString(),
         email,
+        phone,
         password: hashedPassword,
         referredBy,
         role: role || "user",
