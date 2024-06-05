@@ -9,6 +9,7 @@ import SetLocation from "../components/SetLocation/SetLocation";
 import SetBirthReligion from "../components/Setbirthreliogion/Setbirthreliogion";
 import UploadProfilePic from "../components/UploadProfilePic/UploadProfilePic";
 import axios from "axios";
+import SetBankDetails from "../components/SetBankDetails/SetBankDetails";
 
 const UploadInfoPage = () => {
   const { currentUser, fetchUserData } = useAuth();
@@ -25,7 +26,9 @@ const UploadInfoPage = () => {
   // User details data
   const [image, setImage] = useState(undefined);
   const [religion, setReligion] = useState(undefined);
+  const [bank, setBank] = useState(undefined);
   const [userLocation, setUserLocation] = useState({});
+  const [bankDetail, setBankDetail] = useState({});
   const [userDOB, setUserDOB] = useState({
     day: new Date().getDate(),
     month: months[new Date().getMonth() + 1],
@@ -65,36 +68,6 @@ const UploadInfoPage = () => {
     updateDaysInMonth();
   }, [userDOB?.month, userDOB?.year, months]);
 
-  // To consume api
-  // useEffect(() => {
-  //   console.log({
-  //     id: currentUser._id,
-  //     email: currentUser.email,
-  //     image,
-  //     religion,
-  //     gender: selectedGender,
-  //     location: userLocation,
-  //     dateOfBirth: userDOB,
-  //     bankDetails: {
-  //       accountNumber: null,
-  //       bankName: null,
-  //       accountName: null,
-  //     },
-  //     userEarnings: {
-  //       totalEarnings: 0,
-  //       pendingEarnings: 0,
-  //       amountSpent: 0,
-  //       amountWithdrawn: 0,
-  //       balance: 0,
-  //     },
-  //   });
-  // }, [
-  //   selectedGender,
-  //   userLocation,
-  //   userDOB?.month,
-  //   userDOB?.year,
-  //   currentUser,
-  // ]);
   const uploadUserDetails = async () => {
     if (!currentUser.email && !currentUser._id) {
       return history.push("/login");
@@ -117,9 +90,8 @@ const UploadInfoPage = () => {
         location: userLocation,
         dateOfBirth: userDOB,
         bankDetails: {
-          accountNumber: null,
-          bankName: null,
-          accountName: null,
+          bankName: bank,
+          ...bankDetail,
         },
         userEarnings: {
           totalEarnings: 0,
@@ -166,6 +138,15 @@ const UploadInfoPage = () => {
             setSelectedGender={setSelectedGender}
             statesData={statesData}
             setStatesData={setStatesData}
+          />
+        ) : activePage == "bank-details" ? (
+          <SetBankDetails
+            setActivePage={setActivePage}
+            selectedBank={bank}
+            setSelectedBank={setBank}
+            bankDetails={bankDetail}
+            setBankDetails={setBankDetail}
+            setError={setError}
           />
         ) : activePage == "birth-religion" ? (
           <SetBirthReligion

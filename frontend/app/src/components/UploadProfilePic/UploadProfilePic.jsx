@@ -63,7 +63,7 @@ const UploadProfilePic = ({ setActivePage, image, setImage }) => {
         <span className="flex justify-between items-center px-3 py-2 border-b text-sm">
           <h2 className="font-bold">More About You</h2>{" "}
           <button
-            onClick={() => setActivePage("birth-religion")}
+            onClick={() => setActivePage("bank-details")}
             className="text-white bg-green-500 px-5 py-2 rounded-full flex items-center gap-1"
           >
             <span>SKIP</span>
@@ -141,7 +141,7 @@ const UploadProfilePic = ({ setActivePage, image, setImage }) => {
 
         {image && (
           <button
-            onClick={() => setActivePage("birth-religion")}
+            onClick={() => setActivePage("bank-details")}
             className="flex items-center justify-center gap-1 text-green-500 bg-green-200 capitalize px-5 py-3 font-bold"
           >
             <span>Use and continue</span>

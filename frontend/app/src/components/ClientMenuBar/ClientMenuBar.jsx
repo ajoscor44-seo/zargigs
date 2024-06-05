@@ -44,7 +44,7 @@ const ClientMenuBar = () => {
           <span className="text-sm">Home</span>
         </div>
       </Link>
-      <Link to={currentUser.isMember ? "/earn" : "/become-a-member"}>
+      <Link to="/earn">
         <div className="flex flex-col justify-between items-center cursor-pointer relative">
           <PiWalletLight
             size={25}

@@ -84,7 +84,7 @@ const SignUp = ({ setSignedIn }) => {
           note: "Please input your registered phone.",
           placeholder: "8012345678",
           icon: "phone",
-          type: "number",
+          type: "tel",
           error: "An error occurred here",
           isError: false,
           value: formData.phone && formData.phone,
