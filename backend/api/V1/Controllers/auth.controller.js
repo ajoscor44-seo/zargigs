@@ -7,23 +7,17 @@ import nodemailer from "nodemailer";
 import AccessToken from "../Models/access-tokens.model.js";
 
 export const signup = async (req, res, next) => {
-  const { firstname, lastname, username, email, password, referredBy, phone } =
-    req.body;
-  const hashedPassword = password && bcryptjs.hashSync(password, 10);
-  const newUser = new User({
-    firstname,
-    lastname,
-    username: username.toLowerCase(),
-    email,
-    phone,
-    password: hashedPassword,
-    referredBy: referredBy.toLowerCase(),
-    role: "user",
-    isEmailVerified: false,
-    isMember: false,
-    isBanned: false,
-  });
   try {
+    const {
+      firstname,
+      lastname,
+      username,
+      email,
+      password,
+      referredBy,
+      phone,
+    } = req.body;
+    const hashedPassword = password && bcryptjs.hashSync(password, 10);
     const userWithMail = await User.findOne({ email });
     const referrer = await User.findOne({ username: referredBy });
     if (userWithMail) {
@@ -35,6 +29,19 @@ export const signup = async (req, res, next) => {
       const error = ErrorHandler(400, "Username is already taken.");
       return res.status(400).json(error);
     }
+    const newUser = new User({
+      firstname,
+      lastname,
+      username: username.toLowerCase(),
+      email,
+      phone,
+      password: hashedPassword,
+      referredBy: referredBy.toLowerCase() || "admin",
+      role: "user",
+      isEmailVerified: false,
+      isMember: false,
+      isBanned: false,
+    });
     await newUser.save();
 
     if (referrer && referrer !== "admin") {
