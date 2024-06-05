@@ -168,9 +168,6 @@ const AuthProvider = ({ children }) => {
         isEmailVerified: cred.user.emailVerified,
         image: cred.user.photoURL,
         phone: cred.user.phone,
-        referredBy: "admin",
-        role: "user",
-        isMember: false,
       });
 
       const data = res.data;

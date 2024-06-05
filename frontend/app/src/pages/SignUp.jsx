@@ -7,11 +7,7 @@ import { useAuth } from "../context/AuthContext";
 const SignUp = ({ setSignedIn }) => {
   const { signupUser, adminData } = useAuth();
   const params = useParams();
-  const [formData, setFormData] = useState({
-    isMember: false,
-    isEmailVerified: false,
-    role: "user",
-  });
+  const [formData, setFormData] = useState({});
   const pagesData = [
     {
       bgColor: "bg-white",
@@ -156,7 +152,7 @@ const SignUp = ({ setSignedIn }) => {
         return true;
       }
       if (formData.phone.toString().length !== 10) {
-        setError("Phone number must not be more than 10 characters.");
+        setError("Phone number must be 10 characters long.");
         return true;
       }
     }

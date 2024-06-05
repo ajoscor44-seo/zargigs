@@ -7,18 +7,8 @@ import nodemailer from "nodemailer";
 import AccessToken from "../Models/access-tokens.model.js";
 
 export const signup = async (req, res, next) => {
-  const {
-    firstname,
-    lastname,
-    username,
-    email,
-    password,
-    referredBy,
-    role,
-    isEmailVerified,
-    isMember,
-    phone,
-  } = req.body;
+  const { firstname, lastname, username, email, password, referredBy, phone } =
+    req.body;
   const hashedPassword = password && bcryptjs.hashSync(password, 10);
   const newUser = new User({
     firstname,
@@ -28,9 +18,10 @@ export const signup = async (req, res, next) => {
     phone,
     password: hashedPassword,
     referredBy: referredBy.toLowerCase(),
-    role: role || "user",
-    isEmailVerified,
-    isMember,
+    role: "user",
+    isEmailVerified: false,
+    isMember: false,
+    isBanned: false,
   });
   try {
     const userWithMail = await User.findOne({ email });
@@ -128,16 +119,7 @@ export const login = async (req, res, next) => {
 };
 
 export const google = async (req, res, next) => {
-  const {
-    name,
-    email,
-    isEmailVerified,
-    image,
-    referredBy,
-    role,
-    isMember,
-    phone,
-  } = req.body;
+  const { name, email, image, phone } = req.body;
 
   try {
     const fullName = name.split(" ");
@@ -170,10 +152,11 @@ export const google = async (req, res, next) => {
         email,
         phone,
         password: hashedPassword,
-        referredBy,
-        role: role || "user",
-        isEmailVerified,
-        isMember,
+        referredBy: "admin",
+        role: "user",
+        isEmailVerified: false,
+        isMember: false,
+        isBanned: false,
         image,
       });
 
