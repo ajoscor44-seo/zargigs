@@ -68,14 +68,6 @@ export const addUserDetails = async (req, res, next) => {
       bankDetails,
       userEarnings,
     });
-    // Creates wallet for user
-    const admin_data = await Admin.findOne();
-
-    const { mc_acc_details } = admin_data._doc;
-    const mc_access_token = mc_acc_details?.access_token;
-
-    const newUserWallet = await axios.post(`Hello`);
-
     if (image) {
       await User.findOneAndUpdate({ email: req.user.email }, { image });
     }

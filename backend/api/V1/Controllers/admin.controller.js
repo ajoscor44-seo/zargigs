@@ -1,3 +1,4 @@
+import axios from "axios";
 import Admin from "../Models/admin.model.js";
 import User from "../Models/user.model.js";
 import { ErrorHandler } from "../utils/error.js";
