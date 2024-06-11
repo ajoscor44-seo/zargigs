@@ -6,15 +6,54 @@ import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import PayAmountBar from "../components/PayAmountBar/PayAmountBar";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { useRandomString } from "../hooks/useGenerateString";
 
 const BecomeAMember = () => {
-  const { adminData } = useAuth();
+  const { adminData, currentUser } = useAuth();
   const history = useHistory();
   const [disableBtn, setDisableBtn] = useState(false);
   const [error, setError] = useState(null);
 
   const initiatePayment = async () => {
-    //
+    try {
+      var handler = PayDirect.invoice({
+        public_key:
+          import.meta.env.VITE_NODE_ENV !== "production"
+            ? import.meta.env.VITE_DEMO_PUB_KEY
+            : import.meta.env.VITE_PROD_PUB_KEY,
+        order_id: useRandomString(10),
+        customer: {
+          first_name: currentUser.firstname,
+          last_name: currentUser.lastname,
+          email: currentUser.email,
+          phone: currentUser.phone,
+        },
+        fee_bearer: "merchant",
+        items: [
+          {
+            item: "Registration Fee Payment",
+            unit_cost: "1500",
+            revenue_head_code:
+              import.meta.env.VITE_NODE_ENV !== "production"
+                ? import.meta.env.VITE_DEMO_REV_HEAD
+                : import.meta.env.VITE_PROD_REV_HEAD,
+          },
+        ],
+        callback: function (response) {
+          console.log(response);
+          becomeAMember();
+          location.href = "/?reference=" + response.reference_code;
+        },
+        onClose: function () {
+          console.log("Window Closed.");
+          location.href = "/";
+        },
+      });
+      handler.openIframe();
+    } catch (error) {
+      console.log(error, "This is the error");
+      return setError(error?.message || "An error occurred");
+    }
   };
 
   const becomeAMember = async () => {
@@ -25,10 +64,9 @@ const BecomeAMember = () => {
       if (response.failed) setError(response.message);
 
       setError(null);
-      setDisableBtn(false);
-      return history.push("/earn");
+      return setDisableBtn(false);
     } catch (error) {
-      return error;
+      return console.log(error);
     }
   };
   return (
@@ -92,7 +130,7 @@ const BecomeAMember = () => {
           feeTitle={"Membership Fee"}
           fee={adminData?.membershipFee}
           btnText={"Click Here To Pay Now"}
-          handleClick={becomeAMember}
+          handleClick={initiatePayment}
           disable={disableBtn}
         />
       </div>
