@@ -16,6 +16,7 @@ const BecomeAMember = () => {
 
   const initiatePayment = async () => {
     try {
+      await becomeAMember("ACC345UI876TREA");
       var handler = PayDirect.invoice({
         public_key:
           import.meta.env.VITE_NODE_ENV !== "production"
@@ -31,8 +32,8 @@ const BecomeAMember = () => {
         fee_bearer: "merchant",
         items: [
           {
-            item: "Registration Fee Payment",
-            unit_cost: "1500",
+            item: "Registration Fee",
+            unit_cost: adminData.membershipFee,
             revenue_head_code:
               import.meta.env.VITE_NODE_ENV !== "production"
                 ? import.meta.env.VITE_DEMO_REV_HEAD
@@ -56,10 +57,12 @@ const BecomeAMember = () => {
     }
   };
 
-  const becomeAMember = async () => {
+  const becomeAMember = async (transactionId) => {
     try {
       setDisableBtn(true);
-      const response = await axios.put("/api/v1/user/become-a-member");
+      const response = await axios.put("/api/v1/user/become-a-member", {
+        transactionId,
+      });
 
       if (response.failed) setError(response.message);
 

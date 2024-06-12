@@ -25,7 +25,10 @@ const userDetailsSchema = new mongoose.Schema(
     },
     bankDetails: {
       type: Object,
-      required: false,
+      required: true,
+    },
+    walletDetails: {
+      type: Object,
     },
     userEarnings: {
       type: Object,
