@@ -16,7 +16,7 @@ const BecomeAMember = () => {
 
   const initiatePayment = async () => {
     try {
-      await becomeAMember("ACC345UI876TREA");
+      // await becomeAMember("ACC345UI876TREA");
       var handler = PayDirect.invoice({
         public_key:
           import.meta.env.VITE_NODE_ENV !== "production"
@@ -42,12 +42,12 @@ const BecomeAMember = () => {
         ],
         callback: function (response) {
           console.log(response);
-          becomeAMember();
-          location.href = "/?reference=" + response.reference_code;
+          // becomeAMember();
+          window.location.href = "/earn?reference=" + response.reference_code;
         },
         onClose: function () {
           console.log("Window Closed.");
-          location.href = "/";
+          window.location.href = "/earn";
         },
       });
       handler.openIframe();

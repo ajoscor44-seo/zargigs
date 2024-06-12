@@ -142,64 +142,61 @@ export const becomeAMember = async (req, res, next) => {
         .json({ message: "Payment verification failed", failed: true });
     }
     const userData = {
-      private_key: "PRI_DEMO_AC6601A37343337",
+      private_key: priKey,
       first_name: req.user.firstname,
       last_name: req.user.lastname,
       phone: req.user.phone || "09151604081",
       email: req.user.email,
     };
 
+    const createLocalUserWallet = async () => {
+      let walletDetails;
+
+      if (data)
+        walletDetails = {
+          customerId: data.data.customer_id,
+          walletId: data.data.wallet_id,
+          customerEmail: data.data.customer_email,
+          bankName: data.data.bank_name,
+          accountName: data.data.account_name,
+          accountNumber: data.data.account_number,
+          balance: data.data.balance,
+          credit: data.data.credit,
+          debit: data.data.debit,
+          reference: data.data.reference,
+          virtualAccounts: data.data.virtual_accounts,
+        };
+
+      // Makes user a member
+      await User.findOneAndUpdate(
+        { _id: req.user._id },
+        {
+          isMember: true,
+        }
+      );
+
+      // Updates User wallet details
+      await userDetails.findOneAndUpdate(
+        { userId: req.user._id },
+        {
+          walletDetails: walletDetails || data.data,
+        }
+      );
+
+      // Response
+      return res.status(200).json({
+        message: "You are now a member",
+        failed: false,
+      });
+    };
+
     // Creates Virtual Account For User
-    return await axios
-      .post(`${baseUrl}/payment/virtual-account/create`, userData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        let walletDetails;
-
-        if (data)
-          walletDetails = {
-            customerId: data.data.customer_id,
-            walletId: data.data.wallet_id,
-            customerEmail: data.data.customer_email,
-            bankName: data.data.bank_name,
-            accountName: data.data.account_name,
-            accountNumber: data.data.account_number,
-            balance: data.data.balance,
-            credit: data.data.credit,
-            debit: data.data.debit,
-            reference: data.data.reference,
-            virtualAccounts: data.data.virtual_accounts,
-          };
-
-        // Makes user a member
-        await User.findOneAndUpdate(
-          { _id: req.user._id },
-          {
-            isMember: true,
-          }
-        );
-
-        // Updates User wallet details
-        await userDetails.findOneAndUpdate(
-          { userId: req.user._id },
-          {
-            walletDetails: walletDetails || data.data,
-          }
-        );
-
-        // Response
-        return res.status(200).json({
-          message: "You are now a member",
-          failed: false,
-        });
-      })
-      .catch((error) => {
-        logger.error(error);
-        return res
-          .status(500)
-          .json({ failed: true, message: "Error creating user wallet." });
-      })
-      .finally(() => next());
+    useExternalApi(
+      `${baseUrl}/payment/virtual-account/create`,
+      createLocalUserWallet,
+      "POST",
+      userData
+    );
   };
 
   // Makes request to an external api
