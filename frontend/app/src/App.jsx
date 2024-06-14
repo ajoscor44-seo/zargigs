@@ -51,7 +51,7 @@ function App() {
       <Router>
         {/* App Routes */}
         <AuthProvider>
-          {/* <SocketContextProvider> */}
+          <SocketContextProvider>
             <Switch>
               {/* Public Pages */}
               <Route exact path="/ref/:username">
@@ -126,7 +126,7 @@ function App() {
               />
               <Route component={NotFound} />
             </Switch>
-          {/* </SocketContextProvider> */}
+          </SocketContextProvider>
         </AuthProvider>
       </Router>
     </>
