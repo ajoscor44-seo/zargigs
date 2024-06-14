@@ -82,7 +82,10 @@ function App() {
               <PrivateRoute path="/help-support" component={HelpSupport} />
               <PrivateRoute path="/notifications" component={Notifications} />
               <PrivateRoute path="/user-details" component={UserDetails} />
-              <PrivateRoute path="/fund-wallet" component={FundWallets} />
+              <VerifiedMemberPrivateRoute
+                path="/fund-wallet"
+                component={FundWallets}
+              />
               <VerifiedMemberPrivateRoute
                 path="/withdraw"
                 component={Withdrawal}
