@@ -9,6 +9,12 @@ const blockDesktopsMiddleware = (req, res, next) => {
       .json({ message: "Access denied for desktop devices." });
   }
 
+  if (origin && origin.includes("admin.gigsflix.com") && !source.isDesktop) {
+    return res
+      .status(403)
+      .json({ message: "Access denied for non-desktop devices." });
+  }
+
   next();
 };
 
