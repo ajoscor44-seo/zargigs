@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import { GrPowerReset } from "react-icons/gr";
 import { MdOutlineLogin } from "react-icons/md";
-import logo from "../assets/png/logo-color.png";
 import loginIllustration from "../assets/images/login-illustration-png.png";
 import FormInput from "../components/FormInput/FormInput";
 import { useAuth } from "../context/AuthContext";
@@ -70,7 +69,7 @@ const Login = ({ setNotVerified }) => {
     <div className="bg-white px-4 py-10 lg:py-0 lg:flex max-h-screen overflow-hidden">
       <div className="lg:flex lg:flex-col lg:py-5 flex-1">
         <div className="flex items-center gap-2 px-4">
-          <img className="w-10 rounded" src={logo} />
+          <img className="w-10 rounded" src={adminData?.appLogo} />
           <div className="flex items-start flex-col">
             <h2 className="text-2xl font-primary font-bold">
               {adminData?.appName}
