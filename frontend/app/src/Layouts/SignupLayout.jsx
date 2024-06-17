@@ -1,5 +1,4 @@
 import React from "react";
-import logo from "../assets/png/logo-color.png";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import OAuth from "../components/OAuth/OAuth";
 import { useAuth } from "../context/AuthContext";
@@ -13,7 +12,7 @@ const SignupLayout = ({ children }) => {
       style={{ maxHeight: "100vh", width: "100%", maxWidth: "400px" }}
     >
       <div className="flex items-center gap-2 mb-4">
-        <img className="w-10 rounded" src={logo} />
+        <img className="w-10 rounded" src={adminData?.appLogo} />
         <div className="flex items-start flex-col">
           <h2 className="text-2xl font-primary font-bold">
             {adminData?.appName}
