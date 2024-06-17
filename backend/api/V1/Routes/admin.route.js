@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  deleteAnnouncement,
   getAnnouncement,
   postAnnouncement,
 } from "../Controllers/announcement.controller.js";
@@ -61,6 +62,7 @@ router.post("/earn-engagement", postEngagementEarner);
 // Announcement Routes
 router.post("/announcement", postAnnouncement);
 router.get("/announcement", getAnnouncement);
+router.delete("/announcement", deleteAnnouncement);
 
 // Complaints Routes
 router.post("/complaints", postComplaint);

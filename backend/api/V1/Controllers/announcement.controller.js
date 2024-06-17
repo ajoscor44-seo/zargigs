@@ -56,3 +56,13 @@ export const getAnnouncement = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteAnnouncement = async (req, res, next) => {
+  try {
+    const { id } = req.query;
+    await Announcement.findByIdAndDelete(id);
+    res.end();
+  } catch (error) {
+    next(error);
+  }
+};
