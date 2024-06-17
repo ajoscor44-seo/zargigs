@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
 import months from "../data/months";
-import fetchStates from "../hooks/fetchStatesData";
 import ClientNavbar from "../components/ClientNavbar/ClientNavbar";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import SetLocation from "../components/SetLocation/SetLocation";
@@ -10,13 +9,13 @@ import SetBirthReligion from "../components/Setbirthreliogion/Setbirthreliogion"
 import UploadProfilePic from "../components/UploadProfilePic/UploadProfilePic";
 import axios from "axios";
 import SetBankDetails from "../components/SetBankDetails/SetBankDetails";
+import statesData from "../data/states";
 
 const UploadInfoPage = () => {
   const { currentUser, fetchUserData } = useAuth();
   const history = useHistory();
   const [activePage, setActivePage] = useState("location");
   const [error, setError] = useState(null);
-  const [statesData, setStatesData] = useState([]);
   const [days, setDays] = useState(["Day"]);
 
   // Dynamically generate years based on the current year
@@ -35,16 +34,6 @@ const UploadInfoPage = () => {
     year: new Date().getFullYear() - 13,
   });
   const [selectedGender, setSelectedGender] = useState(null);
-
-  // Fetches the location data
-  useEffect(() => {
-    const fetchData = async () => {
-      const states = await fetchStates();
-      return setStatesData(states);
-    };
-
-    fetchData();
-  }, []);
 
   // Effect hook to adjust the days in the selected month, including leap years
   useEffect(() => {
@@ -137,7 +126,6 @@ const UploadInfoPage = () => {
             selectedGender={selectedGender}
             setSelectedGender={setSelectedGender}
             statesData={statesData}
-            setStatesData={setStatesData}
           />
         ) : activePage == "bank-details" ? (
           <SetBankDetails

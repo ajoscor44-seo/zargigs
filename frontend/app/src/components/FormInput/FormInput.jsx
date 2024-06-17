@@ -89,6 +89,7 @@ const FormInput = ({
                 {selections.map((selection) => {
                   return (
                     <option
+                      key={selection}
                       value={selection}
                       className="p-4 text-xs text-slate-600 font-semibold"
                     >
