@@ -11,27 +11,12 @@ import WhatTheyCanDo from "../components/WhatTheyCanDo/WhatTheyCanDo";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import useListenRecentActivity from "../hooks/useListenRecentActivity";
-import { GiSpeaker } from "react-icons/gi";
+import Announcements from "../components/Announcements/Announcements";
 
 const ClientDashboard = () => {
   const { currentUser, adminData } = useAuth();
-  const [announcements, setAnnouncements] = useState(null);
   const [recentActivities, setRecentActivities] = useState([]);
   useListenRecentActivity(setRecentActivities, recentActivities);
-
-  const getAnnouncements = async () => {
-    try {
-      const response = await axios.get("/api/v1/admin/announcement");
-
-      if (response.data.failed) {
-        return error;
-      }
-
-      return setAnnouncements(response.data.data);
-    } catch (error) {
-      return error;
-    }
-  };
 
   // Fetches the recent activities
   const fetchRecentActivities = async () => {
@@ -50,7 +35,6 @@ const ClientDashboard = () => {
   };
 
   useEffect(() => {
-    getAnnouncements();
     fetchRecentActivities();
   }, []);
 
@@ -81,28 +65,7 @@ const ClientDashboard = () => {
           {currentUser.isMember ? (
             <div className="block">
               <ClientWelcomeMsg username={currentUser.username} />
-              {announcements ? (
-                announcements.map((announcement) => {
-                  return (
-                    <div
-                      key={announcement?.id}
-                      className="flex justify-center items-center bg-orange-100 text-orange-400 my-2 mx-4 ps-2 pe-3 rounded-full"
-                    >
-                      <span className="pe-2">
-                        <GiSpeaker size={25} />
-                      </span>
-                      <marquee
-                        style={{ maxHeight: "80px" }}
-                        className="font-semibold text-sm py-1"
-                      >
-                        {announcement?.announcement}
-                      </marquee>
-                    </div>
-                  );
-                })
-              ) : (
-                <div></div>
-              )}
+              <Announcements />
               <ClientDashboardCard
                 firstname={currentUser.firstname}
                 lastname={currentUser.lastname}
