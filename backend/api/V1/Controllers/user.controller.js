@@ -54,6 +54,8 @@ export const addUserDetails = async (req, res, next) => {
     const error = ErrorHandler(404, "There's no user with this email.");
     return res.status(404).json(error);
   }
+  const referrer = await User.findOne({ username: validUser.referredBy });
+  const referrerDetails = await UserDetails.findOne({ userId: referrer._id });
 
   // Checks for user details
   const userDetails = await UserDetails.findOne({ userId: validUser._id });
@@ -75,6 +77,8 @@ export const addUserDetails = async (req, res, next) => {
     if (image) {
       await User.findOneAndUpdate({ email: req.user.email }, { image });
     }
+    referrerDetails.userEarnings.pendingEarnings += 600;
+    await referrerDetails.save();
     await newUserDetails.save();
 
     res.status(200).json({
@@ -114,96 +118,125 @@ export const updateUserDetails = async (req, res, next) => {
 
 // Updates user details
 export const becomeAMember = async (req, res, next) => {
-  // Checks for valid user
-  const validUser = await User.findOne({ email: req.user.email });
-  if (!validUser) {
-    const error = ErrorHandler(404, "There's no user with this email.");
-    return res.status(404).json(error);
-  }
-
-  const baseUrl =
-    process.env.NODE_ENV !== "production"
-      ? process.env.DEMO_MONICREDIT_API
-      : process.env.LIVE_MONICREDIT_API;
-  const priKey =
-    process.env.NODE_ENV !== "production"
-      ? process.env.DEMO_PRI_KEY
-      : process.env.PROD_PRI_KEY;
-
-  const transactionData = {
-    transaction_id: req.body.transactionId,
-    private_key: priKey,
-  };
-
-  const checkVerificationStatus = async (data) => {
-    if (!data.status) {
-      return res
-        .status(402)
-        .json({ message: "Payment verification failed", failed: true });
+  try {
+    // Checks for valid user
+    const validUser = await User.findOne({ email: req.user.email });
+    if (!validUser) {
+      const error = ErrorHandler(404, "There's no user with this email.");
+      return res.status(404).json(error);
     }
+    const referrer = await User.findOne({ username: validUser.referredBy });
+    const referrerDetails = await UserDetails.findOne({ userId: referrer._id });
+
+    const baseUrl =
+      process.env.NODE_ENV !== "production"
+        ? process.env.DEMO_MONICREDIT_API
+        : process.env.LIVE_MONICREDIT_API;
+    const priKey =
+      process.env.NODE_ENV !== "production"
+        ? process.env.DEMO_PRI_KEY
+        : process.env.PROD_PRI_KEY;
+
+    const transactionData = {
+      transaction_id: req.body.transactionId,
+      private_key: priKey,
+    };
+
     const userData = {
       private_key: priKey,
       first_name: req.user.firstname,
       last_name: req.user.lastname,
-      phone: req.user.phone || "09151604081",
+      phone: "0" + req.user.phone,
       email: req.user.email,
     };
 
-    const createLocalUserWallet = async () => {
-      let walletDetails;
+    const checkVerificationStatus = async (data) => {
+      try {
+        // Makes request to an external api
+        useExternalApi(
+          `${baseUrl}/payment/transactions/verify-transaction`,
+          console.log,
+          "GET",
+          data
+        );
 
-      if (data)
-        walletDetails = {
-          customerId: data.data.customer_id,
-          walletId: data.data.wallet_id,
-          customerEmail: data.data.customer_email,
-          bankName: data.data.bank_name,
-          accountName: data.data.account_name,
-          accountNumber: data.data.account_number,
-          balance: data.data.balance,
-          credit: data.data.credit,
-          debit: data.data.debit,
-          reference: data.data.reference,
-          virtualAccounts: data.data.virtual_accounts,
-        };
-
-      // Makes user a member
-      await User.findOneAndUpdate(
-        { _id: req.user._id },
-        {
-          isMember: true,
+        if (!data.status) {
+          return res
+            .status(402)
+            .json({ message: "Payment verification failed", failed: true });
         }
-      );
-
-      // Updates User wallet details
-      await userDetails.findOneAndUpdate(
-        { userId: req.user._id },
-        {
-          walletDetails: walletDetails || data.data,
-        }
-      );
-
-      // Response
-      return res.status(200).json({
-        message: "You are now a member",
-        failed: false,
-      });
+      } catch (error) {
+        next(error);
+      }
     };
 
-    // Creates Virtual Account For User
-    useExternalApi(
-      `${baseUrl}/payment/virtual-account/create`,
-      createLocalUserWallet,
-      "POST",
-      userData
-    );
-  };
+    const createVirtualAccountForUser = async (userData) => {
+      try {
+        // Creates Virtual Account For User
+        useExternalApi(
+          `${baseUrl}/payment/virtual-account/create`,
+          createLocalUserWallet,
+          "POST",
+          userData
+        );
+      } catch (error) {
+        next(error);
+      }
+    };
 
-  // Makes request to an external api
-  useExternalApi(
-    `${baseUrl}/payment/transactions/verify-transaction`,
-    checkVerificationStatus,
-    "GET",
-    transactionData
-  );
+    const createLocalUserWallet = async (data) => {
+      try {
+        let walletDetails;
+
+        if (data)
+          walletDetails = {
+            customerId: data.data.customer_id,
+            walletId: data.data.wallet_id,
+            customerEmail: data.data.customer_email,
+            bankName: data.data.bank_name,
+            accountName: data.data.account_name,
+            accountNumber: data.data.account_number,
+            balance: data.data.balance,
+            credit: data.data.credit,
+            debit: data.data.debit,
+            reference: data.data.reference,
+            virtualAccounts: data.data.virtual_accounts,
+          };
+        // Updates User wallet details
+        await userDetails.findOneAndUpdate(
+          { userId: req.user._id },
+          {
+            walletDetails: walletDetails || data.data,
+          }
+        );
+        // Response
+        return res.status(200).json({
+          message: "You are now a member",
+          failed: false,
+        });
+      } catch (error) {
+        next(error);
+      }
+    };
+
+    // const status = await checkVerificationStatus(transactionData)
+
+    // if (status) {
+    // await createVirtualAccountForUser(userData)
+    // }
+
+    // if (status) {
+    // Makes user a member
+    await User.findByIdAndUpdate(req.user._id, { isMember: true });
+
+    // Updates referrer earning details
+    referrerDetails.userEarnings.pendingEarnings -= 600;
+    referrerDetails.walletDetails.balance += 600;
+    referrerDetails.userEarnings.balance += 600;
+    referrerDetails.userEarnings.totalEarnings += 600;
+    await referrerDetails.save();
+    // }
+  } catch (error) {
+    next(error);
+  }
 };

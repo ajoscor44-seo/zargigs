@@ -19,22 +19,22 @@ const useExternalApi = (url, callback, method, data) => {
       });
   }
 
-  if (method.toUpperCase() == "POST") {
-    https
-      .post(url, data, (response) => {
-        let data = "";
+  // if (method.toUpperCase() == "POST") {
+  //   https
+  //     .post(url, data, (response) => {
+  //       let data = "";
 
-        response.on("data", (chunk) => {
-          data += chunk;
-        });
+  //       response.on("data", (chunk) => {
+  //         data += chunk;
+  //       });
 
-        response.on("end", () => callback(data));
-      })
-      .on("error", (error) => {
-        console.log("Error: ", error.message);
-        logger.error(error.message);
-      });
-  }
+  //       response.on("end", () => callback(data));
+  //     })
+  //     .on("error", (error) => {
+  //       console.log("Error: ", error.message);
+  //       logger.error(error.message);
+  //     });
+  // }
 };
 
 export default useExternalApi;
