@@ -27,7 +27,7 @@ const BecomeAMember = () => {
           first_name: currentUser.firstname,
           last_name: currentUser.lastname,
           email: currentUser.email,
-          phone: currentUser.phone,
+          phone: "0" + currentUser.phone,
         },
         fee_bearer: "merchant",
         items: [
