@@ -1,8 +1,8 @@
-import useExternalApi from "../../../../frontend/app/src/hooks/useExternalRequest.js";
 import userDetails from "../../V1/Models/user-details.model.js";
 import UserDetails from "../../V1/Models/user-details.model.js";
 import Admin from "../Models/admin.model.js";
 import User from "../Models/user.model.js";
+import useExternalApi from "../utils/client.js";
 import { ErrorHandler } from "../utils/error.js";
 
 export const getUserDetails = async (req, res, next) => {

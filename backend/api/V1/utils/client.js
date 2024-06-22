@@ -1,5 +1,5 @@
 import axios from "axios";
-import logger from "../../../../backend/api/V1/utils/logger.util.js";
+import logger from "./logger.util.js";
 
 const useExternalApi = (url, method, data, params) => {
   try {
