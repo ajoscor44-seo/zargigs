@@ -1,6 +1,5 @@
 import Notification from "../Models/notification.model.js";
 import User from "../Models/user.model.js";
-import { getReceiverSocketId, io } from "../socket/socket.js";
 import { ErrorHandler } from "../utils/error.js";
 
 export const getNotifications = async (req, res, next) => {
@@ -49,12 +48,6 @@ export const postNotifications = async (req, res, next) => {
     message,
   });
   await newNotification.save();
-
-  const receiverSocketId = getReceiverSocketId(req.user._id);
-
-  if (receiverSocketId) {
-    io.to(receiverSocketId).emit("newNotification", newNotification);
-  }
 
   res
     .status(200)

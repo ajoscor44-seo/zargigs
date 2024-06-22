@@ -9,11 +9,9 @@ import { FaLocationDot } from "react-icons/fa6";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import ReferAndEarn from "../components/ReferAndEarn/ReferAndEarn";
 import { useAuth } from "../context/AuthContext";
-import { useSocketContext } from "../context/SocketContext";
 
 const UserDetails = () => {
   const { currentUser } = useAuth();
-  const { onlineUsers } = useSocketContext();
   const [userImageURL, setUserImageURL] = useState(
     "https://cdn-icons-png.flaticon.com/512/149/149071.png"
   );
@@ -30,8 +28,6 @@ const UserDetails = () => {
   const pendingEarnings = currentUser.userEarnings.pendingEarnings;
   const amountWithdrawn = currentUser.userEarnings.amountWithdrawn;
   const amountSpent = currentUser.userEarnings.amountSpent;
-  const isOnline = onlineUsers.includes(currentUser.id);
-  const badgeColor = isOnline ? "green-500" : "slate-300";
   const balance = currentUser.userEarnings.balance;
   const userPeoples = {
     referrals: currentUser?.referrals?.length || 0,
@@ -57,9 +53,6 @@ const UserDetails = () => {
           <div className="flex flex-col border-b pb-3 justify-center items-center">
             <div className="border-2 rounded-md relative">
               <img className="w-32 h-32 object-cover" src={userImageURL} />
-              <span
-                className={`isOnline w-5 h-5 bg-${badgeColor} rounded-full absolute bottom-3 right-4`}
-              ></span>
             </div>
             <div className="p-2 font-primary flex flex-col items-center">
               <h1 className="font-bold text-2xl text-slate-600">

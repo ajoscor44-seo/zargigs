@@ -29,7 +29,6 @@ import RegistrationPage from "./pages/Registration.jsx";
 import Authentication from "./pages/Authentication.jsx";
 import UploadInfoPage from "./pages/UploadInfoPage.jsx";
 import UploadProfilePrivateRoute from "./routers/UploadProfileRoutes.jsx";
-import { SocketContextProvider } from "./context/SocketContext.jsx";
 import MemberPrivateRoute from "./routers/MemberPrivateRoute.jsx";
 import VerifiedMemberPrivateRoute from "./routers/VerifiedMemberPrivateRoute.jsx";
 import OrderHistory from "./pages/OrderHistory.jsx";
@@ -51,7 +50,6 @@ function App() {
       <Router>
         {/* App Routes */}
         <AuthProvider>
-          <SocketContextProvider>
             <Switch>
               {/* Public Pages */}
               <Route exact path="/ref/:username">
@@ -129,7 +127,6 @@ function App() {
               />
               <Route component={NotFound} />
             </Switch>
-          </SocketContextProvider>
         </AuthProvider>
       </Router>
     </>

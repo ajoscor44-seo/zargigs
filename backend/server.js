@@ -1,8 +1,8 @@
 import express from "express";
+import http from "http";
 import mongoose from "mongoose";
 import useragent from "express-useragent";
 import blockDesktopsMiddleware from "./api/V1/Middleware/blockDesktops.middleware.js";
-import { app, server } from "./api/V1/socket/socket.js";
 import dotenv from "dotenv";
 import authRoutes from "../backend/api/V1/Routes/auth.route.js";
 import v1Routes from "./api/V1/Routes/index.js";
@@ -13,6 +13,9 @@ import morgan from "morgan";
 import authenticateToken from "./api/V1/Middleware/authenticate.js";
 import { getAdminData } from "./api/V1/Controllers/admin.controller.js";
 import limiter from "./api/V1/Middleware/limiter.middleware.js";
+
+const app = express();
+const server = http.createServer(app);
 
 // Connects to db
 mongoose
@@ -51,7 +54,7 @@ app.options("*", cors(corsOptions));
 
 // Blocks desktop devices
 app.use(useragent.express());
-// app.use(blockDesktopsMiddleware);
+app.use(blockDesktopsMiddleware);
 
 // Rate limits user
 app.use(limiter);
