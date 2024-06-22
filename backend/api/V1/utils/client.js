@@ -1,36 +1,42 @@
 import axios from "axios";
 import logger from "./logger.util.js";
 
-const useExternalApi = (url, method, data, params) => {
-  try {
-    if (method.toUpperCase() === "GET") {
-      return axios
-        .get(url)
-        .then((response) => response)
-        .catch((err) => err);
-    } else if (method.toUpperCase() === "POST") {
-      return axios
-        .post(url, data)
-        .then((response) => response)
-        .catch((err) => err);
-    } else if (method.toUpperCase() === "PUT") {
-      return axios
-        .put(url, data, { params })
-        .then((response) => response)
-        .catch((err) => err);
-    } else if (method.toUpperCase() === "PATCH") {
-      return axios
-        .patch(url, data, { params })
-        .then((response) => response)
-        .catch((err) => err);
-    } else {
-      return axios
-        .delete(url, { params })
-        .then((response) => response)
-        .catch((err) => err);
+const useExternalApi = async (url, method, data, params) => {
+  if (method.toUpperCase() === "GET") {
+    try {
+      const response = await axios.get(url);
+      return response.data;
+    } catch (error) {
+      return logger.error(error.message);
     }
-  } catch (error) {
-    return logger.error(error);
+  } else if (method.toUpperCase() === "POST") {
+    try {
+      const response = await axios.post(url, data);
+      return response.data;
+    } catch (error) {
+      return logger.error(error.message);
+    }
+  } else if (method.toUpperCase() === "PUT") {
+    try {
+      const response = await axios.put(url, data, { params });
+      return response.data;
+    } catch (error) {
+      return logger.error(error.message);
+    }
+  } else if (method.toUpperCase() === "PATCH") {
+    try {
+      const response = await axios.patch(url, data, { params });
+      return response.data;
+    } catch (error) {
+      return logger.error(error.message);
+    }
+  } else {
+    try {
+      const response = await axios.delete(url, { params });
+      return response.data;
+    } catch (error) {
+      return logger.error(error.message);
+    }
   }
 };
 

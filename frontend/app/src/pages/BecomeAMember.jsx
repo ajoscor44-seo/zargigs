@@ -16,7 +16,7 @@ const BecomeAMember = () => {
 
   const initiatePayment = async () => {
     try {
-      await becomeAMember("Transaction Id");
+      await becomeAMember("ACX6677248A1921B");
       var handler = PayDirect.invoice({
         public_key:
           import.meta.env.VITE_NODE_ENV !== "production"

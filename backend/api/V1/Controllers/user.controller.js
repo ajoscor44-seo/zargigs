@@ -187,13 +187,12 @@ export const becomeAMember = async (req, res, next) => {
     };
 
     // Verifies payment
-    const verificationReponse = useExternalApi(
+    const verificationData = await useExternalApi(
       `${baseUrl}/payment/transactions/verify-payment`,
       "POST",
       transactionData,
       null
     );
-    const verificationData = verificationReponse.data;
     if (!verificationData.status) {
       return res
         .status(402)
@@ -207,13 +206,12 @@ export const becomeAMember = async (req, res, next) => {
     }
 
     // Creates Virtual Account For User
-    const accResponse = useExternalApi(
+    const accData = await useExternalApi(
       `${baseUrl}/payment/virtual-account/create`,
       "POST",
       userData,
       null
     );
-    const accData = accResponse.data;
     if (!accData.status) {
       return res.status(400).json({ message: accData.message });
     }
