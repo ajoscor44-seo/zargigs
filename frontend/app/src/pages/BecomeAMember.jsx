@@ -16,7 +16,7 @@ const BecomeAMember = () => {
 
   const initiatePayment = async () => {
     try {
-      await becomeAMember(true);
+      await becomeAMember("Transaction Id");
       var handler = PayDirect.invoice({
         public_key:
           import.meta.env.VITE_NODE_ENV !== "production"
@@ -42,7 +42,7 @@ const BecomeAMember = () => {
         ],
         callback: function (response) {
           console.log(response);
-          becomeAMember();
+          becomeAMember(response.reference_code);
           window.location.href = "/earn?reference=" + response.reference_code;
         },
         onClose: function () {
@@ -57,11 +57,11 @@ const BecomeAMember = () => {
     }
   };
 
-  const becomeAMember = async (status) => {
+  const becomeAMember = async (transactionId) => {
     try {
       setDisableBtn(true);
       const response = await axios.put("/api/v1/user/become-a-member", {
-        status,
+        transactionId,
       });
 
       if (response.failed) setError(response.message);
