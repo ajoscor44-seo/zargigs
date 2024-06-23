@@ -178,7 +178,9 @@ export const postWithdrawalRequests = async (req, res, next) => {
     const newUserBalance =
       validUserDetails.userEarnings.balance - withdrawalAmount - charges;
     const newUserAmountWithdrawn =
-      validUserDetails.userEarnings.amountWithdrawn + withdrawalAmount;
+      validUserDetails.userEarnings.amountWithdrawn +
+      withdrawalAmount +
+      charges;
     await validUserDetails.updateOne({
       userEarnings: {
         ...validUserDetails.userEarnings,
@@ -212,7 +214,7 @@ export const postWithdrawalRequests = async (req, res, next) => {
 
 export const approveWithdrawalRequests = async (req, res, next) => {
   try {
-    const { id, userId, withdrawalAmount } = req.body;
+    const { id, userId, amount } = req.body;
 
     // Updating our own withdrawal request
     await WithdrawalRequests.findByIdAndUpdate(id, {
@@ -223,7 +225,7 @@ export const approveWithdrawalRequests = async (req, res, next) => {
     const notification = {
       userId: userId,
       title: "Withdrawal Approved",
-      message: `Congratulations, your withdrawal of ₦${withdrawalAmount} has been approved. Kindly check your withdrawal history and your local bank account balance for confirmation.`,
+      message: `Congratulations, your withdrawal of ₦${amount} has been approved. Kindly check your withdrawal history and your local bank account balance for confirmation.`,
       type: "withdraw",
     };
 
@@ -240,7 +242,7 @@ export const approveWithdrawalRequests = async (req, res, next) => {
 
 export const disapproveWithdrawalRequests = async (req, res, next) => {
   try {
-    const { amount, userId, id, reason, charges } = req.body;
+    const { amount, userId, id, reason, charges, returnAmount } = req.body;
 
     // Checks for valid user details
     const validUserDetails = await userDetails.findOne({
@@ -253,19 +255,23 @@ export const disapproveWithdrawalRequests = async (req, res, next) => {
 
     // Updates balance and amount withdrawn
     const newUserBalance =
-      parseInt(validUserDetails.userEarnings.balance) +
-      parseInt(amount) +
-      parseInt(charges);
+      Number(validUserDetails.userEarnings.balance) +
+      Number(amount) +
+      Number(charges);
     const newUserAmountWithdrawn =
-      parseInt(validUserDetails.userEarnings.amountWithdrawn) -
-      parseInt(amount);
-    await validUserDetails.updateOne({
-      userEarnings: {
-        ...validUserDetails.userEarnings,
-        balance: newUserBalance,
-        amountWithdrawn: newUserAmountWithdrawn,
-      },
-    });
+      Number(validUserDetails.userEarnings.amountWithdrawn) -
+      Number(amount) -
+      Number(charges);
+
+    if (returnAmount) {
+      await validUserDetails.updateOne({
+        userEarnings: {
+          ...validUserDetails.userEarnings,
+          balance: newUserBalance,
+          amountWithdrawn: newUserAmountWithdrawn,
+        },
+      });
+    }
 
     // Updating our own withdrawal request
     await WithdrawalRequests.findByIdAndUpdate(id, {
