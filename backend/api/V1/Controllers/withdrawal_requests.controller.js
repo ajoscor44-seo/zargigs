@@ -3,6 +3,7 @@ import bcryptjs from "bcryptjs";
 import { ErrorHandler } from "../utils/error.js";
 import WithdrawalRequests from "../Models/withdrawal_requests.model.js";
 import userDetails from "../Models/user-details.model.js";
+import { sendNotitfication } from "../utils/notification.js";
 
 export const getAllWithdrawalRequests = async (req, res, next) => {
   const page = parseInt(req.query.page, 10) || 1;
@@ -57,6 +58,7 @@ export const getAllWithdrawalRequests = async (req, res, next) => {
 
         return {
           id: _id,
+          userId,
           ...rest,
           ...details_rest,
           ...user_rest,
@@ -82,13 +84,57 @@ export const getAllWithdrawalRequests = async (req, res, next) => {
 
 export const getUserWithdrawalRequests = async (req, res, next) => {
   try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+
     // Checks for valid user
     const validUser = await User.findOne({ email: req.user.email });
     if (!validUser) {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);
     }
-    //
+
+    const userWithdrawalRequests = await WithdrawalRequests.find({
+      userId: validUser._id,
+    })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const userWithdrawalRequests_ = userWithdrawalRequests.map(
+      (userWithdrawalRequest) => {
+        const {
+          _id,
+          charges,
+          withdrawalAmount,
+          status,
+          bankDetails,
+          createdAt,
+        } = userWithdrawalRequest;
+
+        const formattedRequest = {
+          id: _id,
+          charges,
+          amount: withdrawalAmount + charges,
+          status,
+          bankDetails,
+          date: createdAt,
+        };
+
+        return formattedRequest;
+      }
+    );
+
+    const totalCount = await WithdrawalRequests.countDocuments();
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return res.status(200).json({
+      failed: false,
+      data: userWithdrawalRequests_,
+      meta: {
+        total: totalCount,
+        pages: totalPages,
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -166,17 +212,27 @@ export const postWithdrawalRequests = async (req, res, next) => {
 
 export const approveWithdrawalRequests = async (req, res, next) => {
   try {
-    const { withdrawalAmount, charges, bankDetails, userEarnings, id } =
-      req.body;
-
-    // Monicredit validations
-
-    // Monicredit withdrawal
+    const { id, userId, withdrawalAmount } = req.body;
 
     // Updating our own withdrawal request
     await WithdrawalRequests.findByIdAndUpdate(id, {
       $set: { status: "approved" },
     });
+
+    // Creates notitfication
+    const notification = {
+      userId: userId,
+      title: "Withdrawal Approved",
+      message: `Congratulations, your withdrawal of ${withdrawalAmount} has been approved. Kindly check your withdrawal history and your local bank account balance for confirmation.`,
+      type: "withdrawal",
+    };
+
+    // Send notification to user
+    await sendNotitfication(notification);
+
+    return res
+      .status(200)
+      .json({ failed: false, message: "Withdrawal approved successfully" });
   } catch (error) {
     next(error);
   }
@@ -184,15 +240,45 @@ export const approveWithdrawalRequests = async (req, res, next) => {
 
 export const disapproveWithdrawalRequests = async (req, res, next) => {
   try {
-    const { withdrawalAmount, charges, bankDetails, userEarnings, id } =
-      req.body;
+    const { withdrawalAmount, userId, id, reason, charges } = req.body;
 
-    // Update the user earnings
+    // Checks for valid user details
+    const validUserDetails = await userDetails.findOne({
+      userId,
+    });
+    if (!validUserDetails) {
+      const error = ErrorHandler(404, "There's no user details for this user.");
+      return res.status(404).json(error);
+    }
+
+    // Updates balance and amount withdrawn
+    const newUserBalance =
+      validUserDetails.userEarnings.balance + withdrawalAmount + charges;
+    const newUserAmountWithdrawn =
+      validUserDetails.userEarnings.amountWithdrawn - withdrawalAmount;
+    await validUserDetails.updateOne({
+      userEarnings: {
+        ...validUserDetails.userEarnings,
+        balance: newUserBalance,
+        amountWithdrawn: newUserAmountWithdrawn,
+      },
+    });
 
     // Updating our own withdrawal request
     await WithdrawalRequests.findByIdAndUpdate(id, {
       $set: { status: "disapproved" },
     });
+
+    // Creates notitfication
+    const notification = {
+      userId: userId,
+      title: "Withdrawal Disapproved",
+      message: `Oops, your withdrawal of ${withdrawalAmount} has been disapproved ${reason}, kindly check your withdrawal history for confirmation.`,
+      type: "withdrawal",
+    };
+
+    // Send notification to user
+    await sendNotitfication(notification);
   } catch (error) {
     next(error);
   }
