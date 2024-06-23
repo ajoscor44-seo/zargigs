@@ -1,27 +1,37 @@
 import React, { useEffect, useState } from "react";
-import logo from "../../assets/png/logo-color.png";
 import { TfiHelpAlt } from "react-icons/tfi";
 import { IoNotificationsOutline } from "react-icons/io5";
-import { FaCircleUser } from "react-icons/fa6";
 import { Link } from "react-router-dom/cjs/react-router-dom";
-import allNotifications from "../../data/notifications";
 import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
 
 const ClientNavbar = () => {
   const { currentUser, adminData } = useAuth();
   const [userImageURL, setUserImageURL] = useState(
     "https://cdn-icons-png.flaticon.com/512/149/149071.png"
   );
+  const [newNotificationsNumber, setNewNotificationsNumber] = useState();
 
-  const [newNotificationsNumber, setNewNotificationsNumber] = useState(
-    allNotifications?.length
-  );
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get("/api/v1/notifications");
+      const data = response.data;
+      const notifications = data.data;
+      const unreadNotifications = notifications.length
+        ? notifications.find((notification) => !notification.read)
+        : notifications;
+      return setNewNotificationsNumber(unreadNotifications.length);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   // Updates user profile
   useEffect(() => {
     if (currentUser?.image) {
       return setUserImageURL(currentUser?.image);
     }
+    fetchNotifications();
   }, [currentUser]);
 
   return (
@@ -50,9 +60,11 @@ const ClientNavbar = () => {
               size={25}
               className="transition-colors duration-500"
             />
-            <span className="absolute top-0 right-0 bg-red-500 w-5 h-4 flex justify-center items-center text-white text-sm rounded-sm">
-              {newNotificationsNumber}
-            </span>
+            {newNotificationsNumber ? (
+              <span className="absolute top-0 right-0 bg-red-500 w-5 h-4 flex justify-center items-center text-white text-sm rounded-sm">
+                {newNotificationsNumber}
+              </span>
+            ) : null}
           </div>
         </Link>
 

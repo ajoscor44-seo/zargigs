@@ -13,7 +13,7 @@ export const getNotifications = async (req, res, next) => {
     return res.status(404).json(error);
   }
 
-  const notifications = await Notification.find()
+  const notifications = await Notification.find({ userId: req.user._id })
     .skip((page - 1) * limit)
     .limit(limit);
 
