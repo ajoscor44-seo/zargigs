@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
 import Notification from "../components/Notification/Notification";
-// import icon from "../assets/images/businessman-talking-phone-2.png";
 import allNotifications from "../data/notifications";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 
