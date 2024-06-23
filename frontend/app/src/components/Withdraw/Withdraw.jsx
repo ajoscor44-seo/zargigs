@@ -28,12 +28,12 @@ const Withdraw = () => {
       if (!amount || !password) {
         return setWithdrawalError("Some inputs are yet to be filled.");
       }
-      if (Number(balance) - Number(amount) - Number(charges) <= 0) {
+      if (Number(balance) - Number(amount) - Number(charges) < 0) {
         return setWithdrawalError("Insufficient balance.");
       }
       const withdrawal_data = {
         id: currentUser?.id,
-        withdrawalAmount: Number(amount) - Number(charges),
+        withdrawalAmount: Number(amount),
         charges,
         password,
       };

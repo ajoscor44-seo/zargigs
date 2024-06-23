@@ -166,7 +166,7 @@ export const postWithdrawalRequests = async (req, res, next) => {
       return res.status(401).json(error);
     }
 
-    // Checks for correct password
+    // Checks for valid amount
     const validAmount =
       withdrawalAmount + charges <= validUserDetails.userEarnings.balance;
     if (!validAmount) {
