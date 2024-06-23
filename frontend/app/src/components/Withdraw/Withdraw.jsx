@@ -8,7 +8,7 @@ import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
-import { Alert, Spinner } from "react-bootstrap";
+import { Spinner } from "react-bootstrap";
 import { IoCloseCircle } from "react-icons/io5";
 
 const Withdraw = () => {
