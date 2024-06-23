@@ -223,7 +223,7 @@ export const approveWithdrawalRequests = async (req, res, next) => {
     const notification = {
       userId: userId,
       title: "Withdrawal Approved",
-      message: `Congratulations, your withdrawal of ${withdrawalAmount} has been approved. Kindly check your withdrawal history and your local bank account balance for confirmation.`,
+      message: `Congratulations, your withdrawal of ₦${withdrawalAmount} has been approved. Kindly check your withdrawal history and your local bank account balance for confirmation.`,
       type: "withdraw",
     };
 
@@ -253,9 +253,12 @@ export const disapproveWithdrawalRequests = async (req, res, next) => {
 
     // Updates balance and amount withdrawn
     const newUserBalance =
-      validUserDetails.userEarnings.balance + amount + charges;
+      parseInt(validUserDetails.userEarnings.balance) +
+      parseInt(amount) +
+      parseInt(charges);
     const newUserAmountWithdrawn =
-      validUserDetails.userEarnings.amountWithdrawn - amount;
+      parseInt(validUserDetails.userEarnings.amountWithdrawn) -
+      parseInt(amount);
     await validUserDetails.updateOne({
       userEarnings: {
         ...validUserDetails.userEarnings,
@@ -273,7 +276,7 @@ export const disapproveWithdrawalRequests = async (req, res, next) => {
     const notification = {
       userId: userId,
       title: "Withdrawal Disapproved",
-      message: `Oops, your withdrawal of ${amount} has been disapproved ${reason}, kindly check your withdrawal history for confirmation.`,
+      message: `Oops, your withdrawal of ₦${amount} has been disapproved ${reason}, kindly check your withdrawal history for confirmation.`,
       type: "withdraw",
     };
 
