@@ -214,7 +214,9 @@ export const becomeAMember = async (req, res, next) => {
       null
     );
     if (!accData.status) {
-      return res.status(400).json({ message: accData.message });
+      return res
+        .status(400)
+        .json({ message: `Creation failed: ${accData.message}` });
     }
     const accDetails = accData.data;
 
