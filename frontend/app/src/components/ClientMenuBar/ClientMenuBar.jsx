@@ -6,11 +6,10 @@ import { IoCartOutline } from "react-icons/io5";
 import { FaRegUser } from "react-icons/fa6";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import Notifier from "../Notifier/Notifier";
-import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 
 const ClientMenuBar = () => {
-  const { currentUser } = useAuth();
+  const [unreads, setUnreads] = useState(0);
   const [totalNormalTask, setTotalNormalTasks] = useState(0);
   const [totalAdvertTask, setTotalAdvertTasks] = useState(0);
 
@@ -79,8 +78,8 @@ const ClientMenuBar = () => {
             className="bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full p-2"
           />
           <span className="text-sm">Me</span>
-          {totalNormalTask ? (
-            <Notifier useNumber={true} number={97} />
+          {unreads ? (
+            <Notifier useNumber={true} number={unreads} />
           ) : (
             <div></div>
           )}

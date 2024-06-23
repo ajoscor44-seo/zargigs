@@ -224,7 +224,7 @@ export const approveWithdrawalRequests = async (req, res, next) => {
       userId: userId,
       title: "Withdrawal Approved",
       message: `Congratulations, your withdrawal of ${withdrawalAmount} has been approved. Kindly check your withdrawal history and your local bank account balance for confirmation.`,
-      type: "withdrawal",
+      type: "withdraw",
     };
 
     // Send notification to user
@@ -240,7 +240,7 @@ export const approveWithdrawalRequests = async (req, res, next) => {
 
 export const disapproveWithdrawalRequests = async (req, res, next) => {
   try {
-    const { withdrawalAmount, userId, id, reason, charges } = req.body;
+    const { amount, userId, id, reason, charges } = req.body;
 
     // Checks for valid user details
     const validUserDetails = await userDetails.findOne({
@@ -253,9 +253,9 @@ export const disapproveWithdrawalRequests = async (req, res, next) => {
 
     // Updates balance and amount withdrawn
     const newUserBalance =
-      validUserDetails.userEarnings.balance + withdrawalAmount + charges;
+      validUserDetails.userEarnings.balance + amount + charges;
     const newUserAmountWithdrawn =
-      validUserDetails.userEarnings.amountWithdrawn - withdrawalAmount;
+      validUserDetails.userEarnings.amountWithdrawn - amount;
     await validUserDetails.updateOne({
       userEarnings: {
         ...validUserDetails.userEarnings,
@@ -273,12 +273,16 @@ export const disapproveWithdrawalRequests = async (req, res, next) => {
     const notification = {
       userId: userId,
       title: "Withdrawal Disapproved",
-      message: `Oops, your withdrawal of ${withdrawalAmount} has been disapproved ${reason}, kindly check your withdrawal history for confirmation.`,
-      type: "withdrawal",
+      message: `Oops, your withdrawal of ${amount} has been disapproved ${reason}, kindly check your withdrawal history for confirmation.`,
+      type: "withdraw",
     };
 
     // Send notification to user
     await sendNotitfication(notification);
+
+    return res
+      .status(200)
+      .json({ failed: false, message: "Withdrawal disapproved successfully" });
   } catch (error) {
     next(error);
   }
