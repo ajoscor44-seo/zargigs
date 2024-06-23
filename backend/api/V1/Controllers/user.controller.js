@@ -4,6 +4,7 @@ import Admin from "../Models/admin.model.js";
 import User from "../Models/user.model.js";
 import useExternalApi from "../utils/client.js";
 import { ErrorHandler } from "../utils/error.js";
+import { sendNotitfication } from "../utils/notification.js";
 
 export const getUserDetails = async (req, res, next) => {
   // Checks for valid user
@@ -238,7 +239,7 @@ export const becomeAMember = async (req, res, next) => {
     await userDetails.findOneAndUpdate(
       { userId: req.user._id },
       {
-        walletDetails: walletDetails || data.data,
+        walletDetails: walletDetails,
       }
     );
 
@@ -267,6 +268,17 @@ export const becomeAMember = async (req, res, next) => {
 
     // Saves referrer details
     await referrerDetails.save();
+
+    // Creates notitfication
+    const notification = {
+      userId: req.user._id,
+      title: "Registration Completed!",
+      message: `Congratulations ${req.user.firstname}, you are now a member of gigsflix, you are now eligible to enjoy all earning features available on this platform.`,
+      type: "verification",
+    };
+
+    // Send notification to user
+    await sendNotitfication(notification);
 
     // Returns response
     return res.status(200).send(1);

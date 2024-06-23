@@ -5,6 +5,7 @@ import { ErrorHandler } from "../utils/error.js";
 import Token from "../Models/Token.model.js";
 import nodemailer from "nodemailer";
 import AccessToken from "../Models/access-tokens.model.js";
+import { sendNotitfication } from "../utils/notification.js";
 
 export const signup = async (req, res, next) => {
   try {
@@ -242,6 +243,17 @@ export const verifyEmail = async (req, res, next) => {
       { $set: { isEmailVerified: true } }
     );
     await Token.findByIdAndDelete(validOTP._id);
+
+    // Creates notitfication
+    const notification = {
+      userId: req.user._id,
+      title: "Email Verified!",
+      message: `Congratulations ${req.user.firstname}, your email ${req.user.email} has been verified, you can now login into your Gigsflix account.`,
+      type: "verification",
+    };
+
+    // Send notification to user
+    await sendNotitfication(notification);
 
     res.status(200).json({ message: "Email Verified", failed: false });
   } catch (error) {
