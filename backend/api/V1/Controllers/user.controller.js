@@ -194,9 +194,10 @@ export const becomeAMember = async (req, res, next) => {
       null
     );
     if (!verificationData.status) {
-      return res
-        .status(402)
-        .json({ message: "Payment verification failed", failed: true });
+      return res.status(402).json({
+        message: `Payment verification failed: ${verificationData.message}`,
+        failed: true,
+      });
     }
     const verificationDetails = verificationData.data;
     if (verificationDetails.amount < adminData.membershipFee) {
