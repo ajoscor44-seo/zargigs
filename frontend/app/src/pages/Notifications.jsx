@@ -9,6 +9,7 @@ import { FaSpinner } from "react-icons/fa6";
 const Notifications = () => {
   const [loading, setLoading] = useState(true);
   const [limit, setLimit] = useState(10);
+  const [change, setChange] = useState(new Date().getTime());
   const [meta, setMeta] = useState({});
   const [notifications, setNotifications] = useState([]);
 
@@ -24,10 +25,23 @@ const Notifications = () => {
     }
   };
 
+  const markAsRead = async (id) => {
+    try {
+      const response = await axios.put(`/api/v1/notifications?id=${id}`);
+      const data = response.data;
+      if (data.success) {
+        return setChange(new Date().getTime());
+      }
+      return setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     setLoading(true);
     fetchNotifications();
-  }, [limit]);
+  }, [limit, change]);
 
   return (
     <div>
@@ -41,7 +55,12 @@ const Notifications = () => {
           <div>
             <div>
               {notifications.map((notification) => {
-                return <Notification notification={notification} />;
+                return (
+                  <Notification
+                    markAsRead={markAsRead}
+                    notification={notification}
+                  />
+                );
               })}
             </div>
             {meta.total > limit && (
