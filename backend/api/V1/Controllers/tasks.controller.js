@@ -9,6 +9,7 @@ import PendingTask from "../Models/pending-tasks.model.js";
 import ProofOfWork from "../Models/proof-of-work.model.js";
 import User from "../Models/user.model.js";
 import { ErrorHandler } from "../utils/error.js";
+import { sendNotitfication } from "../utils/notification.js";
 
 // Advert task controllers
 export const getAdvertTask = async (req, res, next) => {
@@ -980,6 +981,8 @@ export const sanctionTask = async (req, res, next) => {
       const error = ErrorHandler(400, "No task in review.");
       return res.status(400).json(error);
     }
+
+    let notification;
     if (sanction == 1) {
       // Creates a completed task if task is approved
       const newTaskCompleted = new CompletedTask({
@@ -996,6 +999,15 @@ export const sanctionTask = async (req, res, next) => {
         mediaUrl: taskInReview.mediaUrl,
       });
       await newTaskCompleted.save();
+
+      // Creates notitfication
+      notification = {
+        userId: taskInReview?.doneBy,
+        title: "Task Reviewed!",
+        message:
+          "Hurray!!, your task has been reviewed and has been approved, check your balance and task history for confirmation. Generate a new task to earn more.",
+        type: "task",
+      };
     } else {
       // Creates a failed task if task is disapproved
       const newTaskFailed = new FailedTask({
@@ -1011,6 +1023,14 @@ export const sanctionTask = async (req, res, next) => {
         mediaUrl: taskInReview.mediaUrl,
       });
       await newTaskFailed.save();
+      // Creates notitfication
+      notification = {
+        userId: taskInReview?.doneBy,
+        title: "Task Reviewed",
+        message:
+          "Your task has been reviewed and has been disapproved due to its invalidity, generate a new task and ask for review.",
+        type: "task",
+      };
     }
 
     // Update proof to based on sanction
@@ -1027,6 +1047,9 @@ export const sanctionTask = async (req, res, next) => {
       const error = ErrorHandler(404, "No proof of work for this task.");
       return res.status(404).json(error);
     }
+
+    // Send notification to user
+    await sendNotitfication(notification);
 
     return res.status(200).json({
       failed: false,

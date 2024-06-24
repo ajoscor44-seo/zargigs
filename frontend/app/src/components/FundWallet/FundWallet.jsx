@@ -23,7 +23,7 @@ const FundWallet = () => {
   const [loading, setLoading] = useState(true);
   const { currentUser } = useAuth();
   const balance = currentUser.userEarnings.balance;
-  const accountDetails = currentUser.bankDetails;
+  const accountDetails = currentUser.walletDetails;
 
   const showWalletDetails = async () => {
     try {
@@ -60,7 +60,6 @@ const FundWallet = () => {
         `/api/v1/fundings?limit=${limit}&page=${page}`
       );
 
-      console.log(response.data);
       setFundings(response.data.data);
       setMeta(response.data.meta);
       setError(null);
@@ -88,24 +87,20 @@ const FundWallet = () => {
           <div className="p-2 flex flex-col gap-2 py-3">
             <div>
               <h3 className="text-lg font-semibold text-gray-400">Bank Name</h3>
-              <p className="text-xl font-bold">
-                {accountDetails.bankName + " Wema"}
-              </p>
+              <p className="text-xl font-bold">{accountDetails?.bankName}</p>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-400">
                 Account Name
               </h3>
-              <p className="text-xl font-bold">
-                {accountDetails.accountName + " Test name"}
-              </p>
+              <p className="text-xl font-bold">{accountDetails?.accountName}</p>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-400">
                 Account Number
               </h3>
               <p className="text-xl font-bold">
-                {accountDetails.accountNumber + " 1309909099"}
+                {accountDetails?.accountNumber}
               </p>
             </div>
           </div>
