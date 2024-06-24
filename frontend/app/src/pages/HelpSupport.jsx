@@ -9,9 +9,11 @@ import axios from "axios";
 import { IoClose } from "react-icons/io5";
 import { FaSpinner } from "react-icons/fa6";
 import { useAuth } from "../context/AuthContext";
+import ToastNotification from "../components/ToastNotification/ToastNotification";
 
 const HelpSupport = () => {
   const { adminData } = useAuth();
+  const [toastNotifications, setToastNotifications] = useState([]);
   const disclaimerMsg = `Please disregard any social media platform or Facebook Groups posing as ${adminData?.appName}. We do not have any Whatsapp Group or Telegram Group. Beware of Fraudsters posing as ${adminData?.appName} agents or customer supports telling you to pay any amount of money into their personal accounts or into any OPAY/PALMPAY account. We DO NOT have an OPAY/PALMPAY account number.`;
   const [visible, setVisibility] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
@@ -20,6 +22,16 @@ const HelpSupport = () => {
     complaint: "",
     proof: "",
   });
+
+  // Toast Notification
+  const showToast = (notificationObj) => {
+    setToastNotifications([...toastNotifications, notificationObj]);
+
+    const toastTimeout = setTimeout(() => {
+      setToastNotifications([]);
+      clearTimeout(toastTimeout);
+    }, 3100);
+  };
 
   const postComplaint = async () => {
     try {
@@ -39,6 +51,10 @@ const HelpSupport = () => {
 
       setError(null);
       setIsAdding(false);
+      showToast({
+        msg: "Complaint sent successfully",
+        errorType: "success",
+      });
       return setVisibility(false);
     } catch (error) {
       setIsAdding(false);
@@ -49,6 +65,7 @@ const HelpSupport = () => {
   const handleVisibility = () => {
     return setVisibility(!visible);
   };
+
   return (
     <div className="flex flex-col">
       <BackNav pageName={"Help and Support"} />
@@ -127,6 +144,16 @@ const HelpSupport = () => {
         </div>
       </div>
       <ClientMenuBar />
+      <div className="toast_cover">
+        {toastNotifications?.map((toastNotification) => {
+          return (
+            <ToastNotification
+              key={toastNotification.id}
+              toastNotification={toastNotification}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 };

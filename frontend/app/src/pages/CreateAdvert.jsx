@@ -71,7 +71,7 @@ const CreateAdvert = () => {
     // const paymentStatus = await payWithMonicredit();
     // Verify Payment
     // return paymentStatus;
-    return true;
+    return { status: true, message: "" };
   };
 
   // Adds new task
@@ -111,7 +111,7 @@ const CreateAdvert = () => {
     setLoading(true);
     const paymentProcessed = await processPayment();
 
-    if (paymentProcessed) {
+    if (paymentProcessed.status) {
       const res = await addNewtask(taskData);
 
       if (!res.failed) {
@@ -133,7 +133,11 @@ const CreateAdvert = () => {
         errorType: "danger",
       });
     }
-    return;
+
+    return showToast({
+      msg: `${paymentProcessed.message}`,
+      errorType: "danger",
+    });
   };
 
   // Selects Profile Picture

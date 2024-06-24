@@ -7,6 +7,7 @@ import { FcAdvertising } from "react-icons/fc";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { GiWallet } from "react-icons/gi";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
+import formatDate from "../../hooks/formatDate";
 
 const Notification = ({ notification, markAsRead }) => {
   const stateStyle = notification.read
@@ -48,6 +49,9 @@ const Notification = ({ notification, markAsRead }) => {
       <div className="flex flex-col">
         <h2 className="font-bold">{notification.title}</h2>
         <span className="text-sm">{notification.message}</span>
+        <div className="flex justify-end items-center mt-2">
+          <span className="text-xs">{formatDate(notification.createdAt)}</span>
+        </div>
       </div>
     </div>
   );

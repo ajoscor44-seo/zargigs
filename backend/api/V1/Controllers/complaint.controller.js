@@ -1,6 +1,7 @@
 import Complaint from "../Models/complaint.model.js";
 import User from "../Models/user.model.js";
 import { ErrorHandler } from "../utils/error.js";
+import { sendNotitfication } from "../utils/notification.js";
 
 export const postComplaint = async (req, res, next) => {
   const { complaint, proof } = req.body;
@@ -21,6 +22,17 @@ export const postComplaint = async (req, res, next) => {
     });
 
     await newComplaint.save();
+
+    // Creates notitfication
+    const notification = {
+      userId: req.user._id,
+      title: "Complaint Received",
+      message: `Your complaint "${complaint}" has been received by the support team and will be resolved soon, while that's done, visit the earning page to continue earning on gigsflix.`,
+      type: "notify",
+    };
+
+    // Send notification to user
+    await sendNotitfication(notification);
     return res.status(200).json({ failed: false, message: "Complaint Posted" });
   } catch (error) {
     next(error);
@@ -169,6 +181,17 @@ export const resolveComplaint = async (req, res, next) => {
       const error = ErrorHandler(404, "Complaint not found");
       return res.status(404).json(error);
     }
+
+    // Creates notitfication
+    const notification = {
+      userId: req.user._id,
+      title: "Issue Resolved!",
+      message: `Your complaint "${complaint.complaint}" has been resolved by the support team. Thanks for choosing gigsflix and don't forget the help section if you face any other error again.`,
+      type: "notify",
+    };
+
+    // Send notification to user
+    await sendNotitfication(notification);
 
     return res.status(200).json({
       failed: false,

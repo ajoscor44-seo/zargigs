@@ -88,7 +88,11 @@ const TransactionHistory = () => {
                       {numeral(data.charges).format("0,0.00")} charges
                     </td>
                     <td className="p-1 border-b text-center text-sm font-normal">
-                      {data.recipient}
+                      <span className="grid">
+                        <span>{data.bankDetails?.accountNumber}</span>
+                        <span>{data.bankDetails?.bankName}</span>
+                        <span>{data.bankDetails?.accountName}</span>
+                      </span>
                     </td>
                     <td className="p-1 border-b text-center text-sm font-normal">
                       <span
