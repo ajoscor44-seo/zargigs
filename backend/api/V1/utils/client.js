@@ -1,10 +1,14 @@
 import axios from "axios";
 import logger from "./logger.util.js";
 
-const useExternalApi = async (url, method, data, params) => {
+const useExternalApi = async (url, method, data, params, headers) => {
   if (method === "GET") {
     try {
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${headers.token}`,
+        },
+      });
       return response.data;
     } catch (error) {
       return logger.error(error.message);

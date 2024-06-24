@@ -7,6 +7,7 @@ import FailedTask from "../Models/failed-tasks.model.js";
 import InReviewTask from "../Models/in-review-tasks.model.js";
 import PendingTask from "../Models/pending-tasks.model.js";
 import ProofOfWork from "../Models/proof-of-work.model.js";
+import userDetails from "../Models/user-details.model.js";
 import User from "../Models/user.model.js";
 import { ErrorHandler } from "../utils/error.js";
 import { sendNotitfication } from "../utils/notification.js";
@@ -1054,6 +1055,51 @@ export const sanctionTask = async (req, res, next) => {
     return res.status(200).json({
       failed: false,
       message: sanction,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const processPayment = async (req, res, next) => {
+  try {
+    const { amount } = req.query;
+
+    // Validates user details
+    const validUserDetails = await userDetails.findOne({
+      userId: req.user._id,
+    });
+    if (!validUserDetails) {
+      const error = ErrorHandler(404, "User details not found.");
+      return res.status(404).json(error);
+    }
+
+    // Checks if user has enough balance
+    if (validUserDetails.userEarnings.balance < amount) {
+      return res.status(200).json({
+        status: false,
+        failed: true,
+        message: "Insufficient balance",
+      });
+    }
+
+    validUserDetails.userEarnings = {
+      ...validUserDetails.userEarnings,
+      balance: Number(validUserDetails.userEarnings.balance) - Number(amount),
+      amountSpent:
+        Number(validUserDetails.userEarnings.amountSpent) + Number(amount),
+    };
+    validUserDetails.walletDetails = {
+      ...validUserDetails.walletDetails,
+      balance:
+        Number(validUserDetails.walletDetails?.balance || 0) - Number(amount),
+    };
+    await validUserDetails.save();
+
+    return res.status(200).json({
+      status: true,
+      failed: false,
+      message: "Payment process successful",
     });
   } catch (error) {
     next(error);

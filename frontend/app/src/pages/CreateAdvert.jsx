@@ -14,7 +14,6 @@ import ToastNotification from "../components/ToastNotification/ToastNotification
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../config/firebase.config";
 import { useAuth } from "../context/AuthContext";
-// import payWithMonicredit from "../hooks/PayWithMonicredit";
 
 const CreateAdvert = () => {
   const { advertCreator } = useAuth();
@@ -32,6 +31,7 @@ const CreateAdvert = () => {
   });
   const [mediaError, setMediaError] = useState(null);
   const [mediaPercentage, setMediaPercentage] = useState(null);
+  const statesName = allStates.map((state) => state.name);
 
   // Task data object
   const [taskData, setTaskData] = useState({
@@ -65,13 +65,13 @@ const CreateAdvert = () => {
     });
   };
 
-  // Processess payment
+  // Processess payment and checks its validity
   const processPayment = async () => {
-    // Initiate Payment
-    // const paymentStatus = await payWithMonicredit();
-    // Verify Payment
-    // return paymentStatus;
-    return { status: true, message: "" };
+    const response = await axios.get(
+      `/api/v1/tasks/process-payment?amount=${amountToPay}`
+    );
+
+    return response.data;
   };
 
   // Adds new task
@@ -265,7 +265,7 @@ const CreateAdvert = () => {
             label={"Select Location"}
             placeholder={"Select Location"}
             useSelect={true}
-            selections={["Select Location", "All Nigeria", ...allStates]}
+            selections={["Select Location", "All Nigeria", ...statesName]}
             note={
               "You can target and select a particular location where your task or advert will be mostly shown. Select 'All Nigeria' if you want to target every location in Nigeria"
             }
