@@ -2,8 +2,6 @@ import axios from "axios";
 import logger from "./logger.util.js";
 
 const useExternalApi = async (url, method, data, params) => {
-  console.log(url);
-  console.log(data);
   if (method === "GET") {
     try {
       const response = await axios.get(url);

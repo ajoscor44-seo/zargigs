@@ -1,6 +1,7 @@
 import React from "react";
 import postAdvertImg from "../../assets/png/post-advert.png";
 import { GiTakeMyMoney } from "react-icons/gi";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const EarningMethods = () => {
   return (
@@ -16,7 +17,9 @@ const EarningMethods = () => {
           </div>
         </div>
         <div className="flex justify-center items-center">
-          <button className="startTask shadow-2xl">Get Started</button>
+          <Link to="/earn" className="startTask shadow-2xl">
+            Get Started
+          </Link>
         </div>
       </div>
 
@@ -31,7 +34,9 @@ const EarningMethods = () => {
           </div>
         </div>
         <div className="flex justify-center items-center">
-          <button className="startTask shadow-2xl">Get Started</button>
+          <Link to="/advertise" className="startTask shadow-2xl">
+            Get Started
+          </Link>
         </div>
       </div>
     </div>
