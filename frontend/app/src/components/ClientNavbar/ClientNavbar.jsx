@@ -17,11 +17,9 @@ const ClientNavbar = () => {
       const response = await axios.get("/api/v1/notifications");
       const data = response.data;
       const notifications = data.data;
-      console.log(notifications);
       const unreadNotifications = notifications.length
         ? notifications.filter((notification) => !notification.read)
         : notifications;
-      console.log(unreadNotifications);
       return setNewNotificationsNumber(unreadNotifications.length);
     } catch (error) {
       console.error(error);

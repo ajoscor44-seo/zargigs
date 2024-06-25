@@ -1,3 +1,4 @@
+import numeral from "numeral";
 import AdvertTask from "../Models/advertTask.model.js";
 import AllocatedTask from "../Models/allocated-tasks.model.js";
 import CancelledTask from "../Models/cancelled-tasks.model.js";
@@ -1091,8 +1092,7 @@ export const processPayment = async (req, res, next) => {
     };
     validUserDetails.walletDetails = {
       ...validUserDetails.walletDetails,
-      balance:
-        Number(validUserDetails.walletDetails?.balance || 0) - Number(amount),
+      balance: Number(validUserDetails.walletDetails.balance) - Number(amount),
     };
     await validUserDetails.save();
 
@@ -1100,7 +1100,9 @@ export const processPayment = async (req, res, next) => {
     const notification = {
       userId: req.user._id,
       title: "Purchase Completed!",
-      message: `Your ${type} order worth ₦${amount}, your order will be delivered as soon as possible. Thanks for choosing gigsflix.`,
+      message: `Your ${type} order worth ₦${numeral(amount).format(
+        "0,0.00"
+      )} has been received, your order will be delivered as soon as possible. Thanks for choosing gigsflix.`,
       type,
     };
 

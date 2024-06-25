@@ -10,7 +10,6 @@ import religions from "../data/religions";
 import axios from "axios";
 import ToastNotification from "../components/ToastNotification/ToastNotification";
 import { useAuth } from "../context/AuthContext";
-// import payWithMonicredit from "../hooks/PayWithMonicredit";
 
 const CreateOrder = () => {
   const { engagementCreator } = useAuth();
@@ -26,6 +25,7 @@ const CreateOrder = () => {
       return wayToCreateEngagementTask.pathToPage == "/order/" + slug;
     }
   );
+  const statesName = allStates.map((state) => state.name);
 
   // Task data object
   const [taskData, setTaskData] = useState({
@@ -60,11 +60,11 @@ const CreateOrder = () => {
 
   // Processess payment
   const processPayment = async () => {
-    // Initiate Payment
-    // const paymentStatus = await payWithMonicredit();
-    // Verify Payment
-    // return paymentStatus;
-    return true;
+    const response = await axios.get(
+      `/api/v1/tasks/process-payment?amount=${amountToPay}&type=task`
+    );
+
+    return response.data;
   };
 
   // Adds new task
@@ -112,7 +112,7 @@ const CreateOrder = () => {
 
         const toastTimeout = setTimeout(() => {
           setToastNotifications([]);
-          history.push("/order");
+          window.location.href = "/order";
           clearTimeout(toastTimeout);
         }, 2500);
         return setLoading(false);
@@ -189,7 +189,7 @@ const CreateOrder = () => {
             label={"Select Location"}
             placeholder={"Select Location"}
             useSelect={true}
-            selections={["Select Location", "All Nigeria", ...allStates]}
+            selections={["Select Location", "All Nigeria", ...statesName]}
             note={
               "You can target and select a particular location where your task or advert will be mostly shown. Select 'All Nigeria' if you want to target every location in Nigeria"
             }

@@ -253,8 +253,7 @@ export const becomeAMember = async (req, res, next) => {
     referrerDetails.walletDetails = {
       ...referrerDetails.walletDetails,
       balance:
-        (referrerDetails.walletDetails.balance || 0) +
-        0.6 * adminData.membershipFee,
+        referrerDetails.walletDetails.balance + 0.6 * adminData.membershipFee,
     };
 
     // Makes user a member

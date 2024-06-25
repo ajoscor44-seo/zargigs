@@ -4,6 +4,7 @@ import { ErrorHandler } from "../utils/error.js";
 import WithdrawalRequests from "../Models/withdrawal_requests.model.js";
 import userDetails from "../Models/user-details.model.js";
 import { sendNotitfication } from "../utils/notification.js";
+import numeral from "numeral";
 
 export const getAllWithdrawalRequests = async (req, res, next) => {
   const page = parseInt(req.query.page, 10) || 1;
@@ -198,10 +199,18 @@ export const postWithdrawalRequests = async (req, res, next) => {
     });
     await newWithdrawalRequests.save();
 
-    if (!newWithdrawalRequests) {
-      const error = ErrorHandler(500, "Error making request");
-      return res.status(500).json(error);
-    }
+    // Creates notitfication
+    const notification = {
+      userId: userId,
+      title: "Withdrawal Requested!",
+      message: `Your withdrawal request of ₦${numeral(withdrawalAmount).format(
+        "0,0.00"
+      )} has been received and would be reviewed by the support. Visit the earning page to continue earning while your withdrawal is being processed.`,
+      type: "withdraw",
+    };
+
+    // Send notification to user
+    await sendNotitfication(notification);
 
     return res.status(200).json({
       failed: false,
@@ -225,7 +234,9 @@ export const approveWithdrawalRequests = async (req, res, next) => {
     const notification = {
       userId: userId,
       title: "Withdrawal Approved",
-      message: `Congratulations, your withdrawal of ₦${amount} has been approved. Kindly check your withdrawal history and your local bank account balance for confirmation.`,
+      message: `Congratulations, your withdrawal of ₦${numeral(amount).format(
+        "0,0.00"
+      )} has been approved. Kindly check your withdrawal history and your local bank account balance for confirmation.`,
       type: "withdraw",
     };
 
@@ -282,7 +293,9 @@ export const disapproveWithdrawalRequests = async (req, res, next) => {
     const notification = {
       userId: userId,
       title: "Withdrawal Disapproved",
-      message: `Oops, your withdrawal of ₦${amount} has been disapproved ${reason}, kindly check your withdrawal history for confirmation.`,
+      message: `Oops, your withdrawal of ₦${numeral(amount).format(
+        "0,0.00"
+      )} has been disapproved ${reason}, kindly check your withdrawal history for confirmation.`,
       type: "withdraw",
     };
 
