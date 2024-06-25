@@ -5,7 +5,7 @@ import { sendNotitfication } from "../utils/notification.js";
 import numeral from "numeral";
 
 export const fundLocalWallet = async (req, res, next) => {
-  console.log(req.body);
+  console.log(req);
   const transData = req.body;
 
   try {
