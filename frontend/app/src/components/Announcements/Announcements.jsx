@@ -7,7 +7,7 @@ const Announcements = () => {
 
   const getAnnouncements = async () => {
     try {
-      const response = await axios.get("/api/v1/admin/announcement");
+      const response = await axios.get("/api/v1/announcement");
 
       if (response.data.failed) {
         return error;

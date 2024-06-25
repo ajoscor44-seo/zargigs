@@ -5,6 +5,7 @@ import notificationRoutes from "./notification.route.js";
 import tasksRoutes from "./tasks.route.js";
 import withdrawalsRoutes from "./withdrawal.route.js";
 import adminRoutes from "./admin.route.js";
+import announcementRoutes from "./announcement.route.js";
 import creatorRoutes from "./create-task.route.js";
 import earnerRoutes from "./earn-task.route.js";
 import fundingRoutes from "./funding.route.js";
@@ -21,5 +22,6 @@ router.use("/creator", creatorRoutes);
 router.use("/earner", earnerRoutes);
 router.use("/fundings", fundingRoutes);
 router.use("/admin", authorizeAdmin, adminRoutes);
+router.use("/announcement", announcementRoutes);
 
 export default router;
