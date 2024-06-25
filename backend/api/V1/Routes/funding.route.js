@@ -7,6 +7,5 @@ import {
 const router = express.Router();
 
 router.get("/", getFundings);
-router.post("/fund-wallet", fundLocalWallet);
 
 export default router;

@@ -13,6 +13,7 @@ import morgan from "morgan";
 import authenticateToken from "./api/V1/Middleware/authenticate.js";
 import { getAdminData } from "./api/V1/Controllers/admin.controller.js";
 import limiter from "./api/V1/Middleware/limiter.middleware.js";
+import { fundLocalWallet } from "./api/V1/Controllers/funding.controller.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -65,6 +66,7 @@ app.use(cookieParser());
 app.use(morgan("tiny"));
 
 app.get("/api/v1/admin-data", getAdminData);
+app.post("/fund-wallet", fundLocalWallet);
 
 // Authentication route
 app.use("/api/auth/", authRoutes);
