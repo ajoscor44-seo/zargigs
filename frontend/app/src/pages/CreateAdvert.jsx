@@ -68,7 +68,7 @@ const CreateAdvert = () => {
   // Processess payment and checks its validity
   const processPayment = async () => {
     const response = await axios.get(
-      `/api/v1/tasks/process-payment?amount=${amountToPay}`
+      `/api/v1/tasks/process-payment?amount=${amountToPay}&type=advert`
     );
 
     return response.data;
@@ -122,22 +122,23 @@ const CreateAdvert = () => {
 
         const toastTimeout = setTimeout(() => {
           setToastNotifications([]);
-          history.push("/advertise");
+          window.location.href = "/advertise";
           clearTimeout(toastTimeout);
-        }, 2500);
+        }, 3100);
         return setLoading(false);
       }
-      setLoading(false);
-      return showToast({
+      showToast({
         msg: `${res.message}`,
         errorType: "danger",
       });
+      return setLoading(false);
     }
 
-    return showToast({
+    showToast({
       msg: `${paymentProcessed.message}`,
       errorType: "danger",
     });
+    return setLoading(false);
   };
 
   // Selects Profile Picture

@@ -1063,7 +1063,7 @@ export const sanctionTask = async (req, res, next) => {
 
 export const processPayment = async (req, res, next) => {
   try {
-    const { amount } = req.query;
+    const { amount, type } = req.query;
 
     // Validates user details
     const validUserDetails = await userDetails.findOne({
@@ -1079,7 +1079,7 @@ export const processPayment = async (req, res, next) => {
       return res.status(200).json({
         status: false,
         failed: true,
-        message: "Insufficient balance",
+        message: "Insufficient funds. Fund your wallet",
       });
     }
 
@@ -1095,6 +1095,17 @@ export const processPayment = async (req, res, next) => {
         Number(validUserDetails.walletDetails?.balance || 0) - Number(amount),
     };
     await validUserDetails.save();
+
+    // Creates notitfication
+    const notification = {
+      userId: req.user._id,
+      title: "Purchase Completed!",
+      message: `Your ${type} order worth ₦${amount}, your order will be delivered as soon as possible. Thanks for choosing gigsflix.`,
+      type,
+    };
+
+    // Send notification to user
+    await sendNotitfication(notification);
 
     return res.status(200).json({
       status: true,
