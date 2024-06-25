@@ -7,12 +7,14 @@ import { BiInfoCircle } from "react-icons/bi";
 import NoData from "../NoData/NoData";
 import { FaSpinner } from "react-icons/fa6";
 import formatDate from "../../hooks/formatDate";
+import ToastNotification from "../ToastNotification/ToastNotification";
 
 const FundWallet = () => {
   const [fundings, setFundings] = useState([]);
+  const [toastNotifications, setToastNotifications] = useState([]);
   const [meta, setMeta] = useState({});
   const [limit, setLimit] = useState(10);
-  const [page, setPage] = useState(1);
+  const page = 1;
   const [transDetails, setTransDetails] = useState({});
   const [showBankDetails, setShowDetails] = useState(
     sessionStorage.getItem("showdetails")
@@ -23,6 +25,16 @@ const FundWallet = () => {
   const [loading, setLoading] = useState(true);
   const { currentUser } = useAuth();
   const balance = currentUser.userEarnings.balance;
+
+  // Toast Notification
+  const showToast = (notificationObj) => {
+    setToastNotifications([...toastNotifications, notificationObj]);
+
+    const toastTimeout = setTimeout(() => {
+      setToastNotifications([]);
+      clearTimeout(toastTimeout);
+    }, 3100);
+  };
 
   const showWalletDetails = () => {
     try {
@@ -36,19 +48,38 @@ const FundWallet = () => {
   const fundWallet = async () => {
     try {
       if (!amount) {
-        return setError("Please input an amount.");
+        setError("Please input an amount.");
+        return showToast({
+          msg: "Please input an amount.",
+          errorType: "danger",
+        });
+      }
+      if (amount < 1000) {
+        setError("Amount must not be less than ₦1,000");
+        return showToast({
+          msg: "Amount must not be less than ₦1,000",
+          errorType: "danger",
+        });
       }
       const response = await axios.post("/api/v1/fundings/fund-wallet", {
         amount,
       });
       const data = response.data;
       if (data.failed) {
-        return setError(data.message);
+        setError(data.message);
+        return showToast({
+          msg: `${data.message}`,
+          errorType: data.failed ? "danger" : "success",
+        });
       }
       setTransDetails(data.data);
       return showWalletDetails();
     } catch (error) {
       console.error(error);
+      return showToast({
+        msg: `${error.response.data.message}`,
+        errorType: "danger",
+      });
     }
   };
 
@@ -64,19 +95,26 @@ const FundWallet = () => {
         body
       );
       const data = response.data;
-      // setError(data.message);
       setUpdate(new Date().getTime());
       sessionStorage.removeItem("showdetails");
-      return setShowDetails(false);
+      setShowDetails(false);
+      return showToast({
+        msg: `${data.message}`,
+        errorType: data.failed ? "danger" : "success",
+      });
     } catch (error) {
       console.error(error);
+      return showToast({
+        msg: `${error.response.data.message}`,
+        errorType: "danger",
+      });
     }
   };
 
   const getFundings = async () => {
     try {
       const response = await axios.get(
-        `/api/v1/fundings?limit=${limit}&page=${page}`
+        `/api/v1/fundings?limit=${limit}&page=${1}`
       );
 
       setFundings(response.data.data);
@@ -141,7 +179,10 @@ const FundWallet = () => {
                 setAmount(null);
                 setError(null);
                 sessionStorage.removeItem("showdetails");
-                return verifyFunding();
+                const verifyTimeOut = setTimeout(() => {
+                  verifyFunding();
+                  return clearTimeout(verifyTimeOut);
+                }, 5000);
               }}
               className="bg-green-500 my-3 text-white px-3 py-1 rounded-sm"
             >
@@ -186,7 +227,13 @@ const FundWallet = () => {
               Payment, Bank Transfer, USSD etc. Simply click on "Change Payment"
               button on the Payment Checkout page.
             </p>
-
+            <h2 className="flex font-bold p-2 text-sm gap-2 text-orange-500 bg-sky-50">
+              <BiInfoCircle size={25} />
+              <span className="flex-1">
+                Please note that a transfer charge applies to any amount you are
+                funding your wallet with and amount cannot be less than ₦1,000
+              </span>
+            </h2>
             <div className="py-5 flex flex-col gap-2">
               <h1 className="font-semibold text-xl">Funding History</h1>
 
@@ -246,6 +293,16 @@ const FundWallet = () => {
                 </table>
               )}
             </div>
+          </div>
+          <div className="toast_cover">
+            {toastNotifications?.map((toastNotification) => {
+              return (
+                <ToastNotification
+                  key={toastNotification.id}
+                  toastNotification={toastNotification}
+                />
+              );
+            })}
           </div>
         </div>
       )}
