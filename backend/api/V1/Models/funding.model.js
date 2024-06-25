@@ -3,10 +3,6 @@ const Schema = mongoose.Schema;
 
 const fundingSchema = new Schema(
   {
-    sn: {
-      type: Number,
-      required: true,
-    },
     date: {
       type: Date,
       required: true,
@@ -28,6 +24,14 @@ const fundingSchema = new Schema(
       type: String,
       required: true,
       env: ["pending", "approved", "declined"],
+    },
+    order_id: {
+      type: String,
+      required: true,
+    },
+    trans_id: {
+      type: String,
+      required: true,
     },
   },
   {

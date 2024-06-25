@@ -1,42 +1,181 @@
 import Funding from "../Models/funding.model.js";
 import User from "../Models/user.model.js";
 import { ErrorHandler } from "../utils/error.js";
+import useExternalApi from "../utils/client.js";
+import { randStr } from "../utils/rand-str.js";
+import { sendNotitfication } from "../utils/notification.js";
+import userDetails from "../Models/user-details.model.js";
+import numeral from "numeral";
 
-export const fundUserWallet = async (req, res, next) => {
+export const initiateFunding = async (req, res, next) => {
+  const amount = req.body.amount;
+
   try {
-    const { date, amount, paymentGateway, paymentMethod } = req.body;
+    const orderId = randStr(10);
+    const baseUrl =
+      process.env.NODE_ENV !== "production"
+        ? process.env.DEMO_MONICREDIT_API
+        : process.env.LIVE_MONICREDIT_API;
+    const pubKey =
+      process.env.NODE_ENV !== "production"
+        ? process.env.DEMO_PUB_KEY
+        : process.env.PROD_PUB_KEY;
+    const revHead =
+      process.env.NODE_ENV !== "production"
+        ? process.env.DEMO_REV_HEAD
+        : process.env.PROD_REV_HEAD;
 
-    const fundingLength = await Funding.countDocuments();
-    const newFunding = new Funding({
-      sn: fundingLength + 1,
-      date,
-      amount,
-      payment_gateway: paymentGateway,
-      payment_method: paymentMethod,
-      status: "pending",
+    const transData = {
+      order_id: orderId,
+      public_key: pubKey,
+      customer: {
+        first_name: req.user.firstname,
+        last_name: req.user.lastname,
+        email: req.user.email,
+        phone: "0" + req.user.phone,
+      },
+      items: [
+        {
+          item: "Fund Wallet",
+          revenue_head_code: revHead,
+          unit_cost: amount,
+        },
+      ],
+      currency: "NGN",
+      paytype: "standard",
+    };
+
+    const transRes = await useExternalApi(
+      `${baseUrl}/payment/transactions/init-transaction`,
+      "POST",
+      transData,
+      null,
+      { accept: "application/json" }
+    );
+
+    const transId = transRes.id;
+    const transInfo = await useExternalApi(
+      `${baseUrl}/payment/transactions/init-transaction-info/${transId}`,
+      "GET",
+      {},
+      null,
+      {}
+    );
+    console.log(transInfo);
+
+    const {
+      customer_id,
+      customer_email,
+      balance,
+      wallet_id,
+      credit,
+      debit,
+      reference,
+      ...rest
+    } = transInfo.data.customer;
+
+    return res.status(200).json({
+      failed: false,
+      message: "Transaction Initiated successfully.",
+      data: {
+        id: transId,
+        amountToPay:
+          Number(transInfo.data.total_amount) + Number(transInfo.data.charges),
+        ...rest,
+      },
     });
-
-    await newFunding.save();
-
-    return res.json({ message: "Wallet funded successfully" });
   } catch (error) {
     next(error);
   }
 };
 
-export const updateFunding = async (req, res, next) => {
+export const verifyFunding = async (req, res, next) => {
   try {
-    const { id, status } = req.body;
-
-    const funding = await Funding.findById(id);
-
-    if (!funding) {
-      const error = ErrorHandler(404, "Funding does not exist.");
-      return res.status(404).json(error);
+    const { id, amount } = req.body;
+    const validUserDetails = await userDetails.findOne({
+      userId: req.user._id,
+    });
+    if (!validUserDetails) {
+      return res
+        .status(200)
+        .json({ failed: false, message: "User details not found" });
     }
 
-    funding.status = status;
-    await funding.save();
+    const baseUrl =
+      process.env.NODE_ENV !== "production"
+        ? process.env.DEMO_MONICREDIT_API
+        : process.env.LIVE_MONICREDIT_API;
+
+    const priKey =
+      process.env.NODE_ENV !== "production"
+        ? process.env.DEMO_PRI_KEY
+        : process.env.PROD_PRI_KEY;
+
+    const verfData = {
+      transaction_id: id,
+      private_key: priKey,
+    };
+
+    const verfRes = await useExternalApi(
+      `${baseUrl}/payment/transactions/verify-payment`,
+      "POST",
+      verfData,
+      null,
+      {}
+    );
+    console.log(verfRes);
+
+    if (!verfRes.status) {
+      return res.status(406).json({ failed: true, message: verfRes.message });
+    }
+    if (verfRes.data.amount < amount) {
+      return res
+        .status(406)
+        .json({ failed: true, message: "Payment Insufficient" });
+    }
+
+    // Update fundings list
+    const newFunding = new Funding({
+      date: verfRes.data.date_paid,
+      amount: verfRes.data.amount,
+      payment_gateway: "Autocredit",
+      payment_method: verfRes.data.channel,
+      status: verfRes.data.status,
+      order_id: verfRes.data.orderid,
+      trans_id: verfRes.data.transid,
+    });
+    await newFunding.save();
+
+    // Creates notitfication
+    notification = {
+      userId: req.user._id,
+      title: "Funding Successful",
+      message: `Your funding of ₦${numeral(verfRes.data.amount).format(
+        "0,0.00"
+      )} has been reviewed and has been APPROVED, check your balance for confirmation.`,
+      type: "fund",
+    };
+
+    // Update user earnings
+    validUserDetails.userEarnings = {
+      ...validUserDetails.userEarnings,
+      balance:
+        Number(validUserDetails.userEarnings.balance) +
+        Number(verfRes.data.amount),
+    };
+    validUserDetails.walletDetails = {
+      ...validUserDetails.walletDetails,
+      balance:
+        Number(validUserDetails.walletDetails.balance) +
+        Number(verfRes.data.amount),
+    };
+    await validUserDetails.save();
+    // Send notification to user
+    await sendNotitfication(notification);
+
+    return res
+      .status(200)
+      .json({ failed: false, message: "Wallet funding " + verfRes.message });
   } catch (error) {
     next(error);
   }

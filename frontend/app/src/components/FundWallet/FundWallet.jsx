@@ -12,24 +12,20 @@ const FundWallet = () => {
   const [fundings, setFundings] = useState([]);
   const [meta, setMeta] = useState({});
   const [limit, setLimit] = useState(10);
-  const [fundingResponse, setFundingResponse] = useState(10);
   const [page, setPage] = useState(1);
+  const [transDetails, setTransDetails] = useState({});
   const [showBankDetails, setShowDetails] = useState(
     sessionStorage.getItem("showdetails")
   );
   const [update, setUpdate] = useState(null);
-  const [amount, setAmount] = useState(undefined);
+  const [amount, setAmount] = useState(0);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const { currentUser } = useAuth();
   const balance = currentUser.userEarnings.balance;
-  const accountDetails = currentUser.walletDetails;
 
-  const showWalletDetails = async () => {
+  const showWalletDetails = () => {
     try {
-      if (!amount) {
-        return setError("Please input an amount.");
-      }
       sessionStorage.setItem("showdetails", true);
       return setShowDetails(true);
     } catch (error) {
@@ -39,16 +35,39 @@ const FundWallet = () => {
 
   const fundWallet = async () => {
     try {
-      const body = {
-        date: new Date(),
+      if (!amount) {
+        return setError("Please input an amount.");
+      }
+      const response = await axios.post("/api/v1/fundings/fund-wallet", {
         amount,
-        paymentGateway: "Autocredit",
-        paymentMethod: "Bank transfer",
+      });
+      const data = response.data;
+      if (data.failed) {
+        return setError(data.message);
+      }
+      setTransDetails(data.data);
+      return showWalletDetails();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const verifyFunding = async () => {
+    try {
+      const body = {
+        id: transDetails.id,
+        amount: transDetails.amountToPay,
       };
 
-      const response = await axios.post("/api/v1/fundings/fund-wallet", body);
-      setFundingResponse(response.data.message);
-      return setUpdate(new Date().getTime());
+      const response = await axios.post(
+        "/api/v1/fundings/verify-funding",
+        body
+      );
+      const data = response.data;
+      // setError(data.message);
+      setUpdate(new Date().getTime());
+      sessionStorage.removeItem("showdetails");
+      return setShowDetails(false);
     } catch (error) {
       console.error(error);
     }
@@ -87,28 +106,32 @@ const FundWallet = () => {
           <div className="p-2 flex flex-col gap-2 py-3">
             <div>
               <h3 className="text-lg font-semibold text-gray-400">Bank Name</h3>
-              <p className="text-xl font-bold">{accountDetails?.bankName}</p>
+              <p className="text-xl font-bold">{transDetails?.bank_name}</p>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-400">
                 Account Name
               </h3>
-              <p className="text-xl font-bold">{accountDetails?.accountName}</p>
+              <p className="text-xl font-bold">{transDetails?.account_name}</p>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-400">
                 Account Number
               </h3>
               <p className="text-xl font-bold">
-                {accountDetails?.accountNumber}
+                {transDetails?.account_number}
               </p>
             </div>
           </div>
-          <h2 className="flex font-extrabold p-2 text-sm gap-2 text-sky-500 bg-sky-50">
+          <h2 className="flex font-bold p-2 text-sm gap-2 text-orange-500 bg-sky-50">
             <BiInfoCircle size={25} />
             <span className="flex-1">
-              Transfer {amount} to the above account. The amount you transferred
-              will reflect in your balance once it has been confirmed.
+              Transfer{" "}
+              <span className="font-extrabold">
+                ₦{numeral(transDetails.amountToPay).format("0,0.00")}
+              </span>{" "}
+              to the above account. The amount you transferred will reflect in
+              your balance once it has been confirmed.
             </span>
           </h2>
           <div className="flex justify-center items-center">
@@ -118,7 +141,7 @@ const FundWallet = () => {
                 setAmount(null);
                 setError(null);
                 sessionStorage.removeItem("showdetails");
-                return fundWallet();
+                return verifyFunding();
               }}
               className="bg-green-500 my-3 text-white px-3 py-1 rounded-sm"
             >
@@ -149,7 +172,7 @@ const FundWallet = () => {
                 placeholder="Input amount..."
               />
               <button
-                onClick={showWalletDetails}
+                onClick={fundWallet}
                 className="text-xs bg-green-500 text-white font-semibold px-3 rounded-e-md"
               >
                 FUND WALLET
