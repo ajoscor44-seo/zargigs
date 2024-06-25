@@ -1,14 +1,12 @@
 import express from "express";
 import {
-  initiateFunding,
+  fundLocalWallet,
   getFundings,
-  verifyFunding,
 } from "../Controllers/funding.controller.js";
 
 const router = express.Router();
 
 router.get("/", getFundings);
-router.post("/fund-wallet", initiateFunding);
-router.post("/verify-funding", verifyFunding);
+router.post("/fund-wallet", fundLocalWallet);
 
 export default router;

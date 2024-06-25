@@ -3,6 +3,10 @@ const Schema = mongoose.Schema;
 
 const fundingSchema = new Schema(
   {
+    userId: {
+      type: String,
+      required: true,
+    },
     date: {
       type: Date,
       required: true,
@@ -25,11 +29,11 @@ const fundingSchema = new Schema(
       required: true,
       env: ["pending", "approved", "declined"],
     },
-    order_id: {
+    orderId: {
       type: String,
       required: true,
     },
-    trans_id: {
+    transId: {
       type: String,
       required: true,
     },

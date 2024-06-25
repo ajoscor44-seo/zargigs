@@ -16,41 +16,41 @@ const BecomeAMember = () => {
 
   const initiatePayment = async () => {
     try {
-      // await becomeAMember("ACX6677248A1921B");
-      var handler = PayDirect.invoice({
-        public_key:
-          import.meta.env.VITE_NODE_ENV !== "production"
-            ? import.meta.env.VITE_DEMO_PUB_KEY
-            : import.meta.env.VITE_PROD_PUB_KEY,
-        order_id: useRandomString(10),
-        customer: {
-          first_name: currentUser.firstname,
-          last_name: currentUser.lastname,
-          email: currentUser.email,
-          phone: "0" + currentUser.phone,
-        },
-        fee_bearer: "merchant",
-        items: [
-          {
-            item: "Registration Fee",
-            unit_cost: adminData.membershipFee,
-            revenue_head_code:
-              import.meta.env.VITE_NODE_ENV !== "production"
-                ? import.meta.env.VITE_DEMO_REV_HEAD
-                : import.meta.env.VITE_PROD_REV_HEAD,
-          },
-        ],
-        callback: function (response) {
-          console.log(response);
-          becomeAMember(response.reference_code);
-          window.location.href = "/";
-        },
-        onClose: function () {
-          console.log("Window Closed.");
-          window.location.href = "/become-a-member";
-        },
-      });
-      handler.openIframe();
+      await becomeAMember("ACX6677248A1921B");
+      // var handler = PayDirect.invoice({
+      //   public_key:
+      //     import.meta.env.VITE_NODE_ENV !== "production"
+      //       ? import.meta.env.VITE_DEMO_PUB_KEY
+      //       : import.meta.env.VITE_PROD_PUB_KEY,
+      //   order_id: useRandomString(10),
+      //   customer: {
+      //     first_name: currentUser.firstname,
+      //     last_name: currentUser.lastname,
+      //     email: currentUser.email,
+      //     phone: "0" + currentUser.phone,
+      //   },
+      //   fee_bearer: "merchant",
+      //   items: [
+      //     {
+      //       item: "Registration Fee",
+      //       unit_cost: adminData.membershipFee,
+      //       revenue_head_code:
+      //         import.meta.env.VITE_NODE_ENV !== "production"
+      //           ? import.meta.env.VITE_DEMO_REV_HEAD
+      //           : import.meta.env.VITE_PROD_REV_HEAD,
+      //     },
+      //   ],
+      //   callback: function (response) {
+      //     console.log(response);
+      //     becomeAMember(response.reference_code);
+      //     window.location.href = "/";
+      //   },
+      //   onClose: function () {
+      //     console.log("Window Closed.");
+      //     window.location.href = "/become-a-member";
+      //   },
+      // });
+      // handler.openIframe();
     } catch (error) {
       console.log(error, "This is the error");
       return setError(error?.message || "An error occurred");

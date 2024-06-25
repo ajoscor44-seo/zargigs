@@ -1,6 +1,5 @@
 import userDetails from "../../V1/Models/user-details.model.js";
 import UserDetails from "../../V1/Models/user-details.model.js";
-import AccessToken from "../Models/access-tokens.model.js";
 import Admin from "../Models/admin.model.js";
 import User from "../Models/user.model.js";
 import useExternalApi from "../utils/client.js";
@@ -179,41 +178,48 @@ export const becomeAMember = async (req, res, next) => {
       private_key: priKey,
     };
 
-    // Verifies payment
-    const verificationData = await useExternalApi(
-      `${baseUrl}/payment/transactions/verify-payment`,
-      "POST",
-      transactionData,
-      null
-    );
-    if (!verificationData.status) {
-      return res.status(402).json({
-        message: `Payment verification failed: ${verificationData.message}`,
-        failed: true,
-      });
-    }
-    const verificationDetails = verificationData.data;
-    if (verificationDetails.amount < adminData.membershipFee) {
-      return res
-        .status(402)
-        .json({ message: "Insufficient balance", failed: true });
-    }
+    // creates user data
+    const userData = {
+      private_key: priKey,
+      first_name: req.user.firstname,
+      last_name: req.user.lastname,
+      phone: "0" + req.user.phone,
+      email: req.user.email,
+    };
 
-    const mcToken = await AccessToken.findOne({ username: req.user.username });
+    // // Verifies payment
+    // const verificationData = await useExternalApi(
+    //   `${baseUrl}/payment/transactions/verify-payment`,
+    //   "POST",
+    //   transactionData,
+    //   null
+    // );
+    // if (!verificationData.status) {
+    //   return res.status(402).json({
+    //     message: `Payment verification failed: ${verificationData.message}`,
+    //     failed: true,
+    //   });
+    // }
+    // const verificationDetails = verificationData.data;
+    // if (verificationDetails.amount < adminData.membershipFee) {
+    //   return res
+    //     .status(402)
+    //     .json({ message: "Insufficient balance", failed: true });
+    // }
 
-    // Gets User Wallet Details From Initiated Transaction
+    // Creates Virtual Account For User
     const accData = await useExternalApi(
-      `${baseUrl}/payment/transactions/init-transaction-info/${req.body.transactionId}`,
-      "GET",
-      null,
-      { token: mcToken.accessToken }
+      `${baseUrl}/payment/virtual-account/create`,
+      "POST",
+      userData,
+      null
     );
     if (!accData.status) {
       return res
         .status(400)
         .json({ message: `Creation failed: ${accData.message}` });
     }
-    const accDetails = accData.data.customer;
+    const accDetails = accData.data;
 
     // Creates Local User Wallet
     const walletDetails = {
@@ -224,10 +230,10 @@ export const becomeAMember = async (req, res, next) => {
       accountName: accDetails.account_name,
       accountNumber: accDetails.account_number,
       balance: accDetails.balance,
-      credit: accDetails.credit || 0,
-      debit: accDetails.debit || 0,
-      reference: accDetails.reference || "",
-      virtualAccounts: accDetails.virtual_accounts || {},
+      credit: accDetails.credit,
+      debit: accDetails.debit,
+      reference: accDetails.reference,
+      virtualAccounts: accDetails.virtual_accounts,
     };
     // Updates User wallet details
     await userDetails.findOneAndUpdate(
@@ -274,7 +280,9 @@ export const becomeAMember = async (req, res, next) => {
     await sendNotitfication(notification);
 
     // Returns response
-    return res.status(200).send(1);
+    return res
+      .status(200)
+      .json({ failed: false, message: "You are now a member" });
   } catch (error) {
     next(error);
   }
