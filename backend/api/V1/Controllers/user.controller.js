@@ -187,25 +187,25 @@ export const becomeAMember = async (req, res, next) => {
       email: req.user.email,
     };
 
-    // // Verifies payment
-    // const verificationData = await useExternalApi(
-    //   `${baseUrl}/payment/transactions/verify-payment`,
-    //   "POST",
-    //   transactionData,
-    //   null
-    // );
-    // if (!verificationData.status) {
-    //   return res.status(402).json({
-    //     message: `Payment verification failed: ${verificationData.message}`,
-    //     failed: true,
-    //   });
-    // }
-    // const verificationDetails = verificationData.data;
-    // if (verificationDetails.amount < adminData.membershipFee) {
-    //   return res
-    //     .status(402)
-    //     .json({ message: "Insufficient balance", failed: true });
-    // }
+    // Verifies payment
+    const verificationData = await useExternalApi(
+      `${baseUrl}/payment/transactions/verify-payment`,
+      "POST",
+      transactionData,
+      null
+    );
+    if (!verificationData.status) {
+      return res.status(402).json({
+        message: `Payment verification failed: ${verificationData.message}`,
+        failed: true,
+      });
+    }
+    const verificationDetails = verificationData.data;
+    if (verificationDetails.amount < adminData.membershipFee) {
+      return res
+        .status(402)
+        .json({ message: "Insufficient balance", failed: true });
+    }
 
     // Creates Virtual Account For User
     const accData = await useExternalApi(

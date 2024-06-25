@@ -5,13 +5,16 @@ import { sendNotitfication } from "../utils/notification.js";
 import numeral from "numeral";
 
 export const fundLocalWallet = async (req, res, next) => {
+  // Verifies request
   console.log(req);
   const transData = req.body;
 
+  const user = await User.findOne({ email: transData.data.customer_email });
+  const userId = user._id;
   try {
     // Update fundings list
     const newFunding = new Funding({
-      userId: req.user._id,
+      userId,
       date: transData.data.date_paid,
       amount: transData.data.amount,
       payment_gateway: "Autocredit",
@@ -24,7 +27,7 @@ export const fundLocalWallet = async (req, res, next) => {
 
     // Creates notitfication
     const notification = {
-      userId: req.user._id,
+      userId,
       title: "Funding Successful",
       message: `Your funding of ₦${numeral(transData.data.amount).format(
         "0,0.00"
