@@ -977,6 +977,13 @@ export const sanctionTask = async (req, res, next) => {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);
     }
+    const validUserDetails = await userDetails.findOne({
+      userId: validUser._id,
+    });
+    if (!validUserDetails) {
+      const error = ErrorHandler(404, "There's no user details for this user.");
+      return res.status(404).json(error);
+    }
 
     const taskInReview = await InReviewTask.findOneAndDelete({ _id: parentId });
     if (!taskInReview) {
@@ -1010,6 +1017,23 @@ export const sanctionTask = async (req, res, next) => {
           "Hurray!!, your task has been reviewed and has been approved, check your balance and task history for confirmation. Generate a new task to earn more.",
         type: "task",
       };
+
+      validUserDetails.userEarnings = {
+        ...validUserDetails.userEarnings,
+        balance:
+          Number(validUserDetails.userEarnings.balance) +
+          Number(taskInReview?.earningPerTask),
+        totalEarnings:
+          Number(validUserDetails.userEarnings.totalEarnings) +
+          Number(taskInReview?.earningPerTask),
+      };
+      validUserDetails.walletDetails = {
+        ...validUserDetails.walletDetails,
+        balance:
+          Number(validUserDetails.walletDetails.balance) +
+          Number(taskInReview?.earningPerTask),
+      };
+      await validUserDetails.save();
     } else {
       // Creates a failed task if task is disapproved
       const newTaskFailed = new FailedTask({
