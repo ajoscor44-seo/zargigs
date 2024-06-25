@@ -866,9 +866,15 @@ export const requestForReview = async (req, res, next) => {
   try {
     // Validations for user request
     const validUser = await User.findOne({ email: req.user.email });
-
     if (!validUser) {
       const error = ErrorHandler(404, "There's no user with this email.");
+      return res.status(404).json(error);
+    }
+    const validUserDetails = await userDetails.findOne({
+      userId: validUser._id,
+    });
+    if (!validUserDetails) {
+      const error = ErrorHandler(404, "There's no details for this user.");
       return res.status(404).json(error);
     }
 
@@ -902,6 +908,16 @@ export const requestForReview = async (req, res, next) => {
     // Deletes the allocation and pending task.
     await PendingTask.findOneAndDelete({ allocationId: id });
     await AllocatedTask.findOneAndDelete({ _id: id });
+
+    // Update user earnings
+    validUserDetails.userEarnings = {
+      ...validUserDetails.userEarnings,
+      pendingEarnings:
+        Number(validUserDetails.userEarnings.pendingEarnings) +
+        Number(earningPerTask),
+    };
+    await validUserDetails.save();
+
     return res.status(200).send({
       failed: false,
       message: "Task uploaded for review.",
@@ -950,18 +966,17 @@ export const getProofsOfWork = async (req, res, next) => {
         } = proof?.toObject();
 
         const proofPoster = await User.findOne({ _id: createdBy });
-        const { image, username, ...posterRest } = proofPoster.toObject();
 
         return {
           id: _id,
-          posterUsername: username,
-          posterImage: image,
+          posterUsername: proofPoster?.username,
+          posterImage: proofPoster?.image,
           ...rest,
         };
       })
     );
 
-    res.status(200).json(proofObject);
+    return res.status(200).json(proofObject);
   } catch (error) {
     next(error);
   }
@@ -1014,7 +1029,7 @@ export const sanctionTask = async (req, res, next) => {
         userId: taskInReview?.doneBy,
         title: "Task Reviewed!",
         message:
-          "Hurray!!, your task has been reviewed and has been approved, check your balance and task history for confirmation. Generate a new task to earn more.",
+          "Hurray!!, your task has been reviewed and has been APPROVED, check your balance and task history for confirmation. Generate a new task to earn more.",
         type: "task",
       };
 
@@ -1026,6 +1041,9 @@ export const sanctionTask = async (req, res, next) => {
         totalEarnings:
           Number(validUserDetails.userEarnings.totalEarnings) +
           Number(taskInReview?.earningPerTask),
+        pendingEarnings:
+          Number(validUserDetails.userEarnings.pendingEarnings) -
+          Number(taskInReview?.earningPerTask),
       };
       validUserDetails.walletDetails = {
         ...validUserDetails.walletDetails,
@@ -1034,6 +1052,23 @@ export const sanctionTask = async (req, res, next) => {
           Number(taskInReview?.earningPerTask),
       };
       await validUserDetails.save();
+
+      const taskQuery = {
+        taskPlatform: taskInReview?.taskPlatform,
+        taskType: taskInReview?.taskType,
+        _id: taskInReview?.parentId,
+      };
+      taskInReview?.taskType == "advert"
+        ? await AdvertTask.findOneAndUpdate(taskQuery, {
+            $inc: {
+              completedTasks: 1,
+            },
+          })
+        : await EngagementTask.findOneAndUpdate(taskQuery, {
+            $inc: {
+              completedTasks: 1,
+            },
+          });
     } else {
       // Creates a failed task if task is disapproved
       const newTaskFailed = new FailedTask({
@@ -1054,9 +1089,35 @@ export const sanctionTask = async (req, res, next) => {
         userId: taskInReview?.doneBy,
         title: "Task Reviewed",
         message:
-          "Your task has been reviewed and has been disapproved due to its invalidity, generate a new task and ask for review.",
+          "Your task has been reviewed and has been DISapproved due to its invalidity, generate a new task and ask for review.",
         type: "task",
       };
+
+      // Update user earnings
+      validUserDetails.userEarnings = {
+        ...validUserDetails.userEarnings,
+        pendingEarnings:
+          Number(validUserDetails.userEarnings.pendingEarnings) -
+          Number(taskInReview?.earningPerTask),
+      };
+      await validUserDetails.save();
+
+      const taskQuery = {
+        taskPlatform: taskInReview?.taskPlatform,
+        taskType: taskInReview?.taskType,
+        _id: taskInReview?.parentId,
+      };
+      taskInReview?.taskType == "advert"
+        ? await AdvertTask.findOneAndUpdate(taskQuery, {
+            $inc: {
+              allocatedTasks: -1,
+            },
+          })
+        : await EngagementTask.findOneAndUpdate(taskQuery, {
+            $inc: {
+              allocatedTasks: -1,
+            },
+          });
     }
 
     // Update proof to based on sanction
