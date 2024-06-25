@@ -15,7 +15,7 @@ const Notification = ({ notification, markAsRead }) => {
     : "border-l-4 border-green-500";
   return (
     <div
-      onClick={() => markAsRead(notification._id)}
+      onClick={() => markAsRead(notification._id, notification.read)}
       className={
         stateStyle +
         " hover:bg-slate-100 grid grid-flow-col gap-3 items-start font-primary p-4 cursor-pointer"
