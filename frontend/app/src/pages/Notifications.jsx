@@ -25,7 +25,10 @@ const Notifications = () => {
     }
   };
 
-  const markAsRead = async (id) => {
+  const markAsRead = async (id, read) => {
+    if (read) {
+      return setLoading(false);
+    }
     try {
       const response = await axios.put(`/api/v1/notifications?id=${id}`);
       const data = response.data;
@@ -54,7 +57,7 @@ const Notifications = () => {
         ) : notifications.length ? (
           <div>
             <div>
-              {notifications.map((notification) => {
+              {notifications.reverse().map((notification) => {
                 return (
                   <Notification
                     markAsRead={markAsRead}

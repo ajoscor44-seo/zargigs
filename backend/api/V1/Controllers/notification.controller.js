@@ -18,7 +18,9 @@ export const getNotifications = async (req, res, next) => {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    const totalCount = await Notification.countDocuments();
+    const totalCount = await Notification.countDocuments({
+      userId: req.user._id,
+    });
     const totalPages = Math.ceil(totalCount / limit);
 
     return res.status(200).json({
