@@ -18,10 +18,10 @@ export const fundLocalWallet = async (req, res, next) => {
   const transData = req.body;
   const walletReference = transData.walletReference;
 
-  const userDetails = await userDetails.findOne({
+  const UserDetails = await userDetails.findOne({
     "walletDetails.reference": walletReference,
   });
-  const userId = userDetails.userId;
+  const userId = UserDetails.userId;
 
   try {
     // Update fundings list
