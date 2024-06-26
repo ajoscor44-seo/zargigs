@@ -69,7 +69,7 @@ app.options("*", cors(corsOptions));
 
 // Blocks desktop devices
 app.use(useragent.express());
-app.use(blockDesktopsMiddleware);
+// app.use(blockDesktopsMiddleware);
 
 // Rate limits user
 app.use(limiter);
