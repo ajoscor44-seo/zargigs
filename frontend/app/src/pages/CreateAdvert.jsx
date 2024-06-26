@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
-import { useHistory, useParams } from "react-router-dom/cjs/react-router-dom";
+import { useParams } from "react-router-dom/cjs/react-router-dom";
 import PricingWay from "../components/PricingWay/PricingWay";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import FormInput from "../components/FormInput/FormInput";
@@ -20,7 +20,6 @@ const CreateAdvert = () => {
   const fileInputRef = useRef();
   const [toastNotifications, setToastNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
-  const history = useHistory();
   const [activeMediaUploadTab, setActiveMediaUploadTab] = useState("photo");
   const [amountToPay, setAmountToPay] = useState(0);
   const [error, setError] = useState(null);

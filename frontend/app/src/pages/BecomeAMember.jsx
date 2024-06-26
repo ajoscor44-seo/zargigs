@@ -6,70 +6,41 @@ import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import PayAmountBar from "../components/PayAmountBar/PayAmountBar";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-import { useRandomString } from "../hooks/useGenerateString";
+import ToastNotification from "../components/ToastNotification/ToastNotification";
 
 const BecomeAMember = () => {
-  const { adminData, currentUser } = useAuth();
-  const history = useHistory();
+  const [toastNotifications, setToastNotifications] = useState([]);
+  const { adminData, logoutUser } = useAuth();
   const [disableBtn, setDisableBtn] = useState(false);
   const [error, setError] = useState(null);
 
-  const initiatePayment = async () => {
-    try {
-      // await becomeAMember("ACX6677248A1921B");
-      var handler = PayDirect.invoice({
-        public_key:
-          import.meta.env.VITE_NODE_ENV !== "production"
-            ? import.meta.env.VITE_DEMO_PUB_KEY
-            : import.meta.env.VITE_PROD_PUB_KEY,
-        order_id: useRandomString(10),
-        customer: {
-          first_name: currentUser.firstname,
-          last_name: currentUser.lastname,
-          email: currentUser.email,
-          phone: "0" + currentUser.phone,
-        },
-        fee_bearer: "merchant",
-        items: [
-          {
-            item: "Registration Fee",
-            unit_cost: adminData.membershipFee,
-            revenue_head_code:
-              import.meta.env.VITE_NODE_ENV !== "production"
-                ? import.meta.env.VITE_DEMO_REV_HEAD
-                : import.meta.env.VITE_PROD_REV_HEAD,
-          },
-        ],
-        callback: function (response) {
-          console.log(response);
-          becomeAMember(response.reference_code);
-          window.location.href = "/";
-        },
-        onClose: function () {
-          console.log("Window Closed.");
-          window.location.href = "/become-a-member";
-        },
-      });
-      handler.openIframe();
-    } catch (error) {
-      console.log(error, "This is the error");
-      return setError(error?.message || "An error occurred");
-    }
+  // Toast Notification
+  const showToast = (notificationObj) => {
+    setToastNotifications([...toastNotifications, notificationObj]);
+
+    const toastTimeout = setTimeout(() => {
+      setToastNotifications([]);
+      clearTimeout(toastTimeout);
+    }, 3100);
   };
 
-  const becomeAMember = async (transactionId) => {
+  const becomeAMember = async () => {
     try {
+      console.log("ran func.");
       setDisableBtn(true);
-      const response = await axios.put("/api/v1/user/become-a-member", {
-        transactionId,
-      });
+      const response = await axios.put("/api/v1/user/become-a-member");
 
       if (response.failed) setError(response.message);
 
       setError(null);
-      return setDisableBtn(false);
+      await logoutUser();
+      window.location.href = "/login";
     } catch (error) {
-      return console.log(error);
+      showToast({
+        msg: `${error.response.data.message}`,
+        errorType: "danger",
+      });
+      return setDisableBtn(false);
     }
   };
   return (
@@ -133,9 +104,19 @@ const BecomeAMember = () => {
           feeTitle={"Membership Fee"}
           fee={adminData?.membershipFee}
           btnText={"Click Here To Pay Now"}
-          handleClick={initiatePayment}
+          handleClick={becomeAMember}
           disable={disableBtn}
         />
+        <div className="toast_cover">
+          {toastNotifications?.map((toastNotification) => {
+            return (
+              <ToastNotification
+                key={toastNotification.id}
+                toastNotification={toastNotification}
+              />
+            );
+          })}
+        </div>
       </div>
       <ClientMenuBar />
     </div>

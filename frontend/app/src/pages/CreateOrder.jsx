@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
-import { useHistory, useParams } from "react-router-dom/cjs/react-router-dom";
+import { useParams } from "react-router-dom/cjs/react-router-dom";
 import PricingWay from "../components/PricingWay/PricingWay";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import FormInput from "../components/FormInput/FormInput";
@@ -15,7 +15,6 @@ const CreateOrder = () => {
   const { engagementCreator } = useAuth();
   const [toastNotifications, setToastNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
-  const history = useHistory();
   const [amountToPay, setAmountToPay] = useState(0);
   const [error, setError] = useState(null);
   const params = useParams();
@@ -60,11 +59,15 @@ const CreateOrder = () => {
 
   // Processess payment
   const processPayment = async () => {
-    const response = await axios.get(
-      `/api/v1/tasks/process-payment?amount=${amountToPay}&type=task`
-    );
+    try {
+      const response = await axios.get(
+        `/api/v1/tasks/process-payment?amount=${amountToPay}&type=task`
+      );
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Adds new task
