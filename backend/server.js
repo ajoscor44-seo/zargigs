@@ -48,11 +48,15 @@ const corsOptions = {
           process.env.DEV_CLIENT_URL,
           process.env.DEV_ADMIN_URL,
           process.env.DEV_HOME_URL,
+          process.env.DEV_LIVE_MC_URL,
+          process.env.DEV_MC_URL,
         ]
       : [
           process.env.PROD_CLIENT_URL,
           process.env.PROD_ADMIN_URL,
           process.env.PROD_HOME_URL,
+          process.env.PROD_LIVE_MC_URL,
+          process.env.PROD_MC_URL,
         ],
   credentials: true,
 };
