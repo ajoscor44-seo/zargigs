@@ -6,7 +6,8 @@ import { useAuth } from "../context/AuthContext";
 
 const SignUp = ({ setSignedIn }) => {
   const { signupUser, adminData } = useAuth();
-  const params = useParams();
+  const { username } = useParams();
+  console.log(username);
   const [formData, setFormData] = useState({});
   const pagesData = [
     {
@@ -22,7 +23,7 @@ const SignUp = ({ setSignedIn }) => {
           type: "text",
           error: "An error occurred here",
           isError: false,
-          value: formData.firstname && formData.firstname,
+          value: formData.firstname,
           name: "firstname",
         },
         {
@@ -33,7 +34,7 @@ const SignUp = ({ setSignedIn }) => {
           type: "text",
           error: "An error occurred here",
           isError: false,
-          value: formData.lastname && formData.lastname,
+          value: formData.lastname,
           name: "lastname",
         },
         {
@@ -44,10 +45,7 @@ const SignUp = ({ setSignedIn }) => {
           type: "text",
           error: "An error occurred here",
           isError: false,
-          defaultValue: params?.username,
-          value: params?.username
-            ? params?.username
-            : formData.referredBy && formData.referredBy,
+          value: username || formData.referredBy,
           name: "referredBy",
         },
       ],
@@ -65,7 +63,7 @@ const SignUp = ({ setSignedIn }) => {
           type: "text",
           error: "An error occurred here",
           isError: false,
-          value: formData.username && formData.username,
+          value: formData.username,
           name: "username",
         },
         {
@@ -76,7 +74,7 @@ const SignUp = ({ setSignedIn }) => {
           type: "email",
           error: "An error occurred here",
           isError: false,
-          value: formData.email && formData.email,
+          value: formData.email,
           name: "email",
         },
         {
@@ -87,7 +85,7 @@ const SignUp = ({ setSignedIn }) => {
           type: "tel",
           error: "An error occurred here",
           isError: false,
-          value: formData.phone && formData.phone,
+          value: formData.phone,
           name: "phone",
           maxLength: 10,
         },
@@ -106,7 +104,7 @@ const SignUp = ({ setSignedIn }) => {
           type: "password",
           error: "An error occurred here",
           isError: false,
-          value: formData.password && formData.password,
+          value: formData.password,
           name: "password",
         },
         {
@@ -117,7 +115,7 @@ const SignUp = ({ setSignedIn }) => {
           type: "password",
           error: "An error occurred here",
           isError: false,
-          value: formData.confirmPassword && formData.confirmPassword,
+          value: formData.confirmPassword,
           name: "confirmPassword",
         },
       ],

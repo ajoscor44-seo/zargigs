@@ -105,6 +105,7 @@ const FormInput = ({
                 placeholder={placeholder}
                 disabled={icon == "referrer" && value}
                 name={name}
+                value={value}
                 maxLength={maxLength}
                 onChange={(e) => handleChange(e)}
               />
