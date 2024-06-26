@@ -13,9 +13,10 @@ const logRequestDetails = (req) => {
 
 export const fundLocalWallet = async (req, res, next) => {
   // Logs request
-  logRequestDetails(req);
+  // logRequestDetails(req);
 
   const transData = req.body;
+  console.log(transData);
   const walletReference = transData.walletReference;
 
   const UserDetails = await userDetails.findOne({
