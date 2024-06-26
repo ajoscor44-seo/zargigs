@@ -5,18 +5,19 @@ import CopyToClipboard from "../../hooks/CopyToClipboard";
 import { FaCopy, FaFileCircleCheck } from "react-icons/fa6";
 
 const ReferAndEarn = ({ username }) => {
-  const inputRef = useRef(null);
   const app_url =
     import.meta.env.VITE_NODE_ENV !== "production"
       ? import.meta.env.VITE_DEV_APP_URL
       : import.meta.env.VITE_PROD_APP_URL;
-  const [textIsCopied, setTextIsCopied] = useState(false);
   const referralLink = `${app_url}/ref/${username}`;
+  const inputRef = useRef(null);
+  const [textIsCopied, setTextIsCopied] = useState(false);
 
   const copyToClipboard = (inputRef) => {
     const textIsCopied = CopyToClipboard(inputRef);
-
+    console.log(textIsCopied);
     if (textIsCopied) setTextIsCopied(true);
+    alert("Copied: " + textIsCopied);
 
     const timeToReset = setTimeout(() => {
       setTextIsCopied(false);

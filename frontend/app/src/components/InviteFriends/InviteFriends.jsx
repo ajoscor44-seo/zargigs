@@ -1,6 +1,5 @@
 import React, { useRef, useState } from "react";
 import BackNav from "../BackNav/BackNav";
-import ClientMenuBar from "../ClientMenuBar/ClientMenuBar";
 import { BsCopy } from "react-icons/bs";
 import { FaWhatsapp, FaTwitter, FaFacebook, FaLinkedin } from "react-icons/fa6";
 import userPic from "../../assets/images/user-image.png";
@@ -8,10 +7,13 @@ import CopyToClipboard from "../../hooks/CopyToClipboard";
 import { useAuth } from "../../context/AuthContext";
 
 const InviteFriends = () => {
-  const username = "xavier";
-  const { adminData } = useAuth()
-  const [message, setMessage] = useState(
-    `Introducing ${adminData?.appName}: Where Engagement Meets Earning and Growth! Dive into a platform that not only rewards you for social tasks like liking, sharing, and commenting but also elevates your social media presence. Ideal for those looking to amplify their digital influence or businesses aiming to extend their reach. 
+  const { currentUser } = useAuth();
+  const app_url =
+    import.meta.env.VITE_NODE_ENV !== "production"
+      ? import.meta.env.VITE_DEV_APP_URL
+      : import.meta.env.VITE_PROD_APP_URL;
+  const { adminData } = useAuth();
+  const message = `Introducing ${adminData?.appName}: Where Engagement Meets Earning and Growth! Dive into a platform that not only rewards you for social tasks like liking, sharing, and commenting but also elevates your social media presence. Ideal for those looking to amplify their digital influence or businesses aiming to extend their reach. 
 
 At ${adminData?.appName}, your everyday social interactions have value. Beyond earning rewards, users with over 1,000 followers unlock the potential to advertise for others, turning their social media prowess into profit. It's a dual advantage—grow your following and monetize your influence effortlessly. 
     
@@ -19,9 +21,8 @@ For businesses and individuals looking to advertise, ${adminData?.appName} offer
     
 Why join ${adminData?.appName}? It's more than just a platform; it's a community where engagement translates into rewards, growth, and visibility. Whether you're here to enhance your social media presence, earn from advertising, or promote your products, ${adminData?.appName} is your go-to destination. 
     
-To get started, simply visit https://gigsflix.ng/#/ref/${username} to register on the app. You will thank me later.`
-  );
-  const briefMessage = `Discover ${adminData?.appName}, a dynamic platform that rewards social media engagement and boosts your online presence. Perfect for influencers and businesses, ${adminData?.appName} offers a unique chance to earn by liking, sharing, and commenting, or even advertising if you have over 1,000 followers. Join our community to grow your influence, advertise efficiently, and enhance your brand's reach. Start your rewarding journey at ${adminData?.appName} by registering at https://gigsflix.ng/#/ref/${username}.`;
+To get started, simply visit ${app_url}/ref/${currentUser.username} to register on the app. You will thank me later.`;
+  const briefMessage = `Discover ${adminData?.appName}, a dynamic platform that rewards social media engagement and boosts your online presence. Perfect for influencers and businesses, ${adminData?.appName} offers a unique chance to earn by liking, sharing, and commenting, or even advertising if you have over 1,000 followers. Join our community to grow your influence, advertise efficiently, and enhance your brand's reach. Start your rewarding journey at ${adminData?.appName} by registering at ${app_url}/ref/${currentUser.username}.`;
   const messageRef = useRef(null);
 
   const copyToClipboard = (messageRef) => {
@@ -56,7 +57,7 @@ To get started, simply visit https://gigsflix.ng/#/ref/${username} to register o
         <div className="flex mt-3">
           <div className="px-1">
             <img
-              src={userPic}
+              src={currentUser.image || userPic}
               alt="User Profile Pic"
               className="w-16 h-16 object-cover"
             />
