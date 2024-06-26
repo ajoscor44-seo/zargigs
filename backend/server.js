@@ -18,6 +18,16 @@ import { fundLocalWallet } from "./api/V1/Controllers/funding.controller.js";
 const app = express();
 const server = http.createServer(app);
 
+// Set express to trust proxy set by vercel
+app.set("trust proxy", true);
+
+// Middleware to log source details
+app.use((req, res, next) => {
+  console.log("Client IP:", req.ip);
+  console.log("X-Forwarded-For:", req.headers["x-forwarded-for"]);
+  next();
+});
+
 // Connects to db
 mongoose
   .connect(process.env.DATABASE_URI)
@@ -65,8 +75,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("tiny"));
 
-app.get("/api/v1/admin-data", getAdminData);
 app.post("/fund-wallet", fundLocalWallet);
+app.get("/api/v1/admin-data", getAdminData);
 
 // Authentication route
 app.use("/api/auth/", authRoutes);
