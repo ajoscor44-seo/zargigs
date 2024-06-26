@@ -4,9 +4,16 @@ import { ErrorHandler } from "../utils/error.js";
 import { sendNotitfication } from "../utils/notification.js";
 import numeral from "numeral";
 
+const logRequestDetails = (req) => {
+  console.log("Logging request details:");
+  console.log("Request headers:", JSON.stringify(req.headers, null, 2));
+  console.log("Request body:", JSON.stringify(req.body, null, 2));
+};
+
 export const fundLocalWallet = async (req, res, next) => {
   // Verifies request
-  console.log(req);
+  logRequestDetails(req);
+
   const transData = req.body;
 
   const user = await User.findOne({ email: transData.data.customer_email });
