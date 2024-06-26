@@ -6,15 +6,15 @@ import { sendNotitfication } from "../utils/notification.js";
 import numeral from "numeral";
 
 export const fundLocalWallet = async (req, res, next) => {
-  const transData = req.body;
-  const walletReference = transData.walletReference;
-
-  const UserDetails = await userDetails.findOne({
-    "walletDetails.reference": walletReference,
-  });
-  const userId = UserDetails.userId;
-
   try {
+    const transData = req.body;
+    const walletReference = transData.walletReference;
+
+    const UserDetails = await userDetails.findOne({
+      "walletDetails.reference": walletReference,
+    });
+    const userId = UserDetails.userId;
+
     // Update fundings list
     const newFunding = new Funding({
       userId,
@@ -34,6 +34,18 @@ export const fundLocalWallet = async (req, res, next) => {
       walletReference,
     });
     await newFunding.save();
+
+    // Updates referrer earning details
+    UserDetails.userEarnings = {
+      ...UserDetails.userEarnings,
+      balance: UserDetails.userEarnings.balance + transData.settlementAmount,
+    };
+    UserDetails.walletDetails = {
+      ...UserDetails.walletDetails,
+      balance: UserDetails.walletDetails.balance + transData.settlementAmount,
+    };
+    // Saves referrer details
+    await UserDetails.save();
 
     // Creates notitfication
     const notification = {
