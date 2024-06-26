@@ -5,18 +5,8 @@ import { ErrorHandler } from "../utils/error.js";
 import { sendNotitfication } from "../utils/notification.js";
 import numeral from "numeral";
 
-const logRequestDetails = (req) => {
-  console.log("Logging request details:");
-  console.log("Request headers:", JSON.stringify(req.headers, null, 2));
-  console.log("Request body:", JSON.stringify(req.body, null, 2));
-};
-
 export const fundLocalWallet = async (req, res, next) => {
-  // Logs request
-  // logRequestDetails(req);
-
   const transData = req.body;
-  console.log(transData);
   const walletReference = transData.walletReference;
 
   const UserDetails = await userDetails.findOne({
@@ -33,7 +23,7 @@ export const fundLocalWallet = async (req, res, next) => {
       paymentMethod: transData.paymentMethod,
       status: transData.paymentStatus,
       orderId: transData.order_id,
-      transReference: transData.transReference,
+      transReference: transData.transactionReference,
       paymentReference: transData.paymentReference,
       sourceAccountNumber: transData.sourceAccountNumber,
       sourceAccountName: transData.sourceAccountName,

@@ -27,7 +27,6 @@ const fundingSchema = new Schema(
     },
     orderId: {
       type: String,
-      required: true,
     },
     transReference: {
       type: String,
