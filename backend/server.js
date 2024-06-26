@@ -19,14 +19,14 @@ const app = express();
 const server = http.createServer(app);
 
 // Set express to trust proxy set by vercel
-app.set("trust proxy", true);
+// app.set("trust proxy", true);
 
 // Middleware to log source details
-app.use((req, res, next) => {
-  console.log("Client IP:", req.ip);
-  console.log("X-Forwarded-For:", req.headers["x-forwarded-for"]);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log("Client IP:", req.ip);
+//   console.log("X-Forwarded-For:", req.headers["x-forwarded-for"]);
+//   next();
+// });
 
 // Connects to db
 mongoose
@@ -69,7 +69,7 @@ app.options("*", cors(corsOptions));
 
 // Blocks desktop devices
 app.use(useragent.express());
-// app.use(blockDesktopsMiddleware);
+app.use(blockDesktopsMiddleware);
 
 // Rate limits user
 app.use(limiter);
@@ -79,7 +79,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("tiny"));
 
-app.post("/fund-wallet", fundLocalWallet);
+app.post("/api/v1/fund-wallet", fundLocalWallet);
 app.get("/api/v1/admin-data", getAdminData);
 
 // Authentication route
