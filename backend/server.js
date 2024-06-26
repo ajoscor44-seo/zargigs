@@ -68,7 +68,7 @@ app.use(useragent.express());
 app.use(blockDesktopsMiddleware);
 
 // Rate limits user
-// app.use(limiter);
+app.use(limiter);
 
 // Parses json bodies
 app.use(express.json());
