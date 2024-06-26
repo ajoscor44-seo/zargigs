@@ -50,83 +50,77 @@ function App() {
       <Router>
         {/* App Routes */}
         <AuthProvider>
-            <Switch>
-              {/* Public Pages */}
-              <Route exact path="/ref/:username">
-                <SignUp />
-              </Route>
-              <Route exact path="/signup">
-                <RegistrationPage />
-              </Route>
-              <Route exact path="/login">
-                <Authentication />
-              </Route>
+          <Switch>
+            {/* Public Pages */}
+            <Route exact path="/ref/:username">
+              <SignUp />
+            </Route>
+            <Route exact path="/signup">
+              <RegistrationPage />
+            </Route>
+            <Route exact path="/login">
+              <Authentication />
+            </Route>
 
-              {/* Client Forgot Password Route */}
-              <PrivateRoute
-                exact
-                path="/forgot-password/:username"
-                component={ForgotPassword}
-              />
+            {/* Client Forgot Password Route */}
+            <PrivateRoute
+              exact
+              path="/forgot-password/:username"
+              component={ForgotPassword}
+            />
 
-              {/* Client Info Input Pages */}
-              <UploadProfilePrivateRoute
-                path="/input-user-info"
-                component={UploadInfoPage}
-              />
+            {/* Client Info Input Pages */}
+            <UploadProfilePrivateRoute
+              path="/input-user-info"
+              component={UploadInfoPage}
+            />
 
-              {/* Client Page Layout */}
-              <PrivateRoute exact path="/" component={ClientDashboard} />
-              <PrivateRoute path="/help-support" component={HelpSupport} />
-              <PrivateRoute path="/notifications" component={Notifications} />
-              <PrivateRoute path="/user-details" component={UserDetails} />
-              <VerifiedMemberPrivateRoute
-                path="/fund-wallet"
-                component={FundWallets}
-              />
-              <VerifiedMemberPrivateRoute
-                path="/withdraw"
-                component={Withdrawal}
-              />
-              <PrivateRoute
-                path="/update-location"
-                component={UpdateLocation}
-              />
-              <PrivateRoute path="/edit-profile" component={EditProfile} />
-              <PrivateRoute path="/invite" component={InviteFriends} />
-              <PrivateRoute path="/advertise/:slug" component={CreateAdvert} />
-              <PrivateRoute path="/advertise" component={Adevertise} />
-              <PrivateRoute path="/order/:slug" component={CreateOrder} />
-              <PrivateRoute
-                path="/order-history/:slug/:id"
-                component={OrderDetails}
-              />
-              <PrivateRoute path="/order-history" component={OrderHistory} />
-              <PrivateRoute path="/order" component={Order} />
-              <MemberPrivateRoute
-                path="/become-a-member"
-                component={BecomeAMember}
-              />
-              <VerifiedMemberPrivateRoute
-                path="/earn/:type/:slug/:platform/:status/:id"
-                component={TaskDetails}
-              />
-              <VerifiedMemberPrivateRoute
-                path="/earn/:slug"
-                component={EarnWithTasks}
-              />
-              <VerifiedMemberPrivateRoute
-                path="/tasks-history"
-                component={TaskHistory}
-              />
-              <PrivateRoute path="/earn" component={Earn} />
-              <PrivateRoute path="/account-settings" component={Settings} />
-              <PrivateRoute
-                path="/transaction-history"
-                component={TransactionHistory}
-              />
-              <Route component={NotFound} />
-            </Switch>
+            {/* Client Page Layout */}
+            <PrivateRoute exact path="/" component={ClientDashboard} />
+            <PrivateRoute path="/help-support" component={HelpSupport} />
+            <PrivateRoute path="/notifications" component={Notifications} />
+            <PrivateRoute path="/user-details" component={UserDetails} />
+            <PrivateRoute path="/fund-wallet" component={FundWallets} />
+            <VerifiedMemberPrivateRoute
+              path="/withdraw"
+              component={Withdrawal}
+            />
+            <PrivateRoute path="/update-location" component={UpdateLocation} />
+            <PrivateRoute path="/edit-profile" component={EditProfile} />
+            <PrivateRoute path="/invite" component={InviteFriends} />
+            <PrivateRoute path="/advertise/:slug" component={CreateAdvert} />
+            <PrivateRoute path="/advertise" component={Adevertise} />
+            <PrivateRoute path="/order/:slug" component={CreateOrder} />
+            <PrivateRoute
+              path="/order-history/:slug/:id"
+              component={OrderDetails}
+            />
+            <PrivateRoute path="/order-history" component={OrderHistory} />
+            <PrivateRoute path="/order" component={Order} />
+            <MemberPrivateRoute
+              path="/become-a-member"
+              component={BecomeAMember}
+            />
+            <VerifiedMemberPrivateRoute
+              path="/earn/:type/:slug/:platform/:status/:id"
+              component={TaskDetails}
+            />
+            <VerifiedMemberPrivateRoute
+              path="/earn/:slug"
+              component={EarnWithTasks}
+            />
+            <VerifiedMemberPrivateRoute
+              path="/tasks-history"
+              component={TaskHistory}
+            />
+            <PrivateRoute path="/earn" component={Earn} />
+            <PrivateRoute path="/account-settings" component={Settings} />
+            <PrivateRoute
+              path="/transaction-history"
+              component={TransactionHistory}
+            />
+            <Route component={NotFound} />
+          </Switch>
         </AuthProvider>
       </Router>
     </>

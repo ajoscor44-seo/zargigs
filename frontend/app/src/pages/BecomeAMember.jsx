@@ -2,17 +2,17 @@ import React, { useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import numeral from "numeral";
-import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 import PayAmountBar from "../components/PayAmountBar/PayAmountBar";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import ToastNotification from "../components/ToastNotification/ToastNotification";
+import { FaWallet } from "react-icons/fa6";
 
 const BecomeAMember = () => {
   const [toastNotifications, setToastNotifications] = useState([]);
   const { adminData, logoutUser } = useAuth();
   const [disableBtn, setDisableBtn] = useState(false);
-  const [error, setError] = useState(null);
 
   // Toast Notification
   const showToast = (notificationObj) => {
@@ -26,13 +26,8 @@ const BecomeAMember = () => {
 
   const becomeAMember = async () => {
     try {
-      console.log("ran func.");
       setDisableBtn(true);
-      const response = await axios.put("/api/v1/user/become-a-member");
-
-      if (response.failed) setError(response.message);
-
-      setError(null);
+      await axios.put("/api/v1/user/become-a-member");
       await logoutUser();
       window.location.href = "/login";
     } catch (error) {
@@ -46,6 +41,12 @@ const BecomeAMember = () => {
   return (
     <div className="flex fullHeight">
       <BackNav pageName={"Perform Social Tasks And Earn"} />
+      <Link to="/fund-wallet">
+        <FaWallet
+          size={28}
+          className="z-40 fixed right-4 top-4 cursor-pointer text-green-500"
+        />
+      </Link>
       <div className="underBackNav flex flex-col flex-1 font-primary bg-white mt-3 highBase">
         <span className="text-center text-xs mb-1">Become a Member Today</span>
         <h2 className="font-bold text-2xl px-2 text-center">
