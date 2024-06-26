@@ -14,13 +14,9 @@ const ClientNavbar = () => {
 
   const fetchNotifications = async () => {
     try {
-      const response = await axios.get("/api/v1/notifications");
-      const data = response.data;
-      const notifications = data.data;
-      const unreadNotifications = notifications.length
-        ? notifications.filter((notification) => !notification.read)
-        : notifications;
-      return setNewNotificationsNumber(unreadNotifications.length);
+      const response = await axios.get("/api/v1/notifications/unread");
+
+      return setNewNotificationsNumber(response.data.unreads);
     } catch (error) {
       console.error(error);
     }
@@ -29,7 +25,7 @@ const ClientNavbar = () => {
   // Updates user profile
   useEffect(() => {
     if (currentUser?.image) {
-      return setUserImageURL(currentUser?.image);
+      setUserImageURL(currentUser?.image);
     }
     fetchNotifications();
   }, [currentUser]);
