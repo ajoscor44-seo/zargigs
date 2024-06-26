@@ -7,33 +7,61 @@ const fundingSchema = new Schema(
       type: String,
       required: true,
     },
-    date: {
+    paidOn: {
       type: Date,
       required: true,
       default: new Date(),
     },
-    amount: {
-      type: Number,
-      required: true,
-    },
-    payment_gateway: {
+    paymentGateway: {
       type: String,
       default: "Autocredit",
     },
-    payment_method: {
+    paymentMethod: {
       type: String,
-      default: "Bank transfer",
+      default: "ACCOUNT_TRANSFER",
     },
     status: {
       type: String,
       required: true,
-      env: ["pending", "approved", "declined"],
+      env: ["PENDING", "PAID", "DECLINED"],
     },
     orderId: {
       type: String,
       required: true,
     },
-    transId: {
+    transReference: {
+      type: String,
+      required: true,
+    },
+    paymentReference: {
+      type: String,
+      required: true,
+    },
+    sourceAccountNumber: {
+      type: String,
+      required: true,
+    },
+    sourceAccountName: {
+      type: String,
+      required: true,
+    },
+    sourceBankName: {
+      type: String,
+      required: true,
+    },
+    settlementAmount: {
+      type: Number,
+      required: true,
+    },
+    amountPaid: {
+      type: Number,
+      required: true,
+    },
+    paymentDescription: {
+      type: String,
+      required: true,
+    },
+    walletReference: {
       type: String,
       required: true,
     },

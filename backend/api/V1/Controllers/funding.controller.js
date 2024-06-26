@@ -11,24 +11,35 @@ const logRequestDetails = (req) => {
 };
 
 export const fundLocalWallet = async (req, res, next) => {
-  // Verifies request
+  // Logs request
   logRequestDetails(req);
 
   const transData = req.body;
+  const walletReference = transData.walletReference;
 
-  const user = await User.findOne({ email: transData.data.customer_email });
+  const user = await User.findOne({
+    "walletDetails.reference": walletReference,
+  });
+
   const userId = user._id;
   try {
     // Update fundings list
     const newFunding = new Funding({
       userId,
-      date: transData.data.date_paid,
-      amount: transData.data.amount,
-      payment_gateway: "Autocredit",
-      payment_method: transData.data.channel,
-      status: transData.data.status,
-      orderId: transData.data.orderid,
-      transId: transData.data.transid,
+      paidOn: transData.paidOn,
+      paymentGateway: "Autocredit",
+      paymentMethod: transData.paymentMethod,
+      status: transData.paymentStatus,
+      orderId: transData.order_id,
+      transReference: transData.transReference,
+      paymentReference: transData.paymentReference,
+      sourceAccountNumber: transData.sourceAccountNumber,
+      sourceAccountName: transData.sourceAccountName,
+      sourceBankName: transData.sourceBankName,
+      settlementAmount: transData.settlementAmount,
+      amountPaid: transData.amountPaid,
+      paymentDescription: transData.paymentDescription,
+      walletReference,
     });
     await newFunding.save();
 
@@ -36,9 +47,9 @@ export const fundLocalWallet = async (req, res, next) => {
     const notification = {
       userId,
       title: "Funding Successful",
-      message: `Your funding of ₦${numeral(transData.data.amount).format(
+      message: `Your funding of ₦${numeral(Number(transData.amountPaid)).format(
         "0,0.00"
-      )} is successfu. Check your balance for confirmation.`,
+      )} is successful. Check your balance for confirmation.`,
       type: "fund",
     };
     await sendNotitfication(notification);
@@ -46,9 +57,7 @@ export const fundLocalWallet = async (req, res, next) => {
     return res.status(200).json({
       failed: false,
       message: "Wallet funded successfully.",
-      data: {
-        amount,
-      },
+      data: {},
     });
   } catch (error) {
     next(error);
@@ -72,7 +81,18 @@ export const getFundings = async (req, res, next) => {
       .limit(limit);
 
     const fundings = Fundings.map((funding) => {
-      const { updatedAt, __v, _id, ...rest } = funding.toObject();
+      const {
+        updatedAt,
+        transReference,
+        paymentReference,
+        orderId,
+        amountPaid,
+        walletReference,
+        userId,
+        __v,
+        _id,
+        ...rest
+      } = funding.toObject();
       return { id: _id, ...rest };
     });
 
