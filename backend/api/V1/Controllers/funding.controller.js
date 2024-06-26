@@ -1,4 +1,5 @@
 import Funding from "../Models/funding.model.js";
+import userDetails from "../Models/user-details.model.js";
 import User from "../Models/user.model.js";
 import { ErrorHandler } from "../utils/error.js";
 import { sendNotitfication } from "../utils/notification.js";
@@ -17,11 +18,11 @@ export const fundLocalWallet = async (req, res, next) => {
   const transData = req.body;
   const walletReference = transData.walletReference;
 
-  const user = await User.findOne({
+  const userDetails = await userDetails.findOne({
     "walletDetails.reference": walletReference,
   });
+  const userId = userDetails.userId;
 
-  const userId = user._id;
   try {
     // Update fundings list
     const newFunding = new Funding({
