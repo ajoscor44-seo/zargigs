@@ -95,7 +95,7 @@ export const login = async (req, res, next) => {
 
       // Send OTP mail
       await sendOTP(email, OTPToken.token, validUser.lastname);
-      res.status(401).json(error);
+      return res.status(401).json(error);
     }
     const validPassword =
       password && bcryptjs.compareSync(password, validUser.password || "");
@@ -134,7 +134,7 @@ export const login = async (req, res, next) => {
       { new: true, upsert: true }
     );
 
-    res
+    return res
       .cookie("access_token", token, {
         httpOnly: true,
         maxAge: 7200000,
