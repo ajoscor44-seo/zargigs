@@ -603,7 +603,68 @@ export const cancelGeneratedTask = async (req, res, next) => {
   }
 };
 
-// Get user's tasks list based off the status
+// Get user's tasks history based on the status
+export const getUserTasksHistory = async (req, res, next) => {
+  const { status: taskStatus } = req.query;
+
+  try {
+    // Validations for user request
+    const validUser = await User.findOne({ email: req.user.email });
+    if (!validUser) {
+      const error = ErrorHandler(404, "There's no user with this email.");
+      return res.status(404).json(error);
+    }
+    if (!taskStatus) {
+      const error = ErrorHandler(400, "Invalid Parameters.");
+      return res.status(400).json(error);
+    }
+
+    const Tasks =
+      taskStatus == "allocated"
+        ? await AllocatedTask.find({ allocatedTo: req.user._id })
+        : taskStatus == "cancelled"
+        ? await CancelledTask.find({ cancelledBy: req.user._id })
+        : taskStatus == "pending"
+        ? await PendingTask.findOne({ toBeDoneBy: req.user._id })
+        : taskStatus == "failed"
+        ? await FailedTask.find({ doneBy: req.user._id })
+        : taskStatus == "completed"
+        ? await CompletedTask.find({ doneBy: req.user._id })
+        : taskStatus == "in-review"
+        ? await InReviewTask.find({ doneBy: req.user._id })
+        : [];
+
+    if (!Tasks?.length) {
+      const error = ErrorHandler(404, "No data available.");
+      return res.status(404).json(error);
+    }
+
+    const tasks = Tasks.map((Task) => {
+      const {
+        updatedAt,
+        createdBy,
+        parentId,
+        expiresAt,
+        toBeDoneBy,
+        __v,
+        _id,
+        ...rest
+      } = Task?.toObject();
+
+      return {
+        id: _id,
+        ...rest,
+      };
+    });
+
+    // Creates the response
+    return res.status(200).json(tasks);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get user's tasks list based on the status
 export const getTasks = async (req, res, next) => {
   const {
     status: taskStatus,

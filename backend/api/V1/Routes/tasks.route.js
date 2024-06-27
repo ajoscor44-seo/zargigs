@@ -16,11 +16,13 @@ import {
   getProofsOfWork,
   sanctionTask,
   processPayment,
+  getUserTasksHistory,
 } from "../Controllers/tasks.controller.js";
 
 const router = express.Router();
 
 router.get("/", getTasks);
+router.get("/history", getUserTasksHistory);
 router.get("/task/:id", getTask);
 router.get("/total", getTotalTasks);
 router.get("/user-total", getUserTotalTasks);

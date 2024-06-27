@@ -15,7 +15,7 @@ import { FaFileDownload } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 
 const TaskDetails = () => {
-  const { adminData } = useAuth()
+  const { adminData } = useAuth();
   const history = useHistory();
   const { slug, platform, status, id, type } = useParams();
   const [taskDetails, setTaskDetails] = useState({});
@@ -155,6 +155,9 @@ const TaskDetails = () => {
       }
       setUploadError(null);
       setLoading(false);
+      if (slug === "null") {
+        return history.push("/tasks-history");
+      }
       return history.push(`/earn/${slug}`);
     } catch (error) {
       return setUploadError(error);
@@ -222,7 +225,7 @@ const TaskDetails = () => {
     <div className="font-primary">
       <BackNav
         pageName={"Task Details"}
-        pathToGo={`/earn/${slug}`}
+        pathToGo={slug === "null" ? "/tasks-history" : `/earn/${slug}`}
         usePath={true}
       />
       <div className="underBackNav mb-16">
@@ -337,10 +340,11 @@ const TaskDetails = () => {
                 <div className="text-orange-400 font-semibold bg-orange-100 rounded text-xs p-3 mt-2">
                   You must{" "}
                   <span className="font-bold text-orange-500">NOT UNDO</span>{" "}
-                  any task you perform as it may result to your {adminData?.appName} account
-                  getting banned. You will not be able to perform any task if
-                  you <span className="font-bold text-orange-500">UNDO</span>{" "}
-                  any task performed
+                  any task you perform as it may result to your{" "}
+                  {adminData?.appName} account getting banned. You will not be
+                  able to perform any task if you{" "}
+                  <span className="font-bold text-orange-500">UNDO</span> any
+                  task performed
                 </div>
               </div>
 

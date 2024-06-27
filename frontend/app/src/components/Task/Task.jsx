@@ -20,7 +20,7 @@ import { SlUserFollowing } from "react-icons/sl";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import formatDate from "../../hooks/formatDate";
 
-const Subtask = ({ task, slug, platform, status, hideBtn, type }) => {
+const Task = ({ task }) => {
   const btnBgColor =
     task.status?.replace(/\s+/g, "")?.toLowerCase() == "pending"
       ? "bg-orange-400"
@@ -106,11 +106,9 @@ const Subtask = ({ task, slug, platform, status, hideBtn, type }) => {
         </div>
         <div>
           <Link
-            to={
-              hideBtn
-                ? "#"
-                : `/earn/${type}/${slug}/${platform}/${status}/${task?.id}`
-            }
+            to={`/earn/${task.taskType}/${null}/${task.taskPlatform}/${
+              task.status
+            }/${task?.id}`}
           >
             <button
               className={
@@ -131,4 +129,4 @@ const Subtask = ({ task, slug, platform, status, hideBtn, type }) => {
   );
 };
 
-export default Subtask;
+export default Task;
