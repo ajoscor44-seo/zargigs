@@ -44,9 +44,7 @@ const PendingSubtask = ({
       ) : (
         <div className="flex flex-col items-center justify-center text-gray-300 p-2 gap-2 h-96">
           <NoData
-            textBelow={
-              "You have to click on the button below so that your next Follow task will be generated for you. Only one task is generated per time. You have to do the generated task before another one can be generated for you."
-            }
+            textBelow={`You have to click on the button below so that your next ${type} task will be generated for you. Only one task is generated per time. You have to do the generated task before another one can be generated for you.`}
           />
           {isOpen && (
             <Modal

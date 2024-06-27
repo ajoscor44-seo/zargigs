@@ -381,18 +381,34 @@ export const getUserTotalTasks = async (req, res, next) => {
   }
 };
 
-// Generates tasks
+// Generates task
 export const generateTask = async (req, res, next) => {
   const taskType = req.query.type || null;
   const taskPlatform = req.query.platform || null;
   try {
     // Validations for user request
     const validUser = await User.findOne({ email: req.user.email });
-    const taskAllocatedToUser = await AllocatedTask.findOne({
-      allocatedTo: req.user._id,
-      taskType,
-      taskPlatform,
-    });
+    const taskAllocatedToUser =
+      (await AllocatedTask.findOne({
+        allocatedTo: req.user._id,
+        taskType,
+        taskPlatform,
+      })) ||
+      (await PendingTask.findOne({
+        toBeDoneBy: req.user._id,
+        taskType,
+        taskPlatform,
+      })) ||
+      (await CompletedTask.findOne({
+        doneBy: req.user._id,
+        taskType,
+        taskPlatform,
+      })) ||
+      InReviewTask.findOne({
+        doneBy: req.user._id,
+        taskType,
+        taskPlatform,
+      });
 
     if (!validUser) {
       const error = ErrorHandler(404, "There's no user with this email.");
@@ -403,7 +419,10 @@ export const generateTask = async (req, res, next) => {
       return res.status(400).json(error);
     }
     if (taskAllocatedToUser) {
-      const error = ErrorHandler(400, "Already generated a task.");
+      const error = ErrorHandler(
+        400,
+        "Task of this type is not available for you again. Please check back later."
+      );
       return res.status(400).json(error);
     }
 
@@ -426,7 +445,7 @@ export const generateTask = async (req, res, next) => {
         ...rest
       } = Task.toObject();
 
-      if (allocatedTasks.length !== numberOfTasks) {
+      if (allocatedTasks !== numberOfTasks) {
         return {
           id: _id,
           allocatedTasks,
@@ -439,7 +458,7 @@ export const generateTask = async (req, res, next) => {
     const randomIndex = Math.floor(Math.random() * arrayLength);
     if (!arrayLength) {
       return res.status(404).json({
-        message: "No task avalable for this task type.",
+        message: "No task available for this task type.",
         failed: true,
       });
     }
@@ -496,9 +515,7 @@ export const generateTask = async (req, res, next) => {
     };
 
     // Creates the response
-    res.status(200).json(task);
-
-    next();
+    return res.status(200).json(task);
   } catch (error) {
     next(error);
   }

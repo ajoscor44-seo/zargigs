@@ -41,7 +41,7 @@ const EarnWithTasks = () => {
 
       setGeneratedTask(response.data);
     } catch (error) {
-      setError(error.response.data.message);
+      return setError(error.response.data.message);
     }
   };
 
@@ -103,7 +103,7 @@ const EarnWithTasks = () => {
     };
 
     fetchDatas();
-  }, [activeTab]);
+  }, [activeTab, generatedTask]);
   return (
     <div>
       <BackNav pageName={wayToEarn?.title} usePath={true} pathToGo={"/earn"} />
@@ -190,9 +190,9 @@ const EarnWithTasks = () => {
               )}
             </div>
           ) : (
-            <div className="text-red-500 flex flex-col justify-center items-center min-h-96">
+            <div className="text-red-500 text-center px-5 flex flex-col justify-center items-center min-h-96">
               <RiErrorWarningFill size={60} />
-              <p className="text-lg font-semibold">{error}</p>
+              <p className="text-sm font-semibold">{error}</p>
             </div>
           )}
         </div>
