@@ -37,6 +37,7 @@ import CreateOrder from "./pages/CreateOrder.jsx";
 import TaskDetails from "./pages/TaskDetails.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import EditProfile from "./pages/EditProfile.jsx";
+import TransferPage from "./pages/Transfer.jsx";
 
 function App() {
   axios.defaults.baseURL =
@@ -84,6 +85,10 @@ function App() {
             <VerifiedMemberPrivateRoute
               path="/withdraw"
               component={Withdrawal}
+            />
+            <VerifiedMemberPrivateRoute
+              path="/transfer"
+              component={TransferPage}
             />
             <PrivateRoute path="/update-location" component={UpdateLocation} />
             <PrivateRoute path="/edit-profile" component={EditProfile} />

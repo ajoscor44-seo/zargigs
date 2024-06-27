@@ -31,6 +31,7 @@ import {
   disapproveWithdrawalRequests,
   getAllWithdrawalRequests,
 } from "../Controllers/withdrawal_requests.controller.js";
+import { getTransfers } from "../Controllers/transfer.controller.js";
 
 const router = express.Router();
 
@@ -74,5 +75,8 @@ router.put("/update-status", updateUserStatus);
 router.get("/withdrawal-request", getAllWithdrawalRequests);
 router.put("/withdrawal-request", approveWithdrawalRequests);
 router.patch("/withdrawal-request", disapproveWithdrawalRequests);
+
+// All transfers route
+router.get("/all-transfers", getTransfers);
 
 export default router;
