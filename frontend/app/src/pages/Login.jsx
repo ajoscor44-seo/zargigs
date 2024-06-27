@@ -27,41 +27,47 @@ const Login = ({ setNotVerified }) => {
   };
 
   const submitForm = async () => {
-    setIsLoading(true);
-    if (!formData.email && !formData.password) {
-      setError("No email and password");
-      setIsLoading(false);
-      return;
-    } else if (!formData.email) {
-      setError("Please input a email address");
-      setIsLoading(false);
-      return;
-    } else if (!formData.password) {
-      setError("Please input your password");
-      setIsLoading(false);
-      return;
-    } else {
-      const res = await loginUser(formData.email, formData.password);
-
-      if (
-        res.failed &&
-        res.message == "Please verify your email to continue."
-      ) {
+    try {
+      setIsLoading(true);
+      if (!formData.email && !formData.password) {
+        setError("No email and password");
         setIsLoading(false);
-        setError(res.message);
-        sessionStorage.setItem("auth-user-email", formData.email);
-        return setNotVerified(true);
-      }
-      if (res.failed) {
+        return;
+      } else if (!formData.email) {
+        setError("Please input a email address");
         setIsLoading(false);
-        return setError(res.message);
+        return;
+      } else if (!formData.password) {
+        setError("Please input your password");
+        setIsLoading(false);
+        return;
       } else {
-        setIsLoading(false);
-        sessionStorage.removeItem("auth-user-email");
-        resetForm();
-        await fetchUserData();
-        return history.push("/");
+        const res = await loginUser(formData.email, formData.password);
+
+        if (
+          res.failed &&
+          res.message == "Please verify your email to continue."
+        ) {
+          setIsLoading(false);
+          setError(res.message);
+          sessionStorage.setItem("auth-user-email", formData.email);
+          return setNotVerified(true);
+        }
+        if (res.failed) {
+          setIsLoading(false);
+          return setError(res.message);
+        } else {
+          setIsLoading(false);
+          setError(null);
+          sessionStorage.removeItem("auth-user-email");
+          resetForm();
+          await fetchUserData();
+          return history.push("/");
+        }
       }
+    } catch (error) {
+      setIsLoading(false);
+      return setError(error.message);
     }
   };
 

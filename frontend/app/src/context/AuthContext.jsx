@@ -35,10 +35,6 @@ const AuthProvider = ({ children }) => {
       setLoading(true);
       const response = await axios.get("/api/v1/admin-data");
 
-      if (response.data.failed) {
-        return error;
-      }
-
       return setAdminData(response.data[0]);
     } catch (error) {
       return error;
@@ -49,10 +45,6 @@ const AuthProvider = ({ children }) => {
   const getAdvertCreator = async () => {
     try {
       const response = await axios.get("/api/v1/creator/create-advert");
-
-      if (response.data.failed) {
-        return error;
-      }
 
       return setAdvertCreator(response.data.data);
     } catch (error) {
@@ -65,10 +57,6 @@ const AuthProvider = ({ children }) => {
     try {
       const response = await axios.get("/api/v1/creator/create-engagement");
 
-      if (response.data.failed) {
-        return error;
-      }
-
       return setEngagementCreator(response.data.data);
     } catch (error) {
       return error;
@@ -80,10 +68,6 @@ const AuthProvider = ({ children }) => {
     try {
       const response = await axios.get("/api/v1/earner/earn-advert");
 
-      if (response.data.failed) {
-        return error;
-      }
-
       return setAdvertEarner(response.data.data);
     } catch (error) {
       return error;
@@ -94,10 +78,6 @@ const AuthProvider = ({ children }) => {
   const getEngagementEarners = async () => {
     try {
       const response = await axios.get("/api/v1/earner/earn-engagement");
-
-      if (response.data.failed) {
-        return error;
-      }
 
       return setEngagementEarner(response.data.data);
     } catch (error) {
@@ -134,7 +114,7 @@ const AuthProvider = ({ children }) => {
       const data = response.data;
       return data;
     } catch (error) {
-      return error;
+      throw Error(error.response.data.message);
     }
   };
 
@@ -145,7 +125,7 @@ const AuthProvider = ({ children }) => {
       const data = response.data;
       return data;
     } catch (error) {
-      return error;
+      throw Error(error.response.data.message);
     }
   };
 
