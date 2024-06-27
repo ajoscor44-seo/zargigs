@@ -151,7 +151,7 @@ const Login = ({ setNotVerified }) => {
           </div>
         </div>
         <div className="flex flex-col gap-4 px-4">
-          <OAuth />
+          <OAuth setError={setError} />
           <Link to="/forgot-password">
             <p className="flex justify-center text-primary hover:text-green-500">
               Forgot Password

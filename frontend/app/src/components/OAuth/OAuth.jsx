@@ -10,13 +10,13 @@ const OAuth = ({ setError }) => {
   const { OAuthUser, fetchUserData } = useAuth();
   const auth = getAuth(app);
   const history = useHistory();
+  const provider = new GoogleAuthProvider();
 
   const handleOAuth = async () => {
-    setDisabledBtn(true);
-    const provider = new GoogleAuthProvider();
-
     try {
+      setDisabledBtn(true);
       const cred = await signInWithPopup(auth, provider);
+      console.log(cred);
       const res = await OAuthUser(cred);
       if (res.statusCode == 500) {
         setDisabledBtn(false);
@@ -26,21 +26,24 @@ const OAuth = ({ setError }) => {
       setDisabledBtn(false);
       setError(null);
       await fetchUserData();
-      history.push("/");
+      return history.push("/");
     } catch (error) {
-      return error;
+      setDisabledBtn(false);
+      setError(error.message);
+      return console.error(error);
     }
   };
 
   return (
-    <button disabled={disabledBtn} className={disabledBtn ? "opacity-50" : ""}>
-      <div
-        onClick={handleOAuth}
-        className="btn cursor-pointer rounded-sm flex justify-center items-center gap-2 font-primary text-red-600 border mt-3"
-      >
-        <img src={googleIcon} className="w-8" />
-        <span className="text-xl text-dark">Continue With Google</span>
-      </div>
+    <button
+      onClick={handleOAuth}
+      disabled={disabledBtn}
+      className={`btn cursor-pointer rounded-sm flex justify-center items-center gap-2 font-primary text-red-600 border mt-3 ${
+        disabledBtn ? "opacity-50" : ""
+      }`}
+    >
+      <img src={googleIcon} className="w-8" />
+      <span className="text-xl text-dark">Continue With Google</span>
     </button>
   );
 };
