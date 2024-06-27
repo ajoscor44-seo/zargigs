@@ -29,6 +29,7 @@ To get started, simply visit ${app_url}/ref/${currentUser.username} to register 
     const textIsCopied = CopyToClipboard(messageRef);
 
     alert("Copied: " + textIsCopied);
+    messageRef.current.style.display = "block";
   };
 
   const encodedText = encodeURIComponent(message);
@@ -36,8 +37,6 @@ To get started, simply visit ${app_url}/ref/${currentUser.username} to register 
   const whatsappLink = `https://api.whatsapp.com/send?text=${encodedText}`;
   const twitterLink = `https://twitter.com/share?text=${encodedBriefText}`;
   const linkedInLink = `https://www.linkedin.com/sharing/share-offsite/?text=${encodedBriefText}`;
-
-  console.log(whatsappLink);
 
   return (
     <div className="relative">

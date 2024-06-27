@@ -1,8 +1,8 @@
 import React, { useRef, useState } from "react";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { Link } from "react-router-dom/cjs/react-router-dom";
-import CopyToClipboard from "../../hooks/CopyToClipboard";
 import { FaCopy, FaFileCircleCheck } from "react-icons/fa6";
+import CopyToClipboard from "../../hooks/CopyToClipboard";
 
 const ReferAndEarn = ({ username }) => {
   const app_url =
@@ -13,15 +13,14 @@ const ReferAndEarn = ({ username }) => {
   const inputRef = useRef(null);
   const [textIsCopied, setTextIsCopied] = useState(false);
 
-  const copyToClipboard = (inputRef) => {
+  const copyToClipboard = () => {
     const textIsCopied = CopyToClipboard(inputRef);
-    console.log(textIsCopied);
     if (textIsCopied) setTextIsCopied(true);
-    alert("Copied: " + textIsCopied);
+    alert("Copied your invite link. Now share to spread the love and update");
 
     const timeToReset = setTimeout(() => {
       setTextIsCopied(false);
-      return clearTimeout(timeToReset);
+      clearTimeout(timeToReset);
     }, 5000);
   };
 
@@ -51,7 +50,7 @@ const ReferAndEarn = ({ username }) => {
             defaultValue={referralLink}
           ></textarea>
           <button
-            onClick={() => copyToClipboard(inputRef)}
+            onClick={copyToClipboard}
             className="text-white cursor-pointer rounded-r py-2 px-3 bg-green-500"
           >
             {textIsCopied ? (

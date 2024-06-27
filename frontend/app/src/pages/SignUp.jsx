@@ -7,7 +7,6 @@ import { useAuth } from "../context/AuthContext";
 const SignUp = ({ setSignedIn }) => {
   const { signupUser, adminData } = useAuth();
   const { username } = useParams();
-  console.log(username);
   const [formData, setFormData] = useState({});
   const pagesData = [
     {

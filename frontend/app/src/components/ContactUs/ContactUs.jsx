@@ -7,7 +7,7 @@ import { IoLocationSharp, IoMail } from "react-icons/io5";
 const ContactUs = () => {
   const submitForm = (e) => {
     e.preventDefault();
-    console.log(e);
+    return e;
   };
   return (
     <div className="bg-white px-4 py-10">

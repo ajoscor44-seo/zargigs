@@ -20,7 +20,6 @@ const TaskHistory = () => {
       );
       const data = response.data;
 
-      console.log(data);
       setTaskHistory(data);
       return setLoading(false);
     } catch (error) {
@@ -73,7 +72,6 @@ const TaskHistory = () => {
         ) : (
           <div>
             {taskHistory.map((task) => {
-              console.log(task);
               return <Task task={task} />;
             })}
           </div>

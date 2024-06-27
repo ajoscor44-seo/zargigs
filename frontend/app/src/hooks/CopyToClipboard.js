@@ -1,9 +1,12 @@
 const CopyToClipboard = (messageRef) => {
   const textInput = messageRef.current;
+  textInput.style.display = "block";
   textInput.select();
-  const value = document.execCommand("copy").valueOf();
+  textInput.setSelectionRange(0, 99999);
+  const successful = document.execCommand("copy");
+  textInput.style.display = "none";
 
-  return value;
+  return successful;
 };
 
 export default CopyToClipboard;

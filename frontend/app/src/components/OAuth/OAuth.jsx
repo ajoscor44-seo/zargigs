@@ -16,7 +16,6 @@ const OAuth = ({ setError }) => {
     try {
       setDisabledBtn(true);
       const cred = await signInWithPopup(auth, provider);
-      console.log(cred);
       const res = await OAuthUser(cred);
       if (res.statusCode == 500) {
         setDisabledBtn(false);
