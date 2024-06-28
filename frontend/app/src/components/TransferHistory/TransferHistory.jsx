@@ -26,7 +26,7 @@ const TransferHistory = ({ historyData }) => {
               <td className="p-0.5 border-b text-center text-sm font-normal">
                 {i + 1}.
               </td>
-              <td className="p-0.5 border-b text-center text-sm font-normal">
+              <td className="p-0.5 border-b text-center text-sm font-normal min-w-15">
                 {formatDate(data.createdAt)}
               </td>
               <td className="p-0.5 border-b text-center text-sm font-normal">

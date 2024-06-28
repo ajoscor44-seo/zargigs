@@ -44,28 +44,36 @@ const OurHandles = () => {
       </div>
 
       <div className="flex justify-center mt-4 gap-10 py-3">
-        <div className="flex flex-col items-center gap-3">
+        <a className="flex flex-col items-center">
           <div className="service_icon border p-4 rounded-full">
             <FaFacebook size={25} className="text-blue-600" />
           </div>
 
           <p className="font-bold text-lg font-primary">Facebook</p>
-        </div>
-        <div className="flex flex-col items-center gap-3">
+        </a>
+        <a
+          href="https://x.com/GigsflixTech/"
+          target="_blank"
+          className="flex flex-col items-center"
+        >
           <div className="service_icon border p-4 rounded-full">
             <FaTwitter size={25} className="text-blue-400" />
           </div>
 
           <p className="font-bold text-lg font-primary">Twitter</p>
-        </div>
+        </a>
 
-        <div className="flex flex-col items-center gap-3">
+        <a
+          href="https://www.instagram.com/gigsflix_tech/"
+          target="_blank"
+          className="flex flex-col items-center"
+        >
           <div className="service_icon border p-4 rounded-full">
             <FaSquareInstagram size={25} className="text-purple-900" />
           </div>
 
           <p className="font-bold text-lg font-primary">Instagram</p>
-        </div>
+        </a>
       </div>
     </div>
   );

@@ -20,7 +20,6 @@ const TransactionHistory = () => {
         activeTab === "transfer" ? "/transfer/history" : "/withdraw/history";
       const history = await axios.get("/api/v1" + baseUrl);
       setHistoryData(history.data.data);
-      console.log(historyData);
       return setLoading(false);
     } catch (error) {
       setLoading(false);
