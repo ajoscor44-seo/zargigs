@@ -6,7 +6,7 @@ import {
 
 const router = express.Router();
 
-router.get("/transfers", getUserTransfers);
+router.get("/history", getUserTransfers);
 router.post("/make", makeTransfer);
 
 export default router;

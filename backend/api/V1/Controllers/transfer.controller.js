@@ -9,7 +9,7 @@ import { sendNotitfication } from "../utils/notification.js";
 export const makeTransfer = async (req, res, next) => {
   try {
     const { receiver, amount, password, charges } = req.body;
-    const receiverU = await User.findOne({ username: receiver });
+    const receiverU = await User.findOne({ username: receiver.toLowerCase() });
     const validUser = await User.findOne({ _id: req.user._id });
     const validUserDetails = await userDetails.findOne({
       userId: req.user._id,
@@ -53,8 +53,8 @@ export const makeTransfer = async (req, res, next) => {
     const newTransfer = new Transfer({
       sender: req.user._id,
       senderUsername: req.user.username,
-      receiver: receiverU.username,
-      receiverUsername: receiver,
+      receiver: receiverU._id,
+      receiverUsername: receiverU.username,
       amountSent: amount,
       status: "pending",
     });
@@ -66,7 +66,7 @@ export const makeTransfer = async (req, res, next) => {
     const newUserAmountWithdrawn =
       validUserDetails.userEarnings.amountWithdrawn + amount + charges;
     const newReceiverBalance =
-      validReceiverDetails.userEarnings.balance + amount + charges;
+      validReceiverDetails.userEarnings.balance + amount;
 
     // Updates users balances
     await validUserDetails.updateOne({
@@ -88,9 +88,9 @@ export const makeTransfer = async (req, res, next) => {
     const senderNotitfication = {
       userId: req.user._id,
       title: "Transfer Successful",
-      message: `Your transfer of ₦${numeral(amount).format(
-        "0,0.00"
-      )} to ${receiver} is successful.`,
+      message: `Your transfer of ₦${numeral(amount).format("0,0.00")} to ${
+        receiverU.username
+      } is successful.`,
       type: "verification",
     };
     const receiverNotitfication = {
@@ -117,8 +117,10 @@ export const makeTransfer = async (req, res, next) => {
 export const getUserTransfers = async (req, res, next) => {
   try {
     const transfers = await Transfer.find({
-      sender: req.user._id,
-      senderUsername: req.user.username,
+      $or: [
+        { sender: req.user._id, senderUsername: req.user.username },
+        { receiver: req.user._id, receiverUsername: req.user.username },
+      ],
     });
 
     if (!transfers) {
@@ -136,7 +138,10 @@ export const getUserTransfers = async (req, res, next) => {
       };
     });
 
-    return res.status(200).json(transfers_);
+    return res.status(200).json({
+      failed: false,
+      data: transfers_,
+    });
   } catch (error) {
     next(error);
   }

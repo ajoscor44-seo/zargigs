@@ -89,7 +89,7 @@ export const getUserWithdrawalRequests = async (req, res, next) => {
     const limit = parseInt(req.query.limit, 10) || 10;
 
     // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
+    const validUser = await User.findById(req.user._id);
     if (!validUser) {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);

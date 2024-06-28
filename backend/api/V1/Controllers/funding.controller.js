@@ -10,6 +10,13 @@ export const fundLocalWallet = async (req, res, next) => {
     const transData = req.body;
     const walletReference = transData.walletReference;
 
+    const amountFunded = await Funding.findOne({
+      paymentReference: transData.paymentReference,
+    });
+    if (amountFunded) {
+      return res.status(200).json({ failed: false, message: "Wallet funded" });
+    }
+
     const UserDetails = await userDetails.findOne({
       "walletDetails.reference": walletReference,
     });

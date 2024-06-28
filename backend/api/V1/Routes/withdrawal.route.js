@@ -7,6 +7,6 @@ import {
 const router = express.Router();
 
 router.post("/request", postWithdrawalRequests);
-router.get("/history/:id", getUserWithdrawalRequests);
+router.get("/history", getUserWithdrawalRequests);
 
 export default router;
