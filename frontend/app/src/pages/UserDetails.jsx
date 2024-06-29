@@ -31,8 +31,8 @@ const UserDetails = () => {
   const balance = currentUser.userEarnings.balance;
   const userPeoples = {
     referrals: currentUser?.referrals?.length || 0,
-    followers: currentUser?.followers?.length || 0,
-    following: currentUser?.followers?.length || 0,
+    followers: currentUser?.referrals?.length || 0,
+    following: 1,
   };
   const state = show ? "block" : "hidden";
   const location = {
