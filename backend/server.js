@@ -59,7 +59,7 @@ app.options("*", cors(corsOptions));
 
 // Blocks desktop devices
 app.use(useragent.express());
-app.use(blockDesktopsMiddleware);
+// app.use(blockDesktopsMiddleware);
 
 // Rate limits user
 app.use(limiter);
@@ -73,7 +73,7 @@ app.post("/api/v1/fund-wallet", fundLocalWallet);
 app.get("/api/v1/admin-data", getAdminData);
 
 // Authentication route
-app.use("/api/auth/", authRoutes);
+app.use("/api/auth", authRoutes);
 
 // Authenticate User with token
 app.use(authenticateToken);
