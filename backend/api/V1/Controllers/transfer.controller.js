@@ -10,6 +10,10 @@ export const makeTransfer = async (req, res, next) => {
   try {
     const { receiver, amount, password, charges } = req.body;
     const receiverU = await User.findOne({ username: receiver.toLowerCase() });
+    if (!receiverU) {
+      const error = ErrorHandler(404, "Username does not exist.");
+      return res.status(404).json(error);
+    }
     const validUser = await User.findOne({ _id: req.user._id });
     const validUserDetails = await userDetails.findOne({
       userId: req.user._id,
