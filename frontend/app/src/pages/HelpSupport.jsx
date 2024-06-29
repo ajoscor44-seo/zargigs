@@ -42,7 +42,7 @@ const HelpSupport = () => {
       }
 
       setError(null);
-      const response = await axios.post("/api/v1/admin/complaints", complaint);
+      const response = await axios.post("/api/v1/complaint/post", complaint);
 
       if (response.data.failed) {
         setIsAdding(false);
