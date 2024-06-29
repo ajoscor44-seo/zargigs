@@ -20,7 +20,7 @@ const Transfer = () => {
   const [makingTransfer, setMakingTransfer] = useState(false);
   const [password, setPassword] = useState(false);
   const balance = currentUser.userEarnings.balance;
-  const charges = adminData.withdrawalCharges;
+  const charges = adminData?.withdrawalCharges;
   const amountTransferable = balance ? balance - charges : 0;
 
   const makeTransfer = async () => {
