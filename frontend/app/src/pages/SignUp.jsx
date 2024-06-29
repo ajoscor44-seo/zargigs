@@ -7,11 +7,13 @@ import { useAuth } from "../context/AuthContext";
 const SignUp = ({ setSignedIn }) => {
   const { signupUser, adminData } = useAuth();
   const { username } = useParams();
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState(
+    username ? { referredBy: username } : {}
+  );
   const pagesData = [
     {
       bgColor: "bg-white",
-      title: `Sign Up on ${adminData?.appName}`,
+      title: `Sign Up on ${adminData?.appName || "Gigsflix"}`,
       info: "Registration is simple, fast and free!",
       formInputs: [
         {
@@ -150,6 +152,11 @@ const SignUp = ({ setSignedIn }) => {
       }
       if (formData.phone.toString().length !== 10) {
         setError("Phone number must be 10 characters long.");
+        return true;
+      }
+      console.log(parseInt(formData.phone));
+      if (parseInt(formData.phone) === "NaN") {
+        setError("Input a valid phone number");
         return true;
       }
     }

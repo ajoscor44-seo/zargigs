@@ -136,7 +136,7 @@ const AuthProvider = ({ children }) => {
       const data = response.data;
       return data;
     } catch (error) {
-      return { failed: true, message: error.message };
+      return { failed: true, message: error.response.data.message };
     }
   };
 

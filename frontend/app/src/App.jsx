@@ -4,7 +4,6 @@ import {
   Route,
 } from "react-router-dom/cjs/react-router-dom.min";
 import axios from "axios";
-import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/Forgot-Password";
 import ClientDashboard from "./pages/ClientDashboard";
 import HelpSupport from "./pages/HelpSupport";
@@ -54,7 +53,7 @@ function App() {
           <Switch>
             {/* Public Pages */}
             <Route exact path="/ref/:username">
-              <SignUp />
+              <RegistrationPage />
             </Route>
             <Route exact path="/signup">
               <RegistrationPage />
