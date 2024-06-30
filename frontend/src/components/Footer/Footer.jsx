@@ -37,8 +37,16 @@ const Footer = () => {
         <h2 className="footer_head">Support</h2>
         <ul className="footer_list">
           <li className="footer_list-item">Contact Support</li>
-          <li className="footer_list-item">Frequently Asked Questions</li>
-          <li className="footer_list-item">Knowledgebase</li>
+          <li className="footer_list-item">
+            <a href="https://medium.com/@contactgigsflix" target="_blank">
+              Frequently Asked Questions
+            </a>
+          </li>
+          <li className="footer_list-item">
+            <a href="https://medium.com/@contactgigsflix" target="_blank">
+              Knowledgebase
+            </a>
+          </li>
         </ul>
       </div>
       <div>
