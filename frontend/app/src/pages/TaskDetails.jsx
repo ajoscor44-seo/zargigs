@@ -183,7 +183,7 @@ const TaskDetails = () => {
     return validExtensions.has(extension) ? extension : null;
   };
 
-  const downloadMedia = () => {
+  const downloadMedia = async () => {
     try {
       const mediaUrl = taskDetails?.mediaUrl;
       if (!mediaUrl) {
@@ -191,10 +191,14 @@ const TaskDetails = () => {
         return;
       }
 
+      // Get the download URL from Firebase Storage
+      const storageRef = ref(storage, mediaUrl); // Replace with the correct path
+      const url = await getDownloadURL(storageRef);
+
       const mediaExtension = getMediaExtension(mediaUrl);
       if (mediaExtension) {
         const anchor = document.createElement("a");
-        anchor.href = mediaUrl;
+        anchor.href = url;
         anchor.setAttribute(
           "download",
           `${taskDetails?.id}_advert_media.${mediaExtension}`
@@ -207,7 +211,7 @@ const TaskDetails = () => {
       }
     } catch (error) {
       alert("An error occurred while attempting to download the media.");
-      return "Error downloading the media:", error;
+      console.error("Error downloading the media:", error);
     }
   };
 
@@ -308,7 +312,8 @@ const TaskDetails = () => {
 
               <div className="mt-2">
                 <p className="font-bold text-xs">
-                  Please the step-by-step instruction below to do your task:
+                  Please follow the step-by-step instruction below to do your
+                  task:
                 </p>
                 <div className="text-sm flex flex-col gap-2 mt-1 ms-2">
                   <p className="text-xs font-semibold">

@@ -868,7 +868,7 @@ export const getTask = async (req, res, next) => {
     }
 
     if (taskStatus == "pending") {
-      const { updatedAt, taskType, expiresAt, toBeDoneBy, __v, _id, ...rest } =
+      const { updatedAt, expiresAt, toBeDoneBy, __v, _id, ...rest } =
         task?._doc;
       const currentTime = new Date();
       const expiryTime = task?.expiresAt;
@@ -885,7 +885,7 @@ export const getTask = async (req, res, next) => {
       // Creates the response
       return res.status(200).json(responseObj);
     } else if (taskStatus == "in-review") {
-      const { updatedAt, taskType, expiresAt, toBeDoneBy, __v, _id, ...rest } =
+      const { updatedAt, expiresAt, toBeDoneBy, __v, _id, ...rest } =
         task?._doc;
       const proofOfWork = await ProofOfWork.findOne({
         parentId: _id,
@@ -914,7 +914,7 @@ export const getTask = async (req, res, next) => {
       // Creates the response
       return res.status(200).json(responseObj);
     } else if (taskStatus == "completed" || taskStatus == "failed") {
-      const { updatedAt, taskType, expiresAt, toBeDoneBy, __v, _id, ...rest } =
+      const { updatedAt, expiresAt, toBeDoneBy, __v, _id, ...rest } =
         task?._doc;
       const proofOfWork = await ProofOfWork.findOne({
         parentId: task?.proofParentId,
@@ -943,7 +943,7 @@ export const getTask = async (req, res, next) => {
       // Creates the response
       return res.status(200).json(responseObj);
     } else {
-      const { updatedAt, taskType, expiresAt, toBeDoneBy, __v, _id, ...rest } =
+      const { updatedAt, expiresAt, toBeDoneBy, __v, _id, ...rest } =
         task?._doc;
 
       const responseObj = {

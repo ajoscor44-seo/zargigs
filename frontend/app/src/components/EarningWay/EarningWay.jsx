@@ -104,7 +104,7 @@ const EarningWay = ({ way, addSelectBtn, wayDescription, type }) => {
           <span className="text-xs">
             Earnings:{" "}
             <span className="font-bold">
-              ₦{way.amountToEarn} per Advert Post
+              ₦{way.amountToEarn} per {type}
             </span>
           </span>
         </div>
