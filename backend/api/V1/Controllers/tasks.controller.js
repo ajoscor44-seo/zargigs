@@ -398,17 +398,7 @@ export const generateTask = async (req, res, next) => {
         toBeDoneBy: req.user._id,
         taskType,
         taskPlatform,
-      })) ||
-      (await CompletedTask.findOne({
-        doneBy: req.user._id,
-        taskType,
-        taskPlatform,
-      })) ||
-      InReviewTask.findOne({
-        doneBy: req.user._id,
-        taskType,
-        taskPlatform,
-      });
+      }));
 
     if (!validUser) {
       const error = ErrorHandler(404, "There's no user with this email.");
@@ -421,7 +411,7 @@ export const generateTask = async (req, res, next) => {
     if (taskAllocatedToUser) {
       const error = ErrorHandler(
         400,
-        "Task of this type is not available for you again. Please check back later."
+        "You have a pending task of this type, complete the task to generate a new one."
       );
       return res.status(400).json(error);
     }
@@ -432,28 +422,72 @@ export const generateTask = async (req, res, next) => {
         ? await AdvertTask.find(baseQuery)
         : await EngagementTask.find(baseQuery);
 
-    const tasks = Tasks.map((Task) => {
-      const {
-        updatedAt,
-        __v,
-        _id,
-        allocatedTasks,
-        numberOfTasks,
-        gender,
-        location,
-        religion,
-        ...rest
-      } = Task.toObject();
+    const taskS = await Promise.all(
+      Tasks.map(async (Task) => {
+        if (!Task) return null; // Check for undefined Task
 
-      if (allocatedTasks !== numberOfTasks) {
-        return {
-          id: _id,
+        const {
+          updatedAt,
+          __v,
+          _id,
           allocatedTasks,
           numberOfTasks,
-          ...rest,
-        };
-      }
-    });
+          gender,
+          location,
+          religion,
+          ...rest
+        } = Task.toObject();
+
+        // Check if user has done task before
+        const userHasDoneTaskBefore =
+          (await AllocatedTask.findOne({
+            allocatedTo: req.user._id,
+            taskType,
+            taskPlatform,
+            parentId: _id,
+          })) ||
+          (await PendingTask.findOne({
+            toBeDoneBy: req.user._id,
+            taskType,
+            taskPlatform,
+            parentId: _id,
+          })) ||
+          (await CompletedTask.findOne({
+            doneBy: req.user._id,
+            taskType,
+            taskPlatform,
+            parentId: _id,
+          })) ||
+          (await InReviewTask.findOne({
+            doneBy: req.user._id,
+            taskType,
+            taskPlatform,
+            parentId: _id,
+          }));
+
+        if (allocatedTasks < numberOfTasks && !userHasDoneTaskBefore) {
+          return {
+            id: _id,
+            allocatedTasks,
+            numberOfTasks,
+            ...rest,
+          };
+        }
+        return null; // Return null for tasks that don't meet the criteria
+      })
+    );
+
+    // Filter out null values from the resulting array
+    const tasks = taskS.filter((task) => task !== null);
+
+    if (!tasks.length) {
+      const error = ErrorHandler(
+        400,
+        "Task of this type is not available for you again. Please check back later."
+      );
+      return res.status(400).json(error);
+    }
+
     const arrayLength = tasks.length;
     const randomIndex = Math.floor(Math.random() * arrayLength);
     if (!arrayLength) {
