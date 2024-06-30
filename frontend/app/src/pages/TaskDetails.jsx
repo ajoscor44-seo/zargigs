@@ -13,6 +13,7 @@ import formatDate from "../hooks/formatDate";
 import CopyToClipboard from "../hooks/CopyToClipboard";
 import { FaFileDownload } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import DownloadPermissionChecker from "../components/CheckPermissions/CheckPermissions";
 
 const TaskDetails = () => {
   const { adminData } = useAuth();
@@ -197,15 +198,21 @@ const TaskDetails = () => {
 
       const mediaExtension = getMediaExtension(mediaUrl);
       if (mediaExtension) {
-        const anchor = document.createElement("a");
-        anchor.href = url;
-        anchor.setAttribute(
-          "download",
-          `${taskDetails?.id}_advert_media.${mediaExtension}`
-        );
-        document.body.appendChild(anchor);
-        anchor.click();
-        document.body.removeChild(anchor);
+        const xhr = new XMLHttpRequest();
+        xhr.responseType = "blob";
+        xhr.onload = function (event) {
+          const blob = xhr.response;
+          const downloadUrl = window.URL.createObjectURL(blob);
+          const anchor = document.createElement("a");
+          anchor.href = downloadUrl;
+          anchor.download = `${taskDetails?.id}_advert_media.${mediaExtension}`;
+          document.body.appendChild(anchor);
+          anchor.click();
+          document.body.removeChild(anchor);
+          window.URL.revokeObjectURL(downloadUrl);
+        };
+        xhr.open("GET", url);
+        xhr.send();
       } else {
         alert("Unsupported media type, file must be an image or video");
       }
@@ -233,6 +240,7 @@ const TaskDetails = () => {
         usePath={true}
       />
       <div className="underBackNav mb-16">
+        <DownloadPermissionChecker />
         {loading ? (
           <div className="flex justify-center items-center h-96">
             <FaSpinner className="text-green-500" size={25} />
