@@ -12,7 +12,7 @@ import { Spinner } from "react-bootstrap";
 import { IoCloseCircle } from "react-icons/io5";
 
 const Withdraw = () => {
-  const history = useHistory();
+  const [toastNotifications, setToastNotifications] = useState([]);
   const { adminData, currentUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [amount, setAmount] = useState(false);
@@ -22,6 +22,17 @@ const Withdraw = () => {
   const balance = currentUser.userEarnings.balance;
   const charges = adminData?.withdrawalCharges;
   const amountWithdrawable = balance ? balance - charges : 0;
+
+  // Toast Notification
+  const showToast = (notificationObj) => {
+    setToastNotifications([...toastNotifications, notificationObj]);
+
+    const toastTimeout = setTimeout(() => {
+      setToastNotifications([]);
+      clearTimeout(toastTimeout);
+      return window.location.reload();
+    }, 3100);
+  };
 
   const makeWithdrawal = async () => {
     try {
@@ -38,11 +49,17 @@ const Withdraw = () => {
         password,
       };
       setMakingWithdrawal(true);
-      await axios.post("/api/v1/withdraw/request", withdrawal_data);
+      const response = await axios.post(
+        "/api/v1/withdraw/request",
+        withdrawal_data
+      );
 
       setMakingWithdrawal(false);
       setWithdrawalError(null);
-      return window.location.reload();
+      return showToast({
+        msg: `${response.data.message}`,
+        errorType: "success",
+      });
     } catch (error) {
       if (error.response.data.failed) {
         setMakingWithdrawal(false);

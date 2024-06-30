@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ToastNotification from "../ToastNotification/ToastNotification";
 import BackNav from "../BackNav/BackNav";
 import numeral from "numeral";
 import { FaLock } from "react-icons/fa";
@@ -12,6 +13,7 @@ import { IoCloseCircle } from "react-icons/io5";
 import { FaUser } from "react-icons/fa6";
 
 const Transfer = () => {
+  const [toastNotifications, setToastNotifications] = useState([]);
   const { adminData, currentUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [amount, setAmount] = useState(false);
@@ -22,6 +24,17 @@ const Transfer = () => {
   const balance = currentUser.userEarnings.balance;
   const charges = adminData?.withdrawalCharges;
   const amountTransferable = balance ? balance - charges : 0;
+
+  // Toast Notification
+  const showToast = (notificationObj) => {
+    setToastNotifications([...toastNotifications, notificationObj]);
+
+    const toastTimeout = setTimeout(() => {
+      setToastNotifications([]);
+      clearTimeout(toastTimeout);
+      return window.location.reload();
+    }, 3100);
+  };
 
   const makeTransfer = async () => {
     try {
@@ -38,11 +51,14 @@ const Transfer = () => {
         charges,
       };
       setMakingTransfer(true);
-      await axios.post("/api/v1/transfer/make", transfer_data);
+      const response = await axios.post("/api/v1/transfer/make", transfer_data);
 
       setMakingTransfer(false);
       setTransferError(null);
-      return window.location.reload();
+      return showToast({
+        msg: `${response.data.message}`,
+        errorType: "success",
+      });
     } catch (error) {
       if (error.response.data.failed) {
         setMakingTransfer(false);
@@ -186,6 +202,16 @@ const Transfer = () => {
             </Link>
           </div>
         </div>
+      </div>
+      <div className="toast_cover">
+        {toastNotifications?.map((toastNotification) => {
+          return (
+            <ToastNotification
+              key={toastNotification.id}
+              toastNotification={toastNotification}
+            />
+          );
+        })}
       </div>
     </div>
   );
