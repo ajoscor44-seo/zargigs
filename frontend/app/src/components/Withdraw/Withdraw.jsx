@@ -13,7 +13,7 @@ import { IoCloseCircle } from "react-icons/io5";
 
 const Withdraw = () => {
   const [toastNotifications, setToastNotifications] = useState([]);
-  const { adminData, currentUser } = useAuth();
+  const { adminData, currentUser, fetchUserData } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [amount, setAmount] = useState(false);
   const [withdrawalError, setWithdrawalError] = useState(undefined);
@@ -56,6 +56,7 @@ const Withdraw = () => {
 
       setMakingWithdrawal(false);
       setWithdrawalError(null);
+      await fetchUserData();
       return showToast({
         msg: `${response.data.message}`,
         errorType: "success",

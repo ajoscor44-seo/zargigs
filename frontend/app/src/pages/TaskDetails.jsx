@@ -16,7 +16,7 @@ import { useAuth } from "../context/AuthContext";
 import DownloadPermissionChecker from "../components/CheckPermissions/CheckPermissions";
 
 const TaskDetails = () => {
-  const { adminData } = useAuth();
+  const { adminData, fetchUserData } = useAuth();
   const history = useHistory();
   const { slug, platform, status, id, type } = useParams();
   const [taskDetails, setTaskDetails] = useState({});
@@ -159,6 +159,7 @@ const TaskDetails = () => {
       if (slug === "null") {
         return history.push("/tasks-history");
       }
+      await fetchUserData();
       return history.push(`/earn/${slug}`);
     } catch (error) {
       return setUploadError(error);

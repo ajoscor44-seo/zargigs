@@ -4,7 +4,7 @@ const DownloadPermissionChecker = () => {
   const [allowDownloads, setAllowDownloads] = useState(false);
 
   useEffect(() => {
-    const isAllowDownloadsEnabled = () => {
+    const isAllowDownloadsEnabled = async () => {
       const frame = document.createElement("iframe");
       frame.src = "data:text/html;charset=utf-8,";
       frame.sandbox.add("allow-downloads");

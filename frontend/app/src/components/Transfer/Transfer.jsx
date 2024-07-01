@@ -14,7 +14,7 @@ import { FaUser } from "react-icons/fa6";
 
 const Transfer = () => {
   const [toastNotifications, setToastNotifications] = useState([]);
-  const { adminData, currentUser } = useAuth();
+  const { adminData, currentUser, fetchUserData } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [amount, setAmount] = useState(false);
   const [receiverUsername, setReceiverUsername] = useState(null);
@@ -55,6 +55,7 @@ const Transfer = () => {
 
       setMakingTransfer(false);
       setTransferError(null);
+      await fetchUserData();
       return showToast({
         msg: `${response.data.message}`,
         errorType: "success",

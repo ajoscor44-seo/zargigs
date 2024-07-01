@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import formatDate from "../../hooks/formatDate";
 import Modal from "../Modal/Modal";
 import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
 
 const ProofOfWork = ({ proof, setChange, setError }) => {
+  const { fetchUserData } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const textColor =
     proof?.status == "pending"
@@ -25,6 +27,7 @@ const ProofOfWork = ({ proof, setChange, setError }) => {
       return setError(response.data.message);
     }
 
+    await fetchUserData();
     return setChange(Date.now());
   };
   return (
