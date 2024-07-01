@@ -57,7 +57,7 @@ const Notifications = () => {
         ) : notifications.length ? (
           <div>
             <div>
-              {notifications.reverse().map((notification) => {
+              {notifications.map((notification) => {
                 return (
                   <Notification
                     markAsRead={markAsRead}
