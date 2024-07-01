@@ -6,8 +6,11 @@ import EarnWithAds from "../components/EarnWithAds/EarnWithAds";
 import EarnWithTasks from "../components/EarnWithTasks/EarnWithTasks";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
+import { FaSpinner } from "react-icons/fa6";
 
 const Earn = () => {
+  const { getEngagementEarners, getAdvertEarners } = useAuth();
   const [activeTab, setActiveTab] = useState("postAds");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,6 +49,8 @@ const Earn = () => {
     getTasksTotalsBasedOnStatus();
     getTotalEngagementTasks();
     getTotalAdvertTasks();
+    getEngagementEarners();
+    getAdvertEarners();
   }, []);
 
   return (
@@ -117,13 +122,19 @@ const Earn = () => {
             </div>
           </div>
 
-          <div>
-            {activeTab === "postAds" ? (
-              <EarnWithAds setActiveTab={setActiveTab} />
-            ) : (
-              <EarnWithTasks setActiveTab={setActiveTab} />
-            )}
-          </div>
+          {loading ? (
+            <div className="min-h-96 flex justify-center items-center">
+              <FaSpinner size={15} color="green" />
+            </div>
+          ) : (
+            <div>
+              {activeTab === "postAds" ? (
+                <EarnWithAds setActiveTab={setActiveTab} />
+              ) : (
+                <EarnWithTasks setActiveTab={setActiveTab} />
+              )}
+            </div>
+          )}
         </div>
       </div>
       <ClientMenuBar />

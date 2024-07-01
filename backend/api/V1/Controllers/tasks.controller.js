@@ -12,6 +12,7 @@ import userDetails from "../Models/user-details.model.js";
 import User from "../Models/user.model.js";
 import { ErrorHandler } from "../utils/error.js";
 import { sendNotitfication } from "../utils/notification.js";
+import logger from "../utils/logger.util.js";
 
 // Advert task controllers
 export const getAdvertTask = async (req, res, next) => {
@@ -547,6 +548,28 @@ export const generateTask = async (req, res, next) => {
       timeLeftS: 3600,
       ...rest,
     };
+
+    setTimeout(async () => {
+      try {
+        const pendingTask = await PendingTask.findOne({ parentId: Task.id });
+
+        if (pendingTask) {
+          taskType == "advert"
+            ? await AdvertTask.findOneAndUpdate(taskQuery, {
+                $inc: {
+                  allocatedTasks: -1,
+                },
+              })
+            : await EngagementTask.findOneAndUpdate(taskQuery, {
+                $inc: {
+                  allocatedTasks: -1,
+                },
+              });
+        }
+      } catch (err) {
+        logger.error("Failed to update document");
+      }
+    }, 3600000);
 
     // Creates the response
     return res.status(200).json(task);
