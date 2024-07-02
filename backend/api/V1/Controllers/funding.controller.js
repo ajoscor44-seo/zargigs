@@ -8,6 +8,12 @@ import numeral from "numeral";
 export const fundLocalWallet = async (req, res, next) => {
   try {
     const transData = req.body;
+    console.log(req);
+    return res.status(200).json({
+      failed: false,
+      message: "Wallet funded successfully.",
+      data: {},
+    });
     const walletReference = transData.walletReference;
 
     const amountFunded = await Funding.findOne({
@@ -21,14 +27,6 @@ export const fundLocalWallet = async (req, res, next) => {
       "walletDetails.reference": walletReference,
     });
     const userId = UserDetails.userId;
-
-    console.log(req.body);
-
-    return res.status(200).json({
-      failed: false,
-      message: "Wallet funded successfully.",
-      data: {},
-    });
 
     // Update fundings list
     const newFunding = new Funding({
