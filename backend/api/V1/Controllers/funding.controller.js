@@ -22,6 +22,14 @@ export const fundLocalWallet = async (req, res, next) => {
     });
     const userId = UserDetails.userId;
 
+    console.log(req.body);
+
+    return res.status(200).json({
+      failed: false,
+      message: "Wallet funded successfully.",
+      data: {},
+    });
+
     // Update fundings list
     const newFunding = new Funding({
       userId,
