@@ -1,15 +1,17 @@
 import React from "react";
-import { IoChatbubbles } from "react-icons/io5";
+import { FaWhatsapp } from "react-icons/fa6";
 
-const Chat = ({ handleVisibility }) => {
+const Chat = () => {
+  const whatsappLink = "https://www.whatsapp.com";
+
   return (
-    <button className="fixed bottom-20 right-3 cursor-pointer">
-      <IoChatbubbles
-        size={25}
-        onClick={handleVisibility}
-        className="text-green-500 shadow-2xl bg-transparent w-14 h-14"
-      />
-    </button>
+    <div className="fixed bottom-20 right-3 cursor-pointer">
+      <a href={whatsappLink} className="mb-2" target="_blank">
+        <div className="text-sm flex flex-col items-center cursor-pointer">
+          <FaWhatsapp className="text-green-500" size={55} />
+        </div>
+      </a>
+    </div>
   );
 };
 

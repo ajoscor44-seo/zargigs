@@ -75,7 +75,8 @@ const BecomeAMember = () => {
             </li>
             <li className="text-xs font-semibold leading-5 mb-5">
               <span className="font-extrabold">
-                Earn an Instant Referral Commission of ₦500
+                Earn an Instant Referral Commission of ₦
+                {numeral(adminData.membershipFee * 0.6).format("0,0")}
               </span>{" "}
               when you refer someone to become a member on {adminData?.appName}.
               The more you refer, the more you earn. Click{" "}
@@ -84,7 +85,7 @@ const BecomeAMember = () => {
             </li>
             <li className="text-xs font-semibold leading-5 mb-5">
               <span className="font-extrabold">
-                Earn Social Boost Referral Commission of 20% of any amount paid
+                Earn Social Boost Referral Commission of 60% of any amount paid
               </span>{" "}
               when you refer someone to Buy Likes, Followers, Comments, Shares,
               Whatsapp Post Views etc. Click{" "}

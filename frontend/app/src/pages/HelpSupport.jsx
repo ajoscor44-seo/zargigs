@@ -10,6 +10,7 @@ import { IoClose } from "react-icons/io5";
 import { FaSpinner } from "react-icons/fa6";
 import { useAuth } from "../context/AuthContext";
 import ToastNotification from "../components/ToastNotification/ToastNotification";
+import { GrCompliance } from "react-icons/gr";
 
 const HelpSupport = () => {
   const { adminData } = useAuth();
@@ -73,7 +74,19 @@ const HelpSupport = () => {
         <Disclaimer disclaimerMsg={disclaimerMsg} />
         <SupportMsg />
         <Supports />
-        <Chat handleVisibility={handleVisibility} />
+        <Chat />
+        <div
+          onClick={handleVisibility}
+          className="min-h-44 flex flex-col justify-center items-center"
+        >
+          <GrCompliance
+            size={60}
+            className="text-green-500 shadow-2xl bg-transparent w-14 h-14 mt-2"
+          />
+          <span className="text-gray-400">
+            Click anywhere here to lodge a complaint
+          </span>
+        </div>
       </div>
       <div className="px-3">
         <div

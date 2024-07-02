@@ -210,28 +210,34 @@ export const becomeAMember = async (req, res, next) => {
     referrerDetails.userEarnings = {
       ...referrerDetails.userEarnings,
       pendingEarnings:
-        referrerDetails.userEarnings.pendingEarnings -
-        0.6 * adminData.membershipFee,
+        Number(referrerDetails.userEarnings.pendingEarnings) -
+        0.6 * Number(adminData.membershipFee),
       totalEarnings:
-        referrerDetails.userEarnings.totalEarnings +
-        0.6 * adminData.membershipFee,
+        Number(referrerDetails.userEarnings.totalEarnings) +
+        0.6 * Number(adminData.membershipFee),
       balance:
-        referrerDetails.userEarnings.balance + 0.6 * adminData.membershipFee,
+        Number(referrerDetails.userEarnings.balance) +
+        0.6 * Number(adminData.membershipFee),
     };
     referrerDetails.walletDetails = {
       ...referrerDetails.walletDetails,
       balance:
-        referrerDetails.walletDetails.balance + 0.6 * adminData.membershipFee,
+        Number(referrerDetails.walletDetails.balance) +
+        0.6 * Number(adminData.membershipFee),
     };
 
     // Updates user balance
     userDetails.userEarnings = {
       ...userDetails.userEarnings,
-      balance: userDetails.userEarnings.balance - adminData.membershipFee,
+      balance:
+        Number(userDetails.userEarnings.balance) -
+        Number(adminData.membershipFee),
     };
     userDetails.walletDetails = {
       ...userDetails.walletDetails,
-      balance: userDetails.walletDetails.balance - adminData.membershipFee,
+      balance:
+        Number(userDetails.walletDetails.balance) -
+        Number(adminData.membershipFee),
     };
 
     // Makes user a member
