@@ -119,7 +119,7 @@ const TransactionHistory = () => {
                       ) : data.taskPlatform.toLowerCase() === "playstore" ? (
                         <img
                           src={playStoreImage}
-                          className="w-20 h-20 object-cover"
+                          className="w-5 h-5 object-cover"
                         />
                       ) : data.taskPlatform.toLowerCase() === "allretweets" ? (
                         <FaRetweet
