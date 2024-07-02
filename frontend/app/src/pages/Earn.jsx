@@ -124,7 +124,7 @@ const Earn = () => {
 
           {loading ? (
             <div className="min-h-96 flex justify-center items-center">
-              <FaSpinner size={15} color="green" />
+              <FaSpinner size={25} color="green" />
             </div>
           ) : (
             <div>

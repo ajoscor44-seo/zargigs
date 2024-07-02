@@ -60,7 +60,7 @@ const Task = ({ task }) => {
             className="text-blue-500 bg-white rounded-full"
           />
         ) : task.taskPlatform?.toLowerCase() === "playstore" ? (
-          <img src={playStoreImage} className="w-20 h-20 object-cover" />
+          <img src={playStoreImage} className="w-12 h-12 object-cover" />
         ) : task.taskPlatform?.toLowerCase() === "allretweets" ? (
           <FaRetweet
             size={45}

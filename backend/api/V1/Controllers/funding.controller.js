@@ -9,11 +9,6 @@ export const fundLocalWallet = async (req, res, next) => {
   try {
     const transData = req.body;
     console.log(req);
-    return res.status(200).json({
-      failed: false,
-      message: "Wallet funded successfully.",
-      data: {},
-    });
     const walletReference = transData.walletReference;
 
     const amountFunded = await Funding.findOne({
@@ -26,7 +21,7 @@ export const fundLocalWallet = async (req, res, next) => {
     const UserDetails = await userDetails.findOne({
       "walletDetails.reference": walletReference,
     });
-    const userId = UserDetails.userId;
+    const userId = UserDetails?.userId;
 
     // Update fundings list
     const newFunding = new Funding({
@@ -41,8 +36,8 @@ export const fundLocalWallet = async (req, res, next) => {
       sourceAccountNumber: transData.sourceAccountNumber,
       sourceAccountName: transData.sourceAccountName,
       sourceBankName: transData.sourceBankName,
-      settlementAmount: transData.settlementAmount,
-      amountPaid: transData.amountPaid,
+      settlementAmount: Number(transData.settlementAmount),
+      amountPaid: Number(transData.amountPaid),
       paymentDescription: transData.paymentDescription,
       walletReference,
     });
@@ -51,11 +46,15 @@ export const fundLocalWallet = async (req, res, next) => {
     // Updates referrer earning details
     UserDetails.userEarnings = {
       ...UserDetails.userEarnings,
-      balance: UserDetails.userEarnings.balance + transData.settlementAmount,
+      balance:
+        Number(UserDetails.userEarnings.balance) +
+        Number(transData.settlementAmount),
     };
     UserDetails.walletDetails = {
       ...UserDetails.walletDetails,
-      balance: UserDetails.walletDetails.balance + transData.settlementAmount,
+      balance:
+        Number(UserDetails.walletDetails.balance) +
+        Number(transData.settlementAmount),
     };
     // Saves referrer details
     await UserDetails.save();
@@ -77,6 +76,7 @@ export const fundLocalWallet = async (req, res, next) => {
       data: {},
     });
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
