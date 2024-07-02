@@ -325,22 +325,41 @@ const TaskDetails = () => {
                   task:
                 </p>
                 <div className="text-sm flex flex-col gap-2 mt-1 ms-2">
-                  <p className="text-xs font-semibold">
-                    <span className="font-bold">Step 1: </span> Visit the task
-                    link above by clicking the{" "}
-                    <span className="font-bold">"Visit Link"</span> button or by
-                    copying and pasting the link into your browser.
+                  <p>
+                    {type === "advert" ? (
+                      <p className="text-xs font-semibold">
+                        <span className="font-bold">Step 1: </span> Download the
+                        advert media using the download button above.
+                      </p>
+                    ) : (
+                      <p className="text-xs font-semibold">
+                        <span className="font-bold">Step 1: </span> Visit the
+                        task link above by clicking the{" "}
+                        <span className="font-bold">"Visit Link"</span> button
+                        or by copying and pasting the link into your browser.
+                      </p>
+                    )}
                   </p>
-                  <p className="text-xs font-semibold">
-                    <span className="font-bold">Step 2:</span>the link will
-                    direct you to the social media page where you are to excute
-                    your task.
+                  <p>
+                    {type === "advert" ? (
+                      <p className="text-xs font-semibold">
+                        <span className="font-bold">Step 2: </span>Copy the
+                        advert caption and post it with the advert media caption
+                        on the selected social media.
+                      </p>
+                    ) : (
+                      <p className="text-xs font-semibold">
+                        <span className="font-bold">Step 2: </span>The link will
+                        direct you to the social media page where you are to
+                        excute your task.
+                      </p>
+                    )}
                   </p>
                   <p className="text-xs font-semibold">
                     <span className="font-bold">Step 3: </span> Perform the task
                     on this social media page and ensure you{" "}
                     <span className="text-red-500 font-bold">DO NOT UNDO</span>{" "}
-                    any task you did cos it might lead to your account being
+                    any task you did as it might lead to your account being
                     banned.
                   </p>
                   <p className="text-xs font-semibold">
@@ -366,7 +385,9 @@ const TaskDetails = () => {
               status == "in-review" ||
               status == "completed" ? (
                 <div className="mt-2">
-                  <p className="font-bold text-xs">Upload Proof of Work:</p>
+                  <p className="font-bold text-xs">
+                    {status == "pending" && "Upload"} Proof of Work:
+                  </p>
                   <p className="methodeNote text-green-500 font-bold text-center">
                     {imagePercentage}
                   </p>
