@@ -24,6 +24,7 @@ import NoData from "../components/NoData/NoData";
 import { SlUserFollowing } from "react-icons/sl";
 import { SiAudiomack } from "react-icons/si";
 import { BiLike } from "react-icons/bi";
+import playStoreImage from "../assets/images/playstore-icon.png";
 
 const TransactionHistory = () => {
   const [perPage, setPerpage] = useState(10);
@@ -83,7 +84,10 @@ const TransactionHistory = () => {
           ) : (
             historyData.data?.map((data) => {
               return (
-                <Link to={`/order-history/${activeTab}/${data.id}`} key={data.id}>
+                <Link
+                  to={`/order-history/${activeTab}/${data.id}`}
+                  key={data.id}
+                >
                   <div
                     className="px-1 py-2 flex items-start gap-2 border-b cursor-pointer hover:bg-slate-50"
                     key={data.id}

@@ -24,6 +24,7 @@ import { BiLike } from "react-icons/bi";
 import numeral from "numeral";
 import formatDate from "../hooks/formatDate";
 import ProofOfWork from "../components/ProofOfWork/ProofOfWork";
+import playStoreImage from "../assets/images/playstore-icon.png";
 
 const OrderDetails = () => {
   const [loading, setLoading] = useState(true);
