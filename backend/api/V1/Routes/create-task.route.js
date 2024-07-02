@@ -1,13 +1,13 @@
 import express from "express";
 import {
-  getAdvertCreators,
-  getEngagementCreators,
+  getAllAdvertCreators,
+  getAllEngagementCreators,
 } from "../Controllers/create-task.controller.js";
 
 const router = express.Router();
 
 // Task Creator Routes
-router.get("/create-advert", getAdvertCreators);
-router.get("/create-engagement", getEngagementCreators);
+router.get("/create-advert", getAllAdvertCreators);
+router.get("/create-engagement", getAllEngagementCreators);
 
 export default router;

@@ -14,12 +14,16 @@ import {
   updateAdminData,
 } from "../Controllers/admin.controller.js";
 import {
+  getAdvertCreators,
+  getEngagementCreators,
   postAdvertCreator,
   postEngagementCreator,
   updateAdvertCreator,
   updateEngagementCreator,
 } from "../Controllers/create-task.controller.js";
 import {
+  getAdvertEarners,
+  getEngagementEarners,
   postAdvertEarner,
   postEngagementEarner,
   updateAdvertEarner,
@@ -76,5 +80,13 @@ router.patch("/withdrawal-request", disapproveWithdrawalRequests);
 
 // All transfers route
 router.get("/all-transfers", getTransfers);
+
+// Admin adverts and engagement earners routes
+router.get("/earn-advert", getAdvertEarners);
+router.get("/earn-engagement", getEngagementEarners);
+
+// Admin adverts and engagement creators routes
+router.get("/create-advert", getAdvertCreators);
+router.get("/create-engagement", getEngagementCreators);
 
 export default router;

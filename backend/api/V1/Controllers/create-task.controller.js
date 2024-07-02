@@ -45,6 +45,37 @@ export const getAdvertCreators = async (req, res, next) => {
   }
 };
 
+export const getAllAdvertCreators = async (req, res, next) => {
+  try {
+    // Checks for valid user
+    const validUser = await User.findOne({ email: req.user.email });
+    if (!validUser) {
+      const error = ErrorHandler(404, "There's no user with this email.");
+      return res.status(404).json(error);
+    }
+
+    const advert_creators = await CreateAdvert.find({});
+
+    const advert_creators_ = advert_creators.map((advert_creator) => {
+      const { updatedAt, createdAt, __v, _id, ...rest } =
+        advert_creator?.toObject();
+
+      return {
+        id: _id,
+        ...rest,
+      };
+    });
+
+    return res.status(200).json({
+      failed: false,
+      data: advert_creators_,
+      message: "Advert creator fetched successfully.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const postAdvertCreator = async (req, res, next) => {
   try {
     //
@@ -120,6 +151,39 @@ export const getEngagementCreators = async (req, res, next) => {
         total: totalCount,
         pages: totalPages,
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllEngagementCreators = async (req, res, next) => {
+  try {
+    // Checks for valid user
+    const validUser = await User.findOne({ email: req.user.email });
+    if (!validUser) {
+      const error = ErrorHandler(404, "There's no user with this email.");
+      return res.status(404).json(error);
+    }
+
+    const engagement_creators = await CreateEngagement.find({});
+
+    const engagement_creators_ = engagement_creators.map(
+      (engagement_creator) => {
+        const { updatedAt, createdAt, __v, _id, ...rest } =
+          engagement_creator?.toObject();
+
+        return {
+          id: _id,
+          ...rest,
+        };
+      }
+    );
+
+    return res.status(200).json({
+      failed: false,
+      data: engagement_creators_,
+      message: "Engagement task creators fetched successfully.",
     });
   } catch (error) {
     next(error);
