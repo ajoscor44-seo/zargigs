@@ -77,51 +77,53 @@ const FundWallet = () => {
               <NoData textBelow={"No funding history"} />
             </div>
           ) : (
-            <table className="border-red-500 rounded-md">
-              <thead className="text-sm border-red-100">
-                <tr>
-                  <th className="text-center font-bold border">S/N</th>
-                  <th className="text-center font-bold border">Date</th>
-                  <th className="text-center font-bold border">Amount</th>
-                  <th className="text-center font-bold border">
-                    Payment Gateway
-                  </th>
-                  <th className="text-center font-bold border">Status</th>
-                </tr>
-              </thead>
+            <div className="border border-red-500 overflow-scroll">
+              <table className="rounded-md w-full">
+                <thead className="text-sm border-red-100">
+                  <tr>
+                    <th className="text-center font-bold border">S/N</th>
+                    <th className="text-center font-bold border">Date</th>
+                    <th className="text-center font-bold border">Amount</th>
+                    <th className="text-center font-bold border">
+                      Payment Gateway
+                    </th>
+                    <th className="text-center font-bold border">Status</th>
+                  </tr>
+                </thead>
 
-              <tbody className="text-xs">
-                {fundings.map((funding) => {
-                  const statusColor =
-                    funding.status.toLowerCase() == "failed"
-                      ? "red"
-                      : funding.status.toLowerCase() == "pending"
-                      ? "orange"
-                      : "green";
-                  return (
-                    <tr key={funding.sn + new Date().getTime()}>
-                      <td className="text-center font-semibold border">
-                        {funding.sn}.
-                      </td>
-                      <td className="text-center font-semibold border">
-                        {formatDate(funding.date)}
-                      </td>
-                      <td className="text-center font-semibold border">
-                        ₦{numeral(funding.amount).format("0,0.00")}
-                      </td>
-                      <td className="text-center font-semibold border">
-                        {funding.payment_gateway}
-                      </td>
-                      <td
-                        className={`text-center text-${statusColor}-500 font-semibold border capitalize`}
-                      >
-                        {funding.status}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                <tbody className="text-xs">
+                  {fundings.map((funding, i) => {
+                    const statusColor =
+                      funding.status.toLowerCase() == "failed"
+                        ? "red"
+                        : funding.status.toLowerCase() == "pending"
+                        ? "orange"
+                        : "green";
+                    return (
+                      <tr key={i}>
+                        <td className="text-center font-semibold border">
+                          {i + 1}.
+                        </td>
+                        <td className="text-center font-semibold border">
+                          {formatDate(funding.createdAt)}
+                        </td>
+                        <td className="text-center font-semibold border">
+                          ₦{numeral(funding.settlementAmount).format("0,0.00")}
+                        </td>
+                        <td className="text-center font-semibold border">
+                          {funding.paymentGateway}
+                        </td>
+                        <td
+                          className={`text-center text-${statusColor}-500 font-semibold border capitalize`}
+                        >
+                          {funding.status}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>
