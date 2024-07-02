@@ -7,6 +7,7 @@ import { BiInfoCircle } from "react-icons/bi";
 import NoData from "../NoData/NoData";
 import { FaSpinner } from "react-icons/fa6";
 import formatDate from "../../hooks/formatDate";
+import { useHistory } from "react-router-dom/cjs/react-router-dom";
 // import ToastNotification from "../ToastNotification/ToastNotification";
 
 const FundWallet = () => {
@@ -18,6 +19,7 @@ const FundWallet = () => {
   const { currentUser } = useAuth();
   const balance = currentUser.userEarnings.balance;
   const walletDetails = currentUser.walletDetails;
+  const history = useHistory();
 
   const getFundings = async () => {
     try {
@@ -42,6 +44,10 @@ const FundWallet = () => {
     <div>
       <BackNav pageName={"Fund Wallet"} />
       <div className="underBackNav h-fit mb-16">
+        <div>
+          <h2>Balance:</h2>
+          <h2>{numeral(balance).format("0,0.00")}</h2>
+        </div>
         <div className="p-2 flex flex-col gap-2 py-3">
           <div className="flex flex-wrap gap-2">
             <h3 className="text-md font-semibold text-gray-400">Bank Name:</h3>
@@ -77,53 +83,55 @@ const FundWallet = () => {
               <NoData textBelow={"No funding history"} />
             </div>
           ) : (
-            <div className="border border-red-500 overflow-scroll">
-              <table className="rounded-md w-full">
-                <thead className="text-sm border-red-100">
-                  <tr>
-                    <th className="text-center font-bold border">S/N</th>
-                    <th className="text-center font-bold border">Date</th>
-                    <th className="text-center font-bold border">Amount</th>
-                    <th className="text-center font-bold border">
-                      Payment Gateway
-                    </th>
-                    <th className="text-center font-bold border">Status</th>
-                  </tr>
-                </thead>
+            <table className="rounded-md w-full">
+              <thead className="text-sm border-red-100">
+                <tr>
+                  <th className="text-center font-bold border">S/N</th>
+                  <th className="text-center font-bold border">Date</th>
+                  <th className="text-center font-bold border">Amount</th>
+                  <th className="text-center font-bold border">
+                    Payment Gateway
+                  </th>
+                  <th className="text-center font-bold border">Status</th>
+                </tr>
+              </thead>
 
-                <tbody className="text-xs">
-                  {fundings.map((funding, i) => {
-                    const statusColor =
-                      funding.status.toLowerCase() == "failed"
-                        ? "red"
-                        : funding.status.toLowerCase() == "pending"
-                        ? "orange"
-                        : "green";
-                    return (
-                      <tr key={i}>
-                        <td className="text-center font-semibold border">
-                          {i + 1}.
-                        </td>
-                        <td className="text-center font-semibold border">
-                          {formatDate(funding.createdAt)}
-                        </td>
-                        <td className="text-center font-semibold border">
-                          ₦{numeral(funding.settlementAmount).format("0,0.00")}
-                        </td>
-                        <td className="text-center font-semibold border">
-                          {funding.paymentGateway}
-                        </td>
-                        <td
-                          className={`text-center text-${statusColor}-500 font-semibold border capitalize`}
-                        >
-                          {funding.status}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+              <tbody className="text-xs">
+                {fundings.map((funding, i) => {
+                  const statusColor =
+                    funding.status.toLowerCase() == "failed"
+                      ? "red"
+                      : funding.status.toLowerCase() == "pending"
+                      ? "orange"
+                      : "green";
+                  return (
+                    <tr
+                      key={i}
+                      onClick={() => history.push(`/fundings/${funding.id}`)}
+                      className="cursor-pointer hover:bg-slate-100"
+                    >
+                      <td className="text-center font-semibold border">
+                        {i + 1}.
+                      </td>
+                      <td className="text-center font-semibold border">
+                        {formatDate(funding.createdAt)}
+                      </td>
+                      <td className="text-center font-semibold border">
+                        ₦{numeral(funding.settlementAmount).format("0,0.00")}
+                      </td>
+                      <td className="text-center font-semibold border">
+                        {funding.paymentGateway}
+                      </td>
+                      <td
+                        className={`text-center text-${statusColor}-500 font-semibold border capitalize`}
+                      >
+                        {funding.status}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           )}
         </div>
       </div>

@@ -129,3 +129,48 @@ export const getFundings = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getFunding = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    // Checks for valid user
+    const validUser = await User.findOne({ email: req.user.email });
+    if (!validUser) {
+      const error = ErrorHandler(404, "There's no user with this email.");
+      return res.status(404).json(error);
+    }
+
+    const funding = await Funding.findById(id);
+    if (!funding) {
+      const error = ErrorHandler(404, "Funding details not found");
+      return res.status(404).json(error);
+    }
+
+    const {
+      updatedAt,
+      orderId,
+      amountPaid,
+      walletReference,
+      userId,
+      __v,
+      _id,
+      ...rest
+    } = funding.toObject();
+
+    const newFundingObj = {
+      id: _id,
+      ...rest,
+    };
+
+    const response = {
+      failed: false,
+      data: newFundingObj,
+      message: "Funding Details",
+    };
+
+    return res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};

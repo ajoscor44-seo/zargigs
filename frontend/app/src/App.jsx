@@ -37,6 +37,7 @@ import TaskDetails from "./pages/TaskDetails.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import EditProfile from "./pages/EditProfile.jsx";
 import TransferPage from "./pages/Transfer.jsx";
+import FundingDetails from "./pages/FundingDetails.jsx";
 
 function App() {
   axios.defaults.baseURL =
@@ -81,6 +82,7 @@ function App() {
             <PrivateRoute path="/notifications" component={Notifications} />
             <PrivateRoute path="/user-details" component={UserDetails} />
             <PrivateRoute path="/fund-wallet" component={FundWallets} />
+            <PrivateRoute path="/fundings/:id" component={FundingDetails} />
             <VerifiedMemberPrivateRoute
               path="/withdraw"
               component={Withdrawal}
