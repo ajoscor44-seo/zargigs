@@ -18,7 +18,6 @@ const FundingDetails = () => {
       const response = await axios.get(`/api/v1/fundings/${id}`);
       const data = response.data.data;
 
-      console.log(data);
       setFundingDetails(data);
       return setLoading(false);
     } catch (error) {

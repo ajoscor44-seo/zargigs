@@ -39,6 +39,9 @@ const Withdraw = () => {
       if (!amount || !password) {
         return setWithdrawalError("Some inputs are yet to be filled.");
       }
+      if (Number(amount) < 100) {
+        return setWithdrawalError("You cannot withdraw less than ₦100");
+      }
       if (Number(balance) - Number(amount) - Number(charges) < 0) {
         return setWithdrawalError("Insufficient balance.");
       }
@@ -96,6 +99,9 @@ const Withdraw = () => {
             <span className="font-semibold text-sm">
               Max. Withdrawable Amount
             </span>
+            <span className="block font-semibold text-sm">
+              Min. Withdrawable Amount
+            </span>
           </span>
           <span>
             <h2 className="font-bold text-dark">
@@ -103,6 +109,9 @@ const Withdraw = () => {
             </h2>
             <span className="font-semibold text-primary text-sm">
               ₦{numeral(amountWithdrawable).format("0,0.00")}
+            </span>
+            <span className="block font-semibold text-primary text-sm">
+              ₦{numeral(100).format("0,0.00")}
             </span>
           </span>
         </div>
