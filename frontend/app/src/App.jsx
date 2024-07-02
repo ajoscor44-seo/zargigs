@@ -38,6 +38,7 @@ import NotFound from "./pages/NotFound.jsx";
 import EditProfile from "./pages/EditProfile.jsx";
 import TransferPage from "./pages/Transfer.jsx";
 import FundingDetails from "./pages/FundingDetails.jsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 
 function App() {
   axios.defaults.baseURL =
@@ -92,6 +93,7 @@ function App() {
               component={TransferPage}
             />
             <PrivateRoute path="/update-location" component={UpdateLocation} />
+            <PrivateRoute path="/privacy-policy" component={PrivacyPolicy} />
             <PrivateRoute path="/edit-profile" component={EditProfile} />
             <PrivateRoute path="/invite" component={InviteFriends} />
             <PrivateRoute path="/advertise/:slug" component={CreateAdvert} />
