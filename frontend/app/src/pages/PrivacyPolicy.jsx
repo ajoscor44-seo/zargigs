@@ -59,7 +59,10 @@ const PrivacyPolicy = () => {
     {
       title: "Contact Us",
       description:
-        "If you have any questions about this privacy policy, please contact us at contactgigsflix@gmail.com",
+        "If you have any questions about this privacy policy, please contact us at",
+      useLink: true,
+      href: "mailto:contactgigsflix@gmail.com",
+      linkText: "contactgigsflix@gmail.com",
     },
   ];
 
@@ -71,7 +74,7 @@ const PrivacyPolicy = () => {
         pathToGo={"/account-settings"}
       />
       <div className="underBackNav border">
-        <Legal title={"Privacy Policy"} data={policies} />
+        <Legal data={policies} />
       </div>
     </div>
   );

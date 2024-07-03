@@ -1,9 +1,8 @@
 import React from "react";
 
-const Legal = ({ title, data }) => {
+const Legal = ({ data }) => {
   return (
     <div className="p-2">
-      <h1 className="text-lg font-bold italic mb-2">{title}</h1>
       <div className="flex flex-col gap-2">
         {data.map((item, i) => {
           return (
@@ -24,7 +23,18 @@ const Legal = ({ title, data }) => {
                   <h2 className="font-semibold italic text-green-500">
                     {item.title}
                   </h2>
-                  <p className="text-sm">{item.description}</p>
+                  <p className="text-sm">
+                    {item.description}{" "}
+                    {item.useLink && (
+                      <a
+                        className="text-green-500 hover:underline"
+                        href={item.href}
+                        target="_blank"
+                      >
+                        {item.linkText}
+                      </a>
+                    )}
+                  </p>
                 </div>
               )}
             </div>

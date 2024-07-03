@@ -57,9 +57,10 @@ const Notifications = () => {
         ) : notifications.length ? (
           <div>
             <div>
-              {notifications.map((notification) => {
+              {notifications.map((notification, i) => {
                 return (
                   <Notification
+                    key={i}
                     markAsRead={markAsRead}
                     notification={notification}
                   />
