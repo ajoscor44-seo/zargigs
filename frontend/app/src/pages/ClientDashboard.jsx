@@ -13,7 +13,7 @@ import axios from "axios";
 import Announcements from "../components/Announcements/Announcements";
 
 const ClientDashboard = () => {
-  const { currentUser, adminData } = useAuth();
+  const { currentUser, adminData, getAdminData } = useAuth();
   const [recentActivities, setRecentActivities] = useState([]);
 
   // Fetches the recent activities
@@ -33,6 +33,9 @@ const ClientDashboard = () => {
   };
 
   useEffect(() => {
+    if (!adminData) {
+      getAdminData();
+    }
     fetchRecentActivities();
   }, []);
 

@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SignupLayout from "../Layouts/SignupLayout";
 import { useParams } from "react-router-dom/cjs/react-router-dom";
 import PageSlider from "../components/PageSlider/PageSlider";
 import { useAuth } from "../context/AuthContext";
 
 const SignUp = ({ setSignedIn }) => {
-  const { signupUser, adminData } = useAuth();
+  const { signupUser, adminData, getAdminData } = useAuth();
   const { username } = useParams();
   const [formData, setFormData] = useState(
     username ? { referredBy: username } : {}
@@ -197,6 +197,12 @@ const SignUp = ({ setSignedIn }) => {
       return console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (!adminData) {
+      return getAdminData();
+    }
+  }, []);
 
   return (
     <div

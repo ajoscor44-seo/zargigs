@@ -189,6 +189,7 @@ const AuthProvider = ({ children }) => {
     getAdvertEarners,
     getEngagementCreator,
     getAdvertCreator,
+    getAdminData,
   };
 
   return (

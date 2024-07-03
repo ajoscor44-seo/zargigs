@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import { GrPowerReset } from "react-icons/gr";
 import { MdOutlineLogin } from "react-icons/md";
@@ -10,7 +10,7 @@ import OAuth from "../components/OAuth/OAuth";
 const Login = ({ setNotVerified }) => {
   const [email, setEmail] = useState(null);
   const [formData, setFormData] = useState({});
-  const { loginUser, fetchUserData, adminData } = useAuth();
+  const { loginUser, fetchUserData, adminData, getAdminData } = useAuth();
   const [password, setPassword] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -70,6 +70,12 @@ const Login = ({ setNotVerified }) => {
       return setError(error.message);
     }
   };
+
+  useEffect(() => {
+    if (!adminData) {
+      return getAdminData();
+    }
+  }, []);
 
   return (
     <div className="bg-white px-4 py-10 lg:py-0 lg:flex max-h-screen overflow-hidden">
