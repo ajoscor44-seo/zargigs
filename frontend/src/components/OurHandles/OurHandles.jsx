@@ -44,7 +44,11 @@ const OurHandles = () => {
       </div>
 
       <div className="flex justify-center mt-4 gap-10 py-3">
-        <a className="flex flex-col items-center">
+        <a
+          href="https://facebook.com/gigsflix"
+          target="_blank"
+          className="flex flex-col items-center"
+        >
           <div className="service_icon border p-4 rounded-full">
             <FaFacebook size={25} className="text-blue-600" />
           </div>

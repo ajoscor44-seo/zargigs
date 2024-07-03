@@ -13,7 +13,7 @@ const Legal = ({ title, data }) => {
                   <h2 className="font-semibold italic text-green-500">
                     {item.title}
                   </h2>
-                  <ul className=" list-disc">
+                  <ul className="flex flex-col gap-2 list-disc">
                     {item.list.map((lItem) => (
                       <li className="text-sm block">{lItem}</li>
                     ))}

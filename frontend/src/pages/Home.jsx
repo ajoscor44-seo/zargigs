@@ -6,6 +6,7 @@ import OurHandles from "../components/OurHandles/OurHandles";
 import Services from "../components/Services/Services";
 import Footer from "../components/Footer/Footer";
 import RightServed from "../components/CompanyRights/RightServed";
+import ContactUs from "../components/ContactUs/ContactUs";
 
 const Home = () => {
   return (
@@ -16,6 +17,7 @@ const Home = () => {
         <WhatYouDo />
         <AboutUs />
         <OurHandles />
+        <ContactUs />
         <Footer />
         <RightServed />
       </div>

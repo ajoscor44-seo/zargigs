@@ -16,12 +16,20 @@ const Footer = () => {
   };
 
   return (
-    <div className="bg-white p-5 lg:flex lg:justify-center gap-20">
+    <div className="bg-slate-50 p-5 lg:flex lg:justify-center gap-20">
       <div>
         <h2 className="footer_head">Company</h2>
         <ul className="footer_list">
           <li
-            className="footer_list-item"
+            className="footer_list-item block lg:hidden"
+            onClick={() => {
+              scrollTo(3200);
+            }}
+          >
+            About
+          </li>
+          <li
+            className="footer_list-item hidden lg:block"
             onClick={() => {
               scrollTo(2000);
             }}
@@ -99,8 +107,8 @@ const Footer = () => {
           <li className="footer_list-item flex items-center gap-2">
             <FaFacebook className="text-blue-700" size={20} />
             <span>
-              <a target="_blank" href="#">
-                Gigsflix Technologies
+              <a target="_blank" href="https://facebook.com/gigsflix">
+                Gigsflix
               </a>
             </span>
           </li>
