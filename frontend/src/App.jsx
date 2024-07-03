@@ -8,6 +8,7 @@ import AuthProvider from "./context/LandingContext";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import RefundPolicy from "./pages/RefundPolicy";
 import AboutUs from "./pages/AboutUs";
+import TermsOfUse from "./pages/TermsOfUse";
 
 function App() {
   axios.defaults.baseURL =
@@ -32,6 +33,9 @@ function App() {
           </Route>
           <Route path="/about-us">
             <AboutUs />
+          </Route>
+          <Route path="/terms">
+            <TermsOfUse />
           </Route>
         </Router>
       </AuthProvider>
