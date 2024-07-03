@@ -38,7 +38,6 @@ import NotFound from "./pages/NotFound.jsx";
 import EditProfile from "./pages/EditProfile.jsx";
 import TransferPage from "./pages/Transfer.jsx";
 import FundingDetails from "./pages/FundingDetails.jsx";
-import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 
 function App() {
   axios.defaults.baseURL =
@@ -63,7 +62,6 @@ function App() {
             <Route exact path="/login">
               <Authentication />
             </Route>
-            <Route path="/privacy-policy" component={PrivacyPolicy} />
 
             {/* Client Forgot Password Route */}
             <PrivateRoute

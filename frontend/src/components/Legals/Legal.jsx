@@ -20,7 +20,7 @@ const Legal = ({ title, data }) => {
                   </ul>
                 </div>
               ) : (
-                <div>
+                <div key={i}>
                   <h2 className="font-semibold italic text-green-500">
                     {item.title}
                   </h2>

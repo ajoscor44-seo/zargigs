@@ -69,8 +69,7 @@ const ContactUs = () => {
                   Location:
                 </span>
                 <p className="font-primary">
-                  N0. 101, Lorem Street, Ipsum Valley, Dolor Ibadan Motor Park,
-                  Clark Island, Maros City.
+                  No 15 Elesare Quarters, Orita Obele, Akure, Nigeria
                 </p>
               </div>
             </div>

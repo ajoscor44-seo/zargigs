@@ -1,5 +1,4 @@
 import React from "react";
-import BackNav from "../components/BackNav/BackNav";
 import Legal from "../components/Legals/Legal";
 
 const PrivacyPolicy = () => {

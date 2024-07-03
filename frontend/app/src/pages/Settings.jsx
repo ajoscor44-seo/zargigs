@@ -66,17 +66,17 @@ const Settings = () => {
     {
       icon: <MdOutlinePrivacyTip size={20} />,
       name: "Privacy policy",
-      path: "/privacy-policy",
+      exPath: "https://www.gigsflix.com/privacy-policy",
     },
     {
       icon: <FcAbout size={20} />,
       name: `About ${adminData?.appName}`,
-      path: "/about-us",
+      path: "https://www.gigsflix.com/about-us",
     },
     {
       icon: <CiCircleInfo size={20} />,
       name: "Terms Of Use",
-      path: "/term-of-use",
+      path: "https://www.gigsflix.com/terms",
     },
     {
       icon: <CiPower size={20} />,
@@ -135,7 +135,7 @@ const Settings = () => {
             return (
               <Setting
                 key={setting.name}
-                path={setting.path}
+                path={setting.path || setting.exPath}
                 settingName={setting.name}
                 icon={setting.icon}
                 logout={logout}

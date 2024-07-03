@@ -5,6 +5,9 @@ import {
 } from "react-router-dom/cjs/react-router-dom.min";
 import axios from "axios";
 import AuthProvider from "./context/LandingContext";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import RefundPolicy from "./pages/RefundPolicy";
+import AboutUs from "./pages/AboutUs";
 
 function App() {
   axios.defaults.baseURL =
@@ -20,6 +23,15 @@ function App() {
           {/* Landing Page */}
           <Route exact path="/">
             <Home />
+          </Route>
+          <Route path="/privacy-policy">
+            <PrivacyPolicy />
+          </Route>
+          <Route path="/refund-policy">
+            <RefundPolicy />
+          </Route>
+          <Route path="/about-us">
+            <AboutUs />
           </Route>
         </Router>
       </AuthProvider>

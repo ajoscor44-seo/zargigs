@@ -40,10 +40,12 @@ const Footer = () => {
             <a href="#">Careers</a>
           </li>
           <li className="footer_list-item">
-            <a href={`${app_url}/refund-policy`}>Refund Policy</a>
+            <a href={"https://www.gigsflix.com/refund-policy"}>Refund Policy</a>
           </li>
           <li className="footer_list-item">
-            <a href={`${app_url}/privacy-policy`}>Privacy Policy</a>
+            <a href={"https://www.gigsflix.com/privacy-policy"}>
+              Privacy Policy
+            </a>
           </li>
         </ul>
       </div>
@@ -61,7 +63,7 @@ const Footer = () => {
             </a>
           </li>
           <li className="footer_list-item">
-            <a href={`${app_url}/terms`}>Terms</a>
+            <a href={"https://www.gigsflix.com/terms"}>Terms</a>
           </li>
         </ul>
       </div>

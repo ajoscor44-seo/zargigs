@@ -1,0 +1,46 @@
+import React from "react";
+import Legal from "../components/Legals/Legal";
+
+const AboutUs = () => {
+  const data = [
+    {
+      title: "Welcome to Gigsflix",
+      description:
+        "Welcome to Gigsflix. We value your privacy and are committed toGigsflix.com is a dynamic platform designed to connect users with a wide range of earning opportunities. Whether you're looking to complete simple tasks, promote products, or engage in various online activities, Gigsflix provides a user-friendly environment to help you achieve your financial goals.",
+    },
+    {
+      title: "Our Mission",
+      description:
+        "Our mission is to empower individuals by providing them with flexible and accessible earning opportunities. We believe in the power of the gig economy and strive to create a platform that benefits both task creators and task performers.",
+    },
+    {
+      title: "What We Offer",
+      useList: true,
+      list: [
+        "Diverse Tasks: From social media engagements to app downloads and surveys, we offer a variety of tasks to suit different skills and interests.",
+        "User-Friendly Interface: Our platform is designed to be intuitive and easy to navigate, ensuring a seamless experience for all users.",
+        "Reliable Payments: We prioritize timely and secure payments to ensure that our users are rewarded fairly for their efforts.",
+      ],
+    },
+    {
+      title: "Join Us",
+      description:
+        "Become a part of the Gigsflix community and start earning today. Whether you're a task creator looking to promote your business or a task performer seeking new opportunities, Gigsflix is here to support you.",
+    },
+    {
+      title: "Contact Us",
+      description: "For more information, feel free to contact us at",
+      useLink: true,
+      href: "mailto:contactgigsflix@gmail.com",
+      linkText: "contactgigsflix@gmail.com",
+    },
+  ];
+
+  return (
+    <div className="border">
+      <Legal title={"About Us"} data={data} />
+    </div>
+  );
+};
+
+export default AboutUs;

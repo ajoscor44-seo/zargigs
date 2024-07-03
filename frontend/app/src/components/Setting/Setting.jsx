@@ -6,19 +6,37 @@ const Setting = ({ icon, settingName, path, logout }) => {
   return (
     <div>
       {settingName.toLowerCase() !== "logout" ? (
-        <Link to={path}>
-          <div className="px-3 py-2 hover:bg-slate-50 flex justify-between items-center font-primary border-b">
-            <div className="flex items-center gap-2">
-              <div className="text-slate-700 p-2">{icon}</div>
-              <div className="font-semibold text-sm text-slate-700">
-                {settingName}
+        <div>
+          {path.startsWith("https://") ? (
+            <a target="_blank" href={path}>
+              <div className="px-3 py-2 hover:bg-slate-50 flex justify-between items-center font-primary border-b">
+                <div className="flex items-center gap-2">
+                  <div className="text-slate-700 p-2">{icon}</div>
+                  <div className="font-semibold text-sm text-slate-700">
+                    {settingName}
+                  </div>
+                </div>
+                <div className="text-slate-500">
+                  <IoIosArrowForward size={20} />
+                </div>
               </div>
-            </div>
-            <div className="text-slate-500">
-              <IoIosArrowForward size={20} />
-            </div>
-          </div>
-        </Link>
+            </a>
+          ) : (
+            <Link to={path}>
+              <div className="px-3 py-2 hover:bg-slate-50 flex justify-between items-center font-primary border-b">
+                <div className="flex items-center gap-2">
+                  <div className="text-slate-700 p-2">{icon}</div>
+                  <div className="font-semibold text-sm text-slate-700">
+                    {settingName}
+                  </div>
+                </div>
+                <div className="text-slate-500">
+                  <IoIosArrowForward size={20} />
+                </div>
+              </div>
+            </Link>
+          )}
+        </div>
       ) : (
         <div
           onClick={logout}
