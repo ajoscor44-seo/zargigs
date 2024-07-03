@@ -187,6 +187,8 @@ const AuthProvider = ({ children }) => {
     verifyUserEmail,
     getEngagementEarners,
     getAdvertEarners,
+    getEngagementCreator,
+    getAdvertCreator,
   };
 
   return (

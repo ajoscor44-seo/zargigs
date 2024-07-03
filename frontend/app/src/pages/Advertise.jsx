@@ -1,13 +1,20 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import { FaHistory } from "react-icons/fa";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import PricingWay from "../components/PricingWay/PricingWay";
 import { useAuth } from "../context/AuthContext";
+import { FaSpinner } from "react-icons/fa6";
 
 const Adevertise = () => {
-  const { advertCreator } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const { advertCreator, getAdvertCreator } = useAuth();
+
+  useEffect(() => {
+    getAdvertCreator();
+    return setLoading(false);
+  });
 
   return (
     <div className="font-primary">
@@ -47,19 +54,25 @@ const Adevertise = () => {
           </p>
         </div>
 
-        <div className="py-4 flex flex-col gap-2 mb-12">
-          {advertCreator.map((way) => {
-            return (
-              <Link to={way.pathToPage} key={way.pathToPage}>
-                <PricingWay
-                  way={way}
-                  addSelectBtn={true}
-                  wayDescription={`${way.description}`}
-                />
-              </Link>
-            );
-          })}
-        </div>
+        {loading ? (
+          <div className="w-full min-h-96 flex justify-center items-center">
+            <FaSpinner size={30} color="green" />
+          </div>
+        ) : (
+          <div className="py-4 flex flex-col gap-2 mb-12">
+            {advertCreator.map((way) => {
+              return (
+                <Link to={way.pathToPage} key={way.pathToPage}>
+                  <PricingWay
+                    way={way}
+                    addSelectBtn={true}
+                    wayDescription={`${way.description}`}
+                  />
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
       <ClientMenuBar />
     </div>
