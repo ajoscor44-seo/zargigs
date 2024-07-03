@@ -21,6 +21,24 @@ export const getUserDetails = async (req, res, next) => {
     return res.status(200).json({ ...rest });
   }
 
+  const referrals = await Promise.all(
+    validUser.referrals.map(async (referral) => {
+      const user = await User.findById(referral.userId);
+
+      const {
+        username,
+        email,
+        isEmailVerified,
+        isMember,
+        isBanned,
+        image,
+        ...rest
+      } = user.toObject();
+
+      return { username, email, isEmailVerified, isMember, isBanned, image };
+    })
+  );
+
   // Destructures user details object
   const {
     userId,
@@ -30,8 +48,9 @@ export const getUserDetails = async (req, res, next) => {
     updatedAt: detailsUpdatedAt,
     ...details
   } = validUserDetails._doc;
+  const uDetails = { ...details, referrals };
 
-  res.json({ ...rest, ...details, id: _id });
+  res.json({ ...rest, ...uDetails, id: _id });
   next();
 };
 
