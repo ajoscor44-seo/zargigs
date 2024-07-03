@@ -2,45 +2,47 @@ import React from "react";
 
 const Legal = ({ title, data }) => {
   return (
-    <div className="p-2">
-      <h1 className="text-lg font-bold italic mb-2">{title}</h1>
-      <div className="flex flex-col gap-2">
-        {data.map((item, i) => {
-          return (
-            <div key={i}>
-              {item.useList ? (
-                <div>
-                  <h2 className="font-semibold italic text-green-500">
-                    {item.title}
-                  </h2>
-                  <ul className="flex flex-col gap-2 list-disc">
-                    {item.list.map((lItem) => (
-                      <li className="text-sm block">{lItem}</li>
-                    ))}
-                  </ul>
-                </div>
-              ) : (
-                <div key={i}>
-                  <h2 className="font-semibold italic text-green-500">
-                    {item.title}
-                  </h2>
-                  <p className="text-sm">
-                    {item.description}{" "}
-                    {item.useLink && (
-                      <a
-                        className="text-green-500 hover:underline"
-                        href={item.href}
-                        target="_blank"
-                      >
-                        {item.linkText}
-                      </a>
-                    )}
-                  </p>
-                </div>
-              )}
-            </div>
-          );
-        })}
+    <div className="px-2 py-5 lg:flex flex-col justify-center items-center h-screen overflow-y-scroll">
+      <div className="h-screen" style={{ maxWidth: "500px" }}>
+        <h1 className="text-lg font-bold italic mb-2">{title}</h1>
+        <div className="flex flex-col gap-2">
+          {data.map((item, i) => {
+            return (
+              <div key={i}>
+                {item.useList ? (
+                  <div>
+                    <h2 className="font-semibold italic text-green-500">
+                      {item.title}
+                    </h2>
+                    <ul className="flex flex-col gap-2 list-disc">
+                      {item.list.map((lItem) => (
+                        <li className="text-xs block">{lItem}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <div key={i}>
+                    <h2 className="font-semibold italic text-green-500">
+                      {item.title}
+                    </h2>
+                    <p className="text-xs font-semibold">
+                      {item.description}{" "}
+                      {item.useLink && (
+                        <a
+                          className="text-green-500 hover:underline"
+                          href={item.href}
+                          target="_blank"
+                        >
+                          {item.linkText}
+                        </a>
+                      )}
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
