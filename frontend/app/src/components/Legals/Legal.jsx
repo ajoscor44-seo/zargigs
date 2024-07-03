@@ -1,8 +1,9 @@
 import React from "react";
 
-const Legal = ({ data }) => {
+const Legal = ({ title, data }) => {
   return (
     <div className="p-2">
+      <h1 className="text-lg font-bold italic mb-2">{title}</h1>
       <div className="flex flex-col gap-2">
         {data.map((item, i) => {
           return (

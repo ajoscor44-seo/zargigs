@@ -63,6 +63,7 @@ function App() {
             <Route exact path="/login">
               <Authentication />
             </Route>
+            <Route path="/privacy-policy" component={PrivacyPolicy} />
 
             {/* Client Forgot Password Route */}
             <PrivateRoute
@@ -93,7 +94,6 @@ function App() {
               component={TransferPage}
             />
             <PrivateRoute path="/update-location" component={UpdateLocation} />
-            <PrivateRoute path="/privacy-policy" component={PrivacyPolicy} />
             <PrivateRoute path="/edit-profile" component={EditProfile} />
             <PrivateRoute path="/invite" component={InviteFriends} />
             <PrivateRoute path="/advertise/:slug" component={CreateAdvert} />

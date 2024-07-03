@@ -69,7 +69,10 @@ const OurHandles = () => {
           className="flex flex-col items-center"
         >
           <div className="service_icon border p-4 rounded-full">
-            <FaSquareInstagram size={25} className="text-purple-900" />
+            <FaSquareInstagram
+              size={25}
+              className="bg-instagram-gradient text-white rounded"
+            />
           </div>
 
           <p className="font-bold text-lg font-primary">Instagram</p>

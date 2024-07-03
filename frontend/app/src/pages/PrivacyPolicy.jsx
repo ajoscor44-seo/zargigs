@@ -67,15 +67,8 @@ const PrivacyPolicy = () => {
   ];
 
   return (
-    <div>
-      <BackNav
-        pageName={"Privacy Policy"}
-        usePath={true}
-        pathToGo={"/account-settings"}
-      />
-      <div className="underBackNav border">
-        <Legal data={policies} />
-      </div>
+    <div className="border">
+      <Legal title={"Privacy Policy"} data={policies} />
     </div>
   );
 };
