@@ -1121,24 +1121,19 @@ export const sanctionTask = async (req, res, next) => {
   const { id, sanction, parentId } = req.query;
 
   try {
-    // Validates user
-    const validUser = await User.findOne({ email: req.user.email });
-    if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
-    }
-    const validUserDetails = await userDetails.findOne({
-      userId: validUser._id,
-    });
-    if (!validUserDetails) {
-      const error = ErrorHandler(404, "There's no user details for this user.");
-      return res.status(404).json(error);
-    }
-
     const taskInReview = await InReviewTask.findOneAndDelete({ _id: parentId });
     if (!taskInReview) {
       const error = ErrorHandler(400, "No task in review.");
       return res.status(400).json(error);
+    }
+
+    const taskDoerDetails = await userDetails.findOne({
+      userId: taskInReview?.doneBy,
+    });
+
+    if (!taskDoerDetails) {
+      const error = ErrorHandler(404, "There's no doer details for this user.");
+      return res.status(404).json(error);
     }
 
     let notification;
@@ -1168,25 +1163,25 @@ export const sanctionTask = async (req, res, next) => {
         type: "task",
       };
 
-      validUserDetails.userEarnings = {
-        ...validUserDetails.userEarnings,
+      taskDoerDetails.userEarnings = {
+        ...taskDoerDetails.userEarnings,
         balance:
-          Number(validUserDetails.userEarnings.balance) +
+          Number(taskDoerDetails.userEarnings.balance) +
           Number(taskInReview?.earningPerTask),
         totalEarnings:
-          Number(validUserDetails.userEarnings.totalEarnings) +
+          Number(taskDoerDetails.userEarnings.totalEarnings) +
           Number(taskInReview?.earningPerTask),
         pendingEarnings:
-          Number(validUserDetails.userEarnings.pendingEarnings) -
+          Number(taskDoerDetails.userEarnings.pendingEarnings) -
           Number(taskInReview?.earningPerTask),
       };
-      validUserDetails.walletDetails = {
-        ...validUserDetails.walletDetails,
+      taskDoerDetails.walletDetails = {
+        ...taskDoerDetails.walletDetails,
         balance:
-          Number(validUserDetails.walletDetails.balance) +
+          Number(taskDoerDetails.walletDetails.balance) +
           Number(taskInReview?.earningPerTask),
       };
-      await validUserDetails.save();
+      await taskDoerDetails.save();
 
       const taskQuery = {
         taskPlatform: taskInReview?.taskPlatform,
@@ -1229,13 +1224,13 @@ export const sanctionTask = async (req, res, next) => {
       };
 
       // Update user earnings
-      validUserDetails.userEarnings = {
-        ...validUserDetails.userEarnings,
+      taskDoerDetails.userEarnings = {
+        ...taskDoerDetails.userEarnings,
         pendingEarnings:
-          Number(validUserDetails.userEarnings.pendingEarnings) -
+          Number(taskDoerDetails.userEarnings.pendingEarnings) -
           Number(taskInReview?.earningPerTask),
       };
-      await validUserDetails.save();
+      await taskDoerDetails.save();
 
       const taskQuery = {
         taskPlatform: taskInReview?.taskPlatform,
