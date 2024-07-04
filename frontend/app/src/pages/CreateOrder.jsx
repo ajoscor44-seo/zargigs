@@ -35,8 +35,8 @@ const CreateOrder = () => {
     religion: undefined,
     link: undefined,
     numberOfTasks: undefined,
-    costPerTask: wayToCreateEngagement.amountToPay,
-    earningPerTask: wayToCreateEngagement.amountToEarn,
+    payId: wayToCreateEngagement.id,
+    earnId: wayToCreateEngagement.earnId,
     taskPlatform: wayToCreateEngagement.platformName.toLowerCase(),
   });
 

@@ -13,6 +13,10 @@ import User from "../Models/user.model.js";
 import { ErrorHandler } from "../utils/error.js";
 import { sendNotitfication } from "../utils/notification.js";
 import logger from "../utils/logger.util.js";
+import EarnEngagement from "../Models/earn-engagement.model.js";
+import CreateEngagement from "../Models/create-engagement.model.js";
+import EarnAdvert from "../Models/earn-advert.model.js";
+import CreateAdvert from "../Models/create-advert.model.js";
 
 // Advert task controllers
 export const getAdvertTask = async (req, res, next) => {
@@ -95,6 +99,8 @@ export const getAdvertTasks = async (req, res, next) => {
 
 export const postAdvertTask = async (req, res, next) => {
   const {
+    earnId,
+    payId,
     title,
     taskType,
     gender,
@@ -103,8 +109,6 @@ export const postAdvertTask = async (req, res, next) => {
     caption,
     mediaUrl,
     numberOfTasks,
-    costPerTask,
-    earningPerTask,
     taskPlatform,
   } = req.body;
 
@@ -115,6 +119,11 @@ export const postAdvertTask = async (req, res, next) => {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);
     }
+
+    const earnAdvert = await EarnAdvert.findById(earnId);
+    const { amountToEarn } = earnAdvert.toObject();
+    const createAdvert = await CreateAdvert.findById(payId);
+    const { amountToPay } = createAdvert.toObject();
 
     // Create new advert task
     const newAdvertTask = new AdvertTask({
@@ -129,8 +138,8 @@ export const postAdvertTask = async (req, res, next) => {
       numberOfTasks: Number(numberOfTasks),
       allocatedTasks: 0,
       completedTasks: 0,
-      costPerTask: Number(costPerTask),
-      earningPerTask: Number(earningPerTask),
+      costPerTask: Number(amountToPay),
+      earningPerTask: Number(amountToEarn),
       status: "pending",
       title,
     });
@@ -231,6 +240,8 @@ export const getEngagementTasks = async (req, res, next) => {
 
 export const postEngagementTask = async (req, res, next) => {
   const {
+    earnId,
+    payId,
     title,
     taskType,
     gender,
@@ -238,8 +249,6 @@ export const postEngagementTask = async (req, res, next) => {
     religion,
     link,
     numberOfTasks,
-    costPerTask,
-    earningPerTask,
     taskPlatform,
   } = req.body;
 
@@ -250,6 +259,11 @@ export const postEngagementTask = async (req, res, next) => {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);
     }
+
+    const earnEngagement = await EarnEngagement.findById(earnId);
+    const { amountToEarn } = earnEngagement.toObject();
+    const createEngagement = await CreateEngagement.findById(payId);
+    const { amountToPay } = createEngagement.toObject();
 
     // Create new engagement task
     const newEngagementTask = new EngagementTask({
@@ -263,8 +277,8 @@ export const postEngagementTask = async (req, res, next) => {
       numberOfTasks: Number(numberOfTasks),
       allocatedTasks: 0,
       completedTasks: 0,
-      costPerTask: Number(costPerTask),
-      earningPerTask: Number(earningPerTask),
+      costPerTask: Number(amountToPay),
+      earningPerTask: Number(amountToEarn),
       status: "pending",
       title,
     });
@@ -501,29 +515,29 @@ export const generateTask = async (req, res, next) => {
 
     // Needs to check something here
     const newAllocatedTask = new AllocatedTask({
-      createdBy: Task.createdBy,
-      parentId: Task.id,
-      allocatedTo: req.user._id,
+      createdBy: Task?.createdBy,
+      parentId: Task?.id,
+      allocatedTo: req.user?._id,
       taskType: taskType,
-      taskPlatform: Task.taskPlatform,
-      link: Task.link,
-      earningPerTask: Task.earningPerTask,
-      title: Task.title,
-      caption: Task.caption,
-      mediaUrl: Task.mediaUrl,
+      taskPlatform: Task?.taskPlatform,
+      link: Task?.link,
+      earningPerTask: Task?.earningPerTask,
+      title: Task?.title,
+      caption: Task?.caption,
+      mediaUrl: Task?.mediaUrl,
     });
     const newPendingTask = new PendingTask({
-      allocationId: newAllocatedTask._id,
-      createdBy: Task.createdBy,
-      parentId: Task.id,
-      toBeDoneBy: req.user._id,
+      allocationId: newAllocatedTask?._id,
+      createdBy: Task?.createdBy,
+      parentId: Task?.id,
+      toBeDoneBy: req.user?._id,
       taskType: taskType,
-      taskPlatform: Task.taskPlatform,
-      link: Task.link,
-      earningPerTask: Task.costPerTask,
-      title: Task.title,
-      caption: Task.caption,
-      mediaUrl: Task.mediaUrl,
+      taskPlatform: Task?.taskPlatform,
+      link: Task?.link,
+      earningPerTask: Task?.earningPerTask,
+      title: Task?.title,
+      caption: Task?.caption,
+      mediaUrl: Task?.mediaUrl,
     });
     await newAllocatedTask.save();
     await newPendingTask.save();
@@ -993,7 +1007,6 @@ export const requestForReview = async (req, res, next) => {
     createdBy,
     title,
     link,
-    earningPerTask,
     caption,
     mediaUrl,
   } = req.body;
@@ -1012,6 +1025,23 @@ export const requestForReview = async (req, res, next) => {
       const error = ErrorHandler(404, "There's no details for this user.");
       return res.status(404).json(error);
     }
+
+    // const earningPerTask =
+    const pendingTaskDetails = await PendingTask.findOne({
+      toBeDoneBy: req.user._id,
+      taskPlatform: platform,
+      taskType: type,
+      allocationId: id,
+    });
+
+    if (!pendingTaskDetails) {
+      const error = ErrorHandler(
+        404,
+        "There's no pending task of this type for this platform."
+      );
+      return res.status(404).json(error);
+    }
+    const { earningPerTask } = pendingTaskDetails?.toObject();
 
     // Creates new task for review
     const newInReviewTask = new InReviewTask({

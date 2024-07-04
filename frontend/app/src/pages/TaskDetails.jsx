@@ -144,7 +144,6 @@ const TaskDetails = () => {
         parentId: taskDetails?.parentId,
         title: taskDetails?.title,
         link: taskDetails?.link,
-        earningPerTask: taskDetails?.earningPerTask,
         caption: taskDetails?.caption,
         mediaUrl: taskDetails?.mediaUrl,
       });
@@ -162,6 +161,7 @@ const TaskDetails = () => {
       await fetchUserData();
       return history.push(`/earn/${slug}`);
     } catch (error) {
+      setLoading(false);
       return setUploadError(error);
     }
   };

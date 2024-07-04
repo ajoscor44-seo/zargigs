@@ -14,7 +14,7 @@ const Adevertise = () => {
   useEffect(() => {
     getAdvertCreator();
     return setLoading(false);
-  });
+  }, []);
 
   return (
     <div className="font-primary">

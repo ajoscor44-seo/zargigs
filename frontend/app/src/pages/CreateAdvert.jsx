@@ -42,8 +42,8 @@ const CreateAdvert = () => {
     caption: undefined,
     mediaUrl: undefined,
     numberOfTasks: undefined,
-    costPerTask: wayToCreateAdvert?.amountToPay,
-    earningPerTask: wayToCreateAdvert?.amountToEarn,
+    payId: wayToCreateAdvert?.id,
+    earnId: wayToCreateAdvert?.earnId,
     taskPlatform: wayToCreateAdvert?.platformName.toLowerCase(),
   });
 

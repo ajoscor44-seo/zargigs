@@ -116,42 +116,55 @@ const EarningWay = ({ way, addSelectBtn, wayDescription, type }) => {
             <div className="flex items-center gap-2">
               <span>Platforms: </span>
               <span className="flex items-center gap-1">
-                {way.platforms.map((platform) =>
+                {way.platforms.map((platform, i) =>
                   platform.toLowerCase() === "facebook" ? (
-                    <FaFacebook className="text-blue-600" size={15} />
+                    <FaFacebook key={i} className="text-blue-600" size={15} />
                   ) : platform.toLowerCase() === "instagram" ? (
                     <FaInstagram
                       size={15}
+                      key={i}
                       className="text-white bg-instagram-gradient rounded"
                     />
                   ) : platform.toLowerCase() === "whatsapp" ? (
-                    <FaWhatsapp size={15} className="text-green-500 rounded" />
+                    <FaWhatsapp
+                      key={i}
+                      size={15}
+                      className="text-green-500 rounded"
+                    />
                   ) : platform.toLowerCase() === "tiktok" ? (
                     <FaTiktok
                       size={15}
+                      key={i}
                       className="text-white bg-black rounded p-1"
                     />
                   ) : platform.toLowerCase() === "audiomack" ? (
                     <SiAudiomack
                       size={15}
+                      key={i}
                       className="text-orange-500 bg-black rounded"
                     />
                   ) : platform.toLowerCase() === "applestore" ? (
                     <IoLogoAppleAppstore
                       size={15}
+                      key={i}
                       className="text-blue-500 bg-white rounded-full"
                     />
                   ) : platform.toLowerCase() === "playstore" ? (
                     <img
+                      key={i}
                       src={playStoreImage}
                       className="w-5 h-5 object-cover"
                     />
                   ) : platform.toLowerCase() === "youtube" ? (
-                    <FaYoutube size={15} className="text-red-500" />
+                    <FaYoutube key={i} size={15} className="text-red-500" />
                   ) : platform.toLowerCase() === "telegram" ? (
-                    <FaTelegram size={15} className="text-blue-400 bg-white" />
+                    <FaTelegram
+                      key={i}
+                      size={15}
+                      className="text-blue-400 bg-white"
+                    />
                   ) : (
-                    <FaTwitter className="text-blue-400" size={15} />
+                    <FaTwitter key={i} className="text-blue-400" size={15} />
                   )
                 )}
               </span>
