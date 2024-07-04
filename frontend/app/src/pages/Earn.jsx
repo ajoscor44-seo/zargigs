@@ -82,10 +82,8 @@ const Earn = () => {
             </Link>{" "}
             to monitor and track the progress of your tasks in review.
           </p>
-          <h2 
-            className="text-orange-500 text-xs text-center font-semi old hover:underline">
-           <a                           href="https://whatsapp.com/channel/0029Vaiyg0FFcovzni47lR34"           target="_blank" >Click here to join our channel for the latest update on gigsflix
-           </a>
+          <h2 className="text-orange-500 text-xs text-center font-semi old hover:underline">
+           <a href="https://whatsapp.com/channel/0029Vaiyg0FFcovzni47lR34" target="_blank">Click here to join our channel for the latest update on gigsflix</a>
           </h2>
         </div>
 
