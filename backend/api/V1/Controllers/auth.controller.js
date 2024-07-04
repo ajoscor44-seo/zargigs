@@ -22,7 +22,7 @@ export const signup = async (req, res, next) => {
     } = req.body;
     const hashedPassword = password && bcryptjs.hashSync(password, 10);
     const userWithMail = await User.findOne({ email });
-    let referrer = await User.findOne({ username: validUser.referredBy });
+    let referrer = await User.findOne({ username: referredBy });
     //If NO referrer makes an admin referrer
     if (!referrer) referrer = await User.findOne({ role: "admin" });
     if (userWithMail) {
