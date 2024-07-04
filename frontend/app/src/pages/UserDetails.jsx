@@ -171,23 +171,22 @@ const UserDetails = () => {
               <FaSpinner size={25} color="green" />
             </div>
           ) : modalData.length ? (
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 max-h-96 min-w-64 overflow-y-auto">
               {modalData.map((item, i) => {
                 return (
-                  <div
-                    className="flex items-start border rounded-sm max-h-96 overflow-y-auto"
-                    key={i}
-                  >
-                    <div className="flex flex-col justify-center items-center">
+                  <div className="flex border rounded-sm" key={i}>
+                    <div className="flex justify-center items-center">
                       <img
-                        className="w-12 h-12 rounded-full"
+                        className="w-14 h-14 rounded-full"
                         src={item.image || userImageURL}
                         alt="User Profile Pic"
                       />
                     </div>
-                    <div>
-                      <h1>{item.firstname + " " + item.lastname}</h1>
-                      <h2>@{item.username}</h2>
+                    <div className="border flex flex-col px-2 justify-center items-start flex-1">
+                      <h1 className="font-semibold">
+                        {item.firstname + " " + item.lastname}
+                      </h1>
+                      <h2 className="text-xs">@{item.username}</h2>
                     </div>
                   </div>
                 );
