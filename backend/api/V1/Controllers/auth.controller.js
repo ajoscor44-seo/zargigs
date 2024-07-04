@@ -274,9 +274,9 @@ export const verifyEmail = async (req, res, next) => {
 
     // Creates notitfication
     const notification = {
-      userId: req.user._id,
+      userId: validOTP.userId,
       title: "Email Verified!",
-      message: `Congratulations ${req.user.firstname}, your email ${req.user.email} has been verified, you can now login into your Gigsflix account.`,
+      message: `Congratulations ${validUser.firstname}, your email ${validUser.email} has been verified, you can now login into your Gigsflix account.`,
       type: "verification",
     };
 
