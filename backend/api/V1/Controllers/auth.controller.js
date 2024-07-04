@@ -21,7 +21,9 @@ export const signup = async (req, res, next) => {
     } = req.body;
     const hashedPassword = password && bcryptjs.hashSync(password, 10);
     const userWithMail = await User.findOne({ email });
-    const referrer = await User.findOne({ username: referredBy });
+    let referrer = await User.findOne({ username: validUser.referredBy });
+    //If NO referrer makes an admin referrer
+    if (!referrer) referrer = await User.findOne({ role: "admin" });
     if (userWithMail) {
       const error = ErrorHandler(400, "Email is already taken");
       return res.status(400).json(error);
@@ -48,7 +50,7 @@ export const signup = async (req, res, next) => {
     });
     await newUser.save();
 
-    if (referrer && referrer !== "admin") {
+    if (referrer) {
       await referrer.updateOne({
         referrals: [
           ...referrer.referrals,

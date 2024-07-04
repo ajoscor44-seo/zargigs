@@ -27,6 +27,7 @@ const UserDetails = () => {
   }, [currentUser]);
 
   const [show, setShow] = useState(false);
+  const [modalTitle, setModalTitle] = useState("Referrals");
   const totalEarnings = currentUser.userEarnings.totalEarnings;
   const pendingEarnings = currentUser.userEarnings.pendingEarnings;
   const amountWithdrawn = currentUser.userEarnings.amountWithdrawn;
@@ -92,7 +93,10 @@ const UserDetails = () => {
             </div>
             <div className="flex items-end justify-center p-2 gap-5">
               <div
-                onClick={() => showModal(referrals)}
+                onClick={() => {
+                  showModal(referrals);
+                  setModalTitle("Referrals");
+                }}
                 className="flex flex-col items-center justify-center"
               >
                 <h2 className="text-slate-500 font-semibold text-lg">
@@ -101,7 +105,10 @@ const UserDetails = () => {
                 <span className="text-sm">Referrals</span>
               </div>
               <div
-                onClick={() => showModal(followers)}
+                onClick={() => {
+                  showModal(followers);
+                  setModalTitle("Followers");
+                }}
                 className="flex flex-col items-center justify-center"
               >
                 <h2 className="text-slate-600 font-semibold text-2xl">
@@ -151,7 +158,7 @@ const UserDetails = () => {
             className="flex items-center gap-10 justify-between w-full"
             style={{ maxWidth: "400px" }}
           >
-            <h1 className="font-bold italic">Referrals</h1>
+            <h1 className="font-bold italic">{modalTitle}</h1>
             <span
               onClick={() => setModalState(false)}
               className="cursor-pointer border-2 border-white hover:border-gray-200"
@@ -167,16 +174,19 @@ const UserDetails = () => {
             <div className="flex flex-col gap-1">
               {modalData.map((item, i) => {
                 return (
-                  <div className="flex items-start border rounded-sm" key={i}>
+                  <div
+                    className="flex items-start border rounded-sm max-h-96 overflow-y-auto"
+                    key={i}
+                  >
                     <div className="flex flex-col justify-center items-center">
                       <img
                         className="w-12 h-12 rounded-full"
-                        src={item.image}
+                        src={item.image || userImageURL}
                         alt="User Profile Pic"
                       />
                     </div>
                     <div>
-                      <h1>{item.email}</h1>
+                      <h1>{item.firstname + " " + item.lastname}</h1>
                       <h2>@{item.username}</h2>
                     </div>
                   </div>

@@ -32,10 +32,20 @@ export const getUserDetails = async (req, res, next) => {
         isMember,
         isBanned,
         image,
+        firstname,
+        lastname,
         ...rest
       } = user.toObject();
 
-      return { username, email, isEmailVerified, isMember, isBanned, image };
+      return {
+        username,
+        firstname,
+        lastname,
+        isEmailVerified,
+        isMember,
+        isBanned,
+        image,
+      };
     })
   );
 
