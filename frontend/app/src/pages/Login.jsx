@@ -71,12 +71,6 @@ const Login = ({ setNotVerified }) => {
     }
   };
 
-  useEffect(() => {
-    if (!adminData) {
-      return getAdminData();
-    }
-  }, []);
-
   return (
     <div className="bg-white px-4 py-10 lg:py-0 lg:flex max-h-screen overflow-hidden">
       <div className="lg:flex lg:flex-col lg:py-5 flex-1">

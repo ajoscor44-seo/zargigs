@@ -5,7 +5,7 @@ import PageSlider from "../components/PageSlider/PageSlider";
 import { useAuth } from "../context/AuthContext";
 
 const SignUp = ({ setSignedIn }) => {
-  const { signupUser, adminData, getAdminData } = useAuth();
+  const { signupUser, adminData } = useAuth();
   const { username } = useParams();
   const [formData, setFormData] = useState(
     username ? { referredBy: username } : {}
@@ -197,12 +197,6 @@ const SignUp = ({ setSignedIn }) => {
       return console.log(error);
     }
   };
-
-  useEffect(() => {
-    if (!adminData) {
-      return getAdminData();
-    }
-  }, []);
 
   return (
     <div
