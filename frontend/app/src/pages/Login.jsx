@@ -10,7 +10,7 @@ import OAuth from "../components/OAuth/OAuth";
 const Login = ({ setNotVerified }) => {
   const [email, setEmail] = useState(null);
   const [formData, setFormData] = useState({});
-  const { loginUser, fetchUserData, adminData, getAdminData } = useAuth();
+  const { loginUser, fetchUserData, adminData } = useAuth();
   const [password, setPassword] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -44,15 +44,6 @@ const Login = ({ setNotVerified }) => {
       } else {
         const res = await loginUser(formData.email, formData.password);
 
-        if (
-          res.failed &&
-          res.message == "Please verify your email to continue."
-        ) {
-          setIsLoading(false);
-          setError(res.message);
-          sessionStorage.setItem("auth-user-email", formData.email);
-          return setNotVerified(true);
-        }
         if (res.failed) {
           setIsLoading(false);
           return setError(res.message);
@@ -66,6 +57,12 @@ const Login = ({ setNotVerified }) => {
         }
       }
     } catch (error) {
+      if (error.message === "Please verify your email to continue.") {
+        setIsLoading(false);
+        setError(error.message);
+        sessionStorage.setItem("auth-user-email", formData.email);
+        return setNotVerified(true);
+      }
       setIsLoading(false);
       return setError(error.message);
     }

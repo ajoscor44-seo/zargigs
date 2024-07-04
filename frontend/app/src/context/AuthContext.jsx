@@ -168,7 +168,7 @@ const AuthProvider = ({ children }) => {
 
       return data;
     } catch (error) {
-      return error;
+      throw Error(error.response.data.message);
     }
   };
 

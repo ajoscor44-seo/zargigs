@@ -21,13 +21,16 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
   };
 
   const verifyEmail = async () => {
-    const res = await verifyUserEmail(email, otp.join(""));
+    try {
+      await verifyUserEmail(email, otp.join(""));
 
-    if (res.failed) {
-      return setError(res.message);
+      sessionStorage.removeItem("auth-user-email");
+      return setEmailVerified(true);
+    } catch (error) {
+      setEmailVerified(false);
+      sessionStorage.setItem("auth-user-email", email);
+      return setError(error.message);
     }
-    sessionStorage.removeItem("auth-user-email");
-    return setEmailVerified(true);
   };
 
   return (
@@ -40,7 +43,7 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
           <div className="flex justify-center items-center">
             <BiSolidCheckCircle size={100} className="text-green-500" />
           </div>
-          <p className="font-bold text-gray-500">
+          <p className="font-bold text-gray-500 text-center">
             Yay, your email has been verified successfully.
           </p>
           <Link to="/login">
@@ -74,10 +77,12 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
               mail in your inbox. You can also click the Resend Button below to
               get the mail again.
             </p>
-            <p className="text-red-500 font-semibold text-sm text-center">
-              {error}
-            </p>
-            <div className="flex my-5 gap-2">
+            {error && (
+              <p className="w-full bg-red-200 py-1 rounded text-red-500 font-bold text-sm text-center mb-0">
+                {error}
+              </p>
+            )}
+            <div className="flex mb-5 gap-2">
               <img
                 className="h-20 object-cover"
                 src={tfa_icon}
