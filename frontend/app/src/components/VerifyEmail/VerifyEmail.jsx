@@ -7,11 +7,12 @@ import { BiSolidCheckCircle } from "react-icons/bi";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
-  const { verifyUserEmail, adminData } = useAuth();
+  const { verifyUserEmail, adminData, resendOTP } = useAuth();
   const [otp, setOtp] = useState(Array(4).fill(""));
   const email = sessionStorage.getItem("auth-user-email");
   const [emailVerified, setEmailVerified] = useState(false);
   const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
 
   const showLoginContent = () => {
     if (isLoginPage) {
@@ -29,6 +30,17 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
     } catch (error) {
       setEmailVerified(false);
       sessionStorage.setItem("auth-user-email", email);
+      return setError(error.message);
+    }
+  };
+
+  const resendNewOTP = async () => {
+    try {
+      const res = await resendOTP(email);
+      setError(null);
+      return setMessage(res.message);
+    } catch (error) {
+      setMessage(null);
       return setError(error.message);
     }
   };
@@ -82,6 +94,11 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
                 {error}
               </p>
             )}
+            {message && (
+              <p className="w-full bg-green-200 py-1 rounded text-green-500 font-bold text-sm text-center mb-0">
+                {message}
+              </p>
+            )}
             <div className="flex mb-5 gap-2">
               <img
                 className="h-20 object-cover"
@@ -105,7 +122,10 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
 
             <div className="flex flex-col items-center">
               <p className="font-semibold text-sm">Didn't receive the mail?</p>
-              <p className="text-sm text-green-500 font-semibold cursor-pointer">
+              <p
+                onClick={() => resendNewOTP()}
+                className="text-sm text-green-500 font-semibold cursor-pointer"
+              >
                 Click to Resend Mail
               </p>
               <p className="font-extrabold">-OR-</p>

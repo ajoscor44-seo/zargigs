@@ -7,6 +7,7 @@ import nodemailer from "nodemailer";
 import AccessToken from "../Models/access-tokens.model.js";
 import { sendNotitfication } from "../utils/notification.js";
 import useExternalApi from "../utils/client.js";
+import logger from "../utils/logger.util.js";
 
 export const signup = async (req, res, next) => {
   try {
@@ -240,9 +241,9 @@ export const sendOTP = async (email, OTP, lastname) => {
         </div>
       `,
     });
+    console.log(info);
   } catch (error) {
-    const err = ErrorHandler(500, "Email failed to send");
-    console.log(error, err);
+    return logger.error("Email fail to send.");
   }
 };
 
@@ -283,6 +284,32 @@ export const verifyEmail = async (req, res, next) => {
     await sendNotitfication(notification);
 
     res.status(200).json({ message: "Email Verified", failed: false });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resendOTP = async (req, res, next) => {
+  try {
+    const email = req.body.email;
+    const validUser = await User.findOne({ email });
+    if (!validUser) {
+      const error = ErrorHandler(404, "There's no user with this email.");
+      return res.status(404).json(error);
+    }
+    await Token.findOneAndDelete({ userId: validUser._id });
+
+    // Generate OTP token
+    const OTPToken = new Token({
+      userId: validUser._id,
+      token: `${Math.floor(1000 + Math.random() * 9000)}`,
+    });
+    await OTPToken.save();
+
+    await sendOTP(email, OTPToken.token, validUser.lastname);
+    res
+      .status(200)
+      .json({ message: "OTP has been resent successfully", failed: false });
   } catch (error) {
     next(error);
   }

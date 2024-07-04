@@ -172,6 +172,17 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const resendOTP = async (email) => {
+    try {
+      const response = await axios.post("/api/auth/resend-otp", { email });
+      const data = response.data;
+
+      return data;
+    } catch (error) {
+      throw Error(error.response.data.message);
+    }
+  };
+
   const AuthValue = {
     currentUser,
     adminData,
@@ -190,6 +201,7 @@ const AuthProvider = ({ children }) => {
     getEngagementCreator,
     getAdvertCreator,
     getAdminData,
+    resendOTP,
   };
 
   return (
