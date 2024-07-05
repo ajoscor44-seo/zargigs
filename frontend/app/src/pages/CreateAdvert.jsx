@@ -147,6 +147,7 @@ const CreateAdvert = () => {
 
   const handleFileInputChange = (e) => {
     const file = e.target.files[0];
+    console.log(file);
     if (!file) {
       alert("No file chosen.");
       return;
@@ -170,37 +171,45 @@ const CreateAdvert = () => {
   };
 
   const uploadMedia = (image) => {
-    setMediaPercentage(null);
-    setMediaError(null);
-    const fileName = new Date().getTime() + image.name;
-    const storageRef = ref(storage, fileName);
-    const uploadTask = uploadBytesResumable(storageRef, image);
+    try {
+      setMediaPercentage(null);
+      setMediaError(null);
+      const fileName = new Date().getTime() + image.name;
+      const storageRef = ref(storage, activeMediaUploadTab + "/" + fileName);
+      const uploadTask = uploadBytesResumable(storageRef, image);
 
-    // Returns the progress of the image
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
-        setMediaPercentage(progress);
-      },
-      (error) => {
-        setMediaPercentage(null);
-        return setMediaError(error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
-          setTaskData({
-            ...taskData,
-            mediaUrl: downloadUrl,
-          });
-          setMediaError(null);
+      // Returns the progress of the image
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          setMediaPercentage(progress);
+        },
+        (error) => {
           setMediaPercentage(null);
-        });
-      }
-    );
-    return;
+          return setMediaError(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
+            console.log(downloadUrl);
+            setTaskData({
+              ...taskData,
+              mediaUrl: downloadUrl,
+            });
+            setMediaError(null);
+            setMediaPercentage(null);
+          });
+        }
+      );
+      return;
+    } catch (error) {
+      showToast({
+        msg: "File is too large",
+        errorType: "danger",
+      });
+    }
   };
 
   return (
@@ -315,7 +324,11 @@ const CreateAdvert = () => {
                 "uploadAdvertMediaTab " +
                 (activeMediaUploadTab === "photo" && "active")
               }
-              onClick={() => setActiveMediaUploadTab("photo")}
+              onClick={() => {
+                if (!taskData?.mediaUrl) {
+                  setActiveMediaUploadTab("photo");
+                }
+              }}
             >
               Upload Photo Advert
             </div>
@@ -324,7 +337,11 @@ const CreateAdvert = () => {
                 "uploadAdvertMediaTab " +
                 (activeMediaUploadTab === "video" && "active")
               }
-              onClick={() => setActiveMediaUploadTab("video")}
+              onClick={() => {
+                if (!taskData?.mediaUrl) {
+                  setActiveMediaUploadTab("video");
+                }
+              }}
             >
               Upload Video Advert
             </div>
@@ -368,7 +385,11 @@ const CreateAdvert = () => {
               ) : (
                 <div>
                   {taskData.mediaUrl ? (
-                    <video src={taskData.mediaUrl}></video>
+                    <iframe
+                      src={taskData.mediaUrl}
+                      width={"100%"}
+                      height={"150px"}
+                    ></iframe>
                   ) : (
                     <FaVideo className="text-gray-600 mt-10" size={30} />
                   )}
