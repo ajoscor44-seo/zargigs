@@ -241,7 +241,6 @@ export const sendOTP = async (email, OTP, lastname) => {
         </div>
       `,
     });
-    console.log(info);
   } catch (error) {
     return logger.error("Email fail to send.");
   }
@@ -321,5 +320,47 @@ export const signout = (req, res, next) => {
     res.status(200).send({ message: "Logged Out!!", failed: false });
   } catch (error) {
     next(error);
+  }
+};
+
+export const sendEmail = async (req, res, next) => {
+  try {
+    const { email, message, fullname } = req.body;
+    // Creates Email Transporter
+    let transporter = nodemailer.createTransport({
+      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.USER,
+        pass: process.env.GOOGLE_APP_PASSWORD,
+      },
+    });
+
+    // Sends Email
+    let info = await transporter.sendMail({
+      from: process.env.USER,
+      to: process.env.USER,
+      subject: "Mail From Landing Page",
+      html: `
+        <div class="border border-green-500 rounded-md px-10 text-center">
+          <h1 class="text-green-500 font-bold">Hi Gigsflix, my name is ${fullname}</h1>
+          <h2 class="text-green-500 font-bold">Sender Email: ${email}</h2>
+          <p>${message}</p>
+        </div>
+      `,
+    });
+    console.log(info);
+
+    return res.status(200).json({
+      message: "Your message has been delivered successfully",
+      failed: false,
+    });
+  } catch (error) {
+    res
+      .status(406)
+      .json({ message: "Unable to send your message", failed: false });
+    return logger.error("Email fail to send.");
   }
 };

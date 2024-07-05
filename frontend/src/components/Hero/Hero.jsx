@@ -38,9 +38,10 @@ const Hero = () => {
         {menuOpen && (
           <nav className="block lg:hidden pb-5 fixed right-0 bg-white text-center w-full shadow-lg top-20 border-t border-green-500">
             <ul className="flex lg:gap-5 flex-col lg:flex-row">
-              {tabs.map((tab) => {
+              {tabs.map((tab, i) => {
                 return (
                   <li
+                    key={i}
                     className={
                       activeTab == tab.name.toLowerCase()
                         ? "nav_text text-green-500 border-primary"

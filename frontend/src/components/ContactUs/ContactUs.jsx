@@ -1,13 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import { LuSend } from "react-icons/lu";
 import { GrPowerReset } from "react-icons/gr";
 import { FaPhoneAlt } from "react-icons/fa";
 import { IoLocationSharp, IoMail } from "react-icons/io5";
+import { FaSpinner } from "react-icons/fa6";
 
 const ContactUs = () => {
-  const submitForm = (e) => {
-    e.preventDefault();
-    return e;
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const submitForm = async (e) => {
+    try {
+      e.preventDefault();
+      setLoading(true);
+      let formData = {};
+
+      for (let i = 0; i < 3; i++) {
+        const input = e.target[i];
+        formData[`${input["name"]}`] = input.value;
+      }
+      const res = await axios.post("/api/v1/send-mail", formData);
+      const data = res.data;
+      console.log(formData, data);
+      setError(null);
+      setLoading(false);
+      setMessage(data.message);
+      const message_time_out = setTimeout(() => {
+        setMessage(null);
+        return clearTimeout(message_time_out);
+      }, 3000);
+    } catch (error) {
+      console.error(error);
+      setMessage(null);
+      setLoading(false);
+      setError(error.response.data.message);
+      const error_time_out = setTimeout(() => {
+        setError(null);
+        return clearTimeout(error_time_out);
+      }, 3000);
+    }
   };
   return (
     <div className="flex justify-center items-center">
@@ -16,7 +49,19 @@ const ContactUs = () => {
           <h2 className="text-2xl font-primary font-bold">Contact Us</h2>
           <span className="h-1 w-10 rounded-full bg-green-500"></span>
         </div>
-
+        {(error || message) && (
+          <p className="mx-2 flex flex-col mt-3 font-semibold text-center text-sm">
+            {error ? (
+              <span className="rounded bg-red-200 text-red-500 py-1">
+                {error}
+              </span>
+            ) : (
+              <span className="rounded bg-green-200 text-green-500 py-1">
+                {message}
+              </span>
+            )}
+          </p>
+        )}
         <form
           onSubmit={(e) => submitForm(e)}
           className="contact_form flex flex-col gap-4 px-4 py-5"
@@ -27,7 +72,8 @@ const ContactUs = () => {
             </span>
             <input
               type="text"
-              placeholder="Your Name"
+              name="fullname"
+              placeholder="Your Fullname"
               className="border p-3 rounded outline-green-500"
             />
           </div>
@@ -37,6 +83,7 @@ const ContactUs = () => {
             </span>
             <input
               type="email"
+              name="email"
               placeholder="example@example.com"
               className="border p-3 rounded outline-green-500"
             />
@@ -46,18 +93,25 @@ const ContactUs = () => {
               Message:
             </span>
             <textarea
+              name="message"
               placeholder="Short Message..."
               className="border p-3 rounded outline-green-500"
             ></textarea>
           </div>
           <div className="flex gap-4 justify-end">
-            <button className="btn rounded bg-red-500 text-white font-primary font-bold flex items-center">
+            <button
+              disabled={loading}
+              className="btn rounded bg-red-500 text-white font-primary font-bold flex items-center"
+            >
               <GrPowerReset size={15} className="me-2" />
               Reset
             </button>
-            <button className="btn rounded bg-sky-400 text-white font-primary font-bold flex items-center">
+            <button
+              disabled={loading}
+              className="btn rounded bg-sky-400 text-white font-primary font-bold flex items-center"
+            >
               <LuSend size={15} className="me-2" />
-              Send
+              {loading ? <FaSpinner size={15} /> : "Send"}
             </button>
           </div>
 
