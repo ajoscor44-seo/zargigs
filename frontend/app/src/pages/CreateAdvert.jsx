@@ -147,7 +147,6 @@ const CreateAdvert = () => {
 
   const handleFileInputChange = (e) => {
     const file = e.target.files[0];
-    console.log(file);
     if (!file) {
       alert("No file chosen.");
       return;
@@ -156,13 +155,13 @@ const CreateAdvert = () => {
     if (file.type.startsWith("image") && file.size > 2097152) {
       // 2 MB for images
       alert("The photo is too large. Maximum size is 2 MB.");
-      e.target.value = ""; // Reset the input
-    } else if (file.type.startsWith("video") && file.size > 104857600) {
+      return (e.target.value = ""); // Reset the input
+    } else if (file.type.startsWith("video") && file.size > 15728640) {
       // 100 MB for videos
       alert(
-        "The video is too large. Maximum size for a video is approximately 100 MB."
+        "The video is too large. Maximum size for a video is approximately 15MB."
       );
-      e.target.value = ""; // Reset the input
+      return (e.target.value = ""); // Reset the input
     } else {
       alert("File is accepted.");
       // Handle the file upload process here
@@ -193,7 +192,6 @@ const CreateAdvert = () => {
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
-            console.log(downloadUrl);
             setTaskData({
               ...taskData,
               mediaUrl: downloadUrl,
