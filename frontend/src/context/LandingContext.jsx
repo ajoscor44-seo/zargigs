@@ -15,16 +15,14 @@ const AuthProvider = ({ children }) => {
   const getAdminData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("/api/v1/admin-data");
-
-      if (response.data.failed) {
-        return response.data.message;
-      }
+      const response = await axios.get(
+        `/api/v1/admin-data?no-cache=${new Date().getTime()}`
+      );
 
       setAdminData(response.data[0]);
       return setLoading(false);
     } catch (error) {
-      return error;
+      return console.error(error);
     }
   };
 
