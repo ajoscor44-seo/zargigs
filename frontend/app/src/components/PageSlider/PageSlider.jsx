@@ -46,7 +46,7 @@ const PageSlider = ({
           {pages.map((page, index) => (
             <div key={index} className={`${page.bgColor} flex flex-col`}>
               <h2
-                className="text-2xl text-center mb-1 font-semibold"
+                className="text-2xl text-center font-semibold"
                 style={{ width: "33.5%" }}
               >
                 {page.title}
@@ -55,8 +55,8 @@ const PageSlider = ({
                 {page.info}
               </p>
               <div
-                className="flex flex-col gap-3 mt-2 py-2 overflow-y-scroll shadow-inner border-b"
-                style={{ width: "33.5%", height: "360px" }}
+                className="flex flex-col gap-3 mt-2 py-1 overflow-y-scroll shadow-inner border-b"
+                style={{ width: "33.5%", height: "350px" }}
               >
                 {page.formInputs.map((formInput) => {
                   return (
@@ -85,7 +85,7 @@ const PageSlider = ({
       </div>
 
       <div className="flex flex-col text-center">
-        <p className="py-2 text-red-500">{errorMsg}</p>
+        <p className="py-1 font-semibold text-red-500">{errorMsg}</p>
         <div className="flex justify-between mx-3 items-center">
           <button
             disabled={currentPage === 0}
