@@ -351,7 +351,6 @@ export const sendEmail = async (req, res, next) => {
         </div>
       `,
     });
-    console.log(info);
 
     return res.status(200).json({
       message: "Your message has been delivered successfully",

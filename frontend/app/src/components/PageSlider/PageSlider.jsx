@@ -42,21 +42,21 @@ const PageSlider = ({
         }}
         className="transition-transform duration-500"
       >
-        <div className="grid grid-cols-3" style={{ minWidth: "300%" }}>
+        <div className="grid grid-cols-3" style={{ width: "300%" }}>
           {pages.map((page, index) => (
             <div key={index} className={`${page.bgColor} flex flex-col`}>
               <h2
                 className="text-2xl text-center mb-1 font-semibold"
-                style={{ width: "33%" }}
+                style={{ width: "33.5%" }}
               >
                 {page.title}
               </h2>
-              <p className="text-sm text-center" style={{ width: "33%" }}>
+              <p className="text-sm text-center" style={{ width: "33.5%" }}>
                 {page.info}
               </p>
               <div
                 className="flex flex-col gap-3 mt-2 py-2 overflow-y-scroll shadow-inner border-b"
-                style={{ width: "50%", height: "250px" }}
+                style={{ width: "33.5%", height: "360px" }}
               >
                 {page.formInputs.map((formInput) => {
                   return (

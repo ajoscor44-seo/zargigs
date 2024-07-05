@@ -23,7 +23,6 @@ const ContactUs = () => {
       }
       const res = await axios.post("/api/v1/send-mail", formData);
       const data = res.data;
-      console.log(formData, data);
       setError(null);
       setLoading(false);
       setMessage(data.message);

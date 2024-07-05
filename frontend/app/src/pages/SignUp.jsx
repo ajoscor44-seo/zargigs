@@ -150,12 +150,26 @@ const SignUp = ({ setSignedIn }) => {
         setError("Please input an email");
         return true;
       }
+      if (formData.phone.toString().startsWith("0")) {
+        setError("First '0' in phone is not needed");
+        return true;
+      }
       if (formData.phone.toString().length !== 10) {
         setError("Phone number must be 10 characters long.");
         return true;
       }
-      console.log(parseInt(formData.phone));
-      if (parseInt(formData.phone) === "NaN") {
+
+      let invalidChar = false;
+
+      for (let i = 0; i < formData.phone.toString().length; i++) {
+        const element = formData.phone.toString()[i];
+        const numbers = "1234567890";
+        if (!numbers.includes(element)) {
+          invalidChar = true;
+          break;
+        }
+      }
+      if (invalidChar) {
         setError("Input a valid phone number");
         return true;
       }
@@ -204,7 +218,7 @@ const SignUp = ({ setSignedIn }) => {
       style={{ height: "100vh" }}
     >
       <SignupLayout>
-        <div className="flex-1 border py-5 rounded-sm">
+        <div className="w-auto flex-1 border py-5 rounded-sm">
           <PageSlider
             errorMsg={error}
             setError={setError}
