@@ -22,7 +22,7 @@ export const signup = async (req, res, next) => {
     } = req.body;
     const hashedPassword = password && bcryptjs.hashSync(password, 10);
     const userWithMail = await User.findOne({ email });
-    let referrer = await User.findOne({ username: validUser.referredBy });
+    let referrer = await User.findOne({ username: referredBy });
     //If NO referrer makes an admin referrer
     if (!referrer) referrer = await User.findOne({ role: "admin" });
     if (userWithMail) {
@@ -274,9 +274,9 @@ export const verifyEmail = async (req, res, next) => {
 
     // Creates notitfication
     const notification = {
-      userId: req.user._id,
+      userId: validOTP.userId,
       title: "Email Verified!",
-      message: `Congratulations ${req.user.firstname}, your email ${req.user.email} has been verified, you can now login into your Gigsflix account.`,
+      message: `Congratulations ${validUser.firstname}, your email ${validUser.email} has been verified, you can now login into your Gigsflix account.`,
       type: "verification",
     };
 
