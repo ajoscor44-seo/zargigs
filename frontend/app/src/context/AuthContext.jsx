@@ -33,7 +33,7 @@ const AuthProvider = ({ children }) => {
   const getAdminData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("/api/v1/admin-data");
+      const response = await axios.get(`/api/v1/admin-data?no-cache=${new Date().getTime()}`);
 
       return setAdminData(response.data[0]);
     } catch (error) {
