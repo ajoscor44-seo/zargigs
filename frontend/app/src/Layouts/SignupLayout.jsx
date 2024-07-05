@@ -21,13 +21,24 @@ const SignupLayout = ({ children }) => {
         </div>
       </div>
       {children}
-      <OAuth />
       <div className="flex flex-col justify-center bg-white items-center">
-        <p className="text-center text-sm px-8 mx-4 mt-5">
+        <p className="text-center text-sm px-8 mx-4">
           By signing up, you agree to our{" "}
           <Link to="/terms">
-            <span className="text-primary font-semibold hover:underline">
-              Terms and Privacy Policy
+            <span>
+              <a
+                className="text-primary font-semibold hover:underline"
+                href="https://gigsflix.com/terms"
+              >
+                Terms
+              </a>{" "}
+              and{" "}
+              <a
+                className="text-primary font-semibold hover:underline"
+                href="https://gigsflix.com/privacy-policy"
+              >
+                Privacy Policy
+              </a>
             </span>
           </Link>
         </p>

@@ -151,7 +151,7 @@ const SignUp = ({ setSignedIn }) => {
         return true;
       }
       if (formData.phone.toString().startsWith("0")) {
-        setError("First '0' in phone is not needed");
+        setError("First '0' in phone no. is not needed");
         return true;
       }
       if (formData.phone.toString().length !== 10) {
