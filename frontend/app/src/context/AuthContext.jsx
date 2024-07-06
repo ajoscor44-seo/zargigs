@@ -25,7 +25,7 @@ const AuthProvider = ({ children }) => {
         return response.data;
       })
       .catch((error) => {
-        throw Error(error.response.data.message || error.message);
+        return error.response.data || error;
       });
   };
 
