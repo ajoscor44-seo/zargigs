@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+H7import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import { GrPowerReset } from "react-icons/gr";
 import { MdOutlineLogin } from "react-icons/md";
@@ -148,7 +148,6 @@ const Login = ({ setNotVerified }) => {
           </div>
         </div>
         <div className="flex flex-col gap-4 px-4">
-          <OAuth setError={setError} />
           <Link to="/forgot-password">
             <p className="flex justify-center text-primary hover:text-green-500">
               Forgot Password
