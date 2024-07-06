@@ -5,7 +5,6 @@ import { MdOutlineLogin } from "react-icons/md";
 import loginIllustration from "../assets/images/login-illustration-png.png";
 import FormInput from "../components/FormInput/FormInput";
 import { useAuth } from "../context/AuthContext";
-import OAuth from "../components/OAuth/OAuth";
 
 const Login = ({ setNotVerified }) => {
   const [email, setEmail] = useState(null);
@@ -148,7 +147,6 @@ const Login = ({ setNotVerified }) => {
           </div>
         </div>
         <div className="flex flex-col gap-4 px-4">
-          <OAuth setError={setError} />
           <Link to="/forgot-password">
             <p className="flex justify-center text-primary hover:text-green-500">
               Forgot Password
