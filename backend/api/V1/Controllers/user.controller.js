@@ -126,6 +126,7 @@ export const addUserDetails = async (req, res, next) => {
       userData,
       null
     );
+
     if (!accData.status) {
       return res
         .status(400)
@@ -159,21 +160,22 @@ export const addUserDetails = async (req, res, next) => {
     if (image) {
       await User.findOneAndUpdate({ email: req.user.email }, { image });
     }
-    referrerDetails.userEarnings = {
-      ...referrerDetails.userEarnings,
-      pendingEarnings:
-        referrerDetails.userEarnings.pendingEarnings +
-        0.6 * adminData.membershipFee,
-    };
-    await referrerDetails.save();
+    if (referrerDetails) {
+      referrerDetails.userEarnings = {
+        ...referrerDetails.userEarnings,
+        pendingEarnings:
+          referrerDetails.userEarnings.pendingEarnings +
+          0.6 * adminData.membershipFee,
+      };
+      await referrerDetails.save();
+    }
     await newUserDetails.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       failed: false,
       message: "User details added successfully",
       status: 200,
     });
-    next();
   } catch (error) {
     next(error);
   }
