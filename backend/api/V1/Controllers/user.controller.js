@@ -21,33 +21,47 @@ export const getUserDetails = async (req, res, next) => {
     return res.status(200).json({ ...rest });
   }
 
-  const referrals = await Promise.all(
-    validUser.referrals.map(async (referral) => {
-      const user = await User.findById(referral.userId);
+  let referrals = [];
+  if (validUser.referrals.length) {
+    referrals = await Promise.all(
+      validUser.referrals.map(async (referral) => {
+        const user = await User.findById(referral.userId);
+        if (!user) {
+          return {
+            username: "No username",
+            firstname: "No firstname",
+            lastname: "No lastname",
+            isEmailVerified: false,
+            isMember: false,
+            isBanned: false,
+            image: "",
+          };
+        }
 
-      const {
-        username,
-        email,
-        isEmailVerified,
-        isMember,
-        isBanned,
-        image,
-        firstname,
-        lastname,
-        ...rest
-      } = user.toObject();
+        const {
+          username,
+          email,
+          isEmailVerified,
+          isMember,
+          isBanned,
+          image,
+          firstname,
+          lastname,
+          ...rest
+        } = user.toObject();
 
-      return {
-        username,
-        firstname,
-        lastname,
-        isEmailVerified,
-        isMember,
-        isBanned,
-        image,
-      };
-    })
-  );
+        return {
+          username,
+          firstname,
+          lastname,
+          isEmailVerified,
+          isMember,
+          isBanned,
+          image,
+        };
+      })
+    );
+  }
 
   // Destructures user details object
   const {

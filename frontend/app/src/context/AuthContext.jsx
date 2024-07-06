@@ -25,7 +25,7 @@ const AuthProvider = ({ children }) => {
         return response.data;
       })
       .catch((error) => {
-        return error;
+        throw Error(error.response.data.message || error.message);
       });
   };
 
@@ -33,7 +33,9 @@ const AuthProvider = ({ children }) => {
   const getAdminData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`/api/v1/admin-data?no-cache=${new Date().getTime()}`);
+      const response = await axios.get(
+        `/api/v1/admin-data?no-cache=${new Date().getTime()}`
+      );
 
       return setAdminData(response.data[0]);
     } catch (error) {
