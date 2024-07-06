@@ -174,7 +174,10 @@ const CreateAdvert = () => {
       setMediaPercentage(null);
       setMediaError(null);
       const fileName = new Date().getTime() + image.name;
-      const storageRef = ref(storage, activeMediaUploadTab + "/" + fileName);
+      const storageRef = ref(
+        storage,
+        "advert/" + activeMediaUploadTab + "/" + fileName
+      );
       const uploadTask = uploadBytesResumable(storageRef, image);
 
       // Returns the progress of the image

@@ -79,7 +79,7 @@ const TaskDetails = () => {
     setImagePercentage(null);
     setImageError(null);
     const fileName = new Date().getTime() + image.name;
-    const storageRef = ref(storage, fileName);
+    const storageRef = ref(storage, "proof_of_works/" + fileName);
     const uploadTask = uploadBytesResumable(storageRef, image);
 
     // Returns the progress of the image
