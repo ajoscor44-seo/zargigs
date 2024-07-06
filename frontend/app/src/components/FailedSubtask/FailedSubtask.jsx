@@ -2,13 +2,22 @@ import React from "react";
 import Subtask from "../Subtask/Subtask";
 import NoData from "../NoData/NoData";
 
-const FailedSubtask = ({ failedSubtasks, slug, type }) => {
+const FailedSubtask = ({ failedSubtasks, slug, type, status, platform }) => {
   return (
     <div className="font-primary">
-      {failedSubtasks.length ? (
+      {failedSubtasks?.length ? (
         <div className="tasks">
-          {failedSubtasks.map((failedSubtask) => {
-            return <Subtask task={failedSubtask} slug={slug} type={type} />;
+          {failedSubtasks.map((failedSubtask, i) => {
+            return (
+              <Subtask
+                key={i}
+                task={failedSubtask}
+                slug={slug}
+                type={type}
+                platform={platform}
+                status={status}
+              />
+            );
           })}
         </div>
       ) : (

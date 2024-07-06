@@ -125,6 +125,24 @@ const TaskDetails = () => {
     }
   };
 
+  // Cancels generated task
+  const cancelGeneratedTask = async (status) => {
+    if (status.toLowerCase() !== "pending") return;
+    setLoading(true);
+    try {
+      await axios.delete(
+        `/api/v1/tasks/cancel-task?type=${
+          taskDetails?.taskType
+        }&platform=${taskDetails.taskPlatform.toLowerCase()}`
+      );
+
+      setLoading(false);
+      return history.push(`/earn/${slug}`);
+    } catch (error) {
+      setError(error.response.data.message);
+    }
+  };
+
   const uploadTaskForReview = async () => {
     try {
       if (!username) {
@@ -252,9 +270,24 @@ const TaskDetails = () => {
           <div>
             <div>
               {status == "pending" ? (
-                <PendingTaskSubtask task={taskDetails} hideBtn={true} />
+                <PendingTaskSubtask
+                  slug={slug}
+                  task={taskDetails}
+                  hideBtn={true}
+                  cancelTask={cancelGeneratedTask}
+                  platform={platform}
+                  type={type}
+                  status={status}
+                />
               ) : (
-                <Subtask task={taskDetails} hideBtn={true} />
+                <Subtask
+                  slug={slug}
+                  platform={platform}
+                  status={status}
+                  type={type}
+                  task={taskDetails}
+                  hideBtn={true}
+                />
               )}
             </div>
             <div className="mx-2 py-3 flex flex-col gap-1">

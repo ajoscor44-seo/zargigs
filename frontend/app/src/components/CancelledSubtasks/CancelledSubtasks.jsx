@@ -13,9 +13,10 @@ const CancelledSubtasks = ({
     <div className="font-primary">
       {cancelledSubtasks?.length ? (
         <div className="tasks">
-          {cancelledSubtasks.map((cancelledSubtask) => {
+          {cancelledSubtasks.map((cancelledSubtask, i) => {
             return (
               <Subtask
+                key={i}
                 task={cancelledSubtask}
                 slug={slug}
                 platform={platform}

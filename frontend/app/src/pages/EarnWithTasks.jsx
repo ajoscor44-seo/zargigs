@@ -36,7 +36,7 @@ const EarnWithTasks = () => {
   const generateNewTask = async () => {
     try {
       const response = await axios.get(
-        `/api/v1/tasks/generate?type=${taskType}&platform=${wayToEarn.platformName.toLowerCase()}`
+        `/api/v1/tasks/generate?type=${taskType}&platform=${wayToEarn.platformName?.toLowerCase()}`
       );
 
       setGeneratedTask(response.data);
@@ -67,17 +67,14 @@ const EarnWithTasks = () => {
     if (status.toLowerCase() !== "pending") return;
     setLoading(true);
     try {
-      const response = await axios.delete(
+      await axios.delete(
         `/api/v1/tasks/cancel-task?type=${taskType}&platform=${wayToEarn.platformName.toLowerCase()}`
       );
 
-      if (response.data.failed) {
-        return setError(response.data.message);
-      }
-
       setGeneratedTask(null);
       setTaskList(null);
-      return setLoading(false);
+      setLoading(false);
+      return window.location.reload();
     } catch (error) {
       setError(error.response.data.message);
     }

@@ -100,7 +100,7 @@ const Subtask = ({ task, slug, platform, status, hideBtn, type }) => {
           <span className="methodNote font-semibold">
             Earning:{" "}
             <span className="font-extrabold">
-              ₦{task?.earningPerTask} per engagement
+              ₦{task?.earningPerTask} per {type}
             </span>
           </span>
         </div>

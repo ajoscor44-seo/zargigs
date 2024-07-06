@@ -13,9 +13,10 @@ const InReviewSubtask = ({
     <div className="font-primary">
       {inReviewSubtasks?.length ? (
         <div className="tasks">
-          {inReviewSubtasks.map((inReviewSubtask) => {
+          {inReviewSubtasks.map((inReviewSubtask, i) => {
             return (
               <Subtask
+                key={i}
                 task={inReviewSubtask}
                 slug={slug}
                 type={type}
