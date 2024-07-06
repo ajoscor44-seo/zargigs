@@ -99,6 +99,7 @@ const ContactUs = () => {
           </div>
           <div className="flex gap-4 justify-end">
             <button
+              type="reset"
               disabled={loading}
               className="btn rounded bg-red-500 text-white font-primary font-bold flex items-center"
             >
