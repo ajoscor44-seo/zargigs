@@ -14,7 +14,7 @@ const Hero = () => {
     { name: "For Advertisers", to: 900, toBig: 700 },
     { name: "For Members", to: 2200, toBig: 1500 },
     { name: "About", to: 3200, toBig: 2000 },
-    { name: "Contacts Us", to: 0, toBig: 0 },
+    { name: "Contacts Us", to: 4200, toBig: 2950 },
   ];
 
   const scrollTo = (to) => {

@@ -44,9 +44,9 @@ const FundWallet = () => {
     <div>
       <BackNav pageName={"Fund Wallet"} />
       <div className="underBackNav h-fit mb-16">
-        <div>
-          <h2>Balance:</h2>
-          <h2>{numeral(balance).format("0,0.00")}</h2>
+        <div className="flex justify-between items-center px-3 py-1 text-center bg-green-200">
+          <h2 className="font-bold">Balance:</h2>
+          <h2 className="font-bold">₦{numeral(balance).format("0,0.00")}</h2>
         </div>
         <div className="p-2 flex flex-col gap-2 py-3">
           <div className="flex flex-wrap gap-2">
