@@ -140,6 +140,7 @@ export const addUserDetails = async (req, res, next) => {
       userData,
       null
     );
+    console.log("Account Generated: ", accData);
 
     if (!accData.status) {
       return res
@@ -191,6 +192,7 @@ export const addUserDetails = async (req, res, next) => {
       status: 200,
     });
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
