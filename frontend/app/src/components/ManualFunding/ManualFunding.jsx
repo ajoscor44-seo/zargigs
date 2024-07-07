@@ -39,7 +39,7 @@ const ManualFunding = () => {
           Contact Support using the chat button below.
         </span>
       </h2>
-      <Chat whatsappLink={"https://wa.link/tfwje6"} />
+      <Chat whatsappLink={"https://wa.link/g5hruc"} />
     </div>
   );
 };
