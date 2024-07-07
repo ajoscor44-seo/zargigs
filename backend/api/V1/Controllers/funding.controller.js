@@ -106,7 +106,7 @@ export const getFundings = async (req, res, next) => {
         transReference,
         paymentReference,
         orderId,
-        amountPaid,
+        settlementAmount,
         walletReference,
         userId,
         __v,
