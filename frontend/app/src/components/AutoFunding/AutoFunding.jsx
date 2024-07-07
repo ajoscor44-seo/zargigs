@@ -78,7 +78,7 @@ const AutoFunding = ({ walletDetails, loading, fundings }) => {
                       {formatDate(funding.createdAt)}
                     </td>
                     <td className="text-center font-semibold border">
-                      ₦{numeral(funding.settlementAmount).format("0,0.00")}
+                      ₦{numeral(funding.amountPaid).format("0,0.00")}
                     </td>
                     <td className="text-center font-semibold border">
                       {funding.paymentGateway}

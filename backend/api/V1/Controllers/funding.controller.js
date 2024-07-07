@@ -51,14 +51,13 @@ export const fundLocalWallet = async (req, res, next) => {
     UserDetails.userEarnings = {
       ...UserDetails.userEarnings,
       balance:
-        Number(UserDetails.userEarnings.balance) +
-        Number(transData.settlementAmount),
+        Number(UserDetails.userEarnings.balance) + Number(transData.amountPaid),
     };
     UserDetails.walletDetails = {
       ...UserDetails.walletDetails,
       balance:
         Number(UserDetails.walletDetails.balance) +
-        Number(transData.settlementAmount),
+        Number(transData.amountPaid),
     };
     // Saves referrer details
     await UserDetails.save();
