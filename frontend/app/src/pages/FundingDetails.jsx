@@ -68,10 +68,10 @@ const FundingDetails = () => {
               </div>
               <div className="flex justify-between items-start">
                 <h2 className="font-semibold text-gray-400 text-nowrap">
-                  Sender Name:
+                  Sender Bank Name:
                 </h2>
                 <h2 className="text-green-500 font-semibold text-end">
-                  {fundingDetails?.sourceBankName}
+                  {fundingDetails?.sourceBankName || "Omooooooooo"}
                 </h2>
               </div>
               <div className="flex justify-between items-start">
