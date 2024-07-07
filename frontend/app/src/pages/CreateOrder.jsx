@@ -57,17 +57,13 @@ const CreateOrder = () => {
     });
   };
 
-  // Processess payment
+  // Processess payment and checks its validity
   const processPayment = async () => {
-    try {
-      const response = await axios.get(
-        `/api/v1/tasks/process-payment?amount=${amountToPay}&type=task`
-      );
+    const response = await axios.get(
+      `/api/v1/tasks/process-payment?amount=${amountToPay}&type=advert`
+    );
 
-      return response.data;
-    } catch (error) {
-      console.error(error);
-    }
+    return response.data;
   };
 
   // Adds new task
@@ -104,7 +100,7 @@ const CreateOrder = () => {
     setLoading(true);
     const paymentProcessed = await processPayment();
 
-    if (paymentProcessed) {
+    if (paymentProcessed.status) {
       const res = await addNewtask(taskData);
 
       if (!res.failed) {
