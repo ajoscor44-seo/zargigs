@@ -5,11 +5,9 @@ const fundingSchema = new Schema(
   {
     userId: {
       type: String,
-      required: true,
     },
     paidOn: {
       type: Date,
-      required: true,
       default: new Date(),
     },
     paymentGateway: {
@@ -22,7 +20,6 @@ const fundingSchema = new Schema(
     },
     status: {
       type: String,
-      required: true,
       env: ["PENDING", "PAID", "DECLINED"],
     },
     orderId: {
@@ -30,39 +27,31 @@ const fundingSchema = new Schema(
     },
     transReference: {
       type: String,
-      required: true,
     },
     paymentReference: {
       type: String,
-      required: true,
     },
     sourceAccountNumber: {
       type: String,
-      required: true,
     },
     sourceAccountName: {
       type: String,
-      required: true,
     },
     sourceBankName: {
       type: String,
-      required: true,
+      default: "Monicredit",
     },
     settlementAmount: {
       type: Number,
-      required: true,
     },
     amountPaid: {
       type: Number,
-      required: true,
     },
     paymentDescription: {
       type: String,
-      required: true,
     },
     walletReference: {
       type: String,
-      required: true,
     },
   },
   {
