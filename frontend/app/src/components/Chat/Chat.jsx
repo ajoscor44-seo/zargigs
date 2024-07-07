@@ -1,9 +1,7 @@
 import React from "react";
 import { FaWhatsapp } from "react-icons/fa6";
 
-const Chat = () => {
-  const whatsappLink = "https://wa.link/l2u70b";
-
+const Chat = ({ whatsappLink }) => {
   return (
     <div className="fixed bottom-20 right-3 cursor-pointer">
       <a href={whatsappLink} className="mb-2" target="_blank">

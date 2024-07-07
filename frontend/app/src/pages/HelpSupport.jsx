@@ -74,7 +74,7 @@ const HelpSupport = () => {
         <Disclaimer disclaimerMsg={disclaimerMsg} />
         <SupportMsg />
         <Supports />
-        <Chat />
+        <Chat whatsappLink={"https://wa.link/l2u70b"} />
         <div
           onClick={handleVisibility}
           className="min-h-44 flex flex-col justify-center items-center"
