@@ -11,6 +11,15 @@ const AutoFunding = ({ walletDetails, loading, fundings }) => {
 
   return (
     <div>
+      <h2 className="flex flex-col justify-center text-xs bg-red-200 text-red-500 text-center font-bold">
+        <span className="px-2 py-1 border border-b w-full">
+          Minimum funding for AUTOMATIC METHOD is ₦1,000.
+        </span>
+        <span className="px-2 py-1">
+          For fundings less than ₦1,000 use the MANUAL METHOD.
+        </span>
+      </h2>
+
       <div className="p-2 flex flex-col gap-2 py-3">
         <div className="flex flex-wrap gap-2">
           <h3 className="text-md font-semibold text-gray-400">Bank Name:</h3>

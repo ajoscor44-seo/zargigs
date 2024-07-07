@@ -77,7 +77,7 @@ const FundingDetails = () => {
               <div className="flex justify-between items-start">
                 <h2 className="font-semibold text-gray-400">Amount Paid:</h2>
                 <h2 className="text-green-500 font-bold text-end">
-                  ₦{numeral(fundingDetails?.settlementAmount).format("0,0.00")}
+                  ₦{numeral(fundingDetails?.amountPaid).format("0,0.00")}
                 </h2>
               </div>
               <div className="flex justify-between items-start">
