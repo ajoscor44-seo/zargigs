@@ -2,8 +2,13 @@ import React from "react";
 import { BiInfoCircle } from "react-icons/bi";
 import { FaSpinner } from "react-icons/fa6";
 import NoData from "../NoData/NoData";
+import numeral from "numeral";
+import formatDate from "../../hooks/formatDate";
+import { useHistory } from "react-router-dom/cjs/react-router-dom";
 
 const AutoFunding = ({ walletDetails, loading, fundings }) => {
+  const history = useHistory();
+
   return (
     <div>
       <div className="p-2 flex flex-col gap-2 py-3">
