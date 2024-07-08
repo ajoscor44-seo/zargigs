@@ -129,12 +129,9 @@ export const postAdvertTask = async (req, res, next) => {
       taskType,
       req.user._id
     );
-    console.log(paymentResponse);
     if (!paymentResponse.status) {
-      console.log("Debugging");
       return res.status(400).json(paymentResponse);
-    }
-    return;
+    };
 
     // Create new advert task
     const newAdvertTask = new AdvertTask({
@@ -280,12 +277,9 @@ export const postEngagementTask = async (req, res, next) => {
       taskType,
       req.user._id
     );
-    console.log(paymentResponse);
     if (!paymentResponse.status) {
-      console.log("Debugging");
       return res.status(400).json(paymentResponse);
     }
-    return;
 
     // Create new engagement task
     const newEngagementTask = new EngagementTask({
