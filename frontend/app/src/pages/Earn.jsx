@@ -19,14 +19,16 @@ const Earn = () => {
   const [totalNormalTasks, setTotalNormalTasks] = useState(0);
 
   const getTasksTotalsBasedOnStatus = async () => {
-    setLoading(true);
-    const response = await axios.get("/api/v1/tasks/user-total");
+    try {
+      setLoading(true);
+      const response = await axios.get("/api/v1/tasks/user-total");
 
-    if (response.data?.failed) {
-      return setError(response.data.message);
+      setStatusTotal(response.data);
+      return setLoading(false);
+    } catch (error) {
+      console.log();
+      return setError("Oops, an error occurred");
     }
-    setStatusTotal(response.data);
-    return setLoading(false);
   };
 
   const getTotalEngagementTasks = async () => {
@@ -83,7 +85,12 @@ const Earn = () => {
             to monitor and track the progress of your tasks in review.
           </p>
           <h2 className="text-orange-500 text-xs text-center font-semi old hover:underline">
-           <a href="https://whatsapp.com/channel/0029Vaiyg0FFcovzni47lR34" target="_blank">Click here to join our channel for the latest update on gigsflix</a>
+            <a
+              href="https://whatsapp.com/channel/0029Vaiyg0FFcovzni47lR34"
+              target="_blank"
+            >
+              Click here to join our channel for the latest update on gigsflix
+            </a>
           </h2>
         </div>
 
