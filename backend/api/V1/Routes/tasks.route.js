@@ -15,7 +15,6 @@ import {
   requestForReview,
   getProofsOfWork,
   sanctionTask,
-  processPayment,
   getUserTasksHistory,
 } from "../Controllers/tasks.controller.js";
 
@@ -31,7 +30,6 @@ router.get("/proofs-of-work", getProofsOfWork);
 router.post("/request-review", requestForReview);
 router.delete("/cancel-task", cancelGeneratedTask);
 router.put("/sanction-task", sanctionTask);
-router.get("/process-payment", processPayment);
 router.post("/adverts", postAdvertTask);
 router.get("/adverts/:id", getAdvertTask);
 router.get("/adverts", getAdvertTasks);

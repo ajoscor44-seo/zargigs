@@ -64,15 +64,6 @@ const CreateAdvert = () => {
     });
   };
 
-  // Processess payment and checks its validity
-  const processPayment = async () => {
-    const response = await axios.get(
-      `/api/v1/tasks/process-payment?amount=${amountToPay}&type=advert`
-    );
-
-    return response.data;
-  };
-
   // Adds new task
   const addNewtask = async (taskData) => {
     return await axios
@@ -83,61 +74,67 @@ const CreateAdvert = () => {
       .catch((error) => {
         setLoading(false);
         console.error(error);
+        return error.response.data;
       });
   };
 
   // Creates New Task
   const createNewtask = async () => {
-    if (!taskData.numberOfTasks) {
-      return setError("Input A valid Number of Adverts.");
-    }
-    if (!taskData.gender || taskData.gender == "Select Gender") {
-      return setError("Select A Gender.");
-    }
-    if (!taskData.location) {
-      return setError("Select A Location.");
-    }
-    if (!taskData.religion) {
-      return setError("Select A Religion.");
-    }
-    if (!taskData.caption) {
-      return setError("Input A Caption.");
-    }
-    if (!taskData.mediaUrl) {
-      return alert("Are you sure you don't want to upload an advert media.");
-    }
-    setError(null);
-    setLoading(true);
-    const paymentProcessed = await processPayment();
+    try {
+      if (!taskData.numberOfTasks) {
+        return setError("Input A valid Number of Adverts.");
+      }
+      if (!taskData.gender || taskData.gender == "Select Gender") {
+        return setError("Select A Gender.");
+      }
+      if (!taskData.location) {
+        return setError("Select A Location.");
+      }
+      if (!taskData.religion) {
+        return setError("Select A Religion.");
+      }
+      if (!taskData.caption) {
+        return setError("Input A Caption.");
+      }
+      if (!taskData.mediaUrl) {
+        return alert("Are you sure you don't want to upload an advert media.");
+      }
+      setError(null);
+      setLoading(true);
+      const tasksProcessed = await addNewtask(taskData);
 
-    if (paymentProcessed.status) {
-      const res = await addNewtask(taskData);
+      if (tasksProcessed.status) {
+        if (!tasksProcessed.failed) {
+          showToast({
+            msg: `${tasksProcessed.message}`,
+            errorType: "success",
+          });
 
-      if (!res.failed) {
+          const toastTimeout = setTimeout(() => {
+            setToastNotifications([]);
+            window.location.href = "/advertise";
+            clearTimeout(toastTimeout);
+          }, 3100);
+          return setLoading(false);
+        }
         showToast({
-          msg: `${res.message}`,
-          errorType: "success",
+          msg: `${tasksProcessed.message}`,
+          errorType: "danger",
         });
-
-        const toastTimeout = setTimeout(() => {
-          setToastNotifications([]);
-          window.location.href = "/advertise";
-          clearTimeout(toastTimeout);
-        }, 3100);
         return setLoading(false);
       }
       showToast({
-        msg: `${res.message}`,
+        msg: `${tasksProcessed.message}`,
+        errorType: "danger",
+      });
+      return setLoading(false);
+    } catch (error) {
+      showToast({
+        msg: `${error.response.data.message}`,
         errorType: "danger",
       });
       return setLoading(false);
     }
-
-    showToast({
-      msg: `${paymentProcessed.message}`,
-      errorType: "danger",
-    });
-    return setLoading(false);
   };
 
   // Selects Profile Picture
@@ -417,12 +414,9 @@ const CreateAdvert = () => {
       />
       <ClientMenuBar />
       <div className="toast_cover">
-        {toastNotifications?.map((toastNotification) => {
+        {toastNotifications?.map((toastNotification, i) => {
           return (
-            <ToastNotification
-              key={toastNotification.id}
-              toastNotification={toastNotification}
-            />
+            <ToastNotification key={i} toastNotification={toastNotification} />
           );
         })}
       </div>

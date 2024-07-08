@@ -124,6 +124,17 @@ export const postAdvertTask = async (req, res, next) => {
     const { amountToEarn } = earnAdvert.toObject();
     const createAdvert = await CreateAdvert.findById(payId);
     const { amountToPay } = createAdvert.toObject();
+    const paymentResponse = await processPayment(
+      Number(numberOfTasks) * Number(amountToPay),
+      taskType,
+      req.user._id
+    );
+    console.log(paymentResponse);
+    if (!paymentResponse.status) {
+      console.log("Debugging");
+      return res.status(400).json(paymentResponse);
+    }
+    return;
 
     // Create new advert task
     const newAdvertTask = new AdvertTask({
@@ -264,6 +275,17 @@ export const postEngagementTask = async (req, res, next) => {
     const { amountToEarn } = earnEngagement.toObject();
     const createEngagement = await CreateEngagement.findById(payId);
     const { amountToPay } = createEngagement.toObject();
+    const paymentResponse = await processPayment(
+      Number(numberOfTasks) * Number(amountToPay),
+      taskType,
+      req.user._id
+    );
+    console.log(paymentResponse);
+    if (!paymentResponse.status) {
+      console.log("Debugging");
+      return res.status(400).json(paymentResponse);
+    }
+    return;
 
     // Create new engagement task
     const newEngagementTask = new EngagementTask({
@@ -282,14 +304,15 @@ export const postEngagementTask = async (req, res, next) => {
       status: "pending",
       title,
     });
+
     await newEngagementTask.save(); // Saves new engagement task
-    res.status(200).json({
-      status: 200,
-      failed: false,
+    return res.status(200).json({
+      ...paymentResponse,
       message: "Engagement Task Created successfully.",
+      failed: false,
     });
-    next();
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -1307,26 +1330,27 @@ export const sanctionTask = async (req, res, next) => {
   }
 };
 
-export const processPayment = async (req, res, next) => {
+export const processPayment = async (amount, type, userId) => {
   try {
-    const { amount, type } = req.query;
-
     // Validates user details
     const validUserDetails = await userDetails.findOne({
-      userId: req.user._id,
+      userId,
     });
     if (!validUserDetails) {
-      const error = ErrorHandler(404, "User details not found.");
-      return res.status(404).json(error);
+      return {
+        status: false,
+        failed: true,
+        message: "Valid user details not found.",
+      };
     }
 
     // Checks if user has enough balance
     if (validUserDetails.userEarnings.balance < amount) {
-      return res.status(200).json({
+      return {
         status: false,
         failed: true,
         message: "Insufficient funds. Fund your wallet",
-      });
+      };
     }
 
     validUserDetails.userEarnings = {
@@ -1343,7 +1367,7 @@ export const processPayment = async (req, res, next) => {
 
     // Creates notitfication
     const notification = {
-      userId: req.user._id,
+      userId,
       title: "Purchase Completed!",
       message: `Your ${type} order worth ₦${numeral(amount).format(
         "0,0.00"
@@ -1354,12 +1378,17 @@ export const processPayment = async (req, res, next) => {
     // Send notification to user
     await sendNotitfication(notification);
 
-    return res.status(200).json({
+    return {
       status: true,
       failed: false,
       message: "Payment process successful",
-    });
+    };
   } catch (error) {
-    next(error);
+    console.log(error);
+    return {
+      status: false,
+      failed: true,
+      message: "An error occurred while processing payment.",
+    };
   }
 };

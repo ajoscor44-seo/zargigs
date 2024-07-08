@@ -57,15 +57,6 @@ const CreateOrder = () => {
     });
   };
 
-  // Processess payment and checks its validity
-  const processPayment = async () => {
-    const response = await axios.get(
-      `/api/v1/tasks/process-payment?amount=${amountToPay}&type=advert`
-    );
-
-    return response.data;
-  };
-
   // Adds new task
   const addNewtask = async (taskData) => {
     return await axios
@@ -75,54 +66,64 @@ const CreateOrder = () => {
       })
       .catch((error) => {
         setLoading(false);
-        console.error(error);
+        return error.response.data;
       });
   };
 
   // Creates New Task
   const createNewtask = async () => {
-    if (!taskData.numberOfTasks) {
-      return setError("Input A valid Number of Adverts.");
-    }
-    if (!taskData.gender || taskData.gender == "Select Gender") {
-      return setError("Select A Gender.");
-    }
-    if (!taskData.location) {
-      return setError("Select A Location.");
-    }
-    if (!taskData.religion) {
-      return setError("Select A Religion.");
-    }
-    if (!taskData.link) {
-      return setError("Input the link to your profile or page.");
-    }
-    setError(null);
-    setLoading(true);
-    const paymentProcessed = await processPayment();
+    try {
+      if (!taskData.numberOfTasks) {
+        return setError("Input A valid Number of Engagements.");
+      }
+      if (!taskData.gender || taskData.gender == "Select Gender") {
+        return setError("Select A Gender.");
+      }
+      if (!taskData.location) {
+        return setError("Select A Location.");
+      }
+      if (!taskData.religion) {
+        return setError("Select A Religion.");
+      }
+      if (!taskData.link) {
+        return setError("Input the link to your profile or page.");
+      }
+      setError(null);
+      setLoading(true);
+      const tasksProcessed = await addNewtask(taskData);
 
-    if (paymentProcessed.status) {
-      const res = await addNewtask(taskData);
+      if (tasksProcessed.status) {
+        if (!tasksProcessed.failed) {
+          showToast({
+            msg: `${tasksProcessed.message}`,
+            errorType: "success",
+          });
 
-      if (!res.failed) {
+          const toastTimeout = setTimeout(() => {
+            setToastNotifications([]);
+            window.location.href = "/order";
+            clearTimeout(toastTimeout);
+          }, 2500);
+          return setLoading(false);
+        }
         showToast({
-          msg: `${res.message}`,
-          errorType: "success",
+          msg: `${tasksProcessed.message}`,
+          errorType: "danger",
         });
-
-        const toastTimeout = setTimeout(() => {
-          setToastNotifications([]);
-          window.location.href = "/order";
-          clearTimeout(toastTimeout);
-        }, 2500);
         return setLoading(false);
       }
-      setLoading(false);
-      return showToast({
-        msg: `${res.message}`,
+      showToast({
+        msg: `${tasksProcessed.message}`,
         errorType: "danger",
       });
+      return setLoading(false);
+    } catch (error) {
+      showToast({
+        msg: `${error.response.data.message}`,
+        errorType: "danger",
+      });
+      return setLoading(false);
     }
-    return;
   };
 
   return (
@@ -237,12 +238,9 @@ const CreateOrder = () => {
       />
       <ClientMenuBar />
       <div className="toast_cover">
-        {toastNotifications?.map((toastNotification) => {
+        {toastNotifications?.map((toastNotification, i) => {
           return (
-            <ToastNotification
-              key={toastNotification.id}
-              toastNotification={toastNotification}
-            />
+            <ToastNotification key={i} toastNotification={toastNotification} />
           );
         })}
       </div>
