@@ -37,7 +37,7 @@ const SetBankDetails = ({
     "Standard Chartered Bank",
     "Sterling Bank",
     "Union Bank Of Nigeria",
-    "Union Bank For Africa (UBA)",
+    "United Bank For Africa (UBA)",
     "Unity Bank",
     "Zenith Bank",
     "VFD Microfinance Bank",
