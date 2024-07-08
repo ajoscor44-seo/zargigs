@@ -46,6 +46,23 @@ export const getAllUsers = async (req, res, next) => {
   }
 };
 
+export const getUsersTotals = async (req, res, next) => {
+  try {
+    const totalCount = await User.countDocuments();
+    const totalMembers = await User.countDocuments({ isMember: true });
+
+    return res.status(200).json({
+      failed: false,
+      meta: {
+        total: totalCount,
+        members: totalMembers,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getAUser = async (req, res, next) => {
   const { id } = req.query;
 

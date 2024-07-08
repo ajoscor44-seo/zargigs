@@ -3,7 +3,11 @@ import {
   deleteAnnouncement,
   postAnnouncement,
 } from "../Controllers/announcement.controller.js";
-import { getAUser, getAllUsers } from "../Controllers/users.controller.js";
+import {
+  getAUser,
+  getAllUsers,
+  getUsersTotals,
+} from "../Controllers/users.controller.js";
 import {
   getAllComplaint,
   resolveComplaint,
@@ -43,6 +47,7 @@ router.post("/", setAdminData);
 router.put("/", updateAdminData);
 
 // Users Routes
+router.get("/users/totals", getUsersTotals);
 router.get("/users", getAllUsers);
 router.get("/user", getAUser);
 
