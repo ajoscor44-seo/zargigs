@@ -44,7 +44,7 @@ export const signup = async (req, res, next) => {
       phone,
       password: hashedPassword,
       referredBy:
-        referrer && referrer.role !== "admin"
+        referrer && referrer.username !== "logical"
           ? referredBy?.toLowerCase()
           : "admin",
       role: "user",
