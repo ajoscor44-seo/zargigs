@@ -116,7 +116,7 @@ const SetBirthReligion = ({
           <button
             onClick={uploadUserDetails}
             disabled={loading}
-            className="bg-green-500 text-white font-semibold text-sm py-3 rounded"
+            className="bg-green-500 text-white text-centre font-semibold text-sm py-3 rounded"
           >
             {!loading ? (
               <span>PROCEED TO DASHBOARD</span>

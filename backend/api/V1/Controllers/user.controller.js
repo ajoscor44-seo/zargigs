@@ -6,76 +6,80 @@ import { ErrorHandler } from "../utils/error.js";
 import { sendNotitfication } from "../utils/notification.js";
 
 export const getUserDetails = async (req, res, next) => {
-  // Checks for valid user
-  const validUser = await User.findOne({ email: req.user.email });
-  if (!validUser) {
-    const error = ErrorHandler(404, "There's no user with this email.");
-    return res.status(404).json(error);
-  }
-
-  // Destructures user object
-  const { _id, __v, iat, createdAt, updatedAt, role, ...rest } = req.user;
-
-  const validUserDetails = await UserDetails.findOne({ userId: validUser._id });
-  if (!validUserDetails) {
-    return res.status(200).json({ ...rest });
-  }
-
-  let referrals = [];
-  if (validUser.referrals.length) {
-    referrals = await Promise.all(
-      validUser.referrals.map(async (referral) => {
-        const user = await User.findById(referral.userId);
-        if (!user) {
+  try {
+    // Checks for valid user
+    const validUser = await User.findOne({ email: req.user.email });
+    if (!validUser) {
+      const error = ErrorHandler(404, "There's no user with this email.");
+      return res.status(404).json(error);
+    }
+  
+    // Destructures user object
+    const { _id, __v, iat, createdAt, updatedAt, role, ...rest } = req.user;
+  
+    const validUserDetails = await UserDetails.findOne({ userId: validUser._id });
+    if (!validUserDetails) {
+      return res.status(200).json({ ...rest });
+    }
+  
+    let referrals = [];
+    if (validUser.referrals.length) {
+      referrals = await Promise.all(
+        validUser.referrals.map(async (referral) => {
+          const user = await User.findById(referral.userId);
+          if (!user) {
+            return {
+              username: "No username",
+              firstname: "No firstname",
+              lastname: "No lastname",
+              isEmailVerified: false,
+              isMember: false,
+              isBanned: false,
+              image: "",
+            };
+          }
+  
+          const {
+            username,
+            email,
+            isEmailVerified,
+            isMember,
+            isBanned,
+            image,
+            firstname,
+            lastname,
+            ...rest
+          } = user.toObject();
+  
           return {
-            username: "No username",
-            firstname: "No firstname",
-            lastname: "No lastname",
-            isEmailVerified: false,
-            isMember: false,
-            isBanned: false,
-            image: "",
+            username,
+            firstname,
+            lastname,
+            isEmailVerified,
+            isMember,
+            isBanned,
+            image,
           };
-        }
-
-        const {
-          username,
-          email,
-          isEmailVerified,
-          isMember,
-          isBanned,
-          image,
-          firstname,
-          lastname,
-          ...rest
-        } = user.toObject();
-
-        return {
-          username,
-          firstname,
-          lastname,
-          isEmailVerified,
-          isMember,
-          isBanned,
-          image,
-        };
-      })
-    );
+        })
+      );
+    }
+  
+    // Destructures user details object
+    const {
+      userId,
+      _id: detailsId,
+      __v: detailsV,
+      createdAt: detailsCreatedAt,
+      updatedAt: detailsUpdatedAt,
+      ...details
+    } = validUserDetails._doc;
+    const uDetails = { ...details, referrals };
+  
+    return res.json({ ...rest, ...uDetails, id: _id });
+  } catch(error) {
+    console.log(error)
+    next(error)
   }
-
-  // Destructures user details object
-  const {
-    userId,
-    _id: detailsId,
-    __v: detailsV,
-    createdAt: detailsCreatedAt,
-    updatedAt: detailsUpdatedAt,
-    ...details
-  } = validUserDetails._doc;
-  const uDetails = { ...details, referrals };
-
-  res.json({ ...rest, ...uDetails, id: _id });
-  next();
 };
 
 export const addUserDetails = async (req, res, next) => {

@@ -20,6 +20,14 @@ export const signup = async (req, res, next) => {
       referredBy,
       phone,
     } = req.body;
+    const formattedUsername = username
+      ?.replaceAll(" ", "")
+      ?.toLowerCase()
+      ?.replaceAll("@", "");
+    const formattedRefUsername = referredBy
+      ?.replaceAll(" ", "")
+      ?.toLowerCase()
+      ?.replaceAll("@", "");
     const hashedPassword = password && bcryptjs.hashSync(password, 10);
     const userWithMail = await User.findOne({ email });
     let referrer = await User.findOne({ username: referredBy });
@@ -30,7 +38,7 @@ export const signup = async (req, res, next) => {
       return res.status(400).json(error);
     }
     const userWithUsername = await User.findOne({
-      username: username.toLowerCase(),
+      username: formattedUsername,
     });
     if (userWithUsername) {
       const error = ErrorHandler(400, "Username is already taken.");
@@ -39,13 +47,13 @@ export const signup = async (req, res, next) => {
     const newUser = new User({
       firstname,
       lastname,
-      username: username.toLowerCase(),
+      username: formattedUsername,
       email,
       phone,
       password: hashedPassword,
       referredBy:
         referrer && referrer.username !== "logical"
-          ? referredBy?.toLowerCase()
+          ? formattedRefUsername
           : "admin",
       role: "user",
       isEmailVerified: false,
