@@ -46,7 +46,9 @@ const AuthProvider = ({ children }) => {
   // Gets advert creator data
   const getAdvertCreator = async () => {
     try {
-      const response = await axios.get("/api/v1/creator/create-advert");
+      const response = await axios.get(
+        `/api/v1/creator/create-advert?no-cache=${new Date().getTime()}`
+      );
 
       return setAdvertCreator(response.data.data);
     } catch (error) {
@@ -57,7 +59,9 @@ const AuthProvider = ({ children }) => {
   // Gets engagement creator data
   const getEngagementCreator = async () => {
     try {
-      const response = await axios.get("/api/v1/creator/create-engagement");
+      const response = await axios.get(
+        `/api/v1/creator/create-engagement?no-cache=${new Date().getTime()}`
+      );
 
       return setEngagementCreator(response.data.data);
     } catch (error) {
@@ -68,7 +72,9 @@ const AuthProvider = ({ children }) => {
   // Gets advert earners data
   const getAdvertEarners = async () => {
     try {
-      const response = await axios.get("/api/v1/earner/earn-advert");
+      const response = await axios.get(
+        `/api/v1/earner/earn-advert?no-cache=${new Date().getTime()}`
+      );
 
       return setAdvertEarner(response.data.data);
     } catch (error) {
@@ -79,7 +85,9 @@ const AuthProvider = ({ children }) => {
   // Gets engagement earners data
   const getEngagementEarners = async () => {
     try {
-      const response = await axios.get("/api/v1/earner/earn-engagement");
+      const response = await axios.get(
+        `/api/v1/earner/earn-engagement?no-cache=${new Date().getTime()}`
+      );
 
       return setEngagementEarner(response.data.data);
     } catch (error) {
