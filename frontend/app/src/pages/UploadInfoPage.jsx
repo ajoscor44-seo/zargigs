@@ -15,6 +15,7 @@ const UploadInfoPage = () => {
   const { currentUser, fetchUserData } = useAuth();
   const history = useHistory();
   const [activePage, setActivePage] = useState("location");
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [days, setDays] = useState(["Day"]);
 
@@ -58,6 +59,7 @@ const UploadInfoPage = () => {
   }, [userDOB?.month, userDOB?.year, months]);
 
   const uploadUserDetails = async () => {
+    setLoading(true);
     if (!currentUser.email && !currentUser._id) {
       return history.push("/login");
     }
@@ -102,6 +104,7 @@ const UploadInfoPage = () => {
         return setError(data.message);
       }
       await fetchUserData();
+      setLoading(false);
       return history.push("/");
     } catch (error) {
       return console.error(error);
@@ -147,6 +150,7 @@ const UploadInfoPage = () => {
             months={months}
             days={days}
             uploadUserDetails={uploadUserDetails}
+            loading={loading}
           />
         ) : (
           <UploadProfilePic

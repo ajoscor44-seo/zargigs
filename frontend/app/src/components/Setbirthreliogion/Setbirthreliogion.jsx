@@ -3,6 +3,7 @@ import FormInput from "../FormInput/FormInput";
 import religions from "../../data/religions";
 import { IoArrowForward } from "react-icons/io5";
 import { useAuth } from "../../context/AuthContext";
+import { FaSpinner } from "react-icons/fa6";
 
 const SetBirthReligion = ({
   setActivePage,
@@ -14,6 +15,7 @@ const SetBirthReligion = ({
   months,
   days,
   uploadUserDetails,
+  loading,
 }) => {
   const { adminData } = useAuth();
 
@@ -113,9 +115,14 @@ const SetBirthReligion = ({
 
           <button
             onClick={uploadUserDetails}
+            disabled={loading}
             className="bg-green-500 text-white font-semibold text-sm py-3 rounded"
           >
-            PROCEED TO DASHBOARD
+            {!loading ? (
+              <span>PROCEED TO DASHBOARD</span>
+            ) : (
+              <FaSpinner size={25} />
+            )}
           </button>
         </div>
       </div>
