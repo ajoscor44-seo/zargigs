@@ -1153,7 +1153,7 @@ export const getProofsOfWork = async (req, res, next) => {
       taskPlatform: platform,
       taskType: type,
       grandParentId: id,
-    });
+    }).sort({ createdAt: -1 });
 
     if (!proofs) {
       const error = ErrorHandler(404, "No proof of work for this task.");
