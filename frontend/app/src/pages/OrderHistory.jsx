@@ -39,6 +39,7 @@ const TransactionHistory = () => {
       .then((response) => response.data)
       .catch((error) => console.error(error));
     setHistoryData(orders);
+    console.log(orders);
     return setLoading(false);
   };
 
@@ -79,7 +80,9 @@ const TransactionHistory = () => {
             </div>
           ) : !historyData.data?.length ? (
             <div className="min-h-96 flex justify-center items-center">
-              <NoData textBelow={"No Advert History Available"} />
+              <NoData
+                textBelow={`No ${activeTab.toUpperCase()} History Available`}
+              />
             </div>
           ) : (
             historyData.data?.map((data) => {
@@ -233,8 +236,8 @@ const TransactionHistory = () => {
           )}
         </div>
         {!loading &&
-          historyData?.meta.total > 0 &&
-          historyData?.meta.total !== historyData?.data.length && (
+          historyData?.meta?.total > 0 &&
+          historyData?.meta?.total !== historyData?.data?.length && (
             <div
               className="text-center font-bold text-green-500 py-5 cursor-pointer"
               onClick={(prev) => setPerpage(prev + 5)}

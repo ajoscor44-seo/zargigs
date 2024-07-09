@@ -59,6 +59,7 @@ export const getAdvertTasks = async (req, res, next) => {
     const baseQuery = { createdBy: req.user._id };
     if (taskPlatform) baseQuery.taskPlatform = taskPlatform;
     const advertTasks = await AdvertTask.find(baseQuery)
+      .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit);
     const adverttasks = advertTasks.map((advertTask) => {
@@ -208,6 +209,7 @@ export const getEngagementTasks = async (req, res, next) => {
     if (taskPlatform) baseQuery.taskPlatform = taskPlatform;
 
     const engagementTasks = await EngagementTask.find(baseQuery)
+      .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit);
 
