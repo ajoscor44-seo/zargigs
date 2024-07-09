@@ -530,8 +530,15 @@ export const generateTask = async (req, res, next) => {
             taskPlatform,
             parentId: _id,
           }));
-
         if (allocatedTasks < numberOfTasks && !userHasDoneTaskBefore) {
+          if (allocatedTasks++ == numberOfTasks) {
+            const Task =
+              taskType == "advert"
+                ? await AdvertTask.findOne({ ...baseQuery, _id })
+                : await EngagementTask.findOne({ ...baseQuery, _id });
+            Task.status = "completed";
+            await Task.save();
+          }
           return {
             id: _id,
             allocatedTasks,
