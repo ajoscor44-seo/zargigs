@@ -1,4 +1,4 @@
-7import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
 import { useParams } from "react-router-dom/cjs/react-router-dom";
 import EarningWay from "../components/EarningWay/EarningWay";
