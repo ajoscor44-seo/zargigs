@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+7import React, { useEffect, useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
 import { useParams } from "react-router-dom/cjs/react-router-dom";
 import EarningWay from "../components/EarningWay/EarningWay";
@@ -86,9 +86,6 @@ const EarnWithTasks = () => {
       `/api/v1/tasks/user-total?type=${taskType}&platform=${wayToEarn.platformName.toLowerCase()}`
     );
 
-    if (response.data?.failed) {
-      return setError(response.data.message);
-    }
     setStatusTotal(response.data);
     return setLoading(false);
   };
