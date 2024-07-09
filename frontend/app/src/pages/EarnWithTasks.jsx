@@ -86,9 +86,6 @@ const EarnWithTasks = () => {
       `/api/v1/tasks/user-total?type=${taskType}&platform=${wayToEarn.platformName.toLowerCase()}`
     );
 
-    if (response.data?.failed) {
-      return setError(response.data.message);
-    }
     setStatusTotal(response.data);
     return setLoading(false);
   };
