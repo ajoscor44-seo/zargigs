@@ -321,13 +321,6 @@ export const getTotalTasks = async (req, res, next) => {
   const { type: taskType, platform: taskPlatform } = req.query;
 
   try {
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
-    if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
-    }
-
     const baseQuery = {};
     if (taskPlatform) baseQuery.taskPlatform = taskPlatform;
     const Tasks =
@@ -335,7 +328,7 @@ export const getTotalTasks = async (req, res, next) => {
         ? await AdvertTask.find(baseQuery)
         : await EngagementTask.find(baseQuery);
 
-    const tasks = Tasks.map((Task) => {
+    const tAsks = Tasks.map((Task) => {
       const {
         createdBy,
         updatedAt,
@@ -343,36 +336,43 @@ export const getTotalTasks = async (req, res, next) => {
         location,
         religion,
         caption,
+        allocatedTasks,
+        numberOfTasks,
         __v,
         _id,
         ...rest
       } = Task.toObject();
-      return { id: _id, ...rest };
+
+      if (allocatedTasks < numberOfTasks) {
+        return { id: _id, ...rest };
+      }
+      return null;
     });
+    const tasks = tAsks.filter((task) => task !== null);
 
     const taskIds = tasks.map((task) => task.id);
     const userId = req.user._id;
 
     const userTasks = await Promise.all([
-      AllocatedTask.find({
+      await AllocatedTask.find({
         allocatedTo: userId,
         taskType,
         taskPlatform,
         parentId: { $in: taskIds },
       }),
-      PendingTask.find({
+      await PendingTask.find({
         toBeDoneBy: userId,
         taskType,
         taskPlatform,
         parentId: { $in: taskIds },
       }),
-      CompletedTask.find({
+      await CompletedTask.find({
         doneBy: userId,
         taskType,
         taskPlatform,
         parentId: { $in: taskIds },
       }),
-      InReviewTask.find({
+      await InReviewTask.find({
         doneBy: userId,
         taskType,
         taskPlatform,
@@ -540,15 +540,8 @@ export const generateTask = async (req, res, next) => {
             taskPlatform,
             parentId: _id,
           }));
+
         if (allocatedTasks < numberOfTasks && !userHasDoneTaskBefore) {
-          // if (allocatedTasks++ == numberOfTasks) {
-          //   const Task =
-          //     taskType == "advert"
-          //       ? await AdvertTask.findOne({ ...baseQuery, _id })
-          //       : await EngagementTask.findOne({ ...baseQuery, _id });
-          //   Task.status = "completed";
-          //   await Task.save();
-          // }
           return {
             id: _id,
             allocatedTasks,
@@ -559,7 +552,6 @@ export const generateTask = async (req, res, next) => {
         return null; // Return null for tasks that don't meet the criteria
       })
     );
-
     // Filter out null values from the resulting array
     const tasks = taskS.filter((task) => task !== null);
 

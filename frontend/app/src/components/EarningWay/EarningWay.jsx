@@ -36,54 +36,54 @@ const EarningWay = ({ way, addSelectBtn, wayDescription, type }) => {
   return (
     <div className="hover:bg-slate-50 p-4 flex gap-2">
       <div className="flex flex-col items-center gap-2">
-        {way.platformName.toLowerCase() === "facebook" ? (
+        {way?.platformName?.toLowerCase() === "facebook" ? (
           <FaFacebook className="text-blue-600" size={60} />
-        ) : way.platformName.toLowerCase() === "instagram" ? (
+        ) : way?.platformName?.toLowerCase() === "instagram" ? (
           <FaInstagram
             size={60}
             className="text-white bg-instagram-gradient rounded"
           />
-        ) : way.platformName.toLowerCase() === "allfollow" ? (
+        ) : way?.platformName?.toLowerCase() === "allfollow" ? (
           <SlUserFollowing
             size={60}
             className="text-white bg-blue-400 rounded p-2"
           />
-        ) : way.platformName.toLowerCase() === "tiktok" ? (
+        ) : way?.platformName?.toLowerCase() === "tiktok" ? (
           <FaTiktok size={60} className="text-white bg-black rounded p-1" />
-        ) : way.platformName.toLowerCase() === "audiomack" ? (
+        ) : way?.platformName?.toLowerCase() === "audiomack" ? (
           <SiAudiomack
             size={60}
             className="text-orange-500 bg-black rounded p-2"
           />
-        ) : way.platformName.toLowerCase() === "applestore" ? (
+        ) : way?.platformName?.toLowerCase() === "applestore" ? (
           <IoLogoAppleAppstore
             size={60}
             className="text-blue-500 bg-white rounded-full"
           />
-        ) : way.platformName.toLowerCase() === "playstore" ? (
+        ) : way?.platformName?.toLowerCase() === "playstore" ? (
           <img src={playStoreImage} className="w-20 h-20 object-cover" />
-        ) : way.platformName.toLowerCase() === "allretweets" ? (
+        ) : way?.platformName?.toLowerCase() === "allretweets" ? (
           <FaRetweet
             size={60}
             className="text-blue-500 bg-white rounded-full"
           />
-        ) : way.platformName.toLowerCase() === "allshare" ? (
+        ) : way?.platformName?.toLowerCase() === "allshare" ? (
           <FaShare
             size={60}
             className="text-white bg-white rounded-full bg-instagram-gradient p-3"
           />
-        ) : way.platformName.toLowerCase() === "allcomments" ? (
+        ) : way?.platformName?.toLowerCase() === "allcomments" ? (
           <FaCommentDots size={60} className="text-green-400 bg-white" />
-        ) : way.platformName.toLowerCase() === "telegram" ? (
+        ) : way?.platformName?.toLowerCase() === "telegram" ? (
           <FaTelegram size={60} className="text-blue-400 bg-white" />
-        ) : way.platformName.toLowerCase() === "alllike" ? (
+        ) : way?.platformName?.toLowerCase() === "alllike" ? (
           <BiLike
             size={60}
             className="text-white bg-blue-500 rounded-full p-2"
           />
-        ) : way.platformName.toLowerCase() === "youtube" ? (
+        ) : way?.platformName?.toLowerCase() === "youtube" ? (
           <FaYoutube size={60} className="text-red-500" />
-        ) : way.platformName.toLowerCase() === "whatsapp" ? (
+        ) : way?.platformName?.toLowerCase() === "whatsapp" ? (
           <FaWhatsapp
             size={60}
             className="bg-green-500 text-white rounded p-1"
