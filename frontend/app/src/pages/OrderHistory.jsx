@@ -39,7 +39,6 @@ const TransactionHistory = () => {
       .then((response) => response.data)
       .catch((error) => console.error(error));
     setHistoryData(orders);
-    console.log(orders);
     return setLoading(false);
   };
 
@@ -235,16 +234,16 @@ const TransactionHistory = () => {
             })
           )}
         </div>
-        {!loading &&
-          historyData?.meta?.total > 0 &&
-          historyData?.meta?.total !== historyData?.data?.length && (
-            <div
-              className="text-center font-bold text-green-500 py-5 cursor-pointer"
-              onClick={(prev) => setPerpage(prev + 5)}
-            >
-              Load More...
-            </div>
-          )}
+        {!loading && historyData?.meta?.total > historyData?.data?.length ? (
+          <div
+            className="text-center font-bold text-green-500 py-5 cursor-pointer"
+            onClick={() => setPerpage((prev) => prev + 10)}
+          >
+            Load More...
+          </div>
+        ) : (
+          <div></div>
+        )}
       </div>
       <ClientMenuBar />
     </div>
