@@ -38,6 +38,7 @@ export const getAdvertTask = async (req, res, next) => {
     res.status(200).json(adverttask);
     next();
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -93,6 +94,7 @@ export const getAdvertTasks = async (req, res, next) => {
     res.status(200).json(response);
     next();
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -160,6 +162,7 @@ export const postAdvertTask = async (req, res, next) => {
     });
     next();
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -184,6 +187,7 @@ export const getEngagementTask = async (req, res, next) => {
     res.status(200).json(engagementtask);
     next();
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -242,6 +246,7 @@ export const getEngagementTasks = async (req, res, next) => {
     res.status(200).json(response);
     next();
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -390,6 +395,7 @@ export const getTotalTasks = async (req, res, next) => {
     const response = { total: total };
     return res.status(200).json(response);
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -447,6 +453,7 @@ export const getUserTotalTasks = async (req, res, next) => {
     // Creates the response
     return res.status(200).json(response);
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -602,6 +609,7 @@ export const generateTask = async (req, res, next) => {
 
     return res.status(200).json(task);
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -677,6 +685,7 @@ export const cancelGeneratedTask = async (req, res, next) => {
     res.status(200).json(response);
     next();
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -772,6 +781,7 @@ export const getUserTasksHistory = async (req, res, next) => {
     // Creates the response
     return res.status(200).json(tasks);
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -818,35 +828,59 @@ export const getTasks = async (req, res, next) => {
         return res.status(400).json({ error: "Invalid task status." });
     }
 
-    let Tasks = [];
+    if (taskStatus === "pending") {
+      const Task = await PendingTask.findOne(query);
+      if (!Task) {
+        return res.status(200).json(null);
+      }
 
-    switch (taskStatus) {
-      case "allocated":
-        Tasks = await AllocatedTask.find(query);
-        break;
-      case "cancelled":
-        Tasks = await CancelledTask.find(query);
-        break;
-      case "pending":
-        Tasks = await PendingTask.findOne(query);
-        break;
-      case "failed":
-        Tasks = await FailedTask.find(query);
-        break;
-      case "completed":
-        Tasks = await CompletedTask.find(query);
-        break;
-      case "in-review":
-        Tasks = await InReviewTask.find(query);
-        break;
-    }
+      const {
+        updatedAt,
+        createdBy,
+        parentId,
+        expiresAt,
+        toBeDoneBy,
+        __v,
+        _id,
+        ...rest
+      } = Task.toObject();
 
-    if (!Tasks.length && taskStatus !== "pending") {
-      const error = ErrorHandler(404, "No data available.");
-      return res.status(404).json(error);
-    }
+      const currentTime = new Date();
+      const expiryTime = Task.expiresAt;
 
-    if (taskStatus !== "pending") {
+      // Gets time left in seconds for this pending task to expire
+      const timeLeftS = (expiryTime - currentTime) / 1000;
+
+      const task = { id: _id, timeLeftS, ...rest };
+
+      // Creates the response
+      return res.status(200).json(task);
+    } else {
+      let Tasks = [];
+
+      switch (taskStatus) {
+        case "allocated":
+          Tasks = await AllocatedTask.find(query);
+          break;
+        case "cancelled":
+          Tasks = await CancelledTask.find(query);
+          break;
+        case "failed":
+          Tasks = await FailedTask.find(query);
+          break;
+        case "completed":
+          Tasks = await CompletedTask.find(query);
+          break;
+        case "in-review":
+          Tasks = await InReviewTask.find(query);
+          break;
+      }
+
+      if (!Tasks.length) {
+        const error = ErrorHandler(404, "No data available.");
+        return res.status(404).json(error);
+      }
+
       const tasks = Tasks.map((Task) => {
         const {
           updatedAt,
@@ -863,32 +897,9 @@ export const getTasks = async (req, res, next) => {
 
       // Creates the response
       return res.status(200).json(tasks);
-    } else {
-      if (!Tasks) {
-        return res.status(200).json(null);
-      }
-      const {
-        updatedAt,
-        createdBy,
-        parentId,
-        expiresAt,
-        toBeDoneBy,
-        __v,
-        _id,
-        ...rest
-      } = Tasks.toObject();
-      const currentTime = new Date();
-      const expiryTime = Tasks.expiresAt;
-
-      // Gets time left in seconds for this pending task to expire
-      const timeLeftS = (expiryTime - currentTime) / 1000;
-
-      const task = { id: _id, timeLeftS, ...rest };
-
-      // Creates the response
-      return res.status(200).json(task);
     }
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -987,6 +998,7 @@ export const getTask = async (req, res, next) => {
     const responseObj = { id: _id, ...rest };
     return res.status(200).json(responseObj);
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -1083,6 +1095,7 @@ export const requestForReview = async (req, res, next) => {
       message: "Task uploaded for review.",
     });
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -1138,6 +1151,7 @@ export const getProofsOfWork = async (req, res, next) => {
 
     return res.status(200).json(proofObject);
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -1298,6 +1312,7 @@ export const sanctionTask = async (req, res, next) => {
       message: sanction,
     });
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };

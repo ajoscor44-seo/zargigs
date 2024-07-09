@@ -173,7 +173,8 @@ export const postWithdrawalRequests = async (req, res, next) => {
 
     // Checks for valid amount
     const validAmount =
-      withdrawalAmount + charges <= validUserDetails.userEarnings.balance;
+      Number(withdrawalAmount) + Number(charges) <=
+      Number(validUserDetails.userEarnings.balance);
     if (!validAmount) {
       const error = ErrorHandler(406, "Insufficient balance");
       return res.status(406).json(error);
@@ -181,11 +182,13 @@ export const postWithdrawalRequests = async (req, res, next) => {
 
     // Updates balance and amount withdrawn
     const newUserBalance =
-      validUserDetails.userEarnings.balance - withdrawalAmount - charges;
+      Number(validUserDetails.userEarnings.balance) -
+      Number(withdrawalAmount) -
+      Number(charges);
     const newUserAmountWithdrawn =
-      validUserDetails.userEarnings.amountWithdrawn +
-      withdrawalAmount +
-      charges;
+      Number(validUserDetails.userEarnings.amountWithdrawn) +
+      Number(withdrawalAmount) +
+      Number(charges);
     await validUserDetails.updateOne({
       userEarnings: {
         ...validUserDetails.userEarnings,
