@@ -457,13 +457,6 @@ export const generateTask = async (req, res, next) => {
   const taskPlatform = req.query.platform || null;
 
   try {
-    // Validations for user request
-    const validUser = await User.findOne({ email: req.user.email });
-    if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
-    }
-
     if (!taskPlatform || !taskType) {
       const error = ErrorHandler(400, "Parameters Invalid.");
       return res.status(400).json(error);
@@ -618,18 +611,11 @@ export const cancelGeneratedTask = async (req, res, next) => {
   const { type: taskType, platform: taskPlatform } = req.query;
 
   try {
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
     const taskAllocatedToUser = await AllocatedTask.findOne({
       allocatedTo: req.user._id,
       taskType,
       taskPlatform,
     });
-    // Validations
-    if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
-    }
     if (!taskPlatform || !taskType) {
       const error = ErrorHandler(400, "Invalid Parameters.");
       return res.status(400).json(error);
@@ -711,22 +697,56 @@ export const getUserTasksHistory = async (req, res, next) => {
       return res.status(400).json(error);
     }
 
-    const Tasks =
-      taskStatus == "allocated"
-        ? await AllocatedTask.find({ allocatedTo: req.user._id })
-        : taskStatus == "cancelled"
-        ? await CancelledTask.find({ cancelledBy: req.user._id })
-        : taskStatus == "pending"
-        ? await PendingTask.findOne({ toBeDoneBy: req.user._id })
-        : taskStatus == "failed"
-        ? await FailedTask.find({ doneBy: req.user._id })
-        : taskStatus == "completed"
-        ? await CompletedTask.find({ doneBy: req.user._id })
-        : taskStatus == "in-review"
-        ? await InReviewTask.find({ doneBy: req.user._id })
-        : [];
+    let query = {};
+    const userId = req.user._id;
 
-    if (!Tasks?.length) {
+    switch (taskStatus) {
+      case "allocated":
+        query = { allocatedTo: userId };
+        break;
+      case "cancelled":
+        query = { cancelledBy: userId };
+        break;
+      case "pending":
+        query = { toBeDoneBy: userId };
+        break;
+      case "failed":
+        query = { doneBy: userId };
+        break;
+      case "completed":
+        query = { doneBy: userId };
+        break;
+      case "in-review":
+        query = { doneBy: userId };
+        break;
+      default:
+        return res.status(400).json({ error: "Invalid task status." });
+    }
+
+    let Tasks = [];
+
+    switch (taskStatus) {
+      case "allocated":
+        Tasks = await AllocatedTask.find(query);
+        break;
+      case "cancelled":
+        Tasks = await CancelledTask.find(query);
+        break;
+      case "pending":
+        Tasks = await PendingTask.find(query);
+        break;
+      case "failed":
+        Tasks = await FailedTask.find(query);
+        break;
+      case "completed":
+        Tasks = await CompletedTask.find(query);
+        break;
+      case "in-review":
+        Tasks = await InReviewTask.find(query);
+        break;
+    }
+
+    if (!Tasks.length) {
       const error = ErrorHandler(404, "No data available.");
       return res.status(404).json(error);
     }
@@ -741,7 +761,7 @@ export const getUserTasksHistory = async (req, res, next) => {
         __v,
         _id,
         ...rest
-      } = Task?.toObject();
+      } = Task.toObject();
 
       return {
         id: _id,
@@ -767,7 +787,6 @@ export const getTasks = async (req, res, next) => {
   try {
     // Validations for user request
     const validUser = await User.findOne({ email: req.user.email });
-
     if (!validUser) {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);
@@ -777,22 +796,52 @@ export const getTasks = async (req, res, next) => {
       return res.status(400).json(error);
     }
 
-    const Tasks =
-      taskStatus == "allocated"
-        ? await AllocatedTask.find({ allocatedTo: req.user._id, taskPlatform })
-        : taskStatus == "cancelled"
-        ? await CancelledTask.find({ cancelledBy: req.user._id, taskPlatform })
-        : taskStatus == "pending"
-        ? await PendingTask.findOne({ toBeDoneBy: req.user._id, taskPlatform })
-        : taskStatus == "failed"
-        ? await FailedTask.find({ doneBy: req.user._id, taskPlatform })
-        : taskStatus == "completed"
-        ? await CompletedTask.find({ doneBy: req.user._id, taskPlatform })
-        : taskStatus == "in-review"
-        ? await InReviewTask.find({ doneBy: req.user._id, taskPlatform })
-        : [];
+    const userId = req.user._id;
+    let query = { taskPlatform };
 
-    if (!Tasks?.length && taskStatus !== "pending") {
+    switch (taskStatus) {
+      case "allocated":
+        query.allocatedTo = userId;
+        break;
+      case "cancelled":
+        query.cancelledBy = userId;
+        break;
+      case "pending":
+        query.toBeDoneBy = userId;
+        break;
+      case "failed":
+      case "completed":
+      case "in-review":
+        query.doneBy = userId;
+        break;
+      default:
+        return res.status(400).json({ error: "Invalid task status." });
+    }
+
+    let Tasks = [];
+
+    switch (taskStatus) {
+      case "allocated":
+        Tasks = await AllocatedTask.find(query);
+        break;
+      case "cancelled":
+        Tasks = await CancelledTask.find(query);
+        break;
+      case "pending":
+        Tasks = await PendingTask.findOne(query);
+        break;
+      case "failed":
+        Tasks = await FailedTask.find(query);
+        break;
+      case "completed":
+        Tasks = await CompletedTask.find(query);
+        break;
+      case "in-review":
+        Tasks = await InReviewTask.find(query);
+        break;
+    }
+
+    if (!Tasks.length && taskStatus !== "pending") {
       const error = ErrorHandler(404, "No data available.");
       return res.status(404).json(error);
     }
@@ -803,18 +852,13 @@ export const getTasks = async (req, res, next) => {
           updatedAt,
           createdBy,
           parentId,
-          taskType,
           expiresAt,
           toBeDoneBy,
           __v,
           _id,
           ...rest
-        } = Task?.toObject();
-
-        return {
-          id: _id,
-          ...rest,
-        };
+        } = Task.toObject();
+        return { id: _id, ...rest };
       });
 
       // Creates the response
@@ -827,24 +871,19 @@ export const getTasks = async (req, res, next) => {
         updatedAt,
         createdBy,
         parentId,
-        taskType,
         expiresAt,
         toBeDoneBy,
         __v,
         _id,
         ...rest
-      } = Tasks?.toObject();
+      } = Tasks.toObject();
       const currentTime = new Date();
-      const expiryTime = Tasks?.expiresAt;
+      const expiryTime = Tasks.expiresAt;
 
       // Gets time left in seconds for this pending task to expire
       const timeLeftS = (expiryTime - currentTime) / 1000;
 
-      const task = {
-        id: _id,
-        timeLeftS,
-        ...rest,
-      };
+      const task = { id: _id, timeLeftS, ...rest };
 
       // Creates the response
       return res.status(200).json(task);
@@ -865,7 +904,6 @@ export const getTask = async (req, res, next) => {
   try {
     // Validations for user request
     const validUser = await User.findOne({ email: req.user.email });
-
     if (!validUser) {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);
@@ -875,143 +913,79 @@ export const getTask = async (req, res, next) => {
       return res.status(400).json(error);
     }
 
-    const task =
-      taskStatus == "allocated"
-        ? await AllocatedTask.findOne({
-            allocatedTo: req.user._id,
-            taskPlatform,
-            taskType,
-            _id: id,
-          })
-        : taskStatus == "cancelled"
-        ? await CancelledTask.findOne({
-            cancelledBy: req.user._id,
-            taskPlatform,
-            taskType,
-            _id: id,
-          })
-        : taskStatus == "pending"
-        ? await PendingTask.findOne({
-            toBeDoneBy: req.user._id,
-            taskPlatform,
-            taskType,
-            _id: id,
-          })
-        : taskStatus == "failed"
-        ? await FailedTask.findOne({
-            doneBy: req.user._id,
-            taskPlatform,
-            taskType,
-            _id: id,
-          })
-        : taskStatus == "completed"
-        ? await CompletedTask.findOne({
-            doneBy: req.user._id,
-            taskPlatform,
-            taskType,
-            _id: id,
-          })
-        : taskStatus == "in-review"
-        ? await InReviewTask.findOne({
-            doneBy: req.user._id,
-            taskPlatform,
-            taskType,
-            _id: id,
-          })
-        : [];
+    const userId = req.user._id;
+    const query = { taskPlatform, taskType, _id: id };
+    let task;
+
+    switch (taskStatus) {
+      case "allocated":
+        query.allocatedTo = userId;
+        task = await AllocatedTask.findOne(query);
+        break;
+      case "cancelled":
+        query.cancelledBy = userId;
+        task = await CancelledTask.findOne(query);
+        break;
+      case "pending":
+        query.toBeDoneBy = userId;
+        task = await PendingTask.findOne(query);
+        break;
+      case "failed":
+        query.doneBy = userId;
+        task = await FailedTask.findOne(query);
+        break;
+      case "completed":
+        query.doneBy = userId;
+        task = await CompletedTask.findOne(query);
+        break;
+      case "in-review":
+        query.doneBy = userId;
+        task = await InReviewTask.findOne(query);
+        break;
+      default:
+        return res.status(400).json({ error: "Invalid task status." });
+    }
 
     if (!task) {
       const error = ErrorHandler(404, "No data available.");
       return res.status(404).json(error);
     }
 
-    if (taskStatus == "pending") {
-      const { updatedAt, expiresAt, toBeDoneBy, __v, _id, ...rest } =
-        task?._doc;
+    const { updatedAt, expiresAt, toBeDoneBy, __v, _id, ...rest } = task._doc;
+
+    if (taskStatus === "pending") {
       const currentTime = new Date();
-      const expiryTime = task?.expiresAt;
-
-      // Gets time left in seconds for this pending task to expire
-      const timeLeftS = (expiryTime - currentTime) / 1000;
-
-      const responseObj = {
-        id: _id,
-        timeLeftS,
-        ...rest,
-      };
-
-      // Creates the response
-      return res.status(200).json(responseObj);
-    } else if (taskStatus == "in-review") {
-      const { updatedAt, expiresAt, toBeDoneBy, __v, _id, ...rest } =
-        task?._doc;
-      const proofOfWork = await ProofOfWork.findOne({
-        parentId: _id,
-      });
-
-      if (!proofOfWork) {
-        const error = ErrorHandler(400, "No proof of work for this task.");
-        return res.status(400).json(error);
-      }
-
-      const {
-        __v: proofV,
-        updatedAt: proofUpdatedAt,
-        parentId: proofParentId,
-        createdBy: proofCreatedBy,
-        _id: proofId,
-        ...proofDetails
-      } = proofOfWork?._doc;
-
-      const responseObj = {
-        id: _id,
-        proof: proofDetails,
-        ...rest,
-      };
-
-      // Creates the response
-      return res.status(200).json(responseObj);
-    } else if (taskStatus == "completed" || taskStatus == "failed") {
-      const { updatedAt, expiresAt, toBeDoneBy, __v, _id, ...rest } =
-        task?._doc;
-      const proofOfWork = await ProofOfWork.findOne({
-        parentId: task?.proofParentId,
-      });
-
-      if (!proofOfWork) {
-        const error = ErrorHandler(400, "No proof of work for this task.");
-        return res.status(400).json(error);
-      }
-
-      const {
-        __v: proofV,
-        updatedAt: proofUpdatedAt,
-        parentId: proofParentId,
-        createdBy: proofCreatedBy,
-        _id: proofId,
-        ...proofDetails
-      } = proofOfWork?._doc;
-
-      const responseObj = {
-        id: _id,
-        proof: proofDetails,
-        ...rest,
-      };
-
-      // Creates the response
-      return res.status(200).json(responseObj);
-    } else {
-      const { updatedAt, expiresAt, toBeDoneBy, __v, _id, ...rest } =
-        task?._doc;
-
-      const responseObj = {
-        id: _id,
-        ...rest,
-      };
-
-      // Creates the response
+      const timeLeftS = (expiresAt - currentTime) / 1000;
+      const responseObj = { id: _id, timeLeftS, ...rest };
       return res.status(200).json(responseObj);
     }
+
+    if (
+      taskStatus === "in-review" ||
+      taskStatus === "completed" ||
+      taskStatus === "failed"
+    ) {
+      const proofOfWork = await ProofOfWork.findOne({ parentId: _id });
+      if (!proofOfWork) {
+        const error = ErrorHandler(400, "No proof of work for this task.");
+        return res.status(400).json(error);
+      }
+
+      const {
+        __v: proofV,
+        updatedAt: proofUpdatedAt,
+        parentId: proofParentId,
+        createdBy: proofCreatedBy,
+        _id: proofId,
+        ...proofDetails
+      } = proofOfWork._doc;
+      const responseObj = { id: _id, proof: proofDetails, ...rest };
+
+      return res.status(200).json(responseObj);
+    }
+
+    const responseObj = { id: _id, ...rest };
+    return res.status(200).json(responseObj);
   } catch (error) {
     next(error);
   }
