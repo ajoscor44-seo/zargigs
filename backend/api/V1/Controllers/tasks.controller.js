@@ -131,7 +131,7 @@ export const postAdvertTask = async (req, res, next) => {
     );
     if (!paymentResponse.status) {
       return res.status(400).json(paymentResponse);
-    };
+    }
 
     // Create new advert task
     const newAdvertTask = new AdvertTask({
@@ -345,12 +345,46 @@ export const getTotalTasks = async (req, res, next) => {
       return { id: _id, ...rest };
     });
 
-    const total = tasks.reduce((total, task) => {
-      return total + task.numberOfTasks - task.allocatedTasks;
-    }, 0);
+    const totalTasks = await Promise.all(
+      tasks.map(async (task) => {
+        const userHasDoneTaskBefore =
+          (await AllocatedTask.findOne({
+            allocatedTo: req.user._id,
+            taskType,
+            taskPlatform,
+            parentId: task.id,
+          })) ||
+          (await PendingTask.findOne({
+            toBeDoneBy: req.user._id,
+            taskType,
+            taskPlatform,
+            parentId: task.id,
+          })) ||
+          (await CompletedTask.findOne({
+            doneBy: req.user._id,
+            taskType,
+            taskPlatform,
+            parentId: task.id,
+          })) ||
+          (await InReviewTask.findOne({
+            doneBy: req.user._id,
+            taskType,
+            taskPlatform,
+            parentId: task.id,
+          }));
+
+        if (userHasDoneTaskBefore) {
+          return 0;
+        }
+        return 1;
+      })
+    );
+
+    const total = totalTasks.reduce((acc, taskCount) => acc + taskCount, 0);
+
+    console.log("Total user task:", total);
     const response = { total: total };
-    res.status(200).json(response);
-    next();
+    return res.status(200).json(response);
   } catch (error) {
     next(error);
   }
