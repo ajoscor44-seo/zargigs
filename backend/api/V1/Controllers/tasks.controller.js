@@ -184,8 +184,7 @@ export const getEngagementTask = async (req, res, next) => {
         engagementTask.toObject();
       return { id: _id, ...rest };
     });
-    res.status(200).json(engagementtask);
-    next();
+    return res.status(200).json(engagementtask);
   } catch (error) {
     console.log(error);
     next(error);
@@ -391,7 +390,6 @@ export const getTotalTasks = async (req, res, next) => {
       return count;
     }, 0);
 
-    console.log("Total user task:", total);
     const response = { total: total };
     return res.status(200).json(response);
   } catch (error) {

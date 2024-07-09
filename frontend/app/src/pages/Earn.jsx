@@ -15,8 +15,8 @@ const Earn = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [statusTotal, setStatusTotal] = useState({});
-  const [totalAdvertTasks, setTotalAdvertTasks] = useState(0);
-  const [totalNormalTasks, setTotalNormalTasks] = useState(0);
+  const [totalAvailableAdvertTasks, setTotalAvailableAdvertTasks] = useState(0);
+  const [totalAvailableNormalTasks, setTotalAvailableNormalTasks] = useState(0);
 
   const getTasksTotalsBasedOnStatus = async () => {
     try {
@@ -31,26 +31,8 @@ const Earn = () => {
     }
   };
 
-  const getTotalEngagementTasks = async () => {
-    const data = await axios
-      .get("/api/v1/tasks/engagements?page=1&limit=0")
-      .then((response) => response.data)
-      .catch((error) => console.error(error));
-    return setTotalNormalTasks(data.total);
-  };
-
-  const getTotalAdvertTasks = async () => {
-    const data = await axios
-      .get("/api/v1/tasks/adverts?page=1&limit=0")
-      .then((response) => response.data)
-      .catch((error) => console.error(error));
-    return setTotalAdvertTasks(data.total);
-  };
-
   useEffect(() => {
     getTasksTotalsBasedOnStatus();
-    getTotalEngagementTasks();
-    getTotalAdvertTasks();
     getEngagementEarners();
     getAdvertEarners();
   }, []);
@@ -105,9 +87,9 @@ const Earn = () => {
               onClick={() => setActiveTab("postAds")}
             >
               POST ADVERTS{" "}
-              {totalAdvertTasks ? (
+              {totalAvailableAdvertTasks ? (
                 <span className="bg-red-500 text-white px-2 rounded">
-                  {totalAdvertTasks}
+                  {totalAvailableAdvertTasks}
                 </span>
               ) : (
                 <span></span>
@@ -122,9 +104,9 @@ const Earn = () => {
               onClick={() => setActiveTab("doTasks")}
             >
               PERFORM SOCIAL TASKS{" "}
-              {totalNormalTasks ? (
+              {totalAvailableNormalTasks ? (
                 <span className="bg-red-500 text-white px-2 rounded">
-                  {totalNormalTasks}
+                  {totalAvailableNormalTasks}
                 </span>
               ) : (
                 <span></span>
@@ -139,9 +121,15 @@ const Earn = () => {
           ) : (
             <div>
               {activeTab === "postAds" ? (
-                <EarnWithAds setActiveTab={setActiveTab} />
+                <EarnWithAds
+                  setTotalAvailableAdvertTasks={setTotalAvailableAdvertTasks}
+                  setActiveTab={setActiveTab}
+                />
               ) : (
-                <EarnWithTasks setActiveTab={setActiveTab} />
+                <EarnWithTasks
+                  setTotalAvailableNormalTasks={setTotalAvailableNormalTasks}
+                  setActiveTab={setActiveTab}
+                />
               )}
             </div>
           )}

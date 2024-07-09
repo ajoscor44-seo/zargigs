@@ -18,7 +18,14 @@ import { SlUserFollowing } from "react-icons/sl";
 import playStoreImage from "../../assets/images/playstore-icon.png";
 import axios from "axios";
 
-const EarningWay = ({ way, addSelectBtn, wayDescription, type }) => {
+const EarningWay = ({
+  way,
+  addSelectBtn,
+  wayDescription,
+  type,
+  setTotalAvailableAdvertTasks,
+  setTotalAvailableNormalTasks,
+}) => {
   const [totalTasks, setTotalTasks] = useState(0);
 
   const getTotal = async () => {
@@ -26,12 +33,20 @@ const EarningWay = ({ way, addSelectBtn, wayDescription, type }) => {
       .get(
         `/api/v1/tasks/total?type=${type}&platform=${way.platformName.toLowerCase()}`
       )
-      .then((response) => setTotalTasks(response.data.total))
+      .then((response) => {
+        return setTotalTasks(response.data.total);
+      })
       .catch((error) => error);
   };
 
   useEffect(() => {
     getTotal();
+    if (totalTasks)
+      if (type === "advert") {
+        return setTotalAvailableAdvertTasks((prev) => prev + 1);
+      } else {
+        return setTotalAvailableNormalTasks((prev) => prev + 1);
+      }
   }, [totalTasks]);
   return (
     <div className="hover:bg-slate-50 p-4 flex gap-2">
