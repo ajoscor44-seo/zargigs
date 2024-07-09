@@ -3,7 +3,11 @@ import { Link } from "react-router-dom/cjs/react-router-dom";
 import EarningWay from "../EarningWay/EarningWay";
 import { useAuth } from "../../context/AuthContext";
 
-const EarnWithTasks = ({ setActiveTab, setTotalAvailableNormalTasks }) => {
+const EarnWithTasks = ({
+  setActiveTab,
+  setTotalAvailableNormalTasks,
+  setTotalAvailableAdvertTasks,
+}) => {
   const { currentUser, engagementEarner } = useAuth();
 
   return (
@@ -35,6 +39,7 @@ const EarnWithTasks = ({ setActiveTab, setTotalAvailableNormalTasks }) => {
                 way={way}
                 type={"engagement"}
                 addSelectBtn={true}
+                setTotalAvailableAdvertTasks={setTotalAvailableAdvertTasks}
                 setTotalAvailableNormalTasks={setTotalAvailableNormalTasks}
                 wayDescription={`${way.title}. The more ${way.whatTheyDo}, the more you earn.`}
               />

@@ -102,7 +102,12 @@ const EarnWithTasks = () => {
     <div>
       <BackNav pageName={wayToEarn?.title} usePath={true} pathToGo={"/earn"} />
       <div className="underBackNav font-primary">
-        <EarningWay way={wayToEarn} type={taskType} />
+        <EarningWay
+          way={wayToEarn}
+          type={taskType}
+          setTotalAvailableNormalTasks={null}
+          setTotalAvailableAdvertTasks={null}
+        />
         <div className="subTaskHistory">
           <div className="flex w-full justify-between bg-blue-50">
             {tabs.map((tab) => {

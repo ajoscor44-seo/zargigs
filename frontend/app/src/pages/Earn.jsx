@@ -122,12 +122,14 @@ const Earn = () => {
             <div>
               {activeTab === "postAds" ? (
                 <EarnWithAds
+                  setTotalAvailableNormalTasks={setTotalAvailableNormalTasks}
                   setTotalAvailableAdvertTasks={setTotalAvailableAdvertTasks}
                   setActiveTab={setActiveTab}
                 />
               ) : (
                 <EarnWithTasks
                   setTotalAvailableNormalTasks={setTotalAvailableNormalTasks}
+                  setTotalAvailableAdvertTasks={setTotalAvailableAdvertTasks}
                   setActiveTab={setActiveTab}
                 />
               )}

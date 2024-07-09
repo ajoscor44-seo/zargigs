@@ -3,7 +3,11 @@ import { Link } from "react-router-dom/cjs/react-router-dom";
 import EarningWay from "../EarningWay/EarningWay";
 import { useAuth } from "../../context/AuthContext";
 
-const EarnWithAds = ({ setActiveTab, setTotalAvailableAdvertTasks }) => {
+const EarnWithAds = ({
+  setActiveTab,
+  setTotalAvailableAdvertTasks,
+  setTotalAvailableNormalTasks,
+}) => {
   const { currentUser, advertEarner } = useAuth();
 
   return (
@@ -38,6 +42,7 @@ const EarnWithAds = ({ setActiveTab, setTotalAvailableAdvertTasks }) => {
                 way={way}
                 type={"advert"}
                 addSelectBtn={true}
+                setTotalAvailableNormalTasks={setTotalAvailableNormalTasks}
                 setTotalAvailableAdvertTasks={setTotalAvailableAdvertTasks}
                 wayDescription={`Post adverts of various businesses and top brands on your
                       ${way.platformName} Page and earn N100 per advert post. The

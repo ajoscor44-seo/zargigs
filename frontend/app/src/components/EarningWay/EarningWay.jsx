@@ -41,7 +41,10 @@ const EarningWay = ({
 
   useEffect(() => {
     getTotal();
-    if (totalTasks)
+    if (
+      totalTasks &&
+      (setTotalAvailableNormalTasks || setTotalAvailableAdvertTasks)
+    )
       if (type === "advert") {
         return setTotalAvailableAdvertTasks((prev) => prev + 1);
       } else {
