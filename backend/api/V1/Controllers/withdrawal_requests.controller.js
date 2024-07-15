@@ -19,6 +19,7 @@ export const getAllWithdrawalRequests = async (req, res, next) => {
     }
 
     const allWithdrawalRequests = await WithdrawalRequests.find()
+      .sort({ createdAt: -1})
       .skip((page - 1) * limit)
       .limit(limit);
 
@@ -98,6 +99,7 @@ export const getUserWithdrawalRequests = async (req, res, next) => {
     const userWithdrawalRequests = await WithdrawalRequests.find({
       userId: validUser._id,
     })
+      .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit);
 
