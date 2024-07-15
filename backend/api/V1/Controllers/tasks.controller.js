@@ -1128,6 +1128,21 @@ export const requestForReview = async (req, res, next) => {
     };
     await validUserDetails.save();
 
+    setTimeout(async () => {
+      try {
+        const taskHasNotBeenReviewed = await InReviewTask.findById(
+          newInReviewTask._id
+        );
+        if (taskHasNotBeenReviewed) {
+          const query = { id: newInReviewTask._id, sanction: 1, parentId };
+          await sanctionTask({ query }, res, next);
+          return logger.info("Task approved automatically after 24 hours");
+        }
+      } catch (err) {
+        return logger.error("Failed to review task automatically");
+      }
+    }, 86400000);
+
     return res.status(200).send({
       failed: false,
       message: "Task uploaded for review.",
