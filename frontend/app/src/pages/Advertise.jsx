@@ -6,10 +6,11 @@ import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import PricingWay from "../components/PricingWay/PricingWay";
 import { useAuth } from "../context/AuthContext";
 import { FaSpinner } from "react-icons/fa6";
+import numeral from "numeral";
 
 const Adevertise = () => {
   const [loading, setLoading] = useState(true);
-  const { advertCreator, getAdvertCreator } = useAuth();
+  const { advertCreator, getAdvertCreator, adminData } = useAuth();
 
   useEffect(() => {
     getAdvertCreator();
@@ -31,9 +32,21 @@ const Adevertise = () => {
         </Link>
 
         <p className="methodNote px-4 py-3 leading-4 font-semibold border">
-          Get people with atleast 1000 active followers to repost your adverts
-          and perform certain social tasks for you on their social media
-          accounts. Select the type of task you want people to perform below:
+          Get people with atleast{" "}
+          {numeral(adminData?.minimumFollowers).format("0,0")} active followers
+          to repost your adverts and perform certain social tasks for you on
+          their social media accounts. Select the type of task you want people
+          to perform below:
+        </p>
+        <p className="bg-blue-200 text-center text-blue-500 text-xs mx-4 py-3 leading-4 font-semibold rounded mt-2">
+          Click{" "}
+          <Link
+            to="/order-history"
+            className="font-bold text-blue-500 hover:underline"
+          >
+            here
+          </Link>{" "}
+          to monitor and track all your orders and adverts.
         </p>
         <div className="py-3">
           <div className="flex justify-center gap-2">
