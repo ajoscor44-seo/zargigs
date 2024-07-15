@@ -199,7 +199,7 @@ const TaskDetails = () => {
         ? mediaUrl.substring(lastDotIndex + 1).toLowerCase()
         : mediaUrl.substring(lastDotIndex + 1, queryStartIndex).toLowerCase();
 
-    const validExtensions = new Set(["jpg", "jpeg", "png", "mp4", "mp3"]);
+    const validExtensions = new Set(["jpg", "jpeg", "png", "mp4", "mp3", "tiff"]);
     return validExtensions.has(extension) ? extension : null;
   };
 
