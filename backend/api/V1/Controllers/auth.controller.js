@@ -119,7 +119,7 @@ export const login = async (req, res, next) => {
       const error = ErrorHandler(401, "Wrong credentials");
       return res.status(401).json(error);
     }
-    const { password: hashedPassword, ...rest } = validUser._doc;
+    const { password: hashedPassword, referrals, ...rest } = validUser._doc;
     const token = jwt.sign({ ...rest }, process.env.JWT_SECRET);
 
     const baseUrl =
