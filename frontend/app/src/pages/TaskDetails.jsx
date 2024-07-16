@@ -199,7 +199,14 @@ const TaskDetails = () => {
         ? mediaUrl.substring(lastDotIndex + 1).toLowerCase()
         : mediaUrl.substring(lastDotIndex + 1, queryStartIndex).toLowerCase();
 
-    const validExtensions = new Set(["jpg", "jpeg", "png", "mp4", "mp3", "tiff"]);
+    const validExtensions = new Set([
+      "jpg",
+      "jpeg",
+      "png",
+      "mp4",
+      "mp3",
+      "mov",
+    ]);
     return validExtensions.has(extension) ? extension : null;
   };
 
@@ -294,17 +301,23 @@ const TaskDetails = () => {
               <span className="font-semibold text-sm" hidden={type == "advert"}>
                 Task Link
               </span>
-
-              {type == "advert" ? (
-                <div className="flex" hidden={type == "advert"}>
+              {type == "advert" ||
+              taskDetails?.taskPlatform?.toLowerCase() == "allcomment" ? (
+                <div className="flex">
                   <span className="flex-1 flex items-center bg-gray-200 px-2 rounded-s-sm text-sm truncate pe-2">
-                    {taskDetails?.caption}
+                    {taskDetails?.taskPlatform?.toLowerCase() == "allcomment"
+                      ? taskDetails?.customComment
+                      : taskDetails?.caption}
                   </span>
                   <textarea
                     ref={captionRef}
                     rows={25}
                     className="p-2 border bg-slate-200 rounded-s absolute opacity-0 h-0 w-0"
-                    defaultValue={taskDetails?.caption}
+                    defaultValue={
+                      taskDetails?.taskPlatform?.toLowerCase() == "allcomment"
+                        ? taskDetails?.customComment
+                        : taskDetails?.caption
+                    }
                   ></textarea>
                   <span
                     className="w-fit flex justify-center items-center px-2 text-green-500 bg-green-100"
@@ -316,12 +329,14 @@ const TaskDetails = () => {
                       <FaCopy size={20} />
                     )}
                   </span>
-                  <button
-                    onClick={downloadMedia}
-                    className="bg-green-500 flex items-center gap-1 outline-none py-2 text-center px-3 font-semibold rounded-e-sm text-sm cursor-pointer text-white"
-                  >
-                    <span>Download</span> <FaFileDownload size={20} />
-                  </button>
+                  {type == "advert" && (
+                    <button
+                      onClick={downloadMedia}
+                      className="bg-green-500 flex items-center gap-1 outline-none py-2 text-center px-3 font-semibold rounded-e-sm text-sm cursor-pointer text-white"
+                    >
+                      <span>Download</span> <FaFileDownload size={20} />
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div className="flex" hidden={type == "advert"}>
