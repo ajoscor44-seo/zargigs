@@ -264,6 +264,7 @@ export const postEngagementTask = async (req, res, next) => {
     link,
     numberOfTasks,
     taskPlatform,
+    customComment,
   } = req.body;
 
   try {
@@ -303,6 +304,7 @@ export const postEngagementTask = async (req, res, next) => {
       earningPerTask: Number(amountToEarn),
       status: "pending",
       title,
+      customComment,
     });
 
     await newEngagementTask.save(); // Saves new engagement task
@@ -1366,6 +1368,205 @@ export const sanctionTask = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
+    next(error);
+  }
+};
+
+export const sanction = async (id, sanction, parentId, userId) => {
+  try {
+    const taskInReview = await InReviewTask.findOneAndDelete({ _id: parentId });
+    if (!taskInReview) {
+      console.log("Task is not in review");
+      return false;
+    }
+
+    const taskDoerDetails = await userDetails.findOne({
+      userId: taskInReview?.doneBy,
+    });
+
+    if (!taskDoerDetails) {
+      console.log("No task doer details");
+      return false;
+    }
+
+    let notification;
+    if (sanction == 1) {
+      // Creates a completed task if task is approved
+      const newTaskCompleted = new CompletedTask({
+        parentId: taskInReview?.parentId,
+        proofParentId: taskInReview?._id,
+        doneBy: taskInReview?.doneBy,
+        title: taskInReview?.title,
+        createdBy: userId,
+        taskType: taskInReview?.taskType,
+        taskPlatform: taskInReview?.taskPlatform,
+        link: taskInReview?.link,
+        earningPerTask: taskInReview?.earningPerTask,
+        caption: taskInReview.caption,
+        mediaUrl: taskInReview.mediaUrl,
+      });
+      await newTaskCompleted.save();
+
+      // Creates notitfication
+      notification = {
+        userId: taskInReview?.doneBy,
+        title: "Task Reviewed!",
+        message:
+          "Hurray!!, your task has been reviewed and has been APPROVED, check your balance and task history for confirmation. Generate a new task to earn more.",
+        type: "task",
+      };
+
+      taskDoerDetails.userEarnings = {
+        ...taskDoerDetails.userEarnings,
+        balance:
+          Number(taskDoerDetails.userEarnings.balance) +
+          Number(taskInReview?.earningPerTask),
+        totalEarnings:
+          Number(taskDoerDetails.userEarnings.totalEarnings) +
+          Number(taskInReview?.earningPerTask),
+        pendingEarnings:
+          Number(taskDoerDetails.userEarnings.pendingEarnings) -
+          Number(taskInReview?.earningPerTask),
+      };
+      taskDoerDetails.walletDetails = {
+        ...taskDoerDetails.walletDetails,
+        balance:
+          Number(taskDoerDetails.walletDetails.balance) +
+          Number(taskInReview?.earningPerTask),
+      };
+      await taskDoerDetails.save();
+
+      const taskQuery = {
+        taskPlatform: taskInReview?.taskPlatform,
+        taskType: taskInReview?.taskType,
+        _id: taskInReview?.parentId,
+      };
+      taskInReview?.taskType == "advert"
+        ? await AdvertTask.findOneAndUpdate(taskQuery, {
+            $inc: {
+              completedTasks: 1,
+            },
+          })
+        : await EngagementTask.findOneAndUpdate(taskQuery, {
+            $inc: {
+              completedTasks: 1,
+            },
+          });
+    } else {
+      // Creates a failed task if task is disapproved
+      const newTaskFailed = new FailedTask({
+        parentId: taskInReview?.parentId,
+        doneBy: taskInReview?.doneBy,
+        title: taskInReview?.title,
+        createdBy: userId,
+        taskType: taskInReview?.taskType,
+        taskPlatform: taskInReview?.taskPlatform,
+        link: taskInReview?.link,
+        earningPerTask: taskInReview?.earningPerTask,
+        caption: taskInReview.caption,
+        mediaUrl: taskInReview.mediaUrl,
+      });
+      await newTaskFailed.save();
+      // Creates notitfication
+      notification = {
+        userId: taskInReview?.doneBy,
+        title: "Task Reviewed",
+        message:
+          "Your task has been reviewed and has been DISapproved due to its invalidity, generate a new task and ask for review.",
+        type: "task",
+      };
+
+      // Update user earnings
+      taskDoerDetails.userEarnings = {
+        ...taskDoerDetails.userEarnings,
+        pendingEarnings:
+          Number(taskDoerDetails.userEarnings.pendingEarnings) -
+          Number(taskInReview?.earningPerTask),
+      };
+      await taskDoerDetails.save();
+
+      const taskQuery = {
+        taskPlatform: taskInReview?.taskPlatform,
+        taskType: taskInReview?.taskType,
+        _id: taskInReview?.parentId,
+      };
+      taskInReview?.taskType == "advert"
+        ? await AdvertTask.findOneAndUpdate(taskQuery, {
+            $inc: {
+              allocatedTasks: -1,
+            },
+          })
+        : await EngagementTask.findOneAndUpdate(taskQuery, {
+            $inc: {
+              allocatedTasks: -1,
+            },
+          });
+    }
+
+    // Update proof to based on sanction
+    const proof = await ProofOfWork.findOneAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        status: sanction == 1 ? "approved" : "disapproved",
+      }
+    );
+
+    if (!proof) {
+      console.log("Proof of work not found");
+      return false;
+    }
+
+    // Send notification to user
+    await sendNotitfication(notification);
+    console.log("Task approved");
+    return true;
+  } catch (error) {
+    console.log(error);
+    logger.error(error.message);
+    return false;
+  }
+};
+
+export const sanctionAllTask = async (req, res, next) => {
+  const { type } = req.query;
+
+  try {
+    const tasksInReview = await InReviewTask.find();
+
+    for (const taskInReview of tasksInReview) {
+      const proofOfWork = await ProofOfWork.findOne({
+        parentId: taskInReview._id,
+      });
+      if (!proofOfWork) {
+        return res.status(500).json({
+          failed: true,
+          message: "Proof of work not found for a task",
+        });
+      }
+
+      const taskSanctioned = await sanction(
+        proofOfWork._id,
+        type,
+        taskInReview._id,
+        req.user._id
+      );
+
+      if (!taskSanctioned) {
+        return res.status(500).json({
+          failed: true,
+          message: "Task sanctioning failed",
+        });
+      }
+    }
+
+    return res.status(200).json({
+      failed: false,
+      message: "All tasks in review have been approved",
+    });
+  } catch (error) {
+    console.error(error);
     next(error);
   }
 };
