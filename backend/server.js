@@ -90,3 +90,35 @@ app.use((err, req, res, next) => {
 server.listen(PORT, () => {
   console.log(`Server running on Port: ${PORT}`);
 });
+
+const closeDBConnection = async () => {
+  try {
+    await mongoose.connection.close();
+    console.log("MongoDb connection closed");
+  } catch (error) {
+    console.log("Error closing mongo db connection");
+  }
+};
+
+const gracefulShutdown = (signal) => {
+  console.log(`Received ${signal}. Shutting down gracefully...`);
+  server.close(async () => {
+    console.log("HTTP server closed");
+    await closeDBConnection();
+    process.exit(0);
+  });
+
+  setTimeout(() => {
+    console.error("Forcing shutdown...");
+    process.exit(1);
+  }, 10000);
+};
+
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGUSR2", () => gracefulShutdown("SIGUSR2"));
+
+process.on("exit", async () => {
+  console.log("Process exit event triggered");
+  await closeDBConnection();
+});
