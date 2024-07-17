@@ -15,19 +15,13 @@ import { getAdminData } from "./api/V1/Controllers/admin.controller.js";
 import limiter from "./api/V1/Middleware/limiter.middleware.js";
 import { fundLocalWallet } from "./api/V1/Controllers/funding.controller.js";
 import { sendEmail } from "./api/V1/Controllers/auth.controller.js";
+import connectDb from "./db/db.js";
 
 const app = express();
 const server = http.createServer(app);
 
-// Connects to db
-mongoose
-  .connect(process.env.DATABASE_URI)
-  .then(() => {
-    console.log("Connected to database");
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+connectDb();
+
 // Port Number
 const PORT = process.env.PORT || 5000;
 
