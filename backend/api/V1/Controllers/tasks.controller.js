@@ -18,11 +18,8 @@ import CreateEngagement from "../Models/create-engagement.model.js";
 import EarnAdvert from "../Models/earn-advert.model.js";
 import CreateAdvert from "../Models/create-advert.model.js";
 import cron from "node-cron";
-import Queue from "bull";
 
-const reviewQueue = new Queue("reviewTaskQueue");
-
-reviewQueue.process(async (job, done) => {
+cron.schedule("0 * * * *", async (job, done) => {
   try {
     const now = new Date();
     const tasks = await InReviewTask.find({
@@ -46,9 +43,6 @@ reviewQueue.process(async (job, done) => {
     logger.error("Failed to update document:", err);
   }
 });
-
-// Add a repeating job to the queue
-reviewQueue.add({}, { repeat: { cron: "0 * * * *" } });
 
 // Advert task controllers
 export const getAdvertTask = async (req, res, next) => {
