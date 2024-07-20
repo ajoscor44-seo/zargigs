@@ -18,9 +18,11 @@ import CreateEngagement from "../Models/create-engagement.model.js";
 import EarnAdvert from "../Models/earn-advert.model.js";
 import CreateAdvert from "../Models/create-advert.model.js";
 import cron from "node-cron";
+import Queue from "bull";
 
-// Schedule the job to run every hour
-cron.schedule("0 * * * *", async () => {
+const reviewQueue = new Queue("reviewTaskQueue");
+
+reviewQueue.process(async (job, done) => {
   try {
     const now = new Date();
     const tasks = await InReviewTask.find({
@@ -28,21 +30,25 @@ cron.schedule("0 * * * *", async () => {
     });
 
     for (const task of tasks) {
-      const proofOfWork = await ProofOfWork.findOne({
-        parentId: task._id,
-      });
+      const proofOfWork = await ProofOfWork.findOne({ parentId: task._id });
       if (!proofOfWork) {
-        return console.log("No proof of work for this task");
+        logger.info(`No proof of work for task ${task._id}`);
+        continue;
       }
       await sanction(proofOfWork._id, task.taskType, task._id, task.createdBy);
-      console.log(
-        `Task ${task._id}, done by ${task.doneBy} approved automatically after 24 hours`
+      logger.info(
+        `Task ${task._id}, done by ${task.doneBy}, approved automatically after 24 hours`
       );
     }
+    done();
   } catch (err) {
-    console.error("Failed to review tasks automatically:", err);
+    console.log("Error approving task with bull", err);
+    logger.error("Failed to update document:", err);
   }
 });
+
+// Add a repeating job to the queue
+reviewQueue.add({}, { repeat: { cron: "0 * * * *" } });
 
 // Advert task controllers
 export const getAdvertTask = async (req, res, next) => {
