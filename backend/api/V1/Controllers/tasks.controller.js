@@ -32,7 +32,7 @@ cron.schedule("0 * * * *", async () => {
         logger.info(`No proof of work for task ${task._id}`);
         continue;
       }
-      await sanction(proofOfWork._id, task.taskType, task._id, task.createdBy);
+      await sanction(proofOfWork._id, 1, task._id, task.createdBy);
       logger.info(
         `Task ${task._id}, done by ${task.doneBy}, approved automatically after 24 hours`
       );
