@@ -165,22 +165,25 @@ const CreateOrder = () => {
               );
             }}
           />
-          {wayToCreateEngagement.platformName ===
-            "allcomment"(
-              <FormInput
-                type={"text"}
-                fullRounded={true}
-                placeholder={`No. Of ${wayToCreateEngagement.platformName} Engagements`}
-                label={"Custom comment you want people to say on your post"}
-                note={
-                  "This is the custom comment you want people to say on your post."
-                }
-                errorMsg={"Please input a meaningful comment"}
-                isError={false}
-                name={"customComment"}
-                handleChange={handleChange}
-              />
-            )}
+          {wayToCreateEngagement.platformName.toLowerCase() ===
+          "allcomments" ? (
+            <FormInput
+              type={"text"}
+              fullRounded={true}
+              useTextArea={true}
+              placeholder={`Custom comment you want to see on your post`}
+              label={"Custom comment you want people to say on your post"}
+              note={
+                "This is the custom comment you want people to say on your post."
+              }
+              errorMsg={"Please input a meaningful comment"}
+              isError={false}
+              name={"customComment"}
+              handleChange={handleChange}
+            />
+          ) : (
+            <div></div>
+          )}
           <FormInput
             label={"Select Gender"}
             placeholder={"Select Gender"}
