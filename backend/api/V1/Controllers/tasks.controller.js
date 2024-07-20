@@ -18,6 +18,31 @@ import CreateEngagement from "../Models/create-engagement.model.js";
 import EarnAdvert from "../Models/earn-advert.model.js";
 import CreateAdvert from "../Models/create-advert.model.js";
 
+// Schedule the job to run every hour
+cron.schedule("0 * * * *", async () => {
+  try {
+    const now = new Date();
+    const tasks = await InReviewTask.find({
+      createdAt: { $lt: new Date(now - 24 * 60 * 60 * 1000) }, // Tasks older than 24 hours
+    });
+
+    for (const task of tasks) {
+      const proofOfWork = await ProofOfWork.findOne({
+        parentId: task._id,
+      });
+      if (!proofOfWork) {
+        return console.log("No proof of work for this task");
+      }
+      await sanction(proofOfWork._id, task.taskType, task._id, task.createdBy);
+      console.log(
+        `Task ${task._id}, done by ${task.doneBy} approved automatically after 24 hours`
+      );
+    }
+  } catch (err) {
+    console.error("Failed to review tasks automatically:", err);
+  }
+});
+
 // Advert task controllers
 export const getAdvertTask = async (req, res, next) => {
   const { id } = req.params;
@@ -1129,21 +1154,6 @@ export const requestForReview = async (req, res, next) => {
         Number(earningPerTask),
     };
     await validUserDetails.save();
-
-    setTimeout(async () => {
-      try {
-        const taskHasNotBeenReviewed = await InReviewTask.findById(
-          newInReviewTask._id
-        );
-        if (taskHasNotBeenReviewed) {
-          const query = { id: newInReviewTask._id, sanction: 1, parentId };
-          await sanctionTask({ query }, res, next);
-          return logger.info("Task approved automatically after 24 hours");
-        }
-      } catch (err) {
-        return logger.error("Failed to review task automatically");
-      }
-    }, 86400000);
 
     return res.status(200).send({
       failed: false,
