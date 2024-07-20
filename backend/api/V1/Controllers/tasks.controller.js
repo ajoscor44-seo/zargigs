@@ -17,6 +17,7 @@ import EarnEngagement from "../Models/earn-engagement.model.js";
 import CreateEngagement from "../Models/create-engagement.model.js";
 import EarnAdvert from "../Models/earn-advert.model.js";
 import CreateAdvert from "../Models/create-advert.model.js";
+import cron from "node-cron";
 
 // Schedule the job to run every hour
 cron.schedule("0 * * * *", async () => {
