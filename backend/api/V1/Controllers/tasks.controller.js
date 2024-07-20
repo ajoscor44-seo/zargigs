@@ -650,28 +650,6 @@ export const generateTask = async (req, res, next) => {
       ...rest,
     };
 
-    setTimeout(async () => {
-      try {
-        const pendingTask = await PendingTask.findOne({ parentId: Task.id });
-
-        if (pendingTask) {
-          taskType == "advert"
-            ? await AdvertTask.findOneAndUpdate(taskQuery, {
-                $inc: {
-                  allocatedTasks: -1,
-                },
-              })
-            : await EngagementTask.findOneAndUpdate(taskQuery, {
-                $inc: {
-                  allocatedTasks: -1,
-                },
-              });
-        }
-      } catch (err) {
-        logger.error("Failed to update document");
-      }
-    }, 3600000);
-
     // Creates the response
     return res.status(200).json(task);
   } catch (error) {
