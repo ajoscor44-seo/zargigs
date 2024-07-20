@@ -19,7 +19,7 @@ import EarnAdvert from "../Models/earn-advert.model.js";
 import CreateAdvert from "../Models/create-advert.model.js";
 import cron from "node-cron";
 
-cron.schedule("0 * * * *", async (job, done) => {
+cron.schedule("0 * * * *", async () => {
   try {
     const now = new Date();
     const tasks = await InReviewTask.find({
@@ -37,7 +37,6 @@ cron.schedule("0 * * * *", async (job, done) => {
         `Task ${task._id}, done by ${task.doneBy}, approved automatically after 24 hours`
       );
     }
-    done();
   } catch (err) {
     console.log("Error approving task with bull", err);
     logger.error("Failed to update document:", err);
