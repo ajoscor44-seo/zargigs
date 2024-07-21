@@ -11,6 +11,7 @@ import {
   FaTwitter,
   FaWhatsapp,
   FaYoutube,
+  FaSpotify,
 } from "react-icons/fa6";
 import { IoLogoAppleAppstore } from "react-icons/io5";
 import { SiAudiomack } from "react-icons/si";
@@ -80,6 +81,11 @@ const EarningWay = ({
           />
         ) : way?.platformName?.toLowerCase() === "playstore" ? (
           <img src={playStoreImage} className="w-20 h-20 object-cover" />
+        ) : way?.platformName?.toLowerCase() === "spotify" ? (
+          <FaSpotify
+            size={60}
+            className="text-green-500 bg-white rounded-full"
+          />
         ) : way?.platformName?.toLowerCase() === "allretweets" ? (
           <FaRetweet
             size={60}
@@ -180,6 +186,12 @@ const EarningWay = ({
                       key={i}
                       size={15}
                       className="text-blue-400 bg-white"
+                    />
+                  ) : platform.toLowerCase() === "spotify" ? (
+                    <FaSpotify
+                      key={i}
+                      size={15}
+                      className="text-green-600 bg-white"
                     />
                   ) : (
                     <FaTwitter key={i} className="text-blue-400" size={15} />

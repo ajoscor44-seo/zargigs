@@ -10,6 +10,7 @@ import {
   FaRetweet,
   FaShare,
   FaSpinner,
+  FaSpotify,
   FaTelegram,
   FaTiktok,
   FaTwitter,
@@ -138,6 +139,12 @@ const TransactionHistory = () => {
                           size={20}
                           className="text-green-400 bg-white"
                         />
+                      ) : platform.toLowerCase() === "spotify" ? (
+                    <FaSpotify
+                      
+                      size={15}
+                      className="text-green-600 bg-white"
+                    />
                       ) : data.taskPlatform.toLowerCase() === "telegram" ? (
                         <FaTelegram
                           size={20}
