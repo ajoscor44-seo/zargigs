@@ -4,9 +4,11 @@ import {
   FaCommentDots,
   FaFacebook,
   FaInstagram,
+  FaLink,
   FaRetweet,
   FaShare,
   FaSpinner,
+  FaSpotify,
   FaTelegram,
   FaTiktok,
   FaTwitter,
@@ -72,6 +74,10 @@ const PendingTaskSubtask = ({
             />
           ) : task.taskPlatform?.toLowerCase() === "allcomments" ? (
             <FaCommentDots size={45} className="text-green-400 bg-white" />
+          ) : task.taskPlatform?.toLowerCase() === "spotify" ? (
+            <FaSpotify size={45} className="text-green-400 bg-white" />
+          ) : task.taskPlatform?.toLowerCase() === "website" ? (
+            <FaLink size={45} className="text-green-600 bg-white" />
           ) : task.taskPlatform?.toLowerCase() === "telegram" ? (
             <FaTelegram size={45} className="text-blue-400 bg-white" />
           ) : task.taskPlatform?.toLowerCase() === "alllike" ? (
