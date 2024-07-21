@@ -1,20 +1,24 @@
 import Advertisement from "../Models/advertisement.model.js";
+import { processPayment } from "./tasks.controller.js";
 
 export const getAdvertisements = (req, res, next) => {
   try {
     const advertisements = Advertisement.find({});
 
-    const formattedAdvertisements = advertisements.map((advertisement) => {
-      const { name } = advertisement.toObject();
+    const formattedAdvertisements = advertisements.map(
+      async (advertisement) => {
+        const { __v, _id, rest } = advertisement.toObject();
 
-      return {
-        name,
-      };
-    });
+        return {
+          id: _id,
+          ...rest,
+        };
+      }
+    );
 
     return res
       .status(200)
-      .json({ failed: true, data: formattedAdvertisements });
+      .json({ failed: false, data: formattedAdvertisements });
   } catch (error) {
     console.log(error);
     next(error);
@@ -25,7 +29,7 @@ export const getUserAdvertisements = (req, res, next) => {
   try {
     const advertisements = Advertisement.find({});
 
-    return res.status(200).json({ failed: true, data: advertisements });
+    return res.status(200).json({ failed: false, data: advertisements });
   } catch (error) {
     console.log(error);
     next(error);
@@ -36,18 +40,37 @@ export const getAllAdvertisements = (req, res, next) => {
   try {
     const advertisements = Advertisement.find({});
 
-    return res.status(200).json({ failed: true, data: advertisements });
+    return res.status(200).json({ failed: false, data: advertisements });
   } catch (error) {
     console.log(error);
     next(error);
   }
 };
 
-export const createAdvertisement = (req, res, next) => {
+export const createAdvertisement = async (req, res, next) => {
   try {
-    const advertisements = Advertisement.find({});
+    const { name, link, banner, description, duration } = req.body;
+    const paymentResponse = await processPayment(
+      Number(duration) * 1500,
+      "gigflix advert",
+      req.user._id
+    );
+    if (!paymentResponse.status) {
+      return res.status(400).json(paymentResponse);
+    }
+    const newAdvertisement = new Advertisement({
+      name,
+      link,
+      banner,
+      description,
+      duration,
+      postedBy: req.user._id,
+    });
+    await newAdvertisement.save();
 
-    return res.status(200).json({ failed: true, data: advertisements });
+    return res
+      .status(201)
+      .json({ failed: false, message: "Advert posted successfully" });
   } catch (error) {
     console.log(error);
     next(error);
@@ -56,9 +79,9 @@ export const createAdvertisement = (req, res, next) => {
 
 export const deleteAdvertisement = (req, res, next) => {
   try {
-    const advertisements = Advertisement.find({});
+    // const advertisements = Advertisement.find({});
 
-    return res.status(200).json({ failed: true, data: advertisements });
+    return res.status(200).json({ failed: true, message: "Rest Abeg" });
   } catch (error) {
     console.log(error);
     next(error);

@@ -5,10 +5,20 @@ import PayAmountBar from "../components/PayAmountBar/PayAmountBar";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 
 const Advertisement = () => {
-  const [duration, setDuration] = useState(1);
+  const [advertData, setAdvertData] = useState({
+    name: "",
+    description: "",
+    duration: 1,
+    banner: "",
+    link: "",
+  });
+  const amountToPay = advertData.duration * 1500;
 
-  const handleChange = () => {
-    //
+  const handleChange = (e) => {
+    setAdvertData({
+      ...advertData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const uploadAdvert = () => {
@@ -30,6 +40,7 @@ const Advertisement = () => {
             placeholder={"Advert Name"}
             isError={false}
             type={"text"}
+            name={"name"}
             handleChange={handleChange}
           />
           <FormInput
@@ -37,6 +48,7 @@ const Advertisement = () => {
             placeholder={"https://www.example.com/link-to-advert"}
             isError={false}
             type={"text"}
+            name={"link"}
             handleChange={handleChange}
           />
           <FormInput
@@ -44,14 +56,7 @@ const Advertisement = () => {
             placeholder={"Describe Your Advert"}
             isError={false}
             type={"text"}
-            handleChange={handleChange}
-            useTextArea={true}
-          />
-          <FormInput
-            label={"Description"}
-            placeholder={"Describe Your Advert"}
-            isError={false}
-            type={"text"}
+            name={"description"}
             handleChange={handleChange}
             useTextArea={true}
           />
@@ -60,6 +65,7 @@ const Advertisement = () => {
             placeholder={"Describe Your Advert"}
             isError={false}
             type={"file"}
+            name={"banner"}
             handleChange={handleChange}
           />
           <FormInput
@@ -69,13 +75,14 @@ const Advertisement = () => {
             }
             isError={false}
             type={"number"}
+            name={"duration"}
             handleChange={handleChange}
           />
         </div>
       </div>
       <PayAmountBar
-        feeTitle={"Advertisement Fee"}
-        fee={duration * 1500}
+        feeTitle={"Advertisement Fee:"}
+        fee={amountToPay}
         disable={true}
         btnText={"Pay For Advert"}
         handleClick={uploadAdvert}
