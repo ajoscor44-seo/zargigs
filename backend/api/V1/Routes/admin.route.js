@@ -39,6 +39,7 @@ import {
   getAllWithdrawalRequests,
 } from "../Controllers/withdrawal_requests.controller.js";
 import { getTransfers } from "../Controllers/transfer.controller.js";
+import { getAllAdvertisements } from "../Controllers/advertisement.controller.js";
 
 const router = express.Router();
 
@@ -93,5 +94,8 @@ router.get("/earn-engagement", getEngagementEarners);
 // Admin adverts and engagement creators routes
 router.get("/create-advert", getAdvertCreators);
 router.get("/create-engagement", getEngagementCreators);
+
+// Advertisements
+router.get("/all-advertisements", getAllAdvertisements);
 
 export default router;

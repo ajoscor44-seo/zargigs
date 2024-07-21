@@ -1,26 +1,16 @@
 import React, { useState } from "react";
 import BackNav from "../components/BackNav/BackNav";
 import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
-import userImage from "../assets/images/user-image.png";
 import Setting from "../components/Setting/Setting";
 import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import { FaEye } from "react-icons/fa6";
 import { BsCart2, BsChat } from "react-icons/bs";
 import { BiMoneyWithdraw } from "react-icons/bi";
-import { TfiMenuAlt } from "react-icons/tfi";
 import { PiWalletLight } from "react-icons/pi";
-import { IoLocationOutline } from "react-icons/io5";
 import { GrNotification, GrTransaction } from "react-icons/gr";
-import {
-  CiBank,
-  CiPower,
-  CiCircleInfo,
-  CiLock,
-  CiLogout,
-  CiUser,
-} from "react-icons/ci";
+import { CiPower, CiCircleInfo, CiLogout, CiUser } from "react-icons/ci";
 import { MdOutlinePrivacyTip } from "react-icons/md";
-import { FcAbout } from "react-icons/fc";
+import { FcAbout, FcAdvertising } from "react-icons/fc";
 import { useAuth } from "../context/AuthContext";
 
 const Settings = () => {
@@ -52,6 +42,11 @@ const Settings = () => {
       icon: <GrNotification size={15} />,
       name: "My Notifications",
       path: "/notifications",
+    },
+    {
+      icon: <FcAdvertising size={20} />,
+      name: "My Adverts",
+      path: "/advertisements",
     },
     {
       icon: <CiUser size={20} />,
