@@ -74,6 +74,8 @@ const PricingWay = ({ way, addSelectBtn, wayDescription }) => {
             size={60}
             className="bg-green-500 text-white rounded p-1"
           />
+        ) : way.platformName.toLowerCase() === "spotify" ? (
+          <FaSpotify size={60} className="text-green-500 bg-white" />
         ) : (
           <FaTwitter className="text-blue-400" size={60} />
         )}
