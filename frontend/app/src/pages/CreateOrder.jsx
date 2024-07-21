@@ -233,13 +233,13 @@ const CreateOrder = () => {
           />
           <FormInput
             label={
-              "Your Social Media Page/Profile Link (e.g Instagram, Twitter or Tiktok Page Link)"
+              "Your Page/Profile Link (e.g Instagram, Twitter, Website or Tiktok Page Link)"
             }
             placeholder={"Enter Your Link"}
             fullRounded={true}
             icon={"link"}
             note={
-              "Enter the link to your social media page or profile you want people to follow. Ensure this link points directly to your page or profile and NOT a post."
+              "Enter the link to your page or profile you want people to engage. Ensure this link points directly to your page or profile and NOT a post."
             }
             errorMsg={"Please input the link to your page"}
             name={"link"}
