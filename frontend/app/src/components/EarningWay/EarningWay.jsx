@@ -12,6 +12,7 @@ import {
   FaWhatsapp,
   FaYoutube,
   FaSpotify,
+  FaLink,
 } from "react-icons/fa6";
 import { IoLogoAppleAppstore } from "react-icons/io5";
 import { SiAudiomack } from "react-icons/si";
@@ -100,6 +101,8 @@ const EarningWay = ({
           <FaCommentDots size={60} className="text-green-400 bg-white" />
         ) : way?.platformName?.toLowerCase() === "telegram" ? (
           <FaTelegram size={60} className="text-blue-400 bg-white" />
+        ) : way?.platformName.toLowerCase() === "website" ? (
+          <FaLink size={60} className="text-green-400 bg-white" />
         ) : way?.platformName?.toLowerCase() === "alllike" ? (
           <BiLike
             size={60}
@@ -186,6 +189,12 @@ const EarningWay = ({
                       key={i}
                       size={15}
                       className="text-blue-400 bg-white"
+                    />
+                  ) : platform.toLowerCase() === "website" ? (
+                    <FaLink
+                      key={i}
+                      size={15}
+                      className="text-green-400 bg-white"
                     />
                   ) : platform.toLowerCase() === "spotify" ? (
                     <FaSpotify

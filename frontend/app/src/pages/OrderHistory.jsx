@@ -7,6 +7,7 @@ import {
   FaCommentDots,
   FaFacebook,
   FaInstagram,
+  FaLink,
   FaRetweet,
   FaShare,
   FaSpinner,
@@ -151,6 +152,8 @@ const TransactionHistory = () => {
                         />
                       ) : data.taskPlatform.toLowerCase() === "alllike" ? (
                         <BiLike size={20} className="bg-white text-blue-500" />
+                      ) : data.taskPlatform.toLowerCase() === "website" ? (
+                        <FaLink size={20} className="bg-white text-blue-500" />
                       ) : data.taskPlatform.toLowerCase() === "youtube" ? (
                         <FaYoutube size={20} className="text-red-500" />
                       ) : data.taskPlatform.toLowerCase() === "whatsapp" ? (

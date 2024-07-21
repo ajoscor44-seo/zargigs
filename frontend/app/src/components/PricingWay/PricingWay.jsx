@@ -4,6 +4,7 @@ import {
   FaCommentDots,
   FaFacebook,
   FaInstagram,
+  FaLink,
   FaRetweet,
   FaShare,
   FaSpotify,
@@ -62,6 +63,8 @@ const PricingWay = ({ way, addSelectBtn, wayDescription }) => {
           <FaCommentDots size={60} className="text-green-400 bg-white" />
         ) : way.platformName.toLowerCase() === "telegram" ? (
           <FaTelegram size={60} className="text-blue-400 bg-white" />
+        ) : way?.platformName.toLowerCase() === "website" ? (
+          <FaLink size={60} className="text-green-400 bg-white" />
         ) : way.platformName.toLowerCase() === "alllike" ? (
           <BiLike
             size={60}
@@ -158,6 +161,12 @@ const PricingWay = ({ way, addSelectBtn, wayDescription }) => {
                       size={15}
                       key={platform}
                       className="text-blue-400 bg-white"
+                    />
+                  ) : platform.toLowerCase() === "website" ? (
+                    <FaLink
+                      size={15}
+                      key={platform}
+                      className="text-green-400 bg-white"
                     />
                   ) : platform.toLowerCase() === "spotify" ? (
                     <FaSpotify size={15} className="text-green-600 bg-white" />

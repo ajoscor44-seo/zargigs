@@ -7,6 +7,7 @@ import {
   FaCommentDots,
   FaFacebook,
   FaInstagram,
+  FaLink,
   FaRetweet,
   FaShare,
   FaSpinner,
@@ -128,6 +129,8 @@ const OrderDetails = () => {
                   />
                 ) : details.taskPlatform.toLowerCase() === "spotify" ? (
                   <FaSpotify size={15} className="text-green-600 bg-white" />
+                ) : details.taskPlatform.toLowerCase() === "website" ? (
+                  <FaLink size={15} className="text-green-400 bg-white" />
                 ) : details.taskPlatform.toLowerCase() === "telegram" ? (
                   <FaTelegram size={20} className="text-blue-400 bg-white" />
                 ) : details.taskPlatform.toLowerCase() === "alllike" ? (
