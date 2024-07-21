@@ -11,6 +11,7 @@ import WhatTheyCanDo from "../components/WhatTheyCanDo/WhatTheyCanDo";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import Announcements from "../components/Announcements/Announcements";
+import Advertisements from "../components/Advertisements/Advertisements";
 
 const ClientDashboard = () => {
   const { currentUser, adminData } = useAuth();
@@ -60,6 +61,7 @@ const ClientDashboard = () => {
             <div className="block">
               <ClientWelcomeMsg username={currentUser.username} />
               <Announcements />
+              <Advertisements />
               <ClientDashboardCard
                 firstname={currentUser.firstname}
                 lastname={currentUser.lastname}

@@ -57,6 +57,7 @@ export const getAllComplaint = async (req, res, next) => {
     }
 
     const complaints = await Complaint.find(complaintQuery)
+      .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit);
 
