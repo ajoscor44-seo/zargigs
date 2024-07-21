@@ -126,7 +126,7 @@ const OrderDetails = () => {
                     size={20}
                     className="text-green-400 bg-white"
                   />
-                ) : platform.toLowerCase() === "spotify" ? (
+                ) : details.taskPlatform.toLowerCase() === "spotify" ? (
                   <FaSpotify size={15} className="text-green-600 bg-white" />
                 ) : details.taskPlatform.toLowerCase() === "telegram" ? (
                   <FaTelegram size={20} className="text-blue-400 bg-white" />
