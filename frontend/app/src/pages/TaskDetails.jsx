@@ -353,14 +353,21 @@ const TaskDetails = () => {
                 </div>
               )}
               <p
+                hidden={type == "advert" || platform === "website"}
+                className="text-xs text-gray-400 font-semibold"
+              >
+                The task you are given is to engage the account on social media
+                pages.
+              </p>
+              <p
                 hidden={type == "advert"}
                 className="text-xs text-gray-400 font-semibold"
               >
-                The task you are given is to engage this accounts on social
-                media pages.
+                The task you are given is to engage the website you are being
+                redirected to from this page.
               </p>
               <p
-                hidden={type !== "advert"}
+                hidden={type !== "advert" || platform == "website"}
                 className="text-xs text-gray-400 font-semibold"
               >
                 The task you are given is to post this advert on {platform}{" "}
@@ -398,24 +405,53 @@ const TaskDetails = () => {
                     ) : (
                       <p className="text-xs font-semibold">
                         <span className="font-bold">Step 2: </span>The link will
-                        direct you to the social media page where you are to
-                        excute your task.
+                        direct you to the{" "}
+                        {platform === "website" ? "site" : "social media page"}{" "}
+                        where you are to excute your task.
                       </p>
                     )}
                   </p>
-                  <p className="text-xs font-semibold">
-                    <span className="font-bold">Step 3: </span> Perform the task
-                    on this social media page and ensure you{" "}
-                    <span className="text-red-500 font-bold">DO NOT UNDO</span>{" "}
-                    any task you did as it might lead to your account being
-                    banned.
+                  <p>
+                    {platform === "website" && type !== "advert" ? (
+                      <p className="text-xs font-semibold">
+                        <span className="font-bold">Step 3: </span> Scroll to
+                        the bottom of the site or{" "}
+                        <span className="text-red-500 font-bold">
+                          follow the instruction being given if given any
+                        </span>{" "}
+                      </p>
+                    ) : (
+                      <p className="text-xs font-semibold">
+                        <span className="font-bold">Step 3: </span> Perform the
+                        task on this social media page and ensure you{" "}
+                        <span className="text-red-500 font-bold">
+                          DO NOT UNDO
+                        </span>{" "}
+                        any task you did as it might lead to your account being
+                        banned.
+                      </p>
+                    )}
                   </p>
-                  <p className="text-xs font-semibold">
-                    <span className="font-bold">Step 4: </span>Create a
-                    screenshot of the page that shows that you have performed
-                    the task and upload the screenshot as a proof under Proof of
-                    Work Form below. You are also required to enter your social
-                    media account username whcih you used to perform the task.
+                  <p>
+                    {type !== "advert" && platform == "website" ? (
+                      <p className="text-xs font-semibold">
+                        <span className="font-bold">Step 4: </span>Create a
+                        screenshot of the footer of page that shows that you
+                        have performed the task and upload the screenshot as a
+                        proof under Proof of Work Form below. You are also
+                        required to enter your gigsflix media account username
+                        which you used to perform the task.
+                      </p>
+                    ) : (
+                      <p className="text-xs font-semibold">
+                        <span className="font-bold">Step 4: </span>Create a
+                        screenshot of the page that shows that you have
+                        performed the task and upload the screenshot as a proof
+                        under Proof of Work Form below. You are also required to
+                        enter your social media account username which you used
+                        to perform the task.
+                      </p>
+                    )}
                   </p>
                 </div>
                 <div className="text-orange-400 font-semibold bg-orange-100 rounded text-xs p-3 mt-2">
