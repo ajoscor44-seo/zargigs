@@ -84,7 +84,10 @@ const Earn = () => {
                   ? "bg-slate-200 rounded-t p-3 font-bold text-center flex items-center justify-between"
                   : "rounded-t p-3 font-bold text-center flex items-center justify-between"
               }
-              onClick={() => setActiveTab("postAds")}
+              onClick={() => {
+                setTotalAvailableAdvertTasks(0);
+                setActiveTab("postAds");
+              }}
             >
               POST ADVERTS{" "}
               {totalAvailableAdvertTasks ? (
@@ -101,7 +104,10 @@ const Earn = () => {
                   ? "bg-slate-200 rounded-t p-3 font-bold text-center flex-1 flex items-center justify-between"
                   : "rounded-t p-3 font-bold text-center flex-1 flex items-center justify-between"
               }
-              onClick={() => setActiveTab("doTasks")}
+              onClick={() => {
+                setTotalAvailableNormalTasks(0);
+                setActiveTab("doTasks");
+              }}
             >
               PERFORM SOCIAL TASKS{" "}
               {totalAvailableNormalTasks ? (
