@@ -1,5 +1,6 @@
 import React from "react";
 import { BiLike } from "react-icons/bi";
+import { RiSurveyFill } from "react-icons/ri";
 import {
   FaCommentDots,
   FaFacebook,
@@ -15,7 +16,11 @@ import {
   FaYoutube,
 } from "react-icons/fa6";
 import playStoreImage from "../../assets/images/playstore-icon.png";
-import { IoLogoAppleAppstore, IoShareSocialOutline } from "react-icons/io5";
+import {
+  IoLogoAppleAppstore,
+  IoShareSocialOutline,
+  IoTvSharp,
+} from "react-icons/io5";
 import { MdGetApp } from "react-icons/md";
 import { SiAudiomack } from "react-icons/si";
 import { SlUserFollowing } from "react-icons/sl";
@@ -30,6 +35,10 @@ const ItemIcon = ({ platform, size, playstoreSize }) => {
           size={size}
           className="text-white bg-instagram-gradient rounded"
         />
+      ) : platform.toLowerCase() === "whatsapptv" ? (
+        <IoTvSharp size={size} className="text-green-400" />
+      ) : platform.toLowerCase() === "websurvey" ? (
+        <RiSurveyFill size={size} className="text-green-400" />
       ) : platform.toLowerCase() === "allfollow" ? (
         <SlUserFollowing size={size} className="text-blue-400" />
       ) : platform.toLowerCase() === "tiktok" ? (
