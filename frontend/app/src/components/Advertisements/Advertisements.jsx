@@ -1,33 +1,21 @@
 import React, { useEffect, useState } from "react";
+import "./Advertisements.css";
 import banner from "../../assets/images/post_advert_banner.jpg";
+import banner1 from "../../assets/images/gigsflix_advert_banner.png";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const Advertisements = () => {
-  const defaultImageIndex = 0;
-  const [currentIndex, setCurrentIndex] = useState(defaultImageIndex);
-  const [advertisements, setAdvertisements] = useState([
-    {
-      name: "Sale Offer",
-      description: "Join the moving train.....",
-      link: "/advertisements",
-      default: true,
-    },
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [advertisements, setAdvertisements] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const carouselInterval = setInterval(() => {
-    const randomIndex = () => {
-      let index;
-      do {
-        index = Math.floor(Math.random() * advertisements.length);
-      } while (index === defaultImageIndex);
-      return index;
-    };
-
-    setCurrentIndex(randomIndex());
-
-    return clearInterval(carouselInterval);
-  }, 5000);
+  const carouselInfiniteScroll = () => {
+    if (currentIndex === advertisements.length - 1) {
+      return setCurrentIndex(0);
+    }
+    return setCurrentIndex(currentIndex + 1);
+  };
 
   const nextImage = () => {
     setCurrentIndex((currentIndex + 1) % advertisements.length);
@@ -48,7 +36,15 @@ const Advertisements = () => {
   };
 
   useEffect(() => {
-    getAdvertisements();
+    const interval = setInterval(() => {
+      carouselInfiniteScroll();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  });
+
+  useEffect(() => {
+    return getAdvertisements();
   }, []);
 
   return (
@@ -60,31 +56,15 @@ const Advertisements = () => {
         >
           <FaAngleLeft size={25} />
         </button>
-        {advertisements.length && !advertisements[currentIndex].default ? (
-          <Link to={advertisements[currentIndex].link}>
+        <div className="border">
+          <Link to="/advertisements">
             <img
               src={banner}
-              alt={"Gigsflix advert banner"}
+              alt={"Advertisement"}
               className="w-full h-28 object-cover"
             />
           </Link>
-        ) : !advertisements.length ? (
-          <Link to={advertisements[currentIndex].link}>
-            <img
-              src={banner}
-              alt={"Gigsflix advert banner"}
-              className="w-full h-28 object-cover"
-            />
-          </Link>
-        ) : (
-          <a href={advertisements[currentIndex].link}>
-            <img
-              src={advertisements[currentIndex].banner}
-              alt={`Slide ${currentIndex + 1}`}
-              className="w-full h-28 object-cover"
-            />
-          </a>
-        )}
+        </div>
         <button
           onClick={nextImage}
           className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 px-4 py-2 rounded-md"
