@@ -28,6 +28,7 @@ import { SiAudiomack } from "react-icons/si";
 import { BiLike } from "react-icons/bi";
 import playStoreImage from "../assets/images/playstore-icon.png";
 import { MdGetApp } from "react-icons/md";
+import ItemIcon from "../components/ItemIcon/ItemIcon";
 
 const TransactionHistory = () => {
   const [perPage, setPerpage] = useState(10);
@@ -98,75 +99,11 @@ const TransactionHistory = () => {
                     key={data.id}
                   >
                     <div className="flex justify-center items-center border-gray-300 border-2 p-1 rounded-full">
-                      {data.taskPlatform.toLowerCase() === "facebook" ? (
-                        <FaFacebook className="text-blue-600" size={20} />
-                      ) : data.taskPlatform.toLowerCase() === "instagram" ? (
-                        <FaInstagram
-                          size={20}
-                          className="text-white bg-instagram-gradient rounded"
-                        />
-                      ) : data.taskPlatform.toLowerCase() === "allfollow" ? (
-                        <SlUserFollowing size={20} className="text-blue-400" />
-                      ) : data.taskPlatform.toLowerCase() === "tiktok" ? (
-                        <FaTiktok size={20} className="text-white bg-black" />
-                      ) : data.taskPlatform.toLowerCase() === "audiomack" ? (
-                        <SiAudiomack
-                          size={20}
-                          className="text-orange-500 bg-black"
-                        />
-                      ) : data.taskPlatform.toLowerCase() === "twitter" ? (
-                        <FaTwitter size={20} className="text-sky-500" />
-                      ) : data.taskPlatform.toLowerCase() === "applestore" ? (
-                        <IoLogoAppleAppstore
-                          size={20}
-                          className="text-blue-500 bg-white rounded-full"
-                        />
-                      ) : data.taskPlatform.toLowerCase() === "playstore" ? (
-                        <img
-                          src={playStoreImage}
-                          className="w-5 h-5 object-cover"
-                        />
-                      ) : data.taskPlatform.toLowerCase() === "allretweets" ? (
-                        <FaRetweet
-                          size={20}
-                          className="text-blue-500 bg-white"
-                        />
-                      ) : data.taskPlatform.toLowerCase() === "allshare" ? (
-                        <FaShare
-                          size={20}
-                          className="text-white rounded-full bg-instagram-gradient"
-                        />
-                      ) : data.taskPlatform.toLowerCase() === "allcomments" ? (
-                        <FaCommentDots
-                          size={20}
-                          className="text-green-400 bg-white"
-                        />
-                      ) : data.taskPlatform.toLowerCase() === "spotify" ? (
-                        <FaSpotify
-                          size={15}
-                          className="text-green-600 bg-white"
-                        />
-                      ) : data.taskPlatform.toLowerCase() === "telegram" ? (
-                        <FaTelegram
-                          size={20}
-                          className="text-blue-400 bg-white"
-                        />
-                      ) : data.taskPlatform.toLowerCase() === "app" ? (
-                        <MdGetApp size={20} className="text-red-400 bg-white" />
-                      ) : data.taskPlatform.toLowerCase() === "alllike" ? (
-                        <BiLike size={20} className="bg-white text-blue-500" />
-                      ) : data.taskPlatform.toLowerCase() === "website" ? (
-                        <FaLink size={20} className="bg-white text-blue-500" />
-                      ) : data.taskPlatform.toLowerCase() === "youtube" ? (
-                        <FaYoutube size={20} className="text-red-500" />
-                      ) : data.taskPlatform.toLowerCase() === "whatsapp" ? (
-                        <FaWhatsapp size={20} className="text-green-500" />
-                      ) : (
-                        <IoShareSocialOutline
-                          className="text-green-500"
-                          size={20}
-                        />
-                      )}
+                      <ItemIcon
+                        platform={data?.taskPlatform}
+                        size={20}
+                        playstoreSize={"w-5 h-5"}
+                      />
                     </div>
                     <div className="flex flex-col gap-2 w-full">
                       <div className="flex justify-between">

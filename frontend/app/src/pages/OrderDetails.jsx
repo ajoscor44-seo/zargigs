@@ -27,6 +27,7 @@ import numeral from "numeral";
 import formatDate from "../hooks/formatDate";
 import ProofOfWork from "../components/ProofOfWork/ProofOfWork";
 import playStoreImage from "../assets/images/playstore-icon.png";
+import ItemIcon from "../components/ItemIcon/ItemIcon";
 
 const OrderDetails = () => {
   const [loading, setLoading] = useState(true);
@@ -90,60 +91,7 @@ const OrderDetails = () => {
               key={details.id}
             >
               <div className="flex justify-center items-center border-gray-300 border-2 p-1 rounded-full">
-                {details.taskPlatform.toLowerCase() === "facebook" ? (
-                  <FaFacebook className="text-blue-600" size={20} />
-                ) : details.taskPlatform.toLowerCase() === "instagram" ? (
-                  <FaInstagram
-                    size={20}
-                    className="text-white bg-instagram-gradient rounded"
-                  />
-                ) : details.taskPlatform.toLowerCase() === "allfollow" ? (
-                  <SlUserFollowing size={20} className="text-blue-400" />
-                ) : details.taskPlatform.toLowerCase() === "tiktok" ? (
-                  <FaTiktok size={20} className="text-white bg-black" />
-                ) : details.taskPlatform.toLowerCase() === "audiomack" ? (
-                  <SiAudiomack size={20} className="text-orange-500 bg-black" />
-                ) : details.taskPlatform.toLowerCase() === "twitter" ? (
-                  <FaTwitter size={20} className="text-sky-500" />
-                ) : details.taskPlatform.toLowerCase() === "applestore" ? (
-                  <IoLogoAppleAppstore
-                    size={20}
-                    className="text-blue-500 bg-white rounded-full"
-                  />
-                ) : details.taskPlatform.toLowerCase() === "playstore" ? (
-                  <img
-                    src={playStoreImage}
-                    className="w-20 h-20 object-cover"
-                  />
-                ) : details.taskPlatform.toLowerCase() === "allretweets" ? (
-                  <FaRetweet size={20} className="text-blue-500 bg-white" />
-                ) : details.taskPlatform.toLowerCase() === "allshare" ? (
-                  <FaShare
-                    size={20}
-                    className="text-white rounded-full bg-instagram-gradient"
-                  />
-                ) : details.taskPlatform.toLowerCase() === "allcomments" ? (
-                  <FaCommentDots
-                    size={20}
-                    className="text-green-400 bg-white"
-                  />
-                ) : details.taskPlatform.toLowerCase() === "spotify" ? (
-                  <FaSpotify size={15} className="text-green-600 bg-white" />
-                ) : details.taskPlatform.toLowerCase() === "website" ? (
-                  <FaLink size={15} className="text-green-400 bg-white" />
-                ) : details.taskPlatform.toLowerCase() === "telegram" ? (
-                  <FaTelegram size={20} className="text-blue-400 bg-white" />
-                ) : details.taskPlatform.toLowerCase() === "app" ? (
-                  <MdGetApp size={20} className="text-red-400 bg-white" />
-                ) : details.taskPlatform.toLowerCase() === "alllike" ? (
-                  <BiLike size={20} className="bg-white text-blue-500" />
-                ) : details.taskPlatform.toLowerCase() === "youtube" ? (
-                  <FaYoutube size={20} className="text-red-500" />
-                ) : details.taskPlatform.toLowerCase() === "whatsapp" ? (
-                  <FaWhatsapp size={20} className="text-green-500" />
-                ) : (
-                  <IoShareSocialOutline className="text-green-500" size={20} />
-                )}
+                <ItemIcon platform={details?.taskPlatform} size={20} playstoreSize={"w-5 h-5"} />
               </div>
               <div className="flex flex-col gap-2 w-full">
                 <div className="flex justify-between">
