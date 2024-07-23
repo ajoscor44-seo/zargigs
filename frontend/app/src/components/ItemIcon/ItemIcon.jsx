@@ -22,7 +22,7 @@ import {
   IoTvSharp,
 } from "react-icons/io5";
 import { MdGetApp } from "react-icons/md";
-import { SiAudiomack } from "react-icons/si";
+import { SiAudiomack, SiApplemusic } from "react-icons/si";
 import { SlUserFollowing } from "react-icons/sl";
 
 const ItemIcon = ({ platform, size, playstoreSize }) => {
@@ -51,6 +51,11 @@ const ItemIcon = ({ platform, size, playstoreSize }) => {
         <IoLogoAppleAppstore
           size={size}
           className="text-blue-500 bg-white rounded-full"
+        />
+      ) : platform.toLowerCase() === "applemusic" ? (
+        <SiApplemusic
+          size={size}
+          className="text-red-500 bg-white rounded-full"
         />
       ) : platform.toLowerCase() === "playstore" ? (
         <img src={playStoreImage} className={`${playstoreSize} object-cover`} />
