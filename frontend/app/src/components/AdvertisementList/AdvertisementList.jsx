@@ -2,13 +2,15 @@ import React, { useEffect, useState } from "react";
 import AdvertItem from "../AdvertItem/AdvertItem";
 import NoData from "../NoData/NoData";
 import { IoAdd } from "react-icons/io5";
+import axios from "axios";
 
 const AdvertisementList = ({ setCreatingAdvert }) => {
   const [advertisementList, setAdvertisementList] = useState([]);
 
-  const getAdvertisements = () => {
+  const getAdvertisements = async () => {
     try {
       console.log("Get Advertisement");
+      // const advertisements = await axios.get("/api/v1/")
     } catch (error) {
       console.error(error);
     }

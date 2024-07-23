@@ -1,13 +1,13 @@
 import Advertisement from "../Models/advertisement.model.js";
 import { processPayment } from "./tasks.controller.js";
 
-export const getAdvertisements = (req, res, next) => {
+export const getAdvertisements = async (req, res, next) => {
   try {
-    const advertisements = Advertisement.find({});
+    const advertisements = await Advertisement.find({});
 
     const formattedAdvertisements = advertisements.map(
       async (advertisement) => {
-        const { __v, _id, rest } = advertisement.toObject();
+        const { __v, _id, ...rest } = advertisement.toObject();
 
         return {
           id: _id,
@@ -25,9 +25,9 @@ export const getAdvertisements = (req, res, next) => {
   }
 };
 
-export const getUserAdvertisements = (req, res, next) => {
+export const getUserAdvertisements = async (req, res, next) => {
   try {
-    const advertisements = Advertisement.find({});
+    const advertisements = await Advertisement.find({ postedBy: req.user._id });
 
     return res.status(200).json({ failed: false, data: advertisements });
   } catch (error) {
@@ -36,9 +36,9 @@ export const getUserAdvertisements = (req, res, next) => {
   }
 };
 
-export const getAllAdvertisements = (req, res, next) => {
+export const getAllAdvertisements = async (req, res, next) => {
   try {
-    const advertisements = Advertisement.find({});
+    const advertisements = await Advertisement.find({});
 
     return res.status(200).json({ failed: false, data: advertisements });
   } catch (error) {
@@ -77,9 +77,10 @@ export const createAdvertisement = async (req, res, next) => {
   }
 };
 
-export const deleteAdvertisement = (req, res, next) => {
+export const deleteAdvertisement = async (req, res, next) => {
   try {
-    // const advertisements = Advertisement.find({});
+    const id = req.params.id;
+    await Advertisement.findByIdAndDelete(id);
 
     return res.status(200).json({ failed: true, message: "Rest Abeg" });
   } catch (error) {

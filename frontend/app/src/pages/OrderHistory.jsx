@@ -27,6 +27,7 @@ import { SlUserFollowing } from "react-icons/sl";
 import { SiAudiomack } from "react-icons/si";
 import { BiLike } from "react-icons/bi";
 import playStoreImage from "../assets/images/playstore-icon.png";
+import { MdGetApp } from "react-icons/md";
 
 const TransactionHistory = () => {
   const [perPage, setPerpage] = useState(10);
@@ -150,6 +151,8 @@ const TransactionHistory = () => {
                           size={20}
                           className="text-blue-400 bg-white"
                         />
+                      ) : data.taskPlatform.toLowerCase() === "app" ? (
+                        <MdGetApp size={20} className="text-red-400 bg-white" />
                       ) : data.taskPlatform.toLowerCase() === "alllike" ? (
                         <BiLike size={20} className="bg-white text-blue-500" />
                       ) : data.taskPlatform.toLowerCase() === "website" ? (

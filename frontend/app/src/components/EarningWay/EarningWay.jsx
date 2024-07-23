@@ -19,6 +19,7 @@ import { SiAudiomack } from "react-icons/si";
 import { SlUserFollowing } from "react-icons/sl";
 import playStoreImage from "../../assets/images/playstore-icon.png";
 import axios from "axios";
+import { MdGetApp } from "react-icons/md";
 
 const EarningWay = ({
   way,
@@ -101,6 +102,8 @@ const EarningWay = ({
           <FaCommentDots size={60} className="text-green-400 bg-white" />
         ) : way?.platformName?.toLowerCase() === "telegram" ? (
           <FaTelegram size={60} className="text-blue-400 bg-white" />
+        ) : way?.platformName?.toLowerCase() === "app" ? (
+          <MdGetApp size={60} className="text-red-400 bg-white" />
         ) : way?.platformName.toLowerCase() === "website" ? (
           <FaLink size={60} className="text-green-400 bg-white" />
         ) : way?.platformName?.toLowerCase() === "alllike" ? (
@@ -189,6 +192,12 @@ const EarningWay = ({
                       key={i}
                       size={15}
                       className="text-blue-400 bg-white"
+                    />
+                  ) : platform.toLowerCase() === "app" ? (
+                    <MdGetApp
+                      key={i}
+                      size={15}
+                      className="text-red-400 bg-white"
                     />
                   ) : platform.toLowerCase() === "website" ? (
                     <FaLink

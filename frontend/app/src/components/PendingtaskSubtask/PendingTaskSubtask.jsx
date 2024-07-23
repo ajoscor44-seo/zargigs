@@ -22,6 +22,7 @@ import { SlUserFollowing } from "react-icons/sl";
 import CountdownTimer from "../CountDownTimer/CountDownTimer";
 import formatDate from "../../hooks/formatDate";
 import { Link } from "react-router-dom/cjs/react-router-dom";
+import { MdGetApp } from "react-icons/md";
 
 const PendingTaskSubtask = ({
   task,
@@ -80,6 +81,8 @@ const PendingTaskSubtask = ({
             <FaLink size={45} className="text-green-600 bg-white" />
           ) : task.taskPlatform?.toLowerCase() === "telegram" ? (
             <FaTelegram size={45} className="text-blue-400 bg-white" />
+          ) : task.taskPlatform?.toLowerCase() === "app" ? (
+            <MdGetApp size={45} className="text-red-400 bg-white" />
           ) : task.taskPlatform?.toLowerCase() === "alllike" ? (
             <BiLike
               size={45}

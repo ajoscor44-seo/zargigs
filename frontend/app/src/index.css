@@ -7,6 +7,16 @@
   --success: #049e04;
 }
 
+/* Hide scrollbar for WebKit browsers */
+body {
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -19,6 +19,7 @@ import { SiAudiomack } from "react-icons/si";
 import { SlUserFollowing } from "react-icons/sl";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import formatDate from "../../hooks/formatDate";
+import { MdGetApp } from "react-icons/md";
 
 const Task = ({ task }) => {
   const btnBgColor =
@@ -75,6 +76,8 @@ const Task = ({ task }) => {
           <FaCommentDots size={45} className="text-green-400 bg-white" />
         ) : task.taskPlatform?.toLowerCase() === "telegram" ? (
           <FaTelegram size={45} className="text-blue-400 bg-white" />
+        ) : task.taskPlatform?.toLowerCase() === "app" ? (
+          <MdGetApp size={45} className="text-red-400 bg-white" />
         ) : task.taskPlatform?.toLowerCase() === "alllike" ? (
           <BiLike
             size={45}

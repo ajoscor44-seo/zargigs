@@ -18,6 +18,7 @@ import { IoLogoAppleAppstore } from "react-icons/io5";
 import { SiAudiomack } from "react-icons/si";
 import { SlUserFollowing } from "react-icons/sl";
 import playStoreImage from "../../assets/images/playstore-icon.png";
+import { MdGetApp } from "react-icons/md";
 
 const PricingWay = ({ way, addSelectBtn, wayDescription }) => {
   return (
@@ -63,6 +64,8 @@ const PricingWay = ({ way, addSelectBtn, wayDescription }) => {
           <FaCommentDots size={60} className="text-green-400 bg-white" />
         ) : way.platformName.toLowerCase() === "telegram" ? (
           <FaTelegram size={60} className="text-blue-400 bg-white" />
+        ) : way.platformName.toLowerCase() === "app" ? (
+          <MdGetApp size={60} className="text-red-400 bg-white" />
         ) : way?.platformName.toLowerCase() === "website" ? (
           <FaLink size={60} className="text-green-400 bg-white" />
         ) : way.platformName.toLowerCase() === "alllike" ? (
@@ -161,6 +164,12 @@ const PricingWay = ({ way, addSelectBtn, wayDescription }) => {
                       size={15}
                       key={platform}
                       className="text-blue-400 bg-white"
+                    />
+                  ) : platform.toLowerCase() === "app" ? (
+                    <MdGetApp
+                      size={15}
+                      key={platform}
+                      className="text-red-400 bg-white"
                     />
                   ) : platform.toLowerCase() === "website" ? (
                     <FaLink

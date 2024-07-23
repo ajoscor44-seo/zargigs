@@ -16,6 +16,7 @@ import googlePlayIcon from "../../assets/png/google-play-icon.png";
 import { IoLogoAppleAppstore } from "react-icons/io5";
 import { SiAudiomack } from "react-icons/si";
 import { SlUserFollowing } from "react-icons/sl";
+import { MdGetApp } from "react-icons/md";
 
 const RecentActivity = ({ recentActivity }) => {
   const taskDone =
@@ -70,6 +71,8 @@ const RecentActivity = ({ recentActivity }) => {
           <FaCommentDots size={45} className="text-green-400 bg-white" />
         ) : recentActivity.category.toLowerCase() === "telegram" ? (
           <FaTelegram size={45} className="text-blue-400 bg-white" />
+        ) : recentActivity.category.toLowerCase() === "app" ? (
+          <MdGetApp size={45} className="text-red-400 bg-white" />
         ) : recentActivity.category.toLowerCase() === "alllike" ? (
           <BiLike
             size={45}

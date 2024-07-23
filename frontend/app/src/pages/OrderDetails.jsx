@@ -133,6 +133,8 @@ const OrderDetails = () => {
                   <FaLink size={15} className="text-green-400 bg-white" />
                 ) : details.taskPlatform.toLowerCase() === "telegram" ? (
                   <FaTelegram size={20} className="text-blue-400 bg-white" />
+                ) : details.taskPlatform.toLowerCase() === "app" ? (
+                  <MdGetApp size={20} className="text-red-400 bg-white" />
                 ) : details.taskPlatform.toLowerCase() === "alllike" ? (
                   <BiLike size={20} className="bg-white text-blue-500" />
                 ) : details.taskPlatform.toLowerCase() === "youtube" ? (
