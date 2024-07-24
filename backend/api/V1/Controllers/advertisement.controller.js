@@ -58,12 +58,13 @@ export const createAdvertisement = async (req, res, next) => {
     if (!paymentResponse.status) {
       return res.status(400).json(paymentResponse);
     }
+
     const newAdvertisement = new Advertisement({
       name,
       link,
       banner,
       description,
-      duration,
+      duration: Number(duration),
       postedBy: req.user._id,
     });
     await newAdvertisement.save();

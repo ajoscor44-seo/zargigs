@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import FormInput from "../FormInput/FormInput";
 import axios from "axios";
@@ -18,18 +18,7 @@ const CreateAdvertisement = ({ setCreatingAdvert }) => {
   });
   const amountToPay = advertData.duration * 1500;
 
-  const uploadAdvert = () => {
-    try {
-      const response = axios.post("api/v1", advertData);
-
-      console.log(response);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleChange = (e) => {
-    console.log(advertData);
     const isFile = e.target.type === "file";
 
     if (isFile) {
@@ -99,13 +88,31 @@ const CreateAdvertisement = ({ setCreatingAdvert }) => {
 
   const createAdvertisement = async () => {
     try {
+      if (
+        !advertData.banner ||
+        !advertData.name ||
+        !advertData.description ||
+        !advertData.duration ||
+        !advertData.link
+      ) {
+        return alert("Incomplete data for advertisement");
+      }
       const response = await axios.post("/api/v1/advertisements", advertData);
 
-      return console.log(response);
+      console.log(response);
+      alert(
+        "Advertisement created successfully. Thanks for choosing Gigsflix!"
+      );
+      return setCreatingAdvert(false);
     } catch (error) {
       console.error(error);
+      alert(error.response.data.message || "Oops an error occurred!");
     }
   };
+
+  useEffect(() => {
+    console.log(advertData);
+  }, [advertData]);
 
   return (
     <div>
@@ -144,6 +151,19 @@ const CreateAdvertisement = ({ setCreatingAdvert }) => {
           handleChange={handleChange}
           useTextArea={true}
         />
+        <p className="w-full">
+          {imageError ? (
+            <span className="text-red-500 text-center text-sm w-full">
+              Oops an error occurred
+            </span>
+          ) : imagePercentage ? (
+            <span className="text-green-500 text-center text-sm w-full">
+              {imagePercentage}
+            </span>
+          ) : (
+            <span></span>
+          )}
+        </p>
         <FormInput
           label={"Upload Banner"}
           placeholder={"Describe Your Advert"}
@@ -164,9 +184,15 @@ const CreateAdvertisement = ({ setCreatingAdvert }) => {
       <PayAmountBar
         feeTitle={"Advertisement Fee:"}
         fee={amountToPay}
-        disable={true}
+        disable={
+          !advertData.banner ||
+          !advertData.name ||
+          !advertData.description ||
+          !advertData.duration ||
+          !advertData.link
+        }
         btnText={"Pay For Advert"}
-        handleClick={uploadAdvert}
+        handleClick={createAdvertisement}
       />
     </div>
   );
