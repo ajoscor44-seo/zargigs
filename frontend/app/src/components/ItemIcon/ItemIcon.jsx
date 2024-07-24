@@ -88,6 +88,8 @@ const ItemIcon = ({ platform, size, playstoreSize }) => {
         <FaYoutube size={size} className="text-red-500" />
       ) : platform.toLowerCase() === "whatsapp" ? (
         <FaWhatsapp size={size} className="text-green-500" />
+      ) : platform.toLowerCase() === "whatsappgroup" ? (
+        <FaWhatsapp size={size} className="text-green-500" />
       ) : (
         <IoShareSocialOutline className="text-green-500" size={size} />
       )}
