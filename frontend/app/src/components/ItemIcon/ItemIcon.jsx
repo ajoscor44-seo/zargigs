@@ -5,7 +5,6 @@ import {
   FaCommentDots,
   FaFacebook,
   FaInstagram,
-  FaLink,
   FaRetweet,
   FaShare,
   FaSpotify,
@@ -17,11 +16,12 @@ import {
 } from "react-icons/fa6";
 import playStoreImage from "../../assets/images/playstore-icon.png";
 import {
+  IoGlobe,
   IoLogoAppleAppstore,
   IoShareSocialOutline,
   IoTvSharp,
 } from "react-icons/io5";
-import { MdGetApp } from "react-icons/md";
+import { MdGetApp, MdOutlineReviews } from "react-icons/md";
 import { SiAudiomack, SiApplemusic } from "react-icons/si";
 import { SlUserFollowing } from "react-icons/sl";
 
@@ -70,6 +70,8 @@ const ItemIcon = ({ platform, size, playstoreSize }) => {
         <FaCommentDots size={size} className="text-green-400 bg-white" />
       ) : platform.toLowerCase() === "spotify" ? (
         <FaSpotify size={size} className="text-green-600 bg-white" />
+      ) : platform.toLowerCase() === "googlepage" ? (
+        <MdOutlineReviews size={size} className="text-blue-600 bg-white" />
       ) : platform.toLowerCase() === "telegram" ? (
         <FaTelegram size={size} className="text-blue-400 bg-white" />
       ) : platform.toLowerCase() === "app" ? (
@@ -77,8 +79,12 @@ const ItemIcon = ({ platform, size, playstoreSize }) => {
       ) : platform.toLowerCase() === "alllike" ? (
         <BiLike size={size} className="bg-white text-blue-500" />
       ) : platform.toLowerCase() === "website" ? (
-        <FaLink size={size} className="bg-white text-green-500" />
+        <IoGlobe size={size} className="bg-white text-green-500" />
+      ) : platform.toLowerCase() === "websight" ? (
+        <IoGlobe size={size} className="bg-white text-green-500" />
       ) : platform.toLowerCase() === "youtube" ? (
+        <FaYoutube size={size} className="text-red-500" />
+      ) : platform.toLowerCase() === "vlctube" ? (
         <FaYoutube size={size} className="text-red-500" />
       ) : platform.toLowerCase() === "whatsapp" ? (
         <FaWhatsapp size={size} className="text-green-500" />
