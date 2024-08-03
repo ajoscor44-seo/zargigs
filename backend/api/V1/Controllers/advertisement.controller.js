@@ -6,8 +6,16 @@ export const getAdvertisements = async (req, res, next) => {
     const advertisements = await Advertisement.find({});
 
     const formattedAdvertisements = advertisements.map((advertisement) => {
-      const { __v, _id, postedBy, createdAt, updatedAt, ...rest } =
-        advertisement.toObject();
+      const {
+        __v,
+        _id,
+        postedBy,
+        createdAt,
+        updatedAt,
+        expiresAt,
+        duration,
+        ...rest
+      } = advertisement.toObject();
 
       return {
         id: _id,

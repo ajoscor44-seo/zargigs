@@ -2,13 +2,6 @@ import React from "react";
 import CountdownTimer from "../CountDownTimer/CountDownTimer";
 
 const AdvertItem = ({ itemData }) => {
-  console.log(
-    new Date(itemData.expiresAt).getTime(),
-    new Date().getTime(),
-    Math.floor(
-      (new Date(itemData.expiresAt).getTime() - new Date().getTime()) / 1000
-    )
-  );
   return (
     <div className="border py-1 rounded mx-4">
       <img

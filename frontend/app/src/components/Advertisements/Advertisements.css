@@ -1,16 +1,42 @@
-.carousel-container {
-  background: #f1f1f1;
-  display: flex;
-  flex-wrap: nowrap;
+.advertisement-container {
+  position: relative;
   overflow: hidden;
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
 }
 
-.carousel-item {
-  height: 20rem;
-  min-width: 100%;
-  width: 100%;
+.advertisement-slide {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: 1s cubic-bezier(0.39, 0.575, 0.565, 1);
+  transition: transform 0.5s ease-in-out;
+}
+
+.advertisement {
+  min-width: 100%;
+  box-sizing: border-box;
+}
+
+.advertisement img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.arrow-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(255, 255, 255, 0.5);
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  z-index: 10;
+}
+
+.arrow-button.left {
+  left: 10px;
+}
+
+.arrow-button.right {
+  right: 10px;
 }
