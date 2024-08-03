@@ -5,16 +5,38 @@ export const getAdvertisements = async (req, res, next) => {
   try {
     const advertisements = await Advertisement.find({});
 
-    const formattedAdvertisements = advertisements.map(
-      async (advertisement) => {
-        const { __v, _id, ...rest } = advertisement.toObject();
+    const formattedAdvertisements = advertisements.map((advertisement) => {
+      const { __v, _id, postedBy, createdAt, updatedAt, ...rest } =
+        advertisement.toObject();
 
-        return {
-          id: _id,
-          ...rest,
-        };
-      }
-    );
+      return {
+        id: _id,
+        ...rest,
+      };
+    });
+
+    return res.status(200).json({
+      failed: false,
+      data: formattedAdvertisements,
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+export const getUserAdvertisements = async (req, res, next) => {
+  try {
+    const advertisements = await Advertisement.find({ postedBy: req.user._id });
+    const formattedAdvertisements = advertisements.map((advertisement) => {
+      const { __v, _id, postedBy, createdAt, updatedAt, ...rest } =
+        advertisement.toObject();
+
+      return {
+        id: _id,
+        ...rest,
+      };
+    });
 
     return res
       .status(200)
@@ -25,22 +47,22 @@ export const getAdvertisements = async (req, res, next) => {
   }
 };
 
-export const getUserAdvertisements = async (req, res, next) => {
-  try {
-    const advertisements = await Advertisement.find({ postedBy: req.user._id });
-
-    return res.status(200).json({ failed: false, data: advertisements });
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
-};
-
 export const getAllAdvertisements = async (req, res, next) => {
   try {
     const advertisements = await Advertisement.find({});
+    const formattedAdvertisements = advertisements.map((advertisement) => {
+      const { __v, _id, createdAt, updatedAt, ...rest } =
+        advertisement.toObject();
 
-    return res.status(200).json({ failed: false, data: advertisements });
+      return {
+        id: _id,
+        ...rest,
+      };
+    });
+
+    return res
+      .status(200)
+      .json({ failed: false, data: formattedAdvertisements });
   } catch (error) {
     console.log(error);
     next(error);
@@ -55,7 +77,8 @@ export const createAdvertisement = async (req, res, next) => {
       "gigflix advert",
       req.user._id
     );
-    if (!paymentResponse.status) {
+    console.log(paymentResponse);
+    if (paymentResponse.failed) {
       return res.status(400).json(paymentResponse);
     }
 
@@ -71,7 +94,7 @@ export const createAdvertisement = async (req, res, next) => {
 
     return res
       .status(201)
-      .json({ failed: false, message: "Advert posted successfully" });
+      .json({ failed: false, message: "Advert created successfully" });
   } catch (error) {
     console.log(error);
     next(error);

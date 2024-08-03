@@ -20,7 +20,8 @@ const CountdownTimer = ({ totalSeconds }) => {
 
   // Helper function to format seconds into hours minutes seconds
   function startTimer(seconds) {
-    const hours = Math.floor(seconds / 3600);
+    const days = Math.floor(seconds / 86400000);
+    const hours = Math.floor((seconds % 86400) / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secondsLeft = seconds % 60;
 
@@ -29,7 +30,7 @@ const CountdownTimer = ({ totalSeconds }) => {
     };
 
     return {
-      days: "00",
+      days: formatTime(days),
       hours: formatTime(hours),
       minutes: formatTime(minutes),
       seconds: formatTime(secondsLeft),

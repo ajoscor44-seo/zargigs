@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { IoClose } from "react-icons/io5";
 import FormInput from "../FormInput/FormInput";
 import axios from "axios";
@@ -99,20 +99,13 @@ const CreateAdvertisement = ({ setCreatingAdvert }) => {
       }
       const response = await axios.post("/api/v1/advertisements", advertData);
 
-      console.log(response);
-      alert(
-        "Advertisement created successfully. Thanks for choosing Gigsflix!"
-      );
+      alert(`${response.data.message}. Thanks for choosing Gigsflix!`);
       return setCreatingAdvert(false);
     } catch (error) {
       console.error(error);
       alert(error.response.data.message || "Oops an error occurred!");
     }
   };
-
-  useEffect(() => {
-    console.log(advertData);
-  }, [advertData]);
 
   return (
     <div>
@@ -135,12 +128,15 @@ const CreateAdvertisement = ({ setCreatingAdvert }) => {
           handleChange={handleChange}
         />
         <FormInput
-          label={"Advert Link"}
-          placeholder={"https://www.example.com/link-to-advert"}
+          label={"Advert Destination"}
+          placeholder={"https://your-contact-link"}
           isError={false}
           type={"text"}
           name={"link"}
           handleChange={handleChange}
+          note={
+            "This can be the link to your whatsapp chat or customer support."
+          }
         />
         <FormInput
           label={"Description"}

@@ -3,16 +3,22 @@ import AdvertItem from "../AdvertItem/AdvertItem";
 import NoData from "../NoData/NoData";
 import { IoAdd } from "react-icons/io5";
 import axios from "axios";
+import { FaSpinner } from "react-icons/fa6";
 
 const AdvertisementList = ({ setCreatingAdvert }) => {
   const [advertisementList, setAdvertisementList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const getAdvertisements = async () => {
     try {
-      console.log("Get Advertisement");
-      // const advertisements = await axios.get("/api/v1/")
+      const response = await axios.get("/api/v1/advertisements");
+
+      setAdvertisementList(response.data.data);
+      return setLoading(false);
     } catch (error) {
       console.error(error);
+      setAdvertisementList([]);
+      setLoading(false);
     }
   };
 
@@ -34,10 +40,14 @@ const AdvertisementList = ({ setCreatingAdvert }) => {
 
       <div>
         {advertisementList.length ? (
-          <div className="flex flex-col">
+          <div className="flex flex-col mt-3">
             {advertisementList.map((advertisement) => (
-              <AdvertItem itemData={advertisement} />
+              <AdvertItem key={advertisement.id} itemData={advertisement} />
             ))}
+          </div>
+        ) : loading ? (
+          <div className="min-h-96 flex justify-center items-center">
+            <FaSpinner size={30} color="green" />
           </div>
         ) : (
           <div className="min-h-96 flex justify-center items-center">
