@@ -11,7 +11,7 @@ const AdvertisementList = ({ setCreatingAdvert }) => {
 
   const getAdvertisements = async () => {
     try {
-      const response = await axios.get("/api/v1/advertisements");
+      const response = await axios.get("/api/v1/advertisements/user");
 
       setAdvertisementList(response.data.data);
       return setLoading(false);
