@@ -5,10 +5,12 @@ const AdvertItem = ({ itemData }) => {
   console.log(
     new Date(itemData.expiresAt).getTime(),
     new Date().getTime(),
-    new Date(itemData.expiresAt).getTime() - new Date().getTime()
+    Math.floor(
+      (new Date(itemData.expiresAt).getTime() - new Date().getTime()) / 1000
+    )
   );
   return (
-    <div className="border py-1 rounded">
+    <div className="border py-1 rounded mx-4">
       <img
         className="w-full h-48 object-cover border-b"
         src={itemData.banner}
@@ -25,9 +27,10 @@ const AdvertItem = ({ itemData }) => {
           <span className="text-green-500">{itemData.description}</span>
         </p>
         <CountdownTimer
-          totalSeconds={
-            new Date(itemData.expiresAt).getTime() - new Date().getTime()
-          }
+          totalSeconds={Math.floor(
+            (new Date(itemData.expiresAt).getTime() - new Date().getTime()) /
+              1000
+          )}
         />
       </div>
     </div>
