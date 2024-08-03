@@ -8,7 +8,8 @@ import { sendNotitfication } from "../utils/notification.js";
 
 export const makeTransfer = async (req, res, next) => {
   try {
-    const { receiver, amount, password, charges } = req.body;
+    const { receiver, amount: transferAmount, password, charges } = req.body;
+    const amount = Math.abs(transferAmount) 
     if (receiver.toLowerCase() === req.user.username.toLowerCase()) {
       const error = ErrorHandler(404, "You cannot transfer to yourself MUMU");
       return res.status(404).json(error);

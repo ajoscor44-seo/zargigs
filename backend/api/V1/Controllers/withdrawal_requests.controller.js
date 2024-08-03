@@ -145,7 +145,8 @@ export const getUserWithdrawalRequests = async (req, res, next) => {
 
 export const postWithdrawalRequests = async (req, res, next) => {
   try {
-    const { id: userId, withdrawalAmount, charges, password } = req.body;
+    const { id: userId, withdrawalAmount: amount, charges, password } = req.body;
+    const withdrawalAmount = Math.abs(amount)
     if (Number(withdrawalAmount) < 100) {
       const error = ErrorHandler(400, "You cannot withdraw less than ₦100");
       return res.status(400).json(error);
