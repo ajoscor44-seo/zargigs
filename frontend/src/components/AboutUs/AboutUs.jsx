@@ -13,7 +13,7 @@ const AboutUs = () => {
       <div className="flex flex-col items-center mt-5 gap-3">
         <p className="font-primary text-center text-md">
           Welcome to{" "}
-          <span className="font-bold text-primary">{adminData?.appName}</span>,
+          <span className="font-bold text-primary">{adminData?.appName || "Gigsflix"}</span>,
           your go-to platform for monetizing your social media presence!.
         </p>
         <p className="font-primary text-center text-md">
