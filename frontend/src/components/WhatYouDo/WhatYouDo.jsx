@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import postAdvertImg from "../../assets/png/post-advert.png";
-import man_member from "../../assets/images/businessman-talking-phone-2.png";
+import man_member from "../../assets/images/blackman-with-phone.png";
 
 const WhatYouDo = () => {
   const app_url =
