@@ -13,7 +13,7 @@ const WhatYouDo = () => {
       <div className="lg:order-2">
         <img
           src={man_member}
-          className="mb-10 p-2 object-cover my-0 mx-auto"
+          className="mb-10 p-2 object-cover mx-auto"
           style={{ height: "420px" }}
         />
       </div>
