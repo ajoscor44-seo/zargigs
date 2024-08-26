@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom/cjs/react-router-dom";
 import postAdvertImg from "../../assets/png/post-advert.png";
 import man_member from "../../assets/images/blackman-with-phone.png";
 
@@ -12,7 +11,11 @@ const WhatYouDo = () => {
   return (
     <div className="bg-white px-4 py-10 grid lg:grid-cols-2 lg:pt-20 lg:px-72 lg:justify-center lg:items-start">
       <div className="lg:order-2">
-        <img src={man_member} className="mb-10" />
+        <img
+          src={man_member}
+          className="mb-10 p-2 object-cover my-0 mx-auto"
+          style={{ height: "420px" }}
+        />
       </div>
       <div>
         <div className="flex items-center flex-col">
