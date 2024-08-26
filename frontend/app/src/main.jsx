@@ -4,7 +4,7 @@ import App from "./App.jsx";
 import "./index.css";
 import UnderConstruction from "./pages/UnderConstruction.jsx";
 
-const under_construction = true;
+const under_construction = false;
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
