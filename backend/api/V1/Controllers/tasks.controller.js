@@ -11,13 +11,23 @@ import ProofOfWork from "../Models/proof-of-work.model.js";
 import userDetails from "../Models/user-details.model.js";
 import User from "../Models/user.model.js";
 import { ErrorHandler } from "../utils/error.js";
-import { sendNotitfication } from "../utils/notification.js";
+import {
+  sendNotitfication,
+  sendPushNotification,
+} from "../utils/notification.js";
 import logger from "../utils/logger.util.js";
 import EarnEngagement from "../Models/earn-engagement.model.js";
 import CreateEngagement from "../Models/create-engagement.model.js";
 import EarnAdvert from "../Models/earn-advert.model.js";
 import CreateAdvert from "../Models/create-advert.model.js";
 import cron from "node-cron";
+import webPush from "web-push";
+
+webPush.setVapidDetails(
+  "mailto:gigsflixtechnologies@gmail.com",
+  process.env.VAPID_PUB_KEY,
+  process.env.VAPID_PRI_KEY
+);
 
 cron.schedule("0 * * * *", async () => {
   try {
@@ -179,7 +189,13 @@ export const postAdvertTask = async (req, res, next) => {
       status: "pending",
       title,
     });
-    await newAdvertTask.save(); // Saves new advert task
+    await newAdvertTask.save();
+
+    const notification = {
+      title: "New Task Created!",
+      body: "A new advert task has just been posted rush in now to claim your earning!.",
+    };
+    await sendPushNotification(notification);
 
     res.status(200).json({
       status: 200,
@@ -332,7 +348,13 @@ export const postEngagementTask = async (req, res, next) => {
       customComment,
     });
 
-    await newEngagementTask.save(); // Saves new engagement task
+    await newEngagementTask.save();
+
+    const notification = {
+      title: "New Task Created!",
+      body: "A new engagement task has just been posted rush in now to claim your earning!.",
+    };
+    await sendPushNotification(notification);
     return res.status(200).json({
       ...paymentResponse,
       message: "Engagement Task Created successfully.",

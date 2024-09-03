@@ -13,6 +13,7 @@ import creatorRoutes from "./create-task.route.js";
 import earnerRoutes from "./earn-task.route.js";
 import fundingRoutes from "./funding.route.js";
 import authorizeAdmin from "../Middleware/authorization.js";
+import { subscribe } from "../utils/notification.js";
 
 const router = express.Router();
 
@@ -29,5 +30,6 @@ router.use("/earner", earnerRoutes);
 router.use("/fundings", fundingRoutes);
 router.use("/admin", authorizeAdmin, adminRoutes);
 router.use("/announcement", announcementRoutes);
+router.post("/subscribe", subscribe);
 
 export default router;

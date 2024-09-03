@@ -12,6 +12,7 @@ import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import Announcements from "../components/Announcements/Announcements";
 import Advertisements from "../components/Advertisements/Advertisements";
+import PushNotifications from "../components/PushNotifications";
 
 const ClientDashboard = () => {
   const { currentUser, adminData } = useAuth();
@@ -60,6 +61,7 @@ const ClientDashboard = () => {
           {currentUser.isMember ? (
             <div className="block">
               <ClientWelcomeMsg username={currentUser.username} />
+              <PushNotifications />
               <Announcements />
               <Advertisements />
               <ClientDashboardCard

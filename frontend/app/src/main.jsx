@@ -6,6 +6,10 @@ import UnderConstruction from "./pages/UnderConstruction.jsx";
 
 const under_construction = false;
 
+if (import.meta.env.NODE_ENV == "production") {
+  registerServiceWorker();
+}
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     {under_construction ? <UnderConstruction /> : <App />}
