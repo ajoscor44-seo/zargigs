@@ -28,20 +28,18 @@ const PushNotifications = () => {
   };
 
   const subscribeUser = () => {
-    // console.log("Subscribing User");
     navigator.serviceWorker.ready.then((registration) => {
       const publicKey = import.meta.env.VITE_VAPID_PUB_KEY;
       if (!publicKey) {
         throw new Error("VAPID public key is missing");
       }
-      // console.log("Public Key:", publicKey);
       registration.pushManager
         .subscribe({
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(publicKey),
         })
         .then((subscription) => {
-          // console.log("Subscription", subscription);
+          console.log("Subscription", subscription);
           sendSubscriptionToServer(subscription);
         })
         .catch((error) => {
@@ -64,9 +62,7 @@ const PushNotifications = () => {
   };
 
   const sendSubscriptionToServer = async (subscription) => {
-    // console.log("Subscription", subscription);
     await axios.post("/api/v1/subscribe", subscription);
-    // console.log("Subscription send to server");
   };
 
   return (
