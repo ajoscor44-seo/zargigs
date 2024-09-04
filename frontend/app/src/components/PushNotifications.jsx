@@ -27,26 +27,20 @@ const PushNotifications = () => {
     });
   };
 
-  const subscribeUser = () => {
-    navigator.serviceWorker.ready.then((registration) => {
+  const subscribeUser = async () => {
+    if ("serviceWorker" in navigator) {
+      const registration = await navigator.serviceWorker.register("/service-worker.js")
+      console.log(registration)
       const publicKey = import.meta.env.VITE_VAPID_PUB_KEY;
-      if (!publicKey) {
-        throw new Error("VAPID public key is missing");
-      }
       console.log("Subscribing User.....");
-      registration.pushManager
-        .subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(publicKey),
-        })
-        .then((subscription) => {
-          console.log("Subscription", subscription);
-          sendSubscriptionToServer(subscription);
-        })
-        .catch((error) => {
-          console.error("Failed to subscribe the user:", error);
-        });
-    });
+      const subscription = await registration.pushManager
+      .subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
+      })
+      console.log("Subscription", subscription);
+      await sendSubscriptionToServer(subscription);
+    }
   };
 
   const urlBase64ToUint8Array = (base64String) => {
@@ -63,7 +57,11 @@ const PushNotifications = () => {
   };
 
   const sendSubscriptionToServer = async (subscription) => {
-    await axios.post("/api/v1/subscribe", subscription);
+    try {
+      await axios.post("/api/v1/subscribe", subscription);
+    } catch (error) {
+      console.log("Error sending subscription to DB", error)
+    }
   };
 
   return (
