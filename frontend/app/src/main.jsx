@@ -3,12 +3,13 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
 import UnderConstruction from "./pages/UnderConstruction.jsx";
+import { registerServiceWorker } from "./serviceWorker.js"
 
 const under_construction = false;
 
-if (import.meta.env.NODE_ENV == "production") {
-  registerServiceWorker();
-}
+// if (import.meta.env.NODE_ENV == "production") {
+registerServiceWorker();
+// }
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

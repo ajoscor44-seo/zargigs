@@ -33,6 +33,7 @@ const PushNotifications = () => {
       if (!publicKey) {
         throw new Error("VAPID public key is missing");
       }
+      console.log("Subscribing User.....");
       registration.pushManager
         .subscribe({
           userVisibleOnly: true,
