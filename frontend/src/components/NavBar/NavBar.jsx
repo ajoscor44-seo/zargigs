@@ -16,7 +16,7 @@ const NavBar = ({
       : import.meta.env.VITE_PROD_APP_URL;
 
   return (
-    <div className="flex justify-between px-5 pb-5 lg:px-40 pt-5 items-center bg-white mb-5 shadow-sm lg:shadow-none fixed w-full">
+    <div className="flex justify-between px-5 pb-5 lg:px-40 pt-5 items-center bg-white mb-5 shadow-sm lg:shadow-none absolute w-full">
       <div className="flex items-end gap-10 w-full">
         <div className="flex items-center gap-2">
           <img className="w-10 rounded" src={adminData?.appLogo} />
