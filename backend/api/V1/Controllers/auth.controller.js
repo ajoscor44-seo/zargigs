@@ -429,19 +429,16 @@ export const sendResetPasswordLink = async (req, res, next) => {
 
 export const resetPassword = async (req, res, next) => {
   try {
-    const { resetId, password: newPassword } = req.body;
+    const { email, resetId, password: newPassword } = req.body;
     const validResetId = await ResetId.findOneAndDelete({
-      email: req.user.email,
+      email,
       resetId,
     });
     if (!validResetId) {
       return res.status(404).json({ message: "Invalid parameter" });
     }
     const hashedPassword = newPassword && bcryptjs.hashSync(newPassword, 10);
-    await User.findOneAndUpdate(
-      { email: req.user.email },
-      { password: hashedPassword }
-    );
+    await User.findOneAndUpdate({ email }, { password: hashedPassword });
 
     return res
       .status(200)

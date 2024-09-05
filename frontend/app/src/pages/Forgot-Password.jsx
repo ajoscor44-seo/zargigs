@@ -20,6 +20,7 @@ const ForgotPassword = () => {
       if (!email) {
         return setError("Please input your gigsflix email.");
       }
+      localStorage.setItem("reset-email", email);
       await axios.post("/api/v1/forgot-password", { email: email });
       setLoading(false);
       return setSuccessMessage(
@@ -37,7 +38,11 @@ const ForgotPassword = () => {
       if (!password) {
         return setError("Please input your new password.");
       }
-      await axios.post("/api/v1/reset-password", { email: email, resetId });
+
+      await axios.post("/api/v1/reset-password", {
+        email: localStorage.getItem("reset-email"),
+        resetId,
+      });
       setSuccessMessage("Your password has been reset successfully");
       setLoading(false);
       return history.push("/login");
