@@ -380,6 +380,13 @@ export const sendEmail = async (req, res, next) => {
 export const sendResetPasswordLink = async (req, res, next) => {
   try {
     const { email } = req.body;
+    const validUser = await User.findOne({ email });
+
+    if (!validUser) {
+      return res
+        .status(404)
+        .json({ message: "User not found, please confirm the email." });
+    }
 
     const reset_id = randStr(10);
     const resetId = new ResetId({

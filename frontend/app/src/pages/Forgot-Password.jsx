@@ -47,6 +47,7 @@ const ForgotPassword = () => {
       });
       setSuccessMessage("Your password has been reset successfully");
       setLoading(false);
+      localStorage.removeItem("reset-email");
       return history.push("/login");
     } catch (error) {
       setLoading(false);
