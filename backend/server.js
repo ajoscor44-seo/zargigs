@@ -14,7 +14,11 @@ import authenticateToken from "./api/V1/Middleware/authenticate.js";
 import { getAdminData } from "./api/V1/Controllers/admin.controller.js";
 import limiter from "./api/V1/Middleware/limiter.middleware.js";
 import { fundLocalWallet } from "./api/V1/Controllers/funding.controller.js";
-import { sendEmail } from "./api/V1/Controllers/auth.controller.js";
+import {
+  resetPassword,
+  sendEmail,
+  sendResetPasswordLink,
+} from "./api/V1/Controllers/auth.controller.js";
 import connectDb from "./db/db.js";
 
 const app = express();
@@ -67,6 +71,8 @@ app.use(morgan("tiny"));
 app.post("/api/v1/fund-wallet", fundLocalWallet);
 app.get("/api/v1/admin-data", getAdminData);
 app.post("/api/v1/send-mail", sendEmail);
+app.post("/api/v1/forgot-password", sendResetPasswordLink);
+app.post("/api/v1/reset-password", resetPassword);
 
 // Authentication route
 app.use("/api/auth", authRoutes);

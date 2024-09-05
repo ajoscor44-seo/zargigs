@@ -8,6 +8,8 @@ import AccessToken from "../Models/access-tokens.model.js";
 import { sendNotitfication } from "../utils/notification.js";
 import useExternalApi from "../utils/client.js";
 import logger from "../utils/logger.util.js";
+import { randStr } from "../utils/rand-str.js";
+import ResetId from "../Models/resetid.model.js";
 
 export const signup = async (req, res, next) => {
   try {
@@ -372,5 +374,79 @@ export const sendEmail = async (req, res, next) => {
       .status(406)
       .json({ message: "Unable to send your message", failed: false });
     return logger.error("Email fail to send.");
+  }
+};
+
+export const sendResetPasswordLink = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    const reset_id = randStr(10);
+    const resetId = new ResetId({
+      email,
+      resetId: reset_id,
+    });
+    await resetId.save();
+
+    let transporter = nodemailer.createTransport({
+      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.USER,
+        pass: process.env.GOOGLE_APP_PASSWORD,
+      },
+    });
+
+    // Sends Email
+    let info = await transporter.sendMail({
+      from: process.env.USER,
+      to: email,
+      subject: "Reset Password Link",
+      html: `
+        <div class="border border-green-500 rounded-md px-10 text-center">
+          <h1 class="text-green-500 font-bold">Hello there,</h1>
+          <h2 class="text-green-500 font-bold">Seems like your are trying to change your gigsflix account password</h2>
+          <p>Click the button below to reset your password</p>
+          <a href="https://app.gigsflix.com/forgot-password/${reset_id}"><button className="px-2 py-1 rounded text-lg font-bold">Change Password</button></a>
+          <p>Or copy this link and paste to your browser to reset your password</p>
+          <a href="https://app.gigsflix.com/forgot-password/${reset_id}">https://app.gigsflix.com/forgot-password/${reset_id}</a>
+        </div>
+      `,
+    });
+
+    return res
+      .status(200)
+      .json({ message: "A password reset link has been sent to your mail." });
+  } catch (error) {
+    res
+      .status(406)
+      .json({ message: "Unable to send your message", failed: false });
+    next(error);
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { resetId, password: newPassword } = req.body;
+    const validResetId = await ResetId.findOneAndDelete({
+      email: req.user.email,
+      resetId,
+    });
+    if (!validResetId) {
+      return res.status(404).json({ message: "Invalid parameter" });
+    }
+    const hashedPassword = newPassword && bcryptjs.hashSync(newPassword, 10);
+    await User.findOneAndUpdate(
+      { email: req.user.email },
+      { password: hashedPassword }
+    );
+
+    return res
+      .status(200)
+      .json({ message: "Password has been updated successfully." });
+  } catch (error) {
+    next(error);
   }
 };
