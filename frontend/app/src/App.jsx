@@ -63,11 +63,8 @@ function App() {
             <Route exact path="/login">
               <Authentication />
             </Route>
-
-            {/* Client Forgot Password Route */}
-            <PrivateRoute
-              exact
-              path="/forgot-password/:username"
+            <Route
+              path="/forgot-password/:resetId?"
               component={ForgotPassword}
             />
 
