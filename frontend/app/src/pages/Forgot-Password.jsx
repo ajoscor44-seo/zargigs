@@ -27,6 +27,7 @@ const ForgotPassword = () => {
         "A password reset link has been sent to your mail."
       );
     } catch (error) {
+      setLoading(false);
       return setError(error.response.data.message || error.message);
     }
   };
@@ -42,11 +43,13 @@ const ForgotPassword = () => {
       await axios.post("/api/v1/reset-password", {
         email: localStorage.getItem("reset-email"),
         resetId,
+        password,
       });
       setSuccessMessage("Your password has been reset successfully");
       setLoading(false);
       return history.push("/login");
     } catch (error) {
+      setLoading(false);
       return setError(error.response.data.message || error.message);
     }
   };
