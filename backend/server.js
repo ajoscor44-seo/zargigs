@@ -20,6 +20,8 @@ import {
   sendResetPasswordLink,
 } from "./api/V1/Controllers/auth.controller.js";
 import connectDb from "./db/db.js";
+import webPush from "web-push";
+import { subscribe } from "./api/V1/utils/notification.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -28,6 +30,13 @@ connectDb();
 
 // Port Number
 const PORT = process.env.PORT || 5000;
+
+// Configure web pusher
+webPush.setVapidDetails(
+  "mailto:gigsflixtechnologies@gmail.com",
+  process.env.VAPID_PUB_KEY,
+  process.env.VAPID_PRI_KEY
+);
 
 // Configure CORS
 const corsOptions = {
@@ -73,6 +82,8 @@ app.get("/api/v1/admin-data", getAdminData);
 app.post("/api/v1/send-mail", sendEmail);
 app.post("/api/v1/forgot-password", sendResetPasswordLink);
 app.post("/api/v1/reset-password", resetPassword);
+app.post("/subscribe", subscribe);
+// app.post("/send-not", subscribe);
 
 // Authentication route
 app.use("/api/auth", authRoutes);
