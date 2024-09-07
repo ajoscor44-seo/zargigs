@@ -39,12 +39,24 @@ export const sendPushNotitfication = async (notification) => {
 
 export const subscribe = async (req, res, next) => {
   try {
-    const subscription = { userId: req.user._id, ...req.body };
-    await Subscription.create(subscription);
+    const subscriptionData = req.body;
 
-    res.status(201).json({});
+    const subscription = new Subscription({
+      endpoint: subscriptionData.endpoint,
+      expirationTime: subscriptionData.expirationTime,
+      keys: {
+        p256dh: subscriptionData.keys.p256dh,
+        auth: subscriptionData.keys.auth,
+      },
+      userId: req.user._id,
+    });
+    await subscription.save();
+
+    return res.status(201).json({
+      message: "You have successfully subscribed for push notification",
+    });
   } catch (error) {
-    logger.error("Error saving notification subscription");
+    next(error);
   }
 };
 
@@ -52,14 +64,19 @@ export const sendPushNotification = async (notification) => {
   try {
     const subscriptions = await Subscription.find({});
 
-    const payload = JSON.stringify({
-      title: `${notification.title}`,
-      body: `${notification.body}`,
-    });
+    const payload = JSON.stringify(notification);
 
     subscriptions.forEach((subscription) => {
-      webPush
-        .sendNotification(subscription, payload)
+      const pushSubscription = {
+        endpoint: subscription.endpoint,
+        keys: {
+          p256dh: subscription.keys.p256dh,
+          auth: subscription.keys.auth,
+        },
+      };
+
+      webpush
+        .sendNotification(pushSubscription, payload)
         .catch((error) => console.error("Error sending notification:", error));
     });
   } catch (error) {

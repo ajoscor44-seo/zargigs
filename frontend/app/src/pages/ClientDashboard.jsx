@@ -63,7 +63,7 @@ const ClientDashboard = () => {
               <ClientWelcomeMsg username={currentUser.username} />
               <PushNotifications />
               <Announcements />
-              <Advertisements />
+              {/* <Advertisements /> */}
               <ClientDashboardCard
                 firstname={currentUser.firstname}
                 lastname={currentUser.lastname}

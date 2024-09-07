@@ -8,7 +8,7 @@ self.addEventListener("push", (event) => {
 
   const notificationOptions = {
     body: body,
-    tag: "unique-tag",
+    tag: `Sent at ${new Date()}`,
     icon: icon,
     data: {
       url: url,

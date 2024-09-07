@@ -21,7 +21,6 @@ import {
 } from "./api/V1/Controllers/auth.controller.js";
 import connectDb from "./db/db.js";
 import webPush from "web-push";
-import { subscribe } from "./api/V1/utils/notification.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -82,8 +81,6 @@ app.get("/api/v1/admin-data", getAdminData);
 app.post("/api/v1/send-mail", sendEmail);
 app.post("/api/v1/forgot-password", sendResetPasswordLink);
 app.post("/api/v1/reset-password", resetPassword);
-app.post("/subscribe", subscribe);
-// app.post("/send-not", subscribe);
 
 // Authentication route
 app.use("/api/auth", authRoutes);

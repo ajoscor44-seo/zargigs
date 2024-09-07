@@ -45,9 +45,9 @@ const approveTasks = async () => {
   }
 };
 
-setTimeout(async () => {
-  await approveTasks();
-}, 5000);
+// setTimeout(async () => {
+//   await approveTasks();
+// }, 5000);
 
 cron.schedule("0 * * * *", async () => {
   try {
@@ -68,8 +68,7 @@ cron.schedule("0 * * * *", async () => {
       );
     }
   } catch (err) {
-    console.log("Error approving task with bull", err);
-    logger.error("Failed to update document:", err);
+    logger.error("Failed to approve task with bull:", err);
   }
 });
 
@@ -214,9 +213,13 @@ export const postAdvertTask = async (req, res, next) => {
     const notification = {
       title: "New Task Created!",
       body: "A new advert task has just been posted rush in now to claim your earning!.",
-      icon: "https://some-image-url.jpg",
+      icon: "./gigsflix_logo_white.png",
       data: {
-        url: "https://app.gigsflix.com/earn",
+        url: `${
+          process.env.NODE_ENV === "development"
+            ? process.env.DEV_CLIENT_URL
+            : process.env.PROD_CLIENT_URL
+        }/earn`,
       },
     };
 
@@ -377,12 +380,17 @@ export const postEngagementTask = async (req, res, next) => {
 
     const notification = {
       title: "New Task Created!",
-      body: "A new engagement task has just been posted rush in now to claim your earning!.",
-      icon: "https://some-image-url.jpg",
+      body: "A new advert task has just been posted rush in now to claim your earning!.",
+      icon: "./gigsflix_logo_white.png",
       data: {
-        url: "https://app.gigsflix.com/earn",
+        url: `${
+          process.env.NODE_ENV === "development"
+            ? process.env.DEV_CLIENT_URL
+            : process.env.PROD_CLIENT_URL
+        }/earn`,
       },
     };
+
     await sendPushNotification(notification);
     return res.status(200).json({
       ...paymentResponse,
