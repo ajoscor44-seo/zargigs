@@ -40,6 +40,15 @@ export const sendPushNotitfication = async (notification) => {
 export const subscribe = async (req, res, next) => {
   try {
     const subscriptionData = req.body;
+    const validSubscription = await Subscription.findOne({
+      userId: req.user._id,
+    });
+
+    if (validSubscription) {
+      return res.status(200).json({
+        message: "You have already subscribed for push notification",
+      });
+    }
 
     const subscription = new Subscription({
       endpoint: subscriptionData.endpoint,
