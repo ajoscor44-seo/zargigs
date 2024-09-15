@@ -20,57 +20,6 @@ import EarnEngagement from "../Models/earn-engagement.model.js";
 import CreateEngagement from "../Models/create-engagement.model.js";
 import EarnAdvert from "../Models/earn-advert.model.js";
 import CreateAdvert from "../Models/create-advert.model.js";
-import cron from "node-cron";
-
-const approveTasks = async () => {
-  try {
-    const now = new Date();
-    const tasks = await InReviewTask.find({
-      createdAt: { $lt: new Date(now - 24 * 60 * 60 * 1000) },
-    });
-
-    for (const task of tasks) {
-      const proofOfWork = await ProofOfWork.findOne({ parentId: task._id });
-      if (!proofOfWork) {
-        logger.info(`No proof of work for task ${task._id}`);
-        continue;
-      }
-      await sanction(proofOfWork._id, 1, task._id, task.createdBy);
-      logger.info(
-        `Task ${task._id}, done by ${task.doneBy}, approved automatically after 24 hours`
-      );
-    }
-  } catch (err) {
-    logger.error("Failed to automatically approve task with bull:", err);
-  }
-};
-
-// setTimeout(async () => {
-//   await approveTasks();
-// }, 5000);
-
-cron.schedule("0 * * * *", async () => {
-  try {
-    const now = new Date();
-    const tasks = await InReviewTask.find({
-      createdAt: { $lt: new Date(now - 24 * 60 * 60 * 1000) },
-    });
-
-    for (const task of tasks) {
-      const proofOfWork = await ProofOfWork.findOne({ parentId: task._id });
-      if (!proofOfWork) {
-        logger.info(`No proof of work for task ${task._id}`);
-        continue;
-      }
-      await sanction(proofOfWork._id, 1, task._id, task.createdBy);
-      logger.info(
-        `Task ${task._id}, done by ${task.doneBy}, approved automatically after 24 hours`
-      );
-    }
-  } catch (err) {
-    logger.error("Failed to approve task with bull:", err);
-  }
-});
 
 // Advert task controllers
 export const getAdvertTask = async (req, res, next) => {
@@ -380,7 +329,7 @@ export const postEngagementTask = async (req, res, next) => {
 
     const notification = {
       title: "New Task Created!",
-      body: "A new advert task has just been posted rush in now to claim your earning!.",
+      body: "A new engagement task has just been posted rush in now to claim your earning!.",
       icon: "./gigsflix_logo_white.png",
       data: {
         url: `${

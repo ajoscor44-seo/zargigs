@@ -21,6 +21,7 @@ import {
 } from "./api/V1/Controllers/auth.controller.js";
 import connectDb from "./db/db.js";
 import webPush from "web-push";
+import approveTasks from "./api/V1/utils/approver.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -76,6 +77,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("tiny"));
 
+app.get("/api/v1/auto-approve", approveTasks);
 app.post("/api/v1/fund-wallet", fundLocalWallet);
 app.get("/api/v1/admin-data", getAdminData);
 app.post("/api/v1/send-mail", sendEmail);
