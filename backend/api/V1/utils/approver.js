@@ -26,4 +26,27 @@ const approveTasks = async () => {
   }
 };
 
+// cron.schedule("0 * * * *", async () => {
+//   try {
+//     const now = new Date();
+//     const tasks = await InReviewTask.find({
+//       createdAt: { $lt: new Date(now - 24 * 60 * 60 * 1000) },
+//     });
+
+//     for (const task of tasks) {
+//       const proofOfWork = await ProofOfWork.findOne({ parentId: task._id });
+//       if (!proofOfWork) {
+//         logger.info(`No proof of work for task ${task._id}`);
+//         continue;
+//       }
+//       await sanction(proofOfWork._id, 1, task._id, task.createdBy);
+//       logger.info(
+//         `Task ${task._id}, done by ${task.doneBy}, approved automatically after 24 hours`
+//       );
+//     }
+//   } catch (err) {
+//     logger.error("Failed to approve task with bull:", err);
+//   }
+// });
+
 export default approveTasks;
