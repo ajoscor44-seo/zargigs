@@ -124,34 +124,6 @@ export const login = async (req, res, next) => {
     const { password: hashedPassword, referrals, ...rest } = validUser._doc;
     const token = jwt.sign({ ...rest }, process.env.JWT_SECRET);
 
-    const baseUrl =
-      process.env.NODE_ENV !== "production"
-        ? process.env.DEMO_MONICREDIT_API
-        : process.env.LIVE_MONICREDIT_API;
-
-    const cred = {
-      email: process.env.USER,
-      password: process.env.PASSWORD,
-    };
-    const authRes = await useExternalApi(
-      `${baseUrl}/core/auth/login`,
-      "POST",
-      cred
-    );
-
-    if (!authRes.success) {
-      return next();
-    }
-    await AccessToken.findOneAndUpdate(
-      { username: validUser.username },
-      {
-        username: validUser.username,
-        email,
-        accessToken: authRes.accessToken,
-      },
-      { new: true, upsert: true }
-    );
-
     return res
       .cookie("access_token", token, {
         httpOnly: true,
