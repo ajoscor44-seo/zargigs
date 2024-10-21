@@ -89,6 +89,8 @@ const TransactionHistory = () => {
             </div>
           ) : (
             historyData.data?.map((data) => {
+              const orderStatus = data.numberOfTasks == data.completedTasks ? "Completed" : data.numberOfTasks == data.allocatedTasks ? "Allocated" : "Pending";
+
               return (
                 <Link
                   to={`/order-history/${activeTab}/${data.id}`}
@@ -161,18 +163,14 @@ const TransactionHistory = () => {
                           </span>
                           <h3
                             className={`text-xs ${
-                              data.status.toLowerCase() == "pending"
+                              orderStatus.toLowerCase() == "pending"
                                 ? "bg-orange-300"
-                                : data.status.toLowerCase() == "completed"
+                                : orderStatus.toLowerCase() == "completed"
                                 ? "bg-green-600"
-                                : data.status.toLowerCase() == "allocating"
-                                ? "bg-blue-600"
-                                : data.status.toLowerCase() == "cancelled"
-                                ? "bg-red-500"
-                                : "bg-gray-500"
+                                : "bg-sky-500"
                             } text-white px-1 rounded capitalize font-semibold`}
                           >
-                            {data.status}
+                            {orderStatus}
                           </h3>
                         </div>
                       </div>

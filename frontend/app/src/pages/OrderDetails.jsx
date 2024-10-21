@@ -91,7 +91,11 @@ const OrderDetails = () => {
               key={details.id}
             >
               <div className="flex justify-center items-center border-gray-300 border-2 p-1 rounded-full">
-                <ItemIcon platform={details?.taskPlatform} size={20} playstoreSize={"w-5 h-5"} />
+                <ItemIcon
+                  platform={details?.taskPlatform}
+                  size={20}
+                  playstoreSize={"w-5 h-5"}
+                />
               </div>
               <div className="flex flex-col gap-2 w-full">
                 <div className="flex justify-between">
@@ -162,18 +166,18 @@ const OrderDetails = () => {
                     </span>
                     <h3
                       className={`text-xs ${
-                        details.status.toLowerCase() == "pending"
-                          ? "bg-orange-300"
-                          : data.status.toLowerCase() == "completed"
+                        details.allocatedTasks == details.numberOfTasks
+                          ? "bg-sky-500"
+                          : details.completedTasks == details.numberOfTasks
                           ? "bg-green-600"
-                          : data.status.toLowerCase() == "allocating"
-                          ? "bg-blue-600"
-                          : data.status.toLowerCase() == "cancelled"
-                          ? "bg-red-500"
-                          : "bg-gray-500"
+                          : "bg-orange-300"
                       } text-white px-1 rounded capitalize font-semibold`}
                     >
-                      {details.status}
+                      {details.numberOfTasks == details.completedTasks
+                        ? "Completed"
+                        : details.numberOfTasks == details.allocatedTasks
+                        ? "Allocated"
+                        : "Pending"}
                     </h3>
                   </div>
                 </div>

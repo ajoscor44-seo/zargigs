@@ -35,7 +35,8 @@ export const getAdvertTask = async (req, res, next) => {
 
     const advertTask = await AdvertTask.find({ _id: id });
     const adverttask = advertTask.map((advertTask) => {
-      const { createdBy, updatedAt, __v, _id, ...rest } = advertTask.toObject();
+      const { createdBy, updatedAt, __v, _id, status, ...rest } =
+        advertTask.toObject();
       return { id: _id, ...rest };
     });
     res.status(200).json(adverttask);
@@ -73,6 +74,7 @@ export const getAdvertTasks = async (req, res, next) => {
         location,
         religion,
         caption,
+        status,
         __v,
         _id,
         ...rest
@@ -98,7 +100,6 @@ export const getAdvertTasks = async (req, res, next) => {
     res.status(200).json(response);
     next();
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
@@ -199,7 +200,7 @@ export const getEngagementTask = async (req, res, next) => {
 
     const engagementTask = await EngagementTask.find({ _id: id });
     const engagementtask = engagementTask.map((engagementTask) => {
-      const { createdBy, updatedAt, __v, _id, ...rest } =
+      const { createdBy, updatedAt, __v, _id, status, ...rest } =
         engagementTask.toObject();
       return { id: _id, ...rest };
     });
@@ -239,6 +240,7 @@ export const getEngagementTasks = async (req, res, next) => {
         location,
         religion,
         caption,
+        status,
         __v,
         _id,
         ...rest
