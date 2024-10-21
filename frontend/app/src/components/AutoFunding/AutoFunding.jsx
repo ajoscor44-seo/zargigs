@@ -1,23 +1,19 @@
 import React from "react";
 import { BiInfoCircle } from "react-icons/bi";
-import { FaSpinner } from "react-icons/fa6";
+import { FaSpinner, FaBackward, FaForward } from "react-icons/fa6";
 import NoData from "../NoData/NoData";
 import numeral from "numeral";
 import formatDate from "../../hooks/formatDate";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
 
-const AutoFunding = ({ walletDetails, loading, fundings }) => {
+const AutoFunding = ({ walletDetails, loading, fundings, page, setPage }) => {
   const history = useHistory();
 
   return (
     <div>
-      <h2 className="flex flex-col justify-center text-xs bg-red-200 text-red-500 text-center font-bold">
-        <span className="px-2 py-1 border border-b w-full">
-          Minimum funding for AUTOMATIC METHOD is ₦1,000.
-        </span>
-        <span className="px-2 py-1">
-          For fundings less than ₦1,000 use the MANUAL METHOD.
-        </span>
+      <h2 className="flex items-center gap-3 px-3 py-1 text-xs bg-red-200 text-red-500 text-center font-bold">
+        <BiInfoCircle size={16} />
+        <span>For fundings less than ₦1,000 use the MANUAL METHOD.</span>
       </h2>
 
       <div className="p-2 flex flex-col gap-2 py-3">
@@ -42,7 +38,18 @@ const AutoFunding = ({ walletDetails, loading, fundings }) => {
         </span>
       </h2>
       <div className="py-5 flex flex-col gap-2">
-        <h1 className="font-semibold text-xl ms-1">Funding History</h1>
+        <div className="flex justify-between items-center px-3">
+          <h1 className="font-semibold text-xl ms-1">Funding History</h1>
+          <div className="flex gap-3">
+            <button onClick={() => setPage(page - 1)}>
+              <FaBackward />
+            </button>
+            <span className="text-primary font-bold">{page}</span>
+            <button onClick={() => setPage(page + 1)}>
+              <FaForward />
+            </button>
+          </div>
+        </div>
 
         {loading ? (
           <div className="h-64 flex justify-center items-center">
