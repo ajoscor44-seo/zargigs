@@ -44,6 +44,10 @@ const taskSchema = new Schema(
       type: Number,
       required: true,
     },
+    reason: {
+      type: String,
+      required: false,
+    },
     status: { type: String, required: false, default: "failed" },
   },
   {

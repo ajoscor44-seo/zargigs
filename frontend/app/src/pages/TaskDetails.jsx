@@ -374,198 +374,207 @@ const TaskDetails = () => {
                 using the social media account linked to {adminData?.appName} .
               </p>
 
-              <div className="mt-2">
-                <p className="font-bold text-xs">
-                  Please follow the step-by-step instruction below to do your
-                  task:
-                </p>
-                <div className="text-sm flex flex-col gap-2 mt-1 ms-2">
-                  <p>
-                    {type === "advert" ? (
-                      <p className="text-xs font-semibold">
-                        <span className="font-bold">Step 1: </span> Download the
-                        advert media using the download button above.
-                      </p>
-                    ) : (
-                      <p className="text-xs font-semibold">
-                        <span className="font-bold">Step 1: </span> Visit the
-                        task link above by clicking the{" "}
-                        <span className="font-bold">"Visit Link"</span> button
-                        or by copying and pasting the link into your browser.
-                      </p>
-                    )}
-                  </p>
-                  <p>
-                    {type === "advert" ? (
-                      <p className="text-xs font-semibold">
-                        <span className="font-bold">Step 2: </span>Copy the
-                        advert caption and post it with the advert media caption
-                        on the selected social media.
-                      </p>
-                    ) : (
-                      <p className="text-xs font-semibold">
-                        <span className="font-bold">Step 2: </span>The link will
-                        direct you to the{" "}
-                        {platform === "website" ? "site" : "social media page"}{" "}
-                        where you are to excute your task.
-                      </p>
-                    )}
-                  </p>
-                  <p>
-                    {platform === "website" && type !== "advert" ? (
-                      <p className="text-xs font-semibold">
-                        <span className="font-bold">Step 3: </span> Scroll to
-                        the bottom of the site or{" "}
-                        <span className="text-red-500 font-bold">
-                          follow the instruction being given if given any
-                        </span>{" "}
-                      </p>
-                    ) : (
-                      <p className="text-xs font-semibold">
-                        <span className="font-bold">Step 3: </span> Perform the
-                        task on this social media page and ensure you{" "}
-                        <span className="text-red-500 font-bold">
-                          DO NOT UNDO
-                        </span>{" "}
-                        any task you did as it might lead to your account being
-                        banned.
-                      </p>
-                    )}
-                  </p>
-                  <p>
-                    {type !== "advert" && platform == "website" ? (
-                      <p className="text-xs font-semibold">
-                        <span className="font-bold">Step 4: </span>Create a
-                        screenshot of the footer of page that shows that you
-                        have performed the task and upload the screenshot as a
-                        proof under Proof of Work Form below. You are also
-                        required to enter your gigsflix media account username
-                        which you used to perform the task.
-                      </p>
-                    ) : (
-                      <p className="text-xs font-semibold">
-                        <span className="font-bold">Step 4: </span>Create a
-                        screenshot of the page that shows that you have
-                        performed the task and upload the screenshot as a proof
-                        under Proof of Work Form below. You are also required to
-                        enter your social media account username which you used
-                        to perform the task.
-                      </p>
-                    )}
-                  </p>
-                </div>
-                <div className="text-orange-400 font-semibold bg-orange-100 rounded text-xs p-3 mt-2">
-                  You must{" "}
-                  <span className="font-bold text-orange-500">NOT UNDO</span>{" "}
-                  any task you perform as it may result to your{" "}
-                  {adminData?.appName} account getting banned. You will not be
-                  able to perform any task if you{" "}
-                  <span className="font-bold text-orange-500">UNDO</span> any
-                  task performed
-                </div>
-              </div>
-
-              {status == "pending" ||
-              status == "in-review" ||
-              status == "completed" ? (
-                <div className="mt-2">
-                  <p className="font-bold text-xs">
-                    {status == "pending" && "Upload"} Proof of Work:
-                  </p>
-                  <p className="methodeNote text-green-500 font-bold text-center">
-                    {imagePercentage}
-                  </p>
-                  <p className="methodeNote text-red-500 font-bold text-center">
-                    {uploadError || imageError}
-                  </p>
-                  <div className="flex mt-2 gap-2 text-gray-500">
-                    <div>
-                      {image ? (
-                        <img
-                          src={image}
-                          className="w-20 h-20 border rounded bg-gray-200"
-                        />
-                      ) : (
-                        <div
-                          className="methodNote flex flex-col gap-1 justify-center items-center bg-gray-200 py-6 px-3 rounded"
-                          onClick={selectProfilePic}
-                        >
-                          <input
-                            type="file"
-                            ref={fileInputRef}
-                            onChange={handleFileInputChange}
-                            accept="image/*"
-                            style={{ display: "none" }}
-                          />
-                          <BsCamera size={20} />
-                          <span>Upload Screenshot</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <p className="methodNote" hidden={status !== "pending"}>
-                        Please enter the username of the social media account
-                        you used to perform the task.{" "}
-                        <span className="font-bold text-orange-400">
-                          ENSURE THE USERNAME IS CORRECT
-                        </span>
-                        .
-                      </p>
-                      <p className="methodNote" hidden={status == "pending"}>
-                        This is the social media username you used to perform
-                        this task.{" "}
-                        <span className="font-bold text-red-400">
-                          NOTE: THIS USERNAME CANNOT BE EDITED
-                        </span>
-                        .
-                      </p>
-                      <h2
-                        className="font-bold mb-0 text-sm"
-                        hidden={
-                          status !== "in-review" &&
-                          status !== "completed" &&
-                          status !== "failed"
-                        }
-                      >
-                        Username:{" "}
-                        <span className="text-green-500">
-                          {taskDetails?.proof?.username}
-                        </span>
-                      </h2>
-                      <span
-                        className="text-xs font-bold text-gray-400"
-                        hidden={
-                          status !== "in-review" &&
-                          status !== "completed" &&
-                          status !== "failed"
-                        }
-                      >
-                        Submitted At:{" "}
-                        <span className="text-gray-300">
-                          {formatDate(taskDetails?.proof?.createdAt)}
-                        </span>
-                      </span>
-                      <input
-                        type="text"
-                        name="taskPerformerUsername"
-                        hidden={status !== "pending"}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Enter your social media username here"
-                        className="border w-full p-2 outline-none placeholder:text-xs mt-1"
-                      />
-                      <button
-                        onClick={uploadTaskForReview}
-                        hidden={status !== "pending"}
-                        className="border px-2 py-1 mt-1 bg-green-500 text-white rounded text-xs"
-                      >
-                        Upload Proof
-                      </button>
-                    </div>
-                  </div>
+              {status == "failed" ? (
+                <div className="text-orange-400 font-semibold bg-orange-100 rounded text-sm p-3 mt-2">
+                  Your task was disapproved because{" "}
+                  <span className="font-bold text-orange-500 capitalize">
+                    {taskDetails?.reason || "your proof was found invalid"}
+                  </span>
                 </div>
               ) : (
-                <div></div>
+                <div className="mt-2">
+                  <p className="font-bold text-xs">
+                    Please follow the step-by-step instruction below to do your
+                    task:
+                  </p>
+                  <div className="text-sm flex flex-col gap-2 mt-1 ms-2">
+                    <p>
+                      {type === "advert" ? (
+                        <p className="text-xs font-semibold">
+                          <span className="font-bold">Step 1: </span> Download
+                          the advert media using the download button above.
+                        </p>
+                      ) : (
+                        <p className="text-xs font-semibold">
+                          <span className="font-bold">Step 1: </span> Visit the
+                          task link above by clicking the{" "}
+                          <span className="font-bold">"Visit Link"</span> button
+                          or by copying and pasting the link into your browser.
+                        </p>
+                      )}
+                    </p>
+                    <p>
+                      {type === "advert" ? (
+                        <p className="text-xs font-semibold">
+                          <span className="font-bold">Step 2: </span>Copy the
+                          advert caption and post it with the advert media
+                          caption on the selected social media.
+                        </p>
+                      ) : (
+                        <p className="text-xs font-semibold">
+                          <span className="font-bold">Step 2: </span>The link
+                          will direct you to the{" "}
+                          {platform === "website"
+                            ? "site"
+                            : "social media page"}{" "}
+                          where you are to excute your task.
+                        </p>
+                      )}
+                    </p>
+                    <p>
+                      {platform === "website" && type !== "advert" ? (
+                        <p className="text-xs font-semibold">
+                          <span className="font-bold">Step 3: </span> Scroll to
+                          the bottom of the site or{" "}
+                          <span className="text-red-500 font-bold">
+                            follow the instruction being given if given any
+                          </span>{" "}
+                        </p>
+                      ) : (
+                        <p className="text-xs font-semibold">
+                          <span className="font-bold">Step 3: </span> Perform
+                          the task on this social media page and ensure you{" "}
+                          <span className="text-red-500 font-bold">
+                            DO NOT UNDO
+                          </span>{" "}
+                          any task you did as it might lead to your account
+                          being banned.
+                        </p>
+                      )}
+                    </p>
+                    <p>
+                      {type !== "advert" && platform == "website" ? (
+                        <p className="text-xs font-semibold">
+                          <span className="font-bold">Step 4: </span>Create a
+                          screenshot of the footer of page that shows that you
+                          have performed the task and upload the screenshot as a
+                          proof under Proof of Work Form below. You are also
+                          required to enter your gigsflix media account username
+                          which you used to perform the task.
+                        </p>
+                      ) : (
+                        <p className="text-xs font-semibold">
+                          <span className="font-bold">Step 4: </span>Create a
+                          screenshot of the page that shows that you have
+                          performed the task and upload the screenshot as a
+                          proof under Proof of Work Form below. You are also
+                          required to enter your social media account username
+                          which you used to perform the task.
+                        </p>
+                      )}
+                    </p>
+                  </div>
+                  <div className="text-orange-400 font-semibold bg-orange-100 rounded text-xs p-3 mt-2">
+                    You must{" "}
+                    <span className="font-bold text-orange-500">NOT UNDO</span>{" "}
+                    any task you perform as it may result to your{" "}
+                    {adminData?.appName} account getting banned. You will not be
+                    able to perform any task if you{" "}
+                    <span className="font-bold text-orange-500">UNDO</span> any
+                    task performed
+                  </div>
+                </div>
               )}
+
+              {status == "pending" ||
+                status == "in-review" ||
+                (status == "completed" && (
+                  <div className="mt-2">
+                    <p className="font-bold text-xs">
+                      {status == "pending" && "Upload"} Proof of Work:
+                    </p>
+                    <p className="methodeNote text-green-500 font-bold text-center">
+                      {imagePercentage}
+                    </p>
+                    <p className="methodeNote text-red-500 font-bold text-center">
+                      {uploadError || imageError}
+                    </p>
+                    <div className="flex mt-2 gap-2 text-gray-500">
+                      <div>
+                        {image ? (
+                          <img
+                            src={image}
+                            className="w-20 h-20 border rounded bg-gray-200"
+                          />
+                        ) : (
+                          <div
+                            className="methodNote flex flex-col gap-1 justify-center items-center bg-gray-200 py-6 px-3 rounded"
+                            onClick={selectProfilePic}
+                          >
+                            <input
+                              type="file"
+                              ref={fileInputRef}
+                              onChange={handleFileInputChange}
+                              accept="image/*"
+                              style={{ display: "none" }}
+                            />
+                            <BsCamera size={20} />
+                            <span>Upload Screenshot</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className="methodNote" hidden={status !== "pending"}>
+                          Please enter the username of the social media account
+                          you used to perform the task.{" "}
+                          <span className="font-bold text-orange-400">
+                            ENSURE THE USERNAME IS CORRECT
+                          </span>
+                          .
+                        </p>
+                        <p className="methodNote" hidden={status == "pending"}>
+                          This is the social media username you used to perform
+                          this task.{" "}
+                          <span className="font-bold text-red-400">
+                            NOTE: THIS USERNAME CANNOT BE EDITED
+                          </span>
+                          .
+                        </p>
+                        <h2
+                          className="font-bold mb-0 text-sm"
+                          hidden={
+                            status !== "in-review" &&
+                            status !== "completed" &&
+                            status !== "failed"
+                          }
+                        >
+                          Username:{" "}
+                          <span className="text-green-500">
+                            {taskDetails?.proof?.username}
+                          </span>
+                        </h2>
+                        <span
+                          className="text-xs font-bold text-gray-400"
+                          hidden={
+                            status !== "in-review" &&
+                            status !== "completed" &&
+                            status !== "failed"
+                          }
+                        >
+                          Submitted At:{" "}
+                          <span className="text-gray-300">
+                            {formatDate(taskDetails?.proof?.createdAt)}
+                          </span>
+                        </span>
+                        <input
+                          type="text"
+                          name="taskPerformerUsername"
+                          hidden={status !== "pending"}
+                          onChange={(e) => setUsername(e.target.value)}
+                          placeholder="Enter your social media username here"
+                          className="border w-full p-2 outline-none placeholder:text-xs mt-1"
+                        />
+                        <button
+                          onClick={uploadTaskForReview}
+                          hidden={status !== "pending"}
+                          className="border px-2 py-1 mt-1 bg-green-500 text-white rounded text-xs"
+                        >
+                          Upload Proof
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
             </div>
           </div>
         )}

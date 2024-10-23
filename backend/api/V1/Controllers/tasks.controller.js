@@ -1210,7 +1210,7 @@ export const getProofsOfWork = async (req, res, next) => {
 };
 
 export const sanctionTask = async (req, res, next) => {
-  const { id, sanction, parentId } = req.query;
+  const { id, sanction, parentId, reason } = req.query;
 
   try {
     const taskInReview = await InReviewTask.findOneAndDelete({ _id: parentId });
@@ -1304,14 +1304,15 @@ export const sanctionTask = async (req, res, next) => {
         earningPerTask: taskInReview?.earningPerTask,
         caption: taskInReview.caption,
         mediaUrl: taskInReview.mediaUrl,
+        reason,
       });
       await newTaskFailed.save();
+
       // Creates notitfication
       notification = {
         userId: taskInReview?.doneBy,
         title: "Task Reviewed",
-        message:
-          "Your task has been reviewed and has been DISapproved due to its invalidity, generate a new task and ask for review.",
+        message: `Your task has been reviewed and has been DISapproved because - ${reason}, generate a new task and ask for review.`,
         type: "task",
       };
 
@@ -1365,7 +1366,6 @@ export const sanctionTask = async (req, res, next) => {
       message: sanction,
     });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
@@ -1374,7 +1374,6 @@ export const sanction = async (id, sanction, parentId, userId) => {
   try {
     const taskInReview = await InReviewTask.findOneAndDelete({ _id: parentId });
     if (!taskInReview) {
-      console.log("Task is not in review");
       return false;
     }
 
@@ -1383,7 +1382,6 @@ export const sanction = async (id, sanction, parentId, userId) => {
     });
 
     if (!taskDoerDetails) {
-      console.log("No task doer details");
       return false;
     }
 
@@ -1512,16 +1510,13 @@ export const sanction = async (id, sanction, parentId, userId) => {
     );
 
     if (!proof) {
-      console.log("Proof of work not found");
       return false;
     }
 
     // Send notification to user
     await sendNotitfication(notification);
-    console.log("Task approved");
     return true;
   } catch (error) {
-    console.log(error);
     logger.error(error.message);
     return false;
   }
@@ -1564,7 +1559,6 @@ export const sanctionAllTask = async (req, res, next) => {
       message: "All tasks in review have been approved",
     });
   } catch (error) {
-    console.error(error);
     next(error);
   }
 };
@@ -1623,7 +1617,6 @@ export const processPayment = async (amount, type, userId) => {
       message: "Payment process successful",
     };
   } catch (error) {
-    console.log(error);
     return {
       status: false,
       failed: true,
