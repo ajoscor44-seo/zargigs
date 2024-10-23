@@ -3,30 +3,11 @@ import { useParams } from "react-router-dom/cjs/react-router-dom";
 import BackNav from "../components/BackNav/BackNav";
 import axios from "axios";
 import { HiOutlineSpeakerphone } from "react-icons/hi";
-import {
-  FaCommentDots,
-  FaFacebook,
-  FaInstagram,
-  FaLink,
-  FaRetweet,
-  FaShare,
-  FaSpinner,
-  FaSpotify,
-  FaTelegram,
-  FaTiktok,
-  FaTwitter,
-  FaWhatsapp,
-  FaYoutube,
-} from "react-icons/fa6";
+import { FaSpinner } from "react-icons/fa6";
 import NoData from "../components/NoData/NoData";
-import { SlUserFollowing } from "react-icons/sl";
-import { SiAudiomack } from "react-icons/si";
-import { IoLogoAppleAppstore, IoShareSocialOutline } from "react-icons/io5";
-import { BiLike } from "react-icons/bi";
 import numeral from "numeral";
 import formatDate from "../hooks/formatDate";
 import ProofOfWork from "../components/ProofOfWork/ProofOfWork";
-import playStoreImage from "../assets/images/playstore-icon.png";
 import ItemIcon from "../components/ItemIcon/ItemIcon";
 
 const OrderDetails = () => {
@@ -40,6 +21,7 @@ const OrderDetails = () => {
 
   const getTaskDetails = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(`/api/v1/tasks/${slug}/${id}`);
       setDetails(response.data[0]);
       return setLoading(false);
@@ -75,6 +57,7 @@ const OrderDetails = () => {
         usePath={true}
         pathToGo={"/order-history"}
       />
+
       {loading ? (
         <div className="min-h-96 flex justify-center items-center">
           <FaSpinner size={30} className="text-green-500" />
