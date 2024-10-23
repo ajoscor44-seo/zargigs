@@ -147,19 +147,15 @@ const CreateOrder = () => {
         <div className="p-4 border-t flex flex-col gap-3">
           <FormInput
             type={"number"}
-            fullRounded={true}
+            fullRounded
             placeholder={`No. Of ${wayToCreateEngagement.platformName} Engagements`}
             label={`Number of ${wayToCreateEngagement.platformName} Engagements You Want`}
             note={`This is the desired number of ${wayToCreateEngagement.platformName} Engagements you want us to get for you.`}
             errorMsg={"Please input a valid number"}
-            isError={false}
             name={"numberOfTasks"}
             handleChange={(e) => {
-              setTaskData({
-                ...taskData,
-                [e.target.name]: e.target.value,
-              });
-              setAmountToPay(
+              handleChange(e);
+              return setAmountToPay(
                 Number(e.target.value) *
                   Number(wayToCreateEngagement.amountToPay)
               );
@@ -169,15 +165,14 @@ const CreateOrder = () => {
           "allcomments" ? (
             <FormInput
               type={"text"}
-              fullRounded={true}
-              useTextArea={true}
+              fullRounded
+              useTextArea
               placeholder={`Custom comment you want to see on your post`}
               label={"Custom comment you want people to say on your post"}
               note={
                 "This is the custom comment you want people to say on your post."
               }
               errorMsg={"Please input a meaningful comment"}
-              isError={false}
               name={"customComment"}
               handleChange={handleChange}
             />
@@ -187,7 +182,7 @@ const CreateOrder = () => {
           <FormInput
             label={"Select Gender"}
             placeholder={"Select Gender"}
-            useSelect={true}
+            useSelect
             selections={[
               "Select Gender",
               "All Genders",
@@ -203,12 +198,11 @@ const CreateOrder = () => {
             errorMsg={"Please select a gender category"}
             handleChange={handleChange}
             name={"gender"}
-            isError={false}
           />
           <FormInput
             label={"Select Location"}
             placeholder={"Select Location"}
-            useSelect={true}
+            useSelect
             selections={["Select Location", "All Nigeria", ...statesName]}
             note={
               "You can target and select a particular location where your task or advert will be mostly shown. Select 'All Nigeria' if you want to target every location in Nigeria"
@@ -216,12 +210,11 @@ const CreateOrder = () => {
             errorMsg={"Please select a location"}
             name={"location"}
             handleChange={handleChange}
-            isError={false}
           />
           <FormInput
             label={"Select Religion"}
             placeholder={"Select Religion"}
-            useSelect={true}
+            useSelect
             selections={["Select Religion", "All Religions", ...religions]}
             note={
               "You can target people of a particular religion or belief. Your advert and task will be shown to the particular religion you select. Select 'All Religion' if you want to target all religion."
@@ -229,14 +222,13 @@ const CreateOrder = () => {
             errorMsg={"Please select a religion"}
             name={"religion"}
             handleChange={handleChange}
-            isError={false}
           />
           <FormInput
             label={
               "Your Page/Profile Link (e.g Instagram, Twitter, Website or Tiktok Page Link)"
             }
             placeholder={"Enter Your Link"}
-            fullRounded={true}
+            fullRounded
             icon={"link"}
             note={
               "Enter the link to your page or profile you want people to engage. Ensure this link points directly to your page or profile and NOT a post."
@@ -244,7 +236,17 @@ const CreateOrder = () => {
             errorMsg={"Please input the link to your page"}
             name={"link"}
             handleChange={handleChange}
-            isError={false}
+          />
+          <FormInput
+            label={"Describe The Task (Optional)"}
+            placeholder={"Enter A Description"}
+            note={
+              "Describe the task you want people to perform on your page or profile. Ensure this description describes the type of task you selected."
+            }
+            useTextArea
+            errorMsg={"Please input the link to your page"}
+            name={"description"}
+            handleChange={handleChange}
           />
         </div>
       </div>
