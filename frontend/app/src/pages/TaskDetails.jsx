@@ -463,6 +463,10 @@ const TaskDetails = () => {
                         </p>
                       )}
                     </p>
+                    <p>
+                      {taskDetails?.description &&
+                        "Poster said: " + taskDetails?.description}
+                    </p>
                   </div>
                   <div className="text-orange-400 font-semibold bg-orange-100 rounded text-xs p-3 mt-2">
                     You must{" "}
