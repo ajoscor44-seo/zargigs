@@ -1,4 +1,3 @@
-import axios from "axios";
 import Admin from "../Models/admin.model.js";
 import User from "../Models/user.model.js";
 import { ErrorHandler } from "../utils/error.js";
@@ -49,9 +48,8 @@ export const updateAdminData = async (req, res, next) => {
       withdrawalCharges,
       businessMail,
       minimumFollowers,
+      fundingAccount: { accountNumber, accountName, bankName },
     } = req.body;
-
-    // const adminMonicreditData = axios.post()
 
     // Checks for valid user
     const validUser = await User.findOne({ email: req.user.email });
@@ -60,7 +58,7 @@ export const updateAdminData = async (req, res, next) => {
       return res.status(404).json(error);
     }
 
-    const adminDataToBeUpdated = {};
+    const adminDataToBeUpdated = { fundingAccount: {} };
     if (appName) adminDataToBeUpdated.appName = appName;
     if (appLogo) adminDataToBeUpdated.appLogo = appLogo;
     if (membershipFee) adminDataToBeUpdated.membershipFee = membershipFee;
@@ -69,6 +67,11 @@ export const updateAdminData = async (req, res, next) => {
     if (businessMail) adminDataToBeUpdated.businessMail = businessMail;
     if (minimumFollowers)
       adminDataToBeUpdated.minimumFollowers = minimumFollowers;
+    if (accountNumber)
+      adminDataToBeUpdated.fundingAccount.accountNumber = accountNumber;
+    if (accountName)
+      adminDataToBeUpdated.fundingAccount.accountName = accountName;
+    if (bankName) adminDataToBeUpdated.fundingAccount.bankName = bankName;
 
     const updatedAdminData = await Admin.findOneAndUpdate(
       {},

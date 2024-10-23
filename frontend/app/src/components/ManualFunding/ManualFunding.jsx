@@ -1,22 +1,31 @@
 import React from "react";
 import { BiInfoCircle } from "react-icons/bi";
 import Chat from "../Chat/Chat";
+import { useAuth } from "../../context/AuthContext";
 
 const ManualFunding = () => {
+  const { adminData } = useAuth();
+
   return (
     <div>
       <div className="p-2 flex flex-col gap-2 py-3">
         <div className="flex flex-wrap gap-2">
           <h3 className="text-md font-semibold text-gray-400">Bank Name:</h3>
-          <p className="text-md font-bold">Moniepoint Microfinance Bank</p>
+          <p className="text-md font-bold">
+            {adminData?.fundingAccount?.bankName}
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <h3 className="text-md font-semibold text-gray-400">Acct Name:</h3>
-          <p className="text-md font-bold">Monnify-BuySub</p>
+          <p className="text-md font-bold">
+            {adminData?.fundingAccount?.accountName}
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <h3 className="text-md font-semibold text-gray-400">Acct Number:</h3>
-          <p className="text-md font-bold">6493072868</p>
+          <p className="text-md font-bold">
+            {adminData?.fundingAccount?.accountNumber}
+          </p>
         </div>
       </div>
       <h2 className="flex font-bold px-2 py-4 text-sm gap-2 text-orange-500 bg-slate-50">

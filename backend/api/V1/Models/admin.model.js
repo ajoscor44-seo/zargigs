@@ -36,6 +36,15 @@ const adminSchema = new mongoose.Schema(
       required: true,
       default: "gigsflixtechnologies@gmail.com",
     },
+    fundingAccount: {
+      type: Object({
+        accountNumber: { type: String, required: true },
+        accountName: { type: String, required: true },
+        bankName: { type: String, required: true },
+      }),
+      required: true,
+      default: {},
+    },
   },
   { timestamps: true }
 );
