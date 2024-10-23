@@ -10,6 +10,7 @@ const FundWallet = () => {
   const [activeTab, setActiveTab] = useState("automatic");
   const [fundings, setFundings] = useState([]);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const { currentUser } = useAuth();
@@ -24,6 +25,7 @@ const FundWallet = () => {
       );
 
       setFundings(response.data.data);
+      setTotalPages(response.data.meta.pages);
       setError(null);
       return setLoading(false);
     } catch (error) {
@@ -72,6 +74,7 @@ const FundWallet = () => {
               loading={loading}
               fundings={fundings}
               page={page}
+              totalPages={totalPages}
               setPage={setPage}
             />
           ) : (

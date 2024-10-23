@@ -6,7 +6,14 @@ import numeral from "numeral";
 import formatDate from "../../hooks/formatDate";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
 
-const AutoFunding = ({ walletDetails, loading, fundings, page, setPage }) => {
+const AutoFunding = ({
+  walletDetails,
+  loading,
+  fundings,
+  totalPages,
+  page,
+  setPage,
+}) => {
   const history = useHistory();
 
   return (
@@ -41,11 +48,19 @@ const AutoFunding = ({ walletDetails, loading, fundings, page, setPage }) => {
         <div className="flex justify-between items-center px-3">
           <h1 className="font-semibold text-xl ms-1">Funding History</h1>
           <div className="flex gap-3">
-            <button onClick={() => setPage(page - 1)}>
+            <button
+              style={{ opacity: page < 2 && 0.5 }}
+              disabled={page < 2}
+              onClick={() => setPage(page - 1)}
+            >
               <FaBackward />
             </button>
             <span className="text-primary font-bold">{page}</span>
-            <button onClick={() => setPage(page + 1)}>
+            <button
+              style={{ opacity: page == totalPages && 0.5 }}
+              disabled={page == totalPages}
+              onClick={() => setPage(page + 1)}
+            >
               <FaForward />
             </button>
           </div>
