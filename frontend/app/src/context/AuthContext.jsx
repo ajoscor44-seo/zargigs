@@ -163,7 +163,7 @@ const AuthProvider = ({ children }) => {
       const data = res.data;
       return data;
     } catch (error) {
-      return console.log(error);
+      return console.error(error);
     }
   };
 

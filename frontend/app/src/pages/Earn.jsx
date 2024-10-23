@@ -26,7 +26,6 @@ const Earn = () => {
       setStatusTotal(response.data);
       return setLoading(false);
     } catch (error) {
-      console.log();
       return setError("Oops, an error occurred");
     }
   };

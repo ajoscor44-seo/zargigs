@@ -22,7 +22,6 @@ export const urlBase64ToUint8Array = (base64String) => {
 };
 
 export async function subscribeUser(registration) {
-  console.log("VAPID Public Key:", import.meta.env.VITE_VAPID_PUB_KEY);
   try {
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
@@ -30,7 +29,6 @@ export async function subscribeUser(registration) {
         import.meta.env.VITE_VAPID_PUB_KEY
       ),
     });
-    console.log("Subscription: ", subscription);
 
     await sendSubscriptionToServer(subscription);
   } catch (error) {
@@ -88,11 +86,5 @@ const PushNotifications = () => {
     </div>
   );
 };
-
-// const vapidkeys = {
-//   publicKey:
-//     "BKTHQjnIlHvb2sS4gh1fc6gKTXayAgiAVflrxVNyeB_NuCYxU-DBDLarLuQfQlMGS-vmXDshpcWs4fKObj5_YjY",
-//   privateKey: "U-rukgPSzgNfeMkyT7C9S6qeev8HYgTWZ3aQYXnTDzk",
-// };
 
 export default PushNotifications;

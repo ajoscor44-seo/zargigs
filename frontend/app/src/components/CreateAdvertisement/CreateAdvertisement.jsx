@@ -75,7 +75,7 @@ const CreateAdvertisement = ({ setCreatingAdvert }) => {
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
           setImageError(null);
-          console.log(downloadUrl);
+          
           return setAdvertData({
             ...advertData,
             banner: downloadUrl,

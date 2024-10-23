@@ -208,7 +208,7 @@ const SignUp = ({ setSignedIn }) => {
         return;
       }
     } catch (error) {
-      return console.log(error);
+      return console.error(error);
     }
   };
 
