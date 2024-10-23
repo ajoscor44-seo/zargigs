@@ -285,6 +285,7 @@ export const postEngagementTask = async (req, res, next) => {
     numberOfTasks,
     taskPlatform,
     customComment,
+    description,
   } = req.body;
 
   try {
@@ -325,6 +326,7 @@ export const postEngagementTask = async (req, res, next) => {
       status: "pending",
       title,
       customComment,
+      description,
     });
 
     await newEngagementTask.save();
@@ -349,7 +351,6 @@ export const postEngagementTask = async (req, res, next) => {
       failed: false,
     });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };

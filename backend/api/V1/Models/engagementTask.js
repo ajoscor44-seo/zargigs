@@ -62,6 +62,9 @@ const taskSchema = new Schema(
     customComment: {
       type: String,
     },
+    description: {
+      type: String,
+    },
     status: { type: String, required: false, default: "pending" },
   },
   {
