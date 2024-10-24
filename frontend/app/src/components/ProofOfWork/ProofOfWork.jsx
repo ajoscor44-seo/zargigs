@@ -22,7 +22,7 @@ const ProofOfWork = ({ proof, setChange, setError }) => {
   };
 
   const sanctionTask = async (sanction) => {
-    if (!sanction) {
+    if (!sanction && !reason) {
       return setReasonModalState(true);
     }
 
@@ -40,6 +40,7 @@ const ProofOfWork = ({ proof, setChange, setError }) => {
   };
 
   const checkReason = (text, setModalError) => {
+    console.log("Checking Reason");
     setReason(text);
     if (!text) {
       return setModalError(
@@ -51,6 +52,7 @@ const ProofOfWork = ({ proof, setChange, setError }) => {
     }
     setError("");
     setReasonModalState(false);
+    console.log("Checked Reason");
     return sanctionTask(0);
   };
 
