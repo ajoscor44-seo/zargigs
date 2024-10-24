@@ -463,10 +463,10 @@ const TaskDetails = () => {
                         </p>
                       )}
                     </p>
-                    {/* <p>
+                    <p>
                       {taskDetails?.description &&
                         "Poster said: " + taskDetails?.description}
-                    </p> */}
+                    </p>
                   </div>
                   <div className="text-orange-400 font-semibold bg-orange-100 rounded text-xs p-3 mt-2">
                     You must{" "}
@@ -480,105 +480,105 @@ const TaskDetails = () => {
                 </div>
               )}
 
-              {status == "pending" ||
+              {(status == "pending" ||
                 status == "in-review" ||
-                (status == "completed" && (
-                  <div className="mt-2">
-                    <p className="font-bold text-xs">
-                      {status == "pending" && "Upload"} Proof of Work:
-                    </p>
-                    <p className="methodeNote text-green-500 font-bold text-center">
-                      {imagePercentage}
-                    </p>
-                    <p className="methodeNote text-red-500 font-bold text-center">
-                      {uploadError || imageError}
-                    </p>
-                    <div className="flex mt-2 gap-2 text-gray-500">
-                      <div>
-                        {image ? (
-                          <img
-                            src={image}
-                            className="w-20 h-20 border rounded bg-gray-200"
-                          />
-                        ) : (
-                          <div
-                            className="methodNote flex flex-col gap-1 justify-center items-center bg-gray-200 py-6 px-3 rounded"
-                            onClick={selectProfilePic}
-                          >
-                            <input
-                              type="file"
-                              ref={fileInputRef}
-                              onChange={handleFileInputChange}
-                              accept="image/*"
-                              style={{ display: "none" }}
-                            />
-                            <BsCamera size={20} />
-                            <span>Upload Screenshot</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <p className="methodNote" hidden={status !== "pending"}>
-                          Please enter the username of the social media account
-                          you used to perform the task.{" "}
-                          <span className="font-bold text-orange-400">
-                            ENSURE THE USERNAME IS CORRECT
-                          </span>
-                          .
-                        </p>
-                        <p className="methodNote" hidden={status == "pending"}>
-                          This is the social media username you used to perform
-                          this task.{" "}
-                          <span className="font-bold text-red-400">
-                            NOTE: THIS USERNAME CANNOT BE EDITED
-                          </span>
-                          .
-                        </p>
-                        <h2
-                          className="font-bold mb-0 text-sm"
-                          hidden={
-                            status !== "in-review" &&
-                            status !== "completed" &&
-                            status !== "failed"
-                          }
-                        >
-                          Username:{" "}
-                          <span className="text-green-500">
-                            {taskDetails?.proof?.username}
-                          </span>
-                        </h2>
-                        <span
-                          className="text-xs font-bold text-gray-400"
-                          hidden={
-                            status !== "in-review" &&
-                            status !== "completed" &&
-                            status !== "failed"
-                          }
-                        >
-                          Submitted At:{" "}
-                          <span className="text-gray-300">
-                            {formatDate(taskDetails?.proof?.createdAt)}
-                          </span>
-                        </span>
-                        <input
-                          type="text"
-                          name="taskPerformerUsername"
-                          hidden={status !== "pending"}
-                          onChange={(e) => setUsername(e.target.value)}
-                          placeholder="Enter your social media username here"
-                          className="border w-full p-2 outline-none placeholder:text-xs mt-1"
+                status == "completed") && (
+                <div className="mt-2">
+                  <p className="font-bold text-xs">
+                    {status == "pending" && "Upload"} Proof of Work:
+                  </p>
+                  <p className="methodeNote text-green-500 font-bold text-center">
+                    {imagePercentage}
+                  </p>
+                  <p className="methodeNote text-red-500 font-bold text-center">
+                    {uploadError || imageError}
+                  </p>
+                  <div className="flex mt-2 gap-2 text-gray-500">
+                    <div>
+                      {image ? (
+                        <img
+                          src={image}
+                          className="w-20 h-20 border rounded bg-gray-200"
                         />
-                        <button
-                          onClick={uploadTaskForReview}
-                          hidden={status !== "pending"}
-                          className="border px-2 py-1 mt-1 bg-green-500 text-white rounded text-xs"
+                      ) : (
+                        <div
+                          className="methodNote flex flex-col gap-1 justify-center items-center bg-gray-200 py-6 px-3 rounded"
+                          onClick={selectProfilePic}
                         >
-                          Upload Proof
-                        </button>
-                      </div>
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileInputChange}
+                            accept="image/*"
+                            style={{ display: "none" }}
+                          />
+                          <BsCamera size={20} />
+                          <span>Upload Screenshot</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <p className="methodNote" hidden={status !== "pending"}>
+                        Please enter the username of the social media account
+                        you used to perform the task.{" "}
+                        <span className="font-bold text-orange-400">
+                          ENSURE THE USERNAME IS CORRECT
+                        </span>
+                        .
+                      </p>
+                      <p className="methodNote" hidden={status == "pending"}>
+                        This is the social media username you used to perform
+                        this task.{" "}
+                        <span className="font-bold text-red-400">
+                          NOTE: THIS USERNAME CANNOT BE EDITED
+                        </span>
+                        .
+                      </p>
+                      <h2
+                        className="font-bold mb-0 text-sm"
+                        hidden={
+                          status !== "in-review" &&
+                          status !== "completed" &&
+                          status !== "failed"
+                        }
+                      >
+                        Username:{" "}
+                        <span className="text-green-500">
+                          {taskDetails?.proof?.username}
+                        </span>
+                      </h2>
+                      <span
+                        className="text-xs font-bold text-gray-400"
+                        hidden={
+                          status !== "in-review" &&
+                          status !== "completed" &&
+                          status !== "failed"
+                        }
+                      >
+                        Submitted At:{" "}
+                        <span className="text-gray-300">
+                          {formatDate(taskDetails?.proof?.createdAt)}
+                        </span>
+                      </span>
+                      <input
+                        type="text"
+                        name="taskPerformerUsername"
+                        hidden={status !== "pending"}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Enter your social media username here"
+                        className="border w-full p-2 outline-none placeholder:text-xs mt-1"
+                      />
+                      <button
+                        onClick={uploadTaskForReview}
+                        hidden={status !== "pending"}
+                        className="border px-2 py-1 mt-1 bg-green-500 text-white rounded text-xs"
+                      >
+                        Upload Proof
+                      </button>
                     </div>
                   </div>
-                ))}
+                </div>
+              )}
             </div>
           </div>
         )}
