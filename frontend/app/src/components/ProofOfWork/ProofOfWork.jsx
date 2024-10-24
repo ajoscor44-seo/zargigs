@@ -42,6 +42,7 @@ const ProofOfWork = ({ proof, setChange, setError }) => {
   };
 
   const checkReason = (text, setModalError) => {
+    console.log("Checking Reason");
     setReason(text);
     if (!text) {
       return setModalError(
