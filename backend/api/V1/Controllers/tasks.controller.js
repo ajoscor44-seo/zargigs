@@ -1205,7 +1205,6 @@ export const getProofsOfWork = async (req, res, next) => {
 
     return res.status(200).json(proofObject);
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
@@ -1281,17 +1280,17 @@ export const sanctionTask = async (req, res, next) => {
         taskType: taskInReview?.taskType,
         _id: taskInReview?.parentId,
       };
-      taskInReview?.taskType == "advert"
-        ? await AdvertTask.findOneAndUpdate(taskQuery, {
+      await (taskInReview?.taskType == "advert"
+        ? AdvertTask.findOneAndUpdate(taskQuery, {
             $inc: {
               completedTasks: 1,
             },
           })
-        : await EngagementTask.findOneAndUpdate(taskQuery, {
+        : EngagementTask.findOneAndUpdate(taskQuery, {
             $inc: {
               completedTasks: 1,
             },
-          });
+          }));
     } else {
       // Creates a failed task if task is disapproved
       const newTaskFailed = new FailedTask({
@@ -1331,17 +1330,25 @@ export const sanctionTask = async (req, res, next) => {
         taskType: taskInReview?.taskType,
         _id: taskInReview?.parentId,
       };
-      taskInReview?.taskType == "advert"
-        ? await AdvertTask.findOneAndUpdate(taskQuery, {
-            $inc: {
-              allocatedTasks: -1,
+      await (taskInReview?.taskType == "advert"
+        ? AdvertTask.findOneAndUpdate(
+            taskQuery,
+            {
+              $inc: {
+                allocatedTasks: -1,
+              },
             },
-          })
-        : await EngagementTask.findOneAndUpdate(taskQuery, {
-            $inc: {
-              allocatedTasks: -1,
+            { new: true }
+          )
+        : EngagementTask.findOneAndUpdate(
+            taskQuery,
+            {
+              $inc: {
+                allocatedTasks: -1,
+              },
             },
-          });
+            { new: true }
+          ));
     }
 
     // Update proof to based on sanction
