@@ -41,7 +41,7 @@ const ProofOfWork = ({ proof, setChange, setError }) => {
     return setChange(Date.now());
   };
 
-  const checkReason = (text, setModalError) => {
+  const checkReason = async (text, setModalError) => {
     console.log("Checking Reason");
     setReason(text);
     if (!text) {
@@ -54,7 +54,7 @@ const ProofOfWork = ({ proof, setChange, setError }) => {
     }
     setError("");
     setReasonModalState(false);
-    sanctionTask(0);
+    await sanctionTask(0);
     return setReason("");
   };
 

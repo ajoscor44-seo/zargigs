@@ -66,7 +66,7 @@ const TextAreaModal = ({
           </button>
           <button
             disabled={isAdding}
-            onClick={() => postText(text, setError)}
+            onClick={async () => await postText(text, setError)}
             className="px-3 py-1 bg-green-500 text-white rounded"
           >
             {isAdding ? <FaSpinner size="15" variant="white" /> : btnText}
