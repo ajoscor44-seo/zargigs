@@ -22,8 +22,10 @@ const ProofOfWork = ({ proof, setChange, setError }) => {
   };
 
   const sanctionTask = async (sanction) => {
-    if (!sanction) {
-      return setReasonModalState(true);
+    if (!reason) {
+      if (!sanction) {
+        return setReasonModalState(true);
+      }
     }
 
     const response = await axios.put(
@@ -51,7 +53,8 @@ const ProofOfWork = ({ proof, setChange, setError }) => {
     }
     setError("");
     setReasonModalState(false);
-    return sanctionTask(0);
+    sanctionTask(0);
+    return setReason("");
   };
 
   return (
