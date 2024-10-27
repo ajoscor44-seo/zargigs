@@ -44,6 +44,11 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       required: true,
     },
+    isNINVerified: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     isMember: {
       type: Boolean,
       required: true,

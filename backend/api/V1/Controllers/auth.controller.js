@@ -61,6 +61,7 @@ export const signup = async (req, res, next) => {
       isEmailVerified: false,
       isMember: false,
       isBanned: false,
+      isNINVerified: false,
     });
     await newUser.save();
 
