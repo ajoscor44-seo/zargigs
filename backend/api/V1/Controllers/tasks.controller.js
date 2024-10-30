@@ -699,6 +699,7 @@ export const cancelGeneratedTask = async (req, res, next) => {
       caption,
       mediaUrl,
     } = userPendingTask.toObject();
+
     const newCancelledTask = new CancelledTask({
       title,
       createdBy,
@@ -712,7 +713,6 @@ export const cancelGeneratedTask = async (req, res, next) => {
       mediaUrl,
     });
 
-    // Does the necessary addition and removal.
     await PendingTask.findOneAndDelete({
       allocationId: taskAllocatedToUser._id,
     });
@@ -720,26 +720,35 @@ export const cancelGeneratedTask = async (req, res, next) => {
     await newCancelledTask.save();
 
     const taskQuery = { taskPlatform, taskType, _id: parentId };
-    taskType == "advert"
-      ? await AdvertTask.findOneAndUpdate(taskQuery, {
-          $inc: {
-            allocatedTasks: -1,
+
+    await (taskType == "advert"
+      ? AdvertTask.findOneAndUpdate(
+          taskQuery,
+          {
+            $inc: {
+              allocatedTasks: -1,
+            },
           },
-        })
-      : await EngagementTask.findOneAndUpdate(taskQuery, {
-          $inc: {
-            allocatedTasks: -1,
+          { new: true }
+        )
+      : EngagementTask.findOneAndUpdate(
+          taskQuery,
+          {
+            $inc: {
+              allocatedTasks: -1,
+            },
           },
-        });
+          { new: true }
+        ));
+
     const response = {
       statusCode: 200,
       message: "Task Cancelled Successfully",
       failed: false,
     };
-    res.status(200).json(response);
-    next();
+
+    return res.status(200).json(response);
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
@@ -832,10 +841,8 @@ export const getUserTasksHistory = async (req, res, next) => {
       };
     });
 
-    // Creates the response
     return res.status(200).json(tasks);
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
@@ -849,8 +856,8 @@ export const getTasks = async (req, res, next) => {
   } = req.query;
 
   try {
-    // Validations for user request
     const validUser = await User.findOne({ email: req.user.email });
+
     if (!validUser) {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);
