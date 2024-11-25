@@ -13,15 +13,17 @@ export const getUserDetails = async (req, res, next) => {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);
     }
-  
+
     // Destructures user object
     const { _id, __v, iat, createdAt, updatedAt, role, ...rest } = req.user;
-  
-    const validUserDetails = await UserDetails.findOne({ userId: validUser._id });
+
+    const validUserDetails = await UserDetails.findOne({
+      userId: validUser._id,
+    });
     if (!validUserDetails) {
       return res.status(200).json({ ...rest });
     }
-  
+
     let referrals = [];
     if (validUser.referrals.length) {
       referrals = await Promise.all(
@@ -38,7 +40,7 @@ export const getUserDetails = async (req, res, next) => {
               image: "",
             };
           }
-  
+
           const {
             username,
             email,
@@ -50,7 +52,7 @@ export const getUserDetails = async (req, res, next) => {
             lastname,
             ...rest
           } = user.toObject();
-  
+
           return {
             username,
             firstname,
@@ -63,7 +65,7 @@ export const getUserDetails = async (req, res, next) => {
         })
       );
     }
-  
+
     // Destructures user details object
     const {
       userId,
@@ -74,11 +76,11 @@ export const getUserDetails = async (req, res, next) => {
       ...details
     } = validUserDetails._doc;
     const uDetails = { ...details, referrals };
-  
+
     return res.json({ ...rest, ...uDetails, id: _id });
-  } catch(error) {
-    console.log(error)
-    next(error)
+  } catch (error) {
+    console.log(error);
+    next(error);
   }
 };
 
@@ -118,41 +120,6 @@ export const addUserDetails = async (req, res, next) => {
       return res.status(400).json(error);
     }
 
-    // Gets base url and private key
-    const baseUrl =
-      process.env.NODE_ENV !== "production"
-        ? process.env.DEMO_MONICREDIT_API
-        : process.env.LIVE_MONICREDIT_API;
-    const priKey =
-      process.env.NODE_ENV !== "production"
-        ? process.env.DEMO_PRI_KEY
-        : process.env.PROD_PRI_KEY;
-
-    // Creates user data
-    const userData = {
-      private_key: priKey,
-      first_name: req.user.firstname,
-      last_name: req.user.lastname,
-      phone: "0" + req.user.phone,
-      email: req.user.email,
-    };
-
-    // Creates Virtual Account For User
-    const accData = await useExternalApi(
-      `${baseUrl}/payment/virtual-account/create`,
-      "POST",
-      userData,
-      null
-    );
-    console.log("Account Generated: ", accData);
-
-    if (!accData.status) {
-      return res
-        .status(400)
-        .json({ message: `Creation failed: ${accData.message}` });
-    }
-    const accDetails = accData.data;
-
     // Creates user details for user
     const newUserDetails = new UserDetails({
       userId: validUser._id,
@@ -162,19 +129,6 @@ export const addUserDetails = async (req, res, next) => {
       dateOfBirth,
       bankDetails,
       userEarnings,
-      walletDetails: {
-        customerId: accDetails.customer_id,
-        walletId: accDetails.wallet_id,
-        customerEmail: accDetails.customer_email,
-        bankName: accDetails.bank_name,
-        accountName: accDetails.account_name,
-        accountNumber: accDetails.account_number,
-        balance: accDetails.balance,
-        credit: accDetails.credit,
-        debit: accDetails.debit,
-        reference: accDetails.reference,
-        virtualAccounts: accDetails.virtual_accounts,
-      },
     });
     if (image) {
       await User.findOneAndUpdate({ email: req.user.email }, { image });
@@ -196,7 +150,92 @@ export const addUserDetails = async (req, res, next) => {
       status: 200,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
+  }
+};
+
+export const generateUserWallet = async (req, res, next) => {
+  try {
+    const nin = req.query?.nin;
+
+    if (!nin) {
+      return res.status(400).json({ message: "NIN is required" });
+    }
+
+    // Gets base url and private key
+    const baseUrl =
+      process.env.NODE_ENV !== "production"
+        ? process.env.DEMO_MONICREDIT_API
+        : process.env.LIVE_MONICREDIT_API;
+    const priKey =
+      process.env.NODE_ENV !== "production"
+        ? process.env.DEMO_PRI_KEY
+        : process.env.PROD_PRI_KEY;
+
+    // Creates user data
+    const userData = {
+      private_key: priKey,
+      first_name: req.user.firstname,
+      last_name: req.user.lastname,
+      phone: "0" + req.user.phone,
+      email: req.user.email,
+      nin: nin,
+    };
+    let header = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    };
+
+    // Creates Virtual Account For User
+    const accData = await useExternalApi(
+      `${baseUrl}/payment/virtual-account/create`,
+      "POST",
+      userData,
+      null,
+      header
+    );
+
+    if (!accData.status) {
+      return res
+        .status(400)
+        .json({ message: `Wallet generation failed: ${accData.message}` });
+    }
+    const accDetails = accData.data;
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+    user.isNINVerified = true;
+    await user.save();
+
+    const userDetails = await UserDetails.findOne({ userId: req.user._id });
+
+    if (!userDetails) {
+      return res.status(400).json({ message: "User details not found" });
+    }
+
+    userDetails.walletDetails = {
+      ...userDetails.walletDetails,
+      customerId: accDetails.customer_id,
+      walletId: accDetails.wallet_id,
+      customerEmail: accDetails.customer_email,
+      bankName: accDetails.bank_name,
+      accountName: accDetails.account_name,
+      accountNumber: accDetails.account_number,
+      balance: accDetails.balance,
+      credit: accDetails.credit,
+      debit: accDetails.debit,
+      reference: accDetails.reference,
+      virtualAccounts: accDetails.virtual_accounts,
+    };
+    userDetails.isNINVerified = true;
+    userDetails.nin = nin;
+    await userDetails.save();
+
+    return res.status(200).json({ message: "Wallet created successfully" });
+  } catch (error) {
     next(error);
   }
 };

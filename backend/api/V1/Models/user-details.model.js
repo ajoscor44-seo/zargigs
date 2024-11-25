@@ -34,6 +34,10 @@ const userDetailsSchema = new mongoose.Schema(
       type: Object,
       required: false,
     },
+    nin: {
+      type: String,
+      required: false,
+    },
   },
   { timestamps: true }
 );
