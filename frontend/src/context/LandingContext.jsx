@@ -8,7 +8,7 @@ export const useAuth = () => {
 };
 
 const defaultAdminData = {
-  appName: "Gigsflix",
+  appName: "DocsZar",
   membershipFee: 1000,
   withdrawalCharges: 50,
   minWithdrawal: 1000,

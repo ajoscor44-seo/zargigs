@@ -124,14 +124,14 @@ serve(async (req) => {
         .eq("id", userId)
         .maybeSingle();
 
-      let firstName = String(body.firstname || userProfile?.firstname || "Zargigs").trim();
+      let firstName = String(body.firstname || userProfile?.firstname || "DocsZar").trim();
       let lastName = String(body.lastname || userProfile?.lastname || "Earner").trim();
-      if (!firstName || firstName.length < 2) firstName = "Zargigs";
+      if (!firstName || firstName.length < 2) firstName = "DocsZar";
       if (!lastName || lastName.length < 2) lastName = "Earner";
 
       let email = String(body.email || userProfile?.email || "").trim();
       if (!email || !email.includes("@")) {
-        email = `user_${userId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10)}@zargigs.com`;
+        email = `user_${userId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10)}@docszar.com`;
       }
 
       let rawPhone = String(body.phone || userProfile?.phone || "").replace(/[^0-9]/g, "");

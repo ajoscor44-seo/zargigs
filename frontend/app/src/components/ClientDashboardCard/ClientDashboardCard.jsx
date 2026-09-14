@@ -66,7 +66,7 @@ const ClientDashboardCard = ({ firstname, lastname, userBalance }) => {
               Network
             </span>
             <span className="text-xs font-black tracking-widest text-emerald-400 uppercase">
-              ZARGIGS
+              DOCSZAR
             </span>
           </div>
         </div>

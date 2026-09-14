@@ -32,9 +32,9 @@ const Advertisements = () => {
       const advertisementsData = [
         {
           default: true,
-          description: "Place your advert on Zargigs today!",
+          description: "Place your advert on DocsZar today!",
           link: "/advertisements",
-          name: "Zargigs advert",
+          name: "DocsZar advert",
           banner: banner,
         },
         ...response.data.data,

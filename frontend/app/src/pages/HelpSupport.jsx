@@ -239,7 +239,7 @@ const HelpSupport = () => {
                 </h4>
               </div>
               <p className="text-[11px] text-rose-800 leading-relaxed">
-                Please disregard any unauthorized Telegram or WhatsApp deposit groups. {adminData?.appName || "Zargigs"} will never ask for your password or ask you to pay into personal bank accounts.
+                Please disregard any unauthorized Telegram or WhatsApp deposit groups. {adminData?.appName || "DocsZar"} will never ask for your password or ask you to pay into personal bank accounts.
               </p>
             </div>
           </div>

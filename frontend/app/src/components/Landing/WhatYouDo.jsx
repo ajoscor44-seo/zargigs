@@ -83,7 +83,7 @@ const WhatYouDo = () => {
             <div className="relative mx-auto max-w-md lg:max-w-none">
               <img
                 src={man_member}
-                alt="Earn with Zargigs"
+                alt="Earn with DocsZar"
                 className="w-full rounded-2xl shadow-sm object-cover ring-1 ring-slate-900/5 aspect-4/5"
               />
 

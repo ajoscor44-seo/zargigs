@@ -55,7 +55,7 @@ const ClientNavbar = () => {
               className="w-9 h-9 rounded-xl object-contain group-hover:scale-105 transition-transform shadow-xs"
             />
             <span className="text-xl font-black tracking-tight text-slate-800 uppercase font-primary">
-              {adminData?.appName || "Zargigs"}
+              {adminData?.appName || "DocsZar"}
             </span>
           </Link>
         </div>

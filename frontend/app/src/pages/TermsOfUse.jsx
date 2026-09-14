@@ -6,7 +6,7 @@ const TermsOfUse = () => {
     {
       title: "Introduction",
       description:
-        "Welcome to Zargigs! By accessing or using our services, you agree to comply with and be bound by these Terms and Services. Please read them carefully.",
+        "Welcome to DocsZar! By accessing or using our services, you agree to comply with and be bound by these Terms and Services. Please read them carefully.",
     },
     {
       title: "Acceptance of Terms",
@@ -25,7 +25,7 @@ const TermsOfUse = () => {
     {
       title: "Intellectual Property",
       description:
-        "All content on Zargigs, including text, graphics, logos, and software, is the property of Zargigs or its licensors and is protected by applicable laws.",
+        "All content on DocsZar, including text, graphics, logos, and software, is the property of DocsZar or its licensors and is protected by applicable laws.",
     },
     {
       title: "Payment and Fees",
@@ -44,15 +44,15 @@ const TermsOfUse = () => {
     {
       title: "Limitation of Liability",
       description:
-        "Zargigs is not liable for any indirect, incidental, or consequential damages arising out of your use of our services.",
+        "DocsZar is not liable for any indirect, incidental, or consequential damages arising out of your use of our services.",
     },
     {
       title: "Contact Us",
       description:
         "If you have any questions about these terms, please contact us at",
       useLink: true,
-      href: "mailto:zargigstechnologies@gmail.com",
-      linkText: "zargigstechnologies@gmail.com",
+      href: "mailto:contactdocszar@gmail.com",
+      linkText: "contactdocszar@gmail.com",
     },
   ];
 

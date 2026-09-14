@@ -69,7 +69,7 @@ const Transfer = () => {
           Transfer Funds
         </h1>
         <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
-          Send funds instantly to any registered Gigsflix user with zero escrow delay.
+          Send funds instantly to any registered DocsZar user with zero escrow delay.
         </p>
       </div>
 

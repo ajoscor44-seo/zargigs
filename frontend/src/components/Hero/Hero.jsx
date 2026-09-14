@@ -9,7 +9,7 @@ const Hero = () => {
     import.meta.env.VITE_DEV_APP_URL ||
     (import.meta.env.VITE_NODE_ENV !== "production"
       ? "http://localhost:5173"
-      : import.meta.env.VITE_PROD_APP_URL || "https://app.gigsflix.com");
+      : import.meta.env.VITE_PROD_APP_URL || "https://app.docszar.com");
 
   const [activeTab, setActiveTab] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -117,7 +117,7 @@ const Hero = () => {
             <div className="relative z-10 w-full max-w-md">
               <img
                 src={hero_img}
-                alt="Gigsflix Hero Banner"
+                alt="DocsZar Hero Banner"
                 className="w-full h-auto drop-shadow-2xl rounded-2xl transform hover:scale-[1.02] transition-transform duration-300"
               />
 

@@ -1,10 +1,10 @@
 -- ==============================================================================
--- ZARGIGS SUPABASE RLS FIX
+-- DOCSZAR SUPABASE RLS FIX
 -- Run this in your Supabase SQL Editor:
 -- https://supabase.com/dashboard/project/itzqsxmjyjfgtbolfhmq/sql
 -- ==============================================================================
 
--- 1. Disable RLS on all Zargigs application tables
+-- 1. Disable RLS on all DocsZar application tables
 ALTER TABLE IF EXISTS public.users DISABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.user_details DISABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.tokens DISABLE ROW LEVEL SECURITY;

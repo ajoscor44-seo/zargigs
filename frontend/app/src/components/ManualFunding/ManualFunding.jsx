@@ -27,7 +27,7 @@ const ManualFunding = () => {
       <div className="rounded-3xl bg-slate-900 p-6 sm:p-7 text-white shadow-sm border border-slate-800">
         <div className="flex items-center justify-between mb-4">
           <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-            Official Zargigs Settlement Account
+            Official DocsZar Settlement Account
           </span>
           <span className="text-[11px] bg-slate-800 text-slate-300 px-2.5 py-0.5 rounded-full border border-slate-700 font-bold">
             Manual Verification
@@ -47,7 +47,7 @@ const ManualFunding = () => {
             <span className="text-[11px] text-slate-400 font-semibold block mb-1">Account Name</span>
             <span className="text-sm sm:text-base font-bold text-white flex items-center gap-2 truncate">
               <FaUser size={14} className="text-emerald-400 flex-shrink-0" />
-              <span className="truncate">{adminData?.fundingAccount?.accountName || "ZARGIGS ENTERPRISE"}</span>
+              <span className="truncate">{adminData?.fundingAccount?.accountName || "DOCSZAR ENTERPRISE"}</span>
             </span>
           </div>
 

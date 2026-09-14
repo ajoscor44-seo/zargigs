@@ -224,7 +224,7 @@ const AdminDashboard = () => {
 
   // Platform Settings
   const [adminSettings, setAdminSettings] = useState({
-    appName: "Zargigs",
+    appName: "DocsZar",
     membershipFee: 1000,
     withdrawalCharges: 50,
     minWithdrawal: 1000,
@@ -485,7 +485,7 @@ const AdminDashboard = () => {
       const res = await axios.get("/api/v1/admin-data");
       const s = res.data?.[0] || res.data || {};
       setAdminSettings({
-        appName: s.appName || s.app_name || "Zargigs",
+        appName: s.appName || s.app_name || "DocsZar",
         membershipFee: s.membershipFee || s.membership_fee || 1000,
         withdrawalCharges: s.withdrawalCharges || s.min_withdrawal || 50,
         minWithdrawal: s.minWithdrawal || s.min_withdrawal || 1000,

@@ -1154,7 +1154,7 @@ export const walletService = {
         user_id: userId,
         bank_name: (accountData.bankName || "PAGA").toUpperCase(),
         account_number: String(accountData.accountNumber).trim(),
-        account_name: accountData.accountName || "Zargigs Earner",
+        account_name: accountData.accountName || "DocsZar Earner",
         provider: "pocketfi",
         currency: "NGN",
         updated_at: new Date().toISOString(),
@@ -1164,7 +1164,7 @@ export const walletService = {
       await supabase.from("user_details").update({
         virtual_account_bank: (accountData.bankName || "PAGA").toUpperCase(),
         virtual_account_number: String(accountData.accountNumber).trim(),
-        virtual_account_name: accountData.accountName || "Zargigs Earner",
+        virtual_account_name: accountData.accountName || "DocsZar Earner",
         updated_at: new Date().toISOString(),
       }).eq("user_id", userId);
 
@@ -1235,7 +1235,7 @@ export const adminService = {
 
       if (error || !data) {
         return {
-          appName: "Zargigs",
+          appName: "DocsZar",
           membershipFee: 1000,
           withdrawalCharges: 50,
           minWithdrawal: 1000,
@@ -1243,14 +1243,14 @@ export const adminService = {
           fundingAccount: {
             bankName: "Moniepoint",
             accountNumber: "8123456789",
-            accountName: "Zargigs Technologies",
+            accountName: "DocsZar Technologies",
           },
         };
       }
       return formatRecord(data);
     } catch {
       return {
-        appName: "Zargigs",
+        appName: "DocsZar",
         membershipFee: 1000,
         withdrawalCharges: 50,
         minWithdrawal: 1000,
@@ -1258,7 +1258,7 @@ export const adminService = {
         fundingAccount: {
           bankName: "Moniepoint",
           accountNumber: "8123456789",
-          accountName: "Zargigs Technologies",
+          accountName: "DocsZar Technologies",
         },
       };
     }

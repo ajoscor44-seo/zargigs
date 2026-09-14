@@ -16,7 +16,7 @@ const Footer = () => {
           {/* Col 1: Brand Info */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-2">
-              <img src={logo} alt="Gigsflix Logo" className="h-9 w-auto brightness-0 invert" />
+              <img src={logo} alt="DocsZar Logo" className="h-9 w-auto brightness-0 invert" />
             </div>
             <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
               The premier social media monetization and advertising platform. Connecting brands with active real users for organic engagement and sustainable online earnings.
@@ -32,7 +32,7 @@ const Footer = () => {
                 <FaFacebook size={16} />
               </a>
               <a
-                href="https://x.com/GigsflixTech/"
+                href="https://x.com/DocsZarTech/"
                 target="_blank"
                 rel="noreferrer"
                 className="w-9 h-9 rounded-lg bg-slate-800 hover:bg-emerald-600 hover:text-white flex items-center justify-center text-slate-400 transition-colors"
@@ -130,7 +130,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="mailto:gigsflixtechnologies@gmail.com" className="hover:text-emerald-400 transition-colors truncate block">
+                <a href="mailto:contactdocszar@gmail.com" className="hover:text-emerald-400 transition-colors truncate block">
                   Email Support
                 </a>
               </li>
@@ -141,7 +141,7 @@ const Footer = () => {
         {/* Bottom copyright bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
           <div>
-            &copy; {new Date().getFullYear()} Gigsflix Technologies. All rights reserved.
+            &copy; {new Date().getFullYear()} DocsZar Technologies. All rights reserved.
           </div>
           <div className="flex items-center gap-6">
             <Link to="/privacy-policy" className="hover:text-slate-400">Privacy Policy</Link>

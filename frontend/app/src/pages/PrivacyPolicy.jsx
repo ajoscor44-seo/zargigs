@@ -6,7 +6,7 @@ const PrivacyPolicy = () => {
     {
       title: "Introduction",
       description:
-        "Welcome to Zargigs.com. We value your privacy and are committed to protecting your personal data. This privacy policy explains how we collect, use, and share information about you when you use our services.",
+        "Welcome to DocsZar.com. We value your privacy and are committed to protecting your personal data. This privacy policy explains how we collect, use, and share information about you when you use our services.",
     },
     {
       title: "Information We Collect",
@@ -60,8 +60,8 @@ const PrivacyPolicy = () => {
       description:
         "If you have any questions about this privacy policy, please contact us at",
       useLink: true,
-      href: "mailto:zargigstechnologies@gmail.com",
-      linkText: "zargigstechnologies@gmail.com",
+      href: "mailto:contactdocszar@gmail.com",
+      linkText: "contactdocszar@gmail.com",
     },
   ];
 

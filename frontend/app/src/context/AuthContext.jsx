@@ -35,7 +35,7 @@ export const useAuth = () => {
 };
 
 const defaultAdminData = {
-  appName: "Zargigs",
+  appName: "DocsZar",
   membershipFee: 1000,
   withdrawalCharges: 50,
   minWithdrawal: 1000,
@@ -43,7 +43,7 @@ const defaultAdminData = {
   fundingAccount: {
     bankName: "Moniepoint",
     accountNumber: "8123456789",
-    accountName: "Zargigs Technologies",
+    accountName: "DocsZar Technologies",
   },
 };
 

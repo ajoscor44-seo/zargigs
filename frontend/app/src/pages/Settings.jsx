@@ -102,7 +102,7 @@ const Settings = () => {
     },
     {
       icon: <FiInfo className="text-sky-600" size={18} />,
-      name: `About ${adminData?.appName || "Zargigs"}`,
+      name: `About ${adminData?.appName || "DocsZar"}`,
       desc: "Our mission, vision and ecosystem",
       path: "/about-us",
     },
@@ -229,7 +229,7 @@ const Settings = () => {
             </div>
 
             <p className="text-center text-[11px] text-slate-400 font-medium">
-              {adminData?.appName || "Zargigs"} • Version 2.4.0
+              {adminData?.appName || "DocsZar"} • Version 2.4.0
             </p>
           </div>
 

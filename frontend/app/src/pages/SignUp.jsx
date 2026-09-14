@@ -15,7 +15,7 @@ const SignUp = ({ setSignedIn }) => {
   const pagesData = [
     {
       bgColor: "bg-white",
-      title: `Sign Up on ${adminData?.appName || "Zargigs"}`,
+      title: `Sign Up on ${adminData?.appName || "DocsZar"}`,
       info: "Registration is simple, fast and free!",
       formInputs: [
         {
@@ -42,7 +42,7 @@ const SignUp = ({ setSignedIn }) => {
         },
         {
           label: "Referrer's Username (Optional)",
-          note: `Please enter the username of the person who referred you to ${adminData?.appName || "Zargigs"}. You can leave this empty if you wish.`,
+          note: `Please enter the username of the person who referred you to ${adminData?.appName || "DocsZar"}. You can leave this empty if you wish.`,
           placeholder: "Enter Your Referrer's Username",
           icon: "referrer",
           type: "text",

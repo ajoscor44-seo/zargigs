@@ -19,8 +19,8 @@ const OurHandles = () => {
     },
     {
       name: "Twitter / X",
-      handle: "@GigsflixTech",
-      url: "https://x.com/GigsflixTech/",
+      handle: "@DocsZarTech",
+      url: "https://x.com/DocsZarTech/",
       icon: <FaTwitter size={26} className="text-sky-500" />,
       color: "hover:border-sky-300 hover:shadow-sky-100",
     },
@@ -44,7 +44,7 @@ const OurHandles = () => {
               Ready to Monetize or Scale Your Online Presence?
             </h2>
             <p className="mt-4 text-emerald-100 text-base sm:text-lg leading-relaxed">
-              Join thousands of creators, brands, and everyday earners using {adminData?.appName || "Gigsflix"} every day.
+              Join thousands of creators, brands, and everyday earners using {adminData?.appName || "DocsZar"} every day.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <a

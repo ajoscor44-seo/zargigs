@@ -87,7 +87,7 @@ const WhatYouDo = () => {
               <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400/20 to-emerald-400/20 rounded-3xl blur-2xl -z-10" />
               <img
                 src={man_member}
-                alt="Earn with Gigsflix"
+                alt="Earn with DocsZar"
                 className="w-full rounded-2xl shadow-xl object-cover ring-1 ring-slate-900/5 aspect-4/5"
               />
 

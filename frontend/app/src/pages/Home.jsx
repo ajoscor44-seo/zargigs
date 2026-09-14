@@ -238,7 +238,7 @@ const Home = () => {
 
                   <img
                     src={girl_pointing}
-                    alt="Get Things Done & Earn with Zargigs"
+                    alt="Get Things Done & Earn with DocsZar"
                     className="relative z-10 w-full max-h-[520px] object-contain drop-shadow-2xl mx-auto"
                   />
 

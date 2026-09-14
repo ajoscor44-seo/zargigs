@@ -571,7 +571,7 @@ const CreateTaskWizard = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Download & test the GigsFlix Android App"
+                  placeholder="e.g. Download & test the DocsZar Android App"
                   value={taskData.title}
                   onChange={(e) => setTaskData({ ...taskData, title: e.target.value })}
                   className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm font-semibold focus:ring-2 focus:ring-emerald-500/30 focus:outline-hidden"
@@ -609,7 +609,7 @@ const CreateTaskWizard = () => {
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. GigsFlix App, Kuda, @MyBrand"
+                    placeholder="e.g. DocsZar App, Kuda, @MyBrand"
                     value={taskData.appName}
                     onChange={(e) => setTaskData({ ...taskData, appName: e.target.value })}
                     className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/30 focus:outline-hidden"

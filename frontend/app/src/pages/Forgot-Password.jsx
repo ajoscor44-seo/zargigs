@@ -70,7 +70,7 @@ const ForgotPassword = () => {
             <FaArrowLeft size={12} />
             <span>Back to Login</span>
           </Link>
-          <img src={logo} alt="Zargigs" className="h-8 w-auto object-contain" />
+          <img src={logo} alt="DocsZar" className="h-8 w-auto object-contain" />
         </div>
 
         {resetId ? (

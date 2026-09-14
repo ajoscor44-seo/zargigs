@@ -14,7 +14,7 @@ const NavBar = ({
     import.meta.env.VITE_DEV_APP_URL ||
     (import.meta.env.VITE_NODE_ENV !== "production"
       ? "http://localhost:5173"
-      : import.meta.env.VITE_PROD_APP_URL || "https://app.gigsflix.com");
+      : import.meta.env.VITE_PROD_APP_URL || "https://app.docszar.com");
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm transition-all duration-300">
@@ -29,7 +29,7 @@ const NavBar = ({
             )}
           </div>
           <span className="text-2xl font-black tracking-tight text-slate-800 uppercase font-primary">
-            {adminData?.appName || "Gigsflix"}<span className="text-emerald-500">.</span>
+            {adminData?.appName || "DocsZar"}<span className="text-emerald-500">.</span>
           </span>
         </div>
 

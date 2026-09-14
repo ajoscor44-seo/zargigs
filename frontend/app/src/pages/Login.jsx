@@ -20,7 +20,7 @@ const Login = () => {
   const [error, setError] = useState(null);
   const history = useHistory();
   const location = useLocation();
-  const appName = adminData?.appName || "Zargigs";
+  const appName = adminData?.appName || "DocsZar";
   const isRegisteredSuccess = location.search?.includes("registered=true");
 
   const handleChange = (e) => {

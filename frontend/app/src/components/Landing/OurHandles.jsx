@@ -9,22 +9,22 @@ const OurHandles = () => {
   const handles = [
     {
       name: "Facebook",
-      handle: "@zargigs",
-      url: "https://facebook.com/zargigs",
+      handle: "@docszar",
+      url: "https://facebook.com/docszar",
       icon: <FaFacebook size={26} className="text-blue-600" />,
       color: "hover:border-blue-300 hover:shadow-blue-100",
     },
     {
       name: "Twitter / X",
-      handle: "@ZargigsTech",
-      url: "https://x.com/ZargigsTech/",
+      handle: "@DocsZarTech",
+      url: "https://x.com/DocsZarTech/",
       icon: <FaTwitter size={26} className="text-sky-500" />,
       color: "hover:border-sky-300 hover:shadow-sky-100",
     },
     {
       name: "Instagram",
-      handle: "@zargigs_tech",
-      url: "https://www.instagram.com/zargigs_tech/",
+      handle: "@docszar_tech",
+      url: "https://www.instagram.com/docszar_tech/",
       icon: <FaInstagram size={26} className="text-pink-600" />,
       color: "hover:border-pink-300 hover:shadow-pink-100",
     },
@@ -40,7 +40,7 @@ const OurHandles = () => {
               Ready to Monetize or Scale Your Online Presence?
             </h2>
             <p className="mt-4 text-emerald-100 text-base sm:text-lg leading-relaxed">
-              Join thousands of creators, brands, and everyday earners using {adminData?.appName || "Zargigs"} every day.
+              Join thousands of creators, brands, and everyday earners using {adminData?.appName || "DocsZar"} every day.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Link

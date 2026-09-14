@@ -83,7 +83,7 @@ const ContactUs = () => {
                   </div>
                   <div>
                     <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Email Address</div>
-                    <div className="text-sm font-medium text-slate-800 mt-0.5">zargigstechnologies@gmail.com</div>
+                    <div className="text-sm font-medium text-slate-800 mt-0.5">contactdocszar@gmail.com</div>
                   </div>
                 </div>
 

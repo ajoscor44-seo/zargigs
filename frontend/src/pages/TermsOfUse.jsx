@@ -6,7 +6,7 @@ const TermsOfUse = () => {
     {
       title: "Introduction",
       description:
-        "Welcome to Gigsflix! By accessing or using our services, you agree to comply with and be bound by these Terms and Services. Please read them carefully.",
+        "Welcome to DocsZar! By accessing or using our services, you agree to comply with and be bound by these Terms and Services. Please read them carefully.",
     },
     {
       title: "Acceptance of Terms",
@@ -25,7 +25,7 @@ const TermsOfUse = () => {
     {
       title: "Intellectual Property",
       description:
-        "All content on Gigsflix, including text, graphics, logos, and software, is the property of Gigsflix or its licensors and is protected by copyright and other intellectual property laws.",
+        "All content on DocsZar, including text, graphics, logos, and software, is the property of DocsZar or its licensors and is protected by copyright and other intellectual property laws.",
     },
     {
       title: "Payment and Fees",
@@ -44,7 +44,7 @@ const TermsOfUse = () => {
     {
       title: "Limitation of Liability",
       description:
-        "Gigsflix is not liable for any indirect, incidental, or consequential damages arising out of or in connection with your use of our services.",
+        "DocsZar is not liable for any indirect, incidental, or consequential damages arising out of or in connection with your use of our services.",
     },
     {
       title: "Changes to the Terms",
@@ -61,8 +61,8 @@ const TermsOfUse = () => {
       description:
         "If you have any questions about this privacy policy, please contact us at",
       useLink: true,
-      href: "mailto:contactgigsflix@gmail.com",
-      linkText: "contactgigsflix@gmail.com",
+      href: "mailto:contactdocszar@gmail.com",
+      linkText: "contactdocszar@gmail.com",
     },
   ];
 

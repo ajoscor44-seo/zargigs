@@ -4,9 +4,9 @@ import Legal from "../components/Legals/Legal";
 const AboutUs = () => {
   const data = [
     {
-      title: "Welcome to Gigsflix",
+      title: "Welcome to DocsZar",
       description:
-        "Welcome to Gigsflix. We value your privacy and are committed toGigsflix.com is a dynamic platform designed to connect users with a wide range of earning opportunities. Whether you're looking to complete simple tasks, promote products, or engage in various online activities, Gigsflix provides a user-friendly environment to help you achieve your financial goals.",
+        "Welcome to DocsZar. We value your privacy and are committed toDocsZar.com is a dynamic platform designed to connect users with a wide range of earning opportunities. Whether you're looking to complete simple tasks, promote products, or engage in various online activities, DocsZar provides a user-friendly environment to help you achieve your financial goals.",
     },
     {
       title: "Our Mission",
@@ -25,14 +25,14 @@ const AboutUs = () => {
     {
       title: "Join Us",
       description:
-        "Become a part of the Gigsflix community and start earning today. Whether you're a task creator looking to promote your business or a task performer seeking new opportunities, Gigsflix is here to support you.",
+        "Become a part of the DocsZar community and start earning today. Whether you're a task creator looking to promote your business or a task performer seeking new opportunities, DocsZar is here to support you.",
     },
     {
       title: "Contact Us",
       description: "For more information, feel free to contact us at",
       useLink: true,
-      href: "mailto:contactgigsflix@gmail.com",
-      linkText: "contactgigsflix@gmail.com",
+      href: "mailto:contactdocszar@gmail.com",
+      linkText: "contactdocszar@gmail.com",
     },
   ];
 

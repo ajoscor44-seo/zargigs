@@ -1,5 +1,5 @@
 -- ==============================================================================
--- ZARGIGS NIGERIAN MICROTASK & SURVEY MARKETPLACE SCHEMA
+-- DOCSZAR NIGERIAN MICROTASK & SURVEY MARKETPLACE SCHEMA
 -- ==============================================================================
 
 -- 1. MARKETPLACE TASKS TABLE

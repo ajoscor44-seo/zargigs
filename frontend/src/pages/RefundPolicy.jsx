@@ -11,7 +11,7 @@ const RefundPolicy = () => {
     {
       title: "Task Payments",
       description:
-        "Payments for completed tasks are final once they have been verified and credited to your Gigsflix wallet. We do not offer refunds for completed tasks.",
+        "Payments for completed tasks are final once they have been verified and credited to your DocsZar wallet. We do not offer refunds for completed tasks.",
     },
     {
       title: "Referral Fees",
@@ -33,8 +33,8 @@ const RefundPolicy = () => {
       description:
         "If you have any questions about our refund policy, please contact us at: ",
       useLink: true,
-      href: "mailto:contactgigsflix@gmail.com",
-      linkText: "contactgigsflix@gmail.com",
+      href: "mailto:contactdocszar@gmail.com",
+      linkText: "contactdocszar@gmail.com",
     },
   ];
 

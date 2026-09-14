@@ -1,5 +1,5 @@
 -- ==============================================================================
--- ZARGIGS SUPABASE POSTGRESQL SCHEMA & STORAGE MIGRATION
+-- DOCSZAR SUPABASE POSTGRESQL SCHEMA & STORAGE MIGRATION
 -- Project URL: https://itzqsxmjyjfgtbolfhmq.supabase.co
 -- ==============================================================================
 
@@ -324,7 +324,7 @@ CREATE TABLE IF NOT EXISTS public.subscriptions (
 -- 27. ADMIN SETTINGS TABLE
 CREATE TABLE IF NOT EXISTS public.admin_settings (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    app_name VARCHAR(150) DEFAULT 'Zargigs',
+    app_name VARCHAR(150) DEFAULT 'DocsZar',
     maintenance_mode BOOLEAN DEFAULT FALSE,
     min_withdrawal NUMERIC(15, 2) DEFAULT 1000.00,
     membership_fee NUMERIC(15, 2) DEFAULT 1000.00,
@@ -336,7 +336,7 @@ CREATE TABLE IF NOT EXISTS public.admin_settings (
 -- ==============================================================================
 -- STORAGE BUCKETS SETUP
 -- ==============================================================================
--- Create the public storage buckets for Zargigs assets
+-- Create the public storage buckets for DocsZar assets
 INSERT INTO storage.buckets (id, name, public) 
 VALUES 
     ('profile_pics', 'profile_pics', true),

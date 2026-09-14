@@ -14,7 +14,7 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
-  const appName = adminData?.appName || "Zargigs";
+  const appName = adminData?.appName || "DocsZar";
 
   const showLoginContent = () => {
     if (isLoginPage) {

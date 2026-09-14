@@ -46,7 +46,7 @@ const AutoFunding = ({
 
     // 1. Instant local load if exists for this specific user
     try {
-      const cached = localStorage.getItem(`zargigs_pocketfi_va_${uId}`);
+      const cached = localStorage.getItem(`docszar_pocketfi_va_${uId}`);
       if (cached) {
         const parsed = JSON.parse(cached);
         if (parsed?.accountNumber && parsed?.accountNumber !== "8103460237") {
@@ -70,13 +70,13 @@ const AutoFunding = ({
       const supaAccount = await walletService.getVirtualAccount(uId);
       if (supaAccount?.accountNumber) {
         setVirtualAccount(supaAccount);
-        localStorage.setItem(`zargigs_pocketfi_va_${uId}`, JSON.stringify(supaAccount));
+        localStorage.setItem(`docszar_pocketfi_va_${uId}`, JSON.stringify(supaAccount));
         return;
       }
 
       // If no virtual account exists yet
       setVirtualAccount(null);
-      localStorage.removeItem(`zargigs_pocketfi_va_${uId}`);
+      localStorage.removeItem(`docszar_pocketfi_va_${uId}`);
     } catch (err) {
       console.warn("fetchExistingVirtualAccount error:", err);
     }
@@ -94,7 +94,7 @@ const AutoFunding = ({
 
       const payload = {
         userId: uId,
-        firstname: currentUser?.firstname || currentUser?.first_name || currentUser?.username || "Zargigs",
+        firstname: currentUser?.firstname || currentUser?.first_name || currentUser?.username || "DocsZar",
         lastname: currentUser?.lastname || currentUser?.last_name || "Earner",
         email: currentUser?.email || "",
         phone: currentUser?.phone || "",
@@ -107,7 +107,7 @@ const AutoFunding = ({
       if (generatedDetails?.accountNumber) {
         setVirtualAccount(generatedDetails);
         localStorage.setItem(
-          `zargigs_pocketfi_va_${uId}`,
+          `docszar_pocketfi_va_${uId}`,
           JSON.stringify(generatedDetails)
         );
         await fetchUserData();

@@ -6,7 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 
 const Hero = () => {
   const { adminData, currentUser } = useAuth();
-  const appName = adminData?.appName || "Zargigs";
+  const appName = adminData?.appName || "DocsZar";
 
   return (
     <section className="relative pt-28 pb-16 lg:pt-36 lg:pb-24 bg-slate-50">
@@ -83,7 +83,7 @@ const Hero = () => {
 
               <img
                 src={girl_pointing}
-                alt="Earn with Zargigs"
+                alt="Earn with DocsZar"
                 className="relative z-10 w-full max-h-[520px] object-contain drop-shadow-2xl mx-auto"
               />
 

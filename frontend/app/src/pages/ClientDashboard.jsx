@@ -68,7 +68,7 @@ const ClientDashboard = () => {
   const [recentActivities, setRecentActivities] = useState([]);
   const [myCampaigns, setMyCampaigns] = useState([]);
   const [copied, setCopied] = useState(false);
-  const appName = adminData?.appName || "Zargigs";
+  const appName = adminData?.appName || "DocsZar";
   const membershipFee = adminData?.membershipFee || 1000;
   const refLink = `${window.location.origin}/signup?ref=${currentUser?.username || ""}`;
 

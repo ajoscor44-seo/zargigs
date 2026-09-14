@@ -4,7 +4,7 @@ import { FaUsersRays, FaShieldHalved, FaBoltLightning } from "react-icons/fa6";
 
 const AboutUs = () => {
   const { adminData } = useAuth();
-  const appName = adminData?.appName || "Zargigs";
+  const appName = adminData?.appName || "DocsZar";
 
   const pillars = [
     {
