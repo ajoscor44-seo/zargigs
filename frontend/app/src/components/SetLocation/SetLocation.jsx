@@ -1,8 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useAuth } from "../../context/AuthContext";
-import FormInput from "../FormInput/FormInput";
-import { BiSolidCheckCircle } from "react-icons/bi";
-import { FaLocationDot } from "react-icons/fa6";
+import { FiCheckCircle, FiMapPin, FiUser, FiArrowRight } from "react-icons/fi";
 
 const SetLocation = ({
   setActivePage,
@@ -15,129 +13,124 @@ const SetLocation = ({
 }) => {
   const { currentUser, adminData } = useAuth();
 
-  // Selects Data
-  const genders = [
-    "Select Gender",
-    "Male",
-    "Female",
-    "Transgender",
-    "Custom",
-    "Others",
-  ];
+  const genders = ["Male", "Female", "Other"];
+  const states = statesData?.map((state) => state.name) || [];
+  const currentLgas =
+    statesData?.find((state) => state.name === userLocation?.state)?.lgas?.map(
+      (lga) => lga.name
+    ) || [];
 
-  // Get the states from the location data
-  const states = statesData?.map((state) => state.name);
-
-  // Get the lgas from the location data
-  const LGAs = statesData
-    ?.find((state) => state.name == userLocation.state)
-    ?.lgas?.map((lga) => lga.name);
-
-  const LGAList =
-    userLocation.state == "Select State" || !userLocation.state
-      ? ["Abeg go select state jor"]
-      : LGAs;
-
-  const handleChange = (e) => {
-    return setSelectedGender(e.target.value);
+  const handleGenderChange = (e) => {
+    setSelectedGender(e.target.value);
   };
 
   const handleLocationChange = (e) => {
-    return setUserLocation({
+    setUserLocation({
       ...userLocation,
       [e.target.name]: e.target.value,
     });
   };
 
-  const setLocation = async () => {
-    if (userLocation.state && userLocation.LGA && selectedGender) {
-      setError(null);
-      setActivePage("upload-profile-pic");
-      return;
-    }
+  const setLocation = () => {
     if (!selectedGender) {
-      return setError("Please select a gender.");
+      return setError("Please select your gender.");
     }
-    if (!userLocation.state || userLocation.state == "Select State") {
-      return setError("Please input your state.");
+    if (!userLocation?.state) {
+      return setError("Please select your state of residence.");
     }
-    if (!userLocation.LGA) {
-      return setError("Please input your local govt.");
+    if (!userLocation?.LGA) {
+      return setError("Please select your local government area.");
     }
+
+    setError(null);
+    setActivePage("upload-profile-pic");
   };
 
   return (
-    <div
-      className="font-primary mx-3 mt-10 flex flex-col justify-center mb-20"
-      style={{ maxWidth: "400px" }}
-    >
-      <div className="bg-white rounded shadow-2xl">
-        <span className="flex justify-between items-center px-3 py-2 border-b text-sm">
-          <h2 className="font-bold">More About You</h2>{" "}
-        </span>
-
-        <div className="p-3 flex flex-col gap-2">
-          <div className="flex flex-col gap-2 py-0">
-            <div className="flex justify-center items-center">
-              <BiSolidCheckCircle size={55} className="text-green-500" />
-            </div>
-            <h1 className="text-center text-xl font-extrabold">
-              Welcome to {adminData?.appName}!
-            </h1>
-            <p className="text-center text-xs">
-              Congratulations {currentUser.lastname}, your email{" "}
-              <span className="font-bold">{currentUser.email}</span> has been
-              verified successfully. You will need to set your gender and
-              current location before you can continue.
-            </p>
-          </div>
-
-          <div className="flex flex-col">
-            <FormInput
-              useSelect={true}
-              selections={genders}
-              value={selectedGender}
-              // defa
-              name={"gender"}
-              handleChange={handleChange}
-            />
-            <div className="mt-3">
-              <span className="flex items-center">
-                <FaLocationDot className="text-red-500" size={15} />
-                <span className="text-sm font-bold ms-1">Your Location</span>
-              </span>
-              <FormInput
-                useSelect={true}
-                selections={["Select State", ...states]}
-                value={userLocation.state}
-                name={"state"}
-                handleChange={handleLocationChange}
-              />
-              {userLocation.state && userLocation.state !== "Select State" && (
-                <FormInput
-                  useSelect={true}
-                  selections={["Select LGA", ...LGAList]}
-                  value={userLocation.LGA}
-                  name={"LGA"}
-                  handleChange={handleLocationChange}
-                  note={
-                    "You will have to select your state before selecting LGA."
-                  }
-                />
-              )}
-            </div>
-          </div>
-
-          <button
-            onClick={setLocation}
-            className="bg-green-500 text-white font-semibold text-sm py-2 rounded"
-          >
-            SET DETAILS
-          </button>
+    <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100/80 space-y-6">
+      <div className="text-center space-y-2">
+        <div className="w-14 h-14 rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto shadow-sm">
+          <FiCheckCircle size={28} />
         </div>
+        <h2 className="text-xl font-extrabold text-slate-900">
+          Welcome, {currentUser?.firstname || "Member"}!
+        </h2>
+        <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
+          Your account is ready! Let's personalize your experience by setting your gender and location so you receive tasks targeted to your area.
+        </p>
       </div>
+
+      <div className="space-y-4 pt-2">
+        <div>
+          <label className="block text-xs font-bold text-slate-600 mb-1.5 flex items-center gap-1.5">
+            <FiUser size={14} className="text-emerald-600" />
+            <span>Gender</span>
+          </label>
+          <select
+            value={selectedGender}
+            onChange={handleGenderChange}
+            className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-sm px-4 py-3.5 rounded-2xl border border-slate-200 focus:border-emerald-500 outline-none transition-all"
+          >
+            {genders.map((g) => (
+              <option key={g} value={g}>
+                {g}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold text-slate-600 mb-1.5 flex items-center gap-1.5">
+            <FiMapPin size={14} className="text-emerald-600" />
+            <span>State of Residence</span>
+          </label>
+          <select
+            name="state"
+            value={userLocation?.state || ""}
+            onChange={handleLocationChange}
+            className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-sm px-4 py-3.5 rounded-2xl border border-slate-200 focus:border-emerald-500 outline-none transition-all"
+          >
+            <option value="">Select State</option>
+            {states.map((st) => (
+              <option key={st} value={st}>
+                {st}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {userLocation?.state && (
+          <div>
+            <label className="block text-xs font-bold text-slate-600 mb-1.5">
+              Local Government Area (LGA)
+            </label>
+            <select
+              name="LGA"
+              value={userLocation?.LGA || ""}
+              onChange={handleLocationChange}
+              className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-sm px-4 py-3.5 rounded-2xl border border-slate-200 focus:border-emerald-500 outline-none transition-all"
+            >
+              <option value="">Select LGA</option>
+              {currentLgas.map((lga) => (
+                <option key={lga} value={lga}>
+                  {lga}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
+
+      <button
+        onClick={setLocation}
+        className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold rounded-2xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm"
+      >
+        <span>Continue to Profile Photo</span>
+        <FiArrowRight size={16} />
+      </button>
     </div>
   );
 };
 
 export default SetLocation;
+

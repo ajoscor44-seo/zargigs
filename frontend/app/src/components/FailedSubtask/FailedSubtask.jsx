@@ -21,10 +21,10 @@ const FailedSubtask = ({ failedSubtasks, slug, type, status, platform }) => {
           })}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center text-gray-300 p-2 gap-2 h-96">
+        <div className="py-12 px-4 flex flex-col items-center justify-center text-center max-w-md mx-auto">
           <NoData
             textBelow={
-              "You do not have any FAILED task here yet. Your FAILED tasks will appear on this page."
+              "You do not have any failed or disapproved tasks."
             }
           />
         </div>

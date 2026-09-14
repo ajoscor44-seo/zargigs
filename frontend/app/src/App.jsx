@@ -22,7 +22,7 @@ import Adevertise from "./pages/Advertise";
 import Order from "./pages/Order";
 import TaskHistory from "./pages/TaskHistory";
 import CreateAdvert from "./pages/CreateAdvert";
-import AuthProvider from "./context/AuthContext.jsx";
+import AuthProvider, { useAuth } from "./context/AuthContext.jsx";
 import PrivateRoute from "./routers/PrivateRoutes.jsx";
 import RegistrationPage from "./pages/Registration.jsx";
 import Authentication from "./pages/Authentication.jsx";
@@ -39,6 +39,32 @@ import EditProfile from "./pages/EditProfile.jsx";
 import TransferPage from "./pages/Transfer.jsx";
 import FundingDetails from "./pages/FundingDetails.jsx";
 import Advertisement from "./pages/Advertisement.jsx";
+import TaskMarketplace from "./pages/TaskMarketplace.jsx";
+import CreateTaskWizard from "./pages/CreateTaskWizard.jsx";
+import TaskWorkspace from "./pages/TaskWorkspace.jsx";
+import CreatorTaskManage from "./pages/CreatorTaskManage.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
+import AdminPrivateRoute from "./routers/AdminPrivateRoute.jsx";
+
+import PublicMarketplace from "./pages/PublicMarketplace.jsx";
+import Home from "./pages/Home.jsx";
+import AboutUs from "./pages/AboutUs.jsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
+import RefundPolicy from "./pages/RefundPolicy.jsx";
+import TermsOfUse from "./pages/TermsOfUse.jsx";
+
+const RootRoute = () => {
+  const { currentUser } = useAuth();
+  if (
+    currentUser &&
+    currentUser.isEmailVerified &&
+    currentUser.gender &&
+    !currentUser.isBanned
+  ) {
+    return <ClientDashboard />;
+  }
+  return <Home />;
+};
 
 function App() {
   axios.defaults.baseURL =
@@ -53,29 +79,35 @@ function App() {
         {/* App Routes */}
         <AuthProvider>
           <Switch>
-            {/* Public Pages */}
-            <Route exact path="/ref/:username">
-              <RegistrationPage />
-            </Route>
-            <Route exact path="/signup">
-              <RegistrationPage />
-            </Route>
-            <Route exact path="/login">
-              <Authentication />
-            </Route>
+            {/* Landing & Public Content (Same Domain) */}
+            <Route exact path="/" component={RootRoute} />
+            <Route exact path="/marketplace" component={PublicMarketplace} />
+            <Route path="/about-us" component={AboutUs} />
+            <Route path="/privacy-policy" component={PrivacyPolicy} />
+            <Route path="/refund-policy" component={RefundPolicy} />
+            <Route path="/terms" component={TermsOfUse} />
+
+            {/* Auth & Registration */}
+            <Route exact path="/ref/:username" component={RegistrationPage} />
+            <Route exact path="/signup" component={RegistrationPage} />
+            <Route exact path="/login" component={Authentication} />
             <Route
               path="/forgot-password/:resetId?"
               component={ForgotPassword}
             />
 
-            {/* Client Info Input Pages */}
+            {/* Profile Information Onboarding */}
             <UploadProfilePrivateRoute
               path="/input-user-info"
               component={UploadInfoPage}
             />
 
-            {/* Client Page Layout */}
-            <PrivateRoute exact path="/" component={ClientDashboard} />
+            {/* Client Dashboard & Features */}
+            <PrivateRoute exact path="/dashboard" component={ClientDashboard} />
+            <PrivateRoute exact path="/tasks" component={TaskMarketplace} />
+            <PrivateRoute exact path="/create-task" component={CreateTaskWizard} />
+            <PrivateRoute exact path="/workspace/:taskId" component={TaskWorkspace} />
+            <PrivateRoute exact path="/creator/campaigns/:taskId" component={CreatorTaskManage} />
             <PrivateRoute path="/help-support" component={HelpSupport} />
             <PrivateRoute path="/notifications" component={Notifications} />
             <PrivateRoute path="/user-details" component={UserDetails} />
@@ -102,19 +134,19 @@ function App() {
             />
             <PrivateRoute path="/order-history" component={OrderHistory} />
             <PrivateRoute path="/order" component={Order} />
-            <MemberPrivateRoute
+            <PrivateRoute
               path="/become-a-member"
               component={BecomeAMember}
             />
-            <VerifiedMemberPrivateRoute
+            <PrivateRoute
               path="/earn/:type/:slug/:platform/:status/:id"
               component={TaskDetails}
             />
-            <VerifiedMemberPrivateRoute
+            <PrivateRoute
               path="/earn/:slug"
               component={EarnWithTasks}
             />
-            <VerifiedMemberPrivateRoute
+            <PrivateRoute
               path="/tasks-history"
               component={TaskHistory}
             />
@@ -124,6 +156,11 @@ function App() {
               path="/transaction-history"
               component={TransactionHistory}
             />
+
+            {/* Admin Command Center */}
+            <AdminPrivateRoute exact path="/admin" component={AdminDashboard} />
+            <AdminPrivateRoute path="/admin/dashboard" component={AdminDashboard} />
+
             <Route component={NotFound} />
           </Switch>
         </AuthProvider>

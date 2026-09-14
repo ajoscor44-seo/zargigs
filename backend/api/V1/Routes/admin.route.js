@@ -16,6 +16,17 @@ import { updateUserStatus } from "../Controllers/update_status.controller.js";
 import {
   setAdminData,
   updateAdminData,
+  getAdminData,
+  updateAnyUserProfile,
+  getAllPlatformTasks,
+  updatePlatformTask,
+  deletePlatformTask,
+  getAllSubmissions,
+  reviewSubmission,
+  getAllFundings,
+  approveManualFunding,
+  getPricingConfig,
+  updatePricingItem,
 } from "../Controllers/admin.controller.js";
 import {
   getAdvertCreators,
@@ -46,11 +57,31 @@ const router = express.Router();
 // Admin Data Routes
 router.post("/", setAdminData);
 router.put("/", updateAdminData);
+router.get("/settings", getAdminData);
 
-// Users Routes
+// Users Directory & Profile Editor
 router.get("/users/totals", getUsersTotals);
 router.get("/users", getAllUsers);
 router.get("/user", getAUser);
+router.put("/user/edit", updateAnyUserProfile);
+router.put("/update-status", updateUserStatus);
+
+// Tasks & Campaigns Full Management
+router.get("/tasks", getAllPlatformTasks);
+router.put("/task", updatePlatformTask);
+router.delete("/task", deletePlatformTask);
+
+// Proof Submissions & Verification
+router.get("/submissions", getAllSubmissions);
+router.put("/submission/review", reviewSubmission);
+
+// Deposits, Fundings & Manual Transfer Approval
+router.get("/fundings", getAllFundings);
+router.put("/funding/approve", approveManualFunding);
+
+// Pricing Configuration & Platform Rates
+router.get("/pricing", getPricingConfig);
+router.put("/pricing", updatePricingItem);
 
 // Advert Creator Routes
 router.put("/create-advert", updateAdvertCreator);
@@ -76,10 +107,7 @@ router.delete("/announcement", deleteAnnouncement);
 router.get("/complaints", getAllComplaint);
 router.put("/complaint", resolveComplaint);
 
-// Update user status - (Ban user and Lift ban on user)
-router.put("/update-status", updateUserStatus);
-
-// Update withdrawal status - (Approve withdrawal and Disapprove withdrawal)
+// Withdrawal requests
 router.get("/withdrawal-request", getAllWithdrawalRequests);
 router.put("/withdrawal-request", approveWithdrawalRequests);
 router.patch("/withdrawal-request", disapproveWithdrawalRequests);

@@ -1,74 +1,47 @@
-import User from "../Models/user.model.js";
+import { userService, userDetailsService, walletService, notificationService } from "../services/supabaseDb.service.js";
+import { supabase } from "../config/supabase.config.js";
 import bcryptjs from "bcryptjs";
 import { ErrorHandler } from "../utils/error.js";
-import WithdrawalRequests from "../Models/withdrawal_requests.model.js";
-import userDetails from "../Models/user-details.model.js";
 import { sendNotitfication } from "../utils/notification.js";
 import numeral from "numeral";
 
 export const getAllWithdrawalRequests = async (req, res, next) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
 
   try {
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
-    if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
-    }
+    const { data: requests, count, error } = await supabase
+      .from("withdrawal_requests")
+      .select("*, users:user_id(firstname, lastname, username, email, phone)", { count: "exact" })
+      .order("created_at", { ascending: false })
+      .range(from, to);
 
-    const allWithdrawalRequests = await WithdrawalRequests.find()
-      .sort({ createdAt: -1})
-      .skip((page - 1) * limit)
-      .limit(limit);
+    if (error) throw error;
 
-    const allWithdrawalRequests_ = await Promise.all(
-      allWithdrawalRequests.map(async (withdrawalRequest) => {
-        const { updatedAt, userId, createdAt, __v, _id, ...rest } =
-          withdrawalRequest?.toObject();
-        const user_details = await userDetails.findOne({
-          userId,
-        });
-        const {
-          __v: detailsV,
-          _id: detailsUId,
-          location,
-          gender,
-          userId: detailsId,
-          updatedAt: detailsUA,
-          createdAt: detailsCA,
-          dateOfBirth,
-          bankDetails,
-          religion,
-          ...details_rest
-        } = user_details._doc;
-        const user = await User.findById(userId);
-        const {
-          __v: userV,
-          _id: userUId,
-          updatedAt: userUA,
-          createdAt: userCA,
-          role,
-          referrals,
-          isMember,
-          isBanned,
-          isEmailVerified,
-          password,
-          ...user_rest
-        } = user._doc;
+    const allWithdrawalRequests_ = (requests || []).map((wr) => ({
+      id: wr.id,
+      _id: wr.id,
+      userId: wr.user_id,
+      amount: wr.amount,
+      withdrawalAmount: wr.amount,
+      charges: 0,
+      status: wr.status,
+      bankName: wr.bank_name,
+      accountNumber: wr.account_number,
+      accountName: wr.account_name,
+      bankDetails: {
+        bankName: wr.bank_name,
+        accountNumber: wr.account_number,
+        accountName: wr.account_name,
+      },
+      date: wr.created_at,
+      createdAt: wr.created_at,
+      ...(wr.users || {}),
+    }));
 
-        return {
-          id: _id,
-          userId,
-          ...rest,
-          ...details_rest,
-          ...user_rest,
-        };
-      })
-    );
-
-    const totalCount = await WithdrawalRequests.countDocuments();
+    const totalCount = count || 0;
     const totalPages = Math.ceil(totalCount / limit);
 
     return res.json({
@@ -88,46 +61,37 @@ export const getUserWithdrawalRequests = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
 
-    // Checks for valid user
-    const validUser = await User.findById(req.user._id);
-    if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
-    }
+    const userId = req.user.id || req.user._id;
 
-    const userWithdrawalRequests = await WithdrawalRequests.find({
-      userId: validUser._id,
-    })
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
+    const { data: requests, count, error } = await supabase
+      .from("withdrawal_requests")
+      .select("*", { count: "exact" })
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .range(from, to);
 
-    const userWithdrawalRequests_ = userWithdrawalRequests.map(
-      (userWithdrawalRequest) => {
-        const {
-          _id,
-          charges,
-          withdrawalAmount,
-          status,
-          bankDetails,
-          createdAt,
-        } = userWithdrawalRequest;
+    if (error) throw error;
 
-        const formattedRequest = {
-          id: _id,
-          charges,
-          amount: withdrawalAmount + charges,
-          status,
-          bankDetails,
-          date: createdAt,
-        };
+    const userWithdrawalRequests_ = (requests || []).map((wr) => ({
+      id: wr.id,
+      _id: wr.id,
+      charges: 0,
+      amount: wr.amount,
+      withdrawalAmount: wr.amount,
+      status: wr.status,
+      bankDetails: {
+        bankName: wr.bank_name,
+        accountNumber: wr.account_number,
+        accountName: wr.account_name,
+      },
+      date: wr.created_at,
+      createdAt: wr.created_at,
+    }));
 
-        return formattedRequest;
-      }
-    );
-
-    const totalCount = await WithdrawalRequests.countDocuments();
+    const totalCount = count || 0;
     const totalPages = Math.ceil(totalCount / limit);
 
     return res.status(200).json({
@@ -145,81 +109,52 @@ export const getUserWithdrawalRequests = async (req, res, next) => {
 
 export const postWithdrawalRequests = async (req, res, next) => {
   try {
-    const { id: userId, withdrawalAmount: amount, charges, password } = req.body;
-    const withdrawalAmount = Math.abs(amount)
-    if (Number(withdrawalAmount) < 100) {
+    const userId = req.user.id || req.user._id;
+    const { withdrawalAmount: amount, charges = 0, password } = req.body;
+    const withdrawalAmount = Math.abs(Number(amount));
+
+    if (withdrawalAmount < 100) {
       const error = ErrorHandler(400, "You cannot withdraw less than ₦100");
       return res.status(400).json(error);
     }
 
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
+    const validUser = await userService.findById(userId);
     if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
-    }
-    const validUserDetails = await userDetails.findOne({
-      userId: req.user._id,
-    });
-    if (!validUserDetails) {
-      const error = ErrorHandler(404, "There's no user details for this user.");
+      const error = ErrorHandler(404, "User not found.");
       return res.status(404).json(error);
     }
 
-    // Checks for correct password
-    const validPassword =
-      password && bcryptjs.compareSync(password, validUser.password || "");
+    const userDetails = await userDetailsService.getByUserId(userId);
+    const validPassword = password && bcryptjs.compareSync(password, validUser.password || "");
     if (!validPassword) {
       const error = ErrorHandler(401, "Wrong credentials");
       return res.status(401).json(error);
     }
 
-    // Checks for valid amount
-    const validAmount =
-      Number(withdrawalAmount) + Number(charges) <=
-      Number(validUserDetails.userEarnings.balance);
-    if (!validAmount) {
+    const totalDeduction = withdrawalAmount + Number(charges);
+    if ((Number(validUser.balance) || 0) < totalDeduction) {
       const error = ErrorHandler(406, "Insufficient balance");
       return res.status(406).json(error);
     }
 
-    // Updates balance and amount withdrawn
-    const newUserBalance =
-      Number(validUserDetails.userEarnings.balance) -
-      Number(withdrawalAmount) -
-      Number(charges);
-    const newUserAmountWithdrawn =
-      Number(validUserDetails.userEarnings.amountWithdrawn) +
-      Number(withdrawalAmount) +
-      Number(charges);
-    await validUserDetails.updateOne({
-      userEarnings: {
-        ...validUserDetails.userEarnings,
-        balance: newUserBalance,
-        amountWithdrawn: newUserAmountWithdrawn,
-      },
+    // Deduct balance
+    await userService.decrementBalance(userId, totalDeduction);
+
+    // Create withdrawal request
+    await walletService.createWithdrawal(userId, withdrawalAmount, {
+      bankName: userDetails?.bank_name || userDetails?.bankName || "",
+      accountNumber: userDetails?.account_number || userDetails?.accountNumber || "",
+      accountName: userDetails?.account_name || userDetails?.accountName || "",
     });
 
-    const newWithdrawalRequests = new WithdrawalRequests({
-      userId,
-      withdrawalAmount,
-      charges,
-      status: "pending",
-      bankDetails: validUserDetails.bankDetails,
-    });
-    await newWithdrawalRequests.save();
-
-    // Creates notitfication
     const notification = {
       userId: userId,
       title: "Withdrawal Requested!",
       message: `Your withdrawal request of ₦${numeral(withdrawalAmount).format(
         "0,0.00"
-      )} has been received and would be reviewed by the support. Visit the earning page to continue earning while your withdrawal is being processed.`,
+      )} has been received and will be reviewed by support.`,
       type: "withdraw",
     };
-
-    // Send notification to user
     await sendNotitfication(notification);
 
     return res.status(200).json({
@@ -235,22 +170,19 @@ export const approveWithdrawalRequests = async (req, res, next) => {
   try {
     const { id, userId, amount } = req.body;
 
-    // Updating our own withdrawal request
-    await WithdrawalRequests.findByIdAndUpdate(id, {
-      $set: { status: "approved" },
-    });
+    await supabase
+      .from("withdrawal_requests")
+      .update({ status: "approved" })
+      .eq("id", id);
 
-    // Creates notitfication
     const notification = {
       userId: userId,
       title: "Withdrawal Approved",
       message: `Congratulations, your withdrawal of ₦${numeral(amount).format(
         "0,0.00"
-      )} has been approved. Kindly check your withdrawal history and your local bank account balance for confirmation.`,
+      )} has been approved. Kindly check your withdrawal history and bank account.`,
       type: "withdraw",
     };
-
-    // Send notification to user
     await sendNotitfication(notification);
 
     return res
@@ -263,53 +195,25 @@ export const approveWithdrawalRequests = async (req, res, next) => {
 
 export const disapproveWithdrawalRequests = async (req, res, next) => {
   try {
-    const { amount, userId, id, reason, charges, returnAmount } = req.body;
-
-    // Checks for valid user details
-    const validUserDetails = await userDetails.findOne({
-      userId,
-    });
-    if (!validUserDetails) {
-      const error = ErrorHandler(404, "There's no user details for this user.");
-      return res.status(404).json(error);
-    }
-
-    // Updates balance and amount withdrawn
-    const newUserBalance =
-      Number(validUserDetails.userEarnings.balance) +
-      Number(amount) +
-      Number(charges);
-    const newUserAmountWithdrawn =
-      Number(validUserDetails.userEarnings.amountWithdrawn) -
-      Number(amount) -
-      Number(charges);
+    const { amount, userId, id, reason = "", returnAmount } = req.body;
 
     if (returnAmount) {
-      await validUserDetails.updateOne({
-        userEarnings: {
-          ...validUserDetails.userEarnings,
-          balance: newUserBalance,
-          amountWithdrawn: newUserAmountWithdrawn,
-        },
-      });
+      await userService.incrementBalance(userId, Number(amount));
     }
 
-    // Updating our own withdrawal request
-    await WithdrawalRequests.findByIdAndUpdate(id, {
-      $set: { status: "disapproved" },
-    });
+    await supabase
+      .from("withdrawal_requests")
+      .update({ status: "disapproved" })
+      .eq("id", id);
 
-    // Creates notitfication
     const notification = {
       userId: userId,
       title: "Withdrawal Disapproved",
       message: `Oops, your withdrawal of ₦${numeral(amount).format(
         "0,0.00"
-      )} has been disapproved ${reason}, kindly check your withdrawal history for confirmation.`,
+      )} has been disapproved ${reason}.`,
       type: "withdraw",
     };
-
-    // Send notification to user
     await sendNotitfication(notification);
 
     return res

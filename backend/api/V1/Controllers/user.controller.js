@@ -1,85 +1,120 @@
-import UserDetails from "../../V1/Models/user-details.model.js";
-import Admin from "../Models/admin.model.js";
-import User from "../Models/user.model.js";
-import useExternalApi from "../utils/client.js";
+import { userService, userDetailsService, adminService, notificationService } from "../services/supabaseDb.service.js";
 import { ErrorHandler } from "../utils/error.js";
 import { sendNotitfication } from "../utils/notification.js";
+import useExternalApi from "../utils/client.js";
+import pocketfiService from "../services/pocketfi.service.js";
 
 export const getUserDetails = async (req, res, next) => {
   try {
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
+    const userId = req.user.id || req.user._id;
+    const validUser = await userService.findById(userId) || await userService.findByEmail(req.user.email);
     if (!validUser) {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);
     }
 
-    // Destructures user object
-    const { _id, __v, iat, createdAt, updatedAt, role, ...rest } = req.user;
-
-    const validUserDetails = await UserDetails.findOne({
-      userId: validUser._id,
-    });
-    if (!validUserDetails) {
-      return res.status(200).json({ ...rest });
-    }
+    const { id, password, ...restUser } = validUser;
+    const validUserDetails = await userDetailsService.getByUserId(validUser.id);
 
     let referrals = [];
-    if (validUser.referrals.length) {
-      referrals = await Promise.all(
-        validUser.referrals.map(async (referral) => {
-          const user = await User.findById(referral.userId);
-          if (!user) {
-            return {
-              username: "No username",
-              firstname: "No firstname",
-              lastname: "No lastname",
-              isEmailVerified: false,
-              isMember: false,
-              isBanned: false,
-              image: "",
-            };
+    try {
+      // 1. Collect user IDs/references from validUser.referrals JSON
+      const refList = Array.isArray(validUser.referrals) ? validUser.referrals : [];
+      const refUserIds = refList
+        .map((r) => (typeof r === "string" ? r : r?.userId || r?.id || r?._id))
+        .filter(Boolean);
+
+      // 2. Also find users who registered using this user's referral code/username
+      let dbReferred = [];
+      if (validUser.username) {
+        try {
+          const { data: byRef } = await supabase
+            .from("users")
+            .select("id, username, firstname, lastname, email, avatar_url, image, is_member, is_email_verified, created_at")
+            .or(`referred_by.eq.${validUser.username},referred_by.eq.${validUser.id}`);
+          if (byRef && byRef.length) {
+            dbReferred = byRef;
           }
+        } catch (e) {
+          // ignore error if supabase direct fails
+        }
+      }
 
-          const {
-            username,
-            email,
-            isEmailVerified,
-            isMember,
-            isBanned,
-            image,
-            firstname,
-            lastname,
-            ...rest
-          } = user.toObject();
+      // 3. Resolve refUserIds
+      const resolvedFromList = (
+        await Promise.all(
+          refUserIds.map(async (uId) => {
+            try {
+              return await userService.findById(uId);
+            } catch {
+              return null;
+            }
+          })
+        )
+      ).filter(Boolean);
 
-          return {
-            username,
-            firstname,
-            lastname,
-            isEmailVerified,
-            isMember,
-            isBanned,
-            image,
-          };
-        })
-      );
+      // 4. Combine and deduplicate
+      const seen = new Set();
+      const combined = [...resolvedFromList, ...dbReferred].filter((u) => {
+        if (!u || !u.id || seen.has(u.id)) return false;
+        if (u.id === validUser.id) return false; // exclude self
+        seen.add(u.id);
+        return true;
+      });
+
+      referrals = combined.map((u) => ({
+        id: u.id,
+        username: u.username || "",
+        firstname: u.firstname || "",
+        lastname: u.lastname || "",
+        email: u.email || "",
+        isMember: Boolean(u.is_member ?? u.isMember),
+        isEmailVerified: Boolean(u.is_email_verified ?? u.isEmailVerified),
+        image: u.avatar_url || u.avatarUrl || u.image || "",
+        createdAt: u.created_at || u.createdAt || null,
+      }));
+    } catch (err) {
+      console.warn("Referrals resolution fallback:", err);
+      referrals = [];
     }
 
-    // Destructures user details object
-    const {
-      userId,
-      _id: detailsId,
-      __v: detailsV,
-      createdAt: detailsCreatedAt,
-      updatedAt: detailsUpdatedAt,
-      ...details
-    } = validUserDetails._doc;
-    const uDetails = { ...details, referrals };
+    const details = validUserDetails || {};
 
-    return res.json({ ...rest, ...uDetails, id: _id });
+    // Get dedicated PocketFi virtual account if already generated
+    const storedVA = pocketfiService.getStoredVirtualAccountByNumber
+      ? pocketfiService.getStoredVirtualAccounts?.()[validUser.id] || null
+      : null;
+
+    const uDetails = {
+      ...details,
+      referrals,
+      bankDetails: {
+        bankName: details.bank_name || details.bankName || "",
+        accountNumber: details.account_number || details.accountNumber || "",
+        accountName: details.account_name || details.accountName || "",
+      },
+      userEarnings: {
+        balance: validUser.balance || 0,
+        pendingEarnings: validUser.pendingBalance || 0,
+        totalEarnings: validUser.balance || 0,
+      },
+      walletDetails: {
+        balance: validUser.balance || 0,
+        bankName: storedVA?.bankName || "Paga / PocketFi",
+        accountNumber: storedVA?.accountNumber || "",
+        accountName: storedVA?.accountName || `${validUser.firstname} ${validUser.lastname}`,
+      },
+    };
+
+    return res.json({
+      ...restUser,
+      ...uDetails,
+      id: validUser.id,
+      _id: validUser.id,
+      image: validUser.avatarUrl || validUser.image,
+    });
   } catch (error) {
-    console.log(error);
+    console.error("getUserDetails error:", error);
     next(error);
   }
 };
@@ -96,53 +131,37 @@ export const addUserDetails = async (req, res, next) => {
       userEarnings,
     } = req.body;
 
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
+    const userId = req.user.id || req.user._id;
+    const validUser = await userService.findById(userId) || await userService.findByEmail(req.user.email);
     if (!validUser) {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);
     }
-    let referrer = await User.findOne({ username: validUser.referredBy });
-    //If NO referrer makes an admin referrer
-    if (!referrer) referrer = await User.findOne({ role: "admin" });
-    let referrerDetails = await UserDetails.findOne({ userId: referrer._id });
-    if (!referrerDetails) {
-      referrer = await User.findOne({ role: "admin" });
-      referrerDetails = await UserDetails.findOne({ userId: referrer._id });
-    }
-    const adminDatas = await Admin.find();
-    const adminData = adminDatas[0];
 
-    // Checks for user details
-    const userDetails = await UserDetails.findOne({ userId: validUser._id });
-    if (userDetails) {
-      const error = ErrorHandler(400, "User's details already exists.");
-      return res.status(400).json(error);
-    }
+    let referrer = await userService.findByUsername(validUser.referredBy);
+    if (!referrer) referrer = await userService.findAdmin();
 
-    // Creates user details for user
-    const newUserDetails = new UserDetails({
-      userId: validUser._id,
-      location,
-      religion,
-      gender,
-      dateOfBirth,
-      bankDetails,
-      userEarnings,
-    });
+    const adminData = await adminService.getAdminSettings();
+
     if (image) {
-      await User.findOneAndUpdate({ email: req.user.email }, { image });
+      await userService.updateUser(validUser.id, { avatarUrl: image, image });
     }
-    if (referrerDetails) {
-      referrerDetails.userEarnings = {
-        ...referrerDetails.userEarnings,
-        pendingEarnings:
-          referrerDetails.userEarnings.pendingEarnings +
-          0.6 * adminData.membershipFee,
-      };
-      await referrerDetails.save();
+
+    await userDetailsService.upsertUserDetails(validUser.id, {
+      gender,
+      state: location?.state || location,
+      lga: location?.lga || "",
+      bankName: bankDetails?.bankName,
+      accountNumber: bankDetails?.accountNumber,
+      accountName: bankDetails?.accountName,
+    });
+
+    if (referrer) {
+      const bonus = 0.6 * (Number(adminData.membershipFee) || 1000);
+      await userService.updateUser(referrer.id, {
+        pendingBalance: (Number(referrer.pendingBalance) || 0) + bonus,
+      });
     }
-    await newUserDetails.save();
 
     return res.status(200).json({
       failed: false,
@@ -157,201 +176,115 @@ export const addUserDetails = async (req, res, next) => {
 export const generateUserWallet = async (req, res, next) => {
   try {
     const nin = req.query?.nin;
-
-    if (!nin) {
-      return res.status(400).json({ message: "NIN is required" });
-    }
-
-    // Gets base url and private key
-    const baseUrl =
-      process.env.NODE_ENV !== "production"
-        ? process.env.DEMO_MONICREDIT_API
-        : process.env.LIVE_MONICREDIT_API;
-    const priKey =
-      process.env.NODE_ENV !== "production"
-        ? process.env.DEMO_PRI_KEY
-        : process.env.PROD_PRI_KEY;
-
-    // Creates user data
-    const userData = {
-      private_key: priKey,
-      first_name: req.user.firstname,
-      last_name: req.user.lastname,
-      phone: "0" + req.user.phone,
-      email: req.user.email,
-      nin: nin,
-    };
-    let header = {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    };
-
-    // Creates Virtual Account For User
-    const accData = await useExternalApi(
-      `${baseUrl}/payment/virtual-account/create`,
-      "POST",
-      userData,
-      null,
-      header
-    );
-
-    if (!accData.status) {
-      return res
-        .status(400)
-        .json({ message: `Wallet generation failed: ${accData.message}` });
-    }
-    const accDetails = accData.data;
-
-    const user = await User.findById(req.user._id);
-
+    const userId = req.user.id || req.user._id;
+    const user = await userService.findById(userId);
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }
-    user.isNINVerified = true;
-    await user.save();
 
-    const userDetails = await UserDetails.findOne({ userId: req.user._id });
-
-    if (!userDetails) {
-      return res.status(400).json({ message: "User details not found" });
+    await userService.updateUser(user.id, { isNINVerified: true });
+    if (nin) {
+      await userDetailsService.upsertUserDetails(user.id, { nin });
     }
 
-    userDetails.walletDetails = {
-      ...userDetails.walletDetails,
-      customerId: accDetails.customer_id,
-      walletId: accDetails.wallet_id,
-      customerEmail: accDetails.customer_email,
-      bankName: accDetails.bank_name,
-      accountName: accDetails.account_name,
-      accountNumber: accDetails.account_number,
-      balance: accDetails.balance,
-      credit: accDetails.credit,
-      debit: accDetails.debit,
-      reference: accDetails.reference,
-      virtualAccounts: accDetails.virtual_accounts,
-    };
-    userDetails.isNINVerified = true;
-    userDetails.nin = nin;
-    await userDetails.save();
+    // Provision dedicated PocketFi virtual account
+    const vaResult = await pocketfiService.getOrCreateVirtualAccount(user);
 
-    return res.status(200).json({ message: "Wallet created successfully" });
+    return res.status(200).json({
+      message: "Wallet created successfully",
+      walletDetails: {
+        bankName: vaResult.bankName,
+        accountNumber: vaResult.accountNumber,
+        accountName: vaResult.accountName,
+      },
+    });
   } catch (error) {
     next(error);
   }
 };
 
-// Updates user details
 export const updateUserDetails = async (req, res, next) => {
-  const { location, religion, dateOfBirth, image, bankDetails, userEarnings } =
-    req.body;
+  try {
+    const {
+      firstname,
+      lastname,
+      phone,
+      location,
+      religion,
+      dateOfBirth,
+      image,
+      bankDetails,
+      gender,
+    } = req.body;
+    const userId = req.user.id || req.user._id;
 
-  // Checks for valid user
-  const validUser = await User.findOne({ email: req.user.email });
-  if (!validUser) {
-    const error = ErrorHandler(404, "There's no user with this email.");
-    return res.status(404).json(error);
+    const userUpdates = {};
+    if (image) userUpdates.avatarUrl = image;
+    if (firstname) userUpdates.firstname = firstname;
+    if (lastname) userUpdates.lastname = lastname;
+    if (phone) userUpdates.phone = phone;
+
+    if (Object.keys(userUpdates).length > 0) {
+      await userService.updateUser(userId, userUpdates);
+    }
+
+    await userDetailsService.upsertUserDetails(userId, {
+      gender: gender,
+      state: location?.state || (typeof location === "string" ? location : undefined),
+      lga: location?.lga || location?.LGA,
+      religion: religion,
+      dateOfBirth: dateOfBirth,
+      bankName: bankDetails?.bankName,
+      accountNumber: bankDetails?.accountNumber,
+      accountName: bankDetails?.accountName,
+    });
+
+    return res.status(200).json({ message: "User details updated successfully", failed: false });
+  } catch (error) {
+    next(error);
   }
-
-  // Checks for user details
-  const userDetails = await UserDetails.findOne({ userId: req.user._id });
-  if (!userDetails) {
-    const error = ErrorHandler(400, "User's details does not exists.");
-    return res.status(400).json(error);
-  }
-
-  // Code to update user details
-  res.status(200).json("newUserDetails");
-  next();
 };
 
-// Updates user details
 export const becomeAMember = async (req, res, next) => {
   try {
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
+    const userId = req.user.id || req.user._id;
+    const validUser = await userService.findById(userId);
     if (!validUser) {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);
     }
-    let userDetails = await UserDetails.findOne({ userId: req.user._id });
-    let referrer = await User.findOne({ username: validUser.referredBy });
-    //If NO referrer makes an admin referrer
-    if (!referrer) referrer = await User.findOne({ role: "admin" });
-    let referrerDetails = await UserDetails.findOne({ userId: referrer._id });
-    if (!referrerDetails) {
-      referrer = await User.findOne({ role: "admin" });
-      referrerDetails = await UserDetails.findOne({ userId: referrer._id });
-    }
-    // Gets admin data
-    const adminDatas = await Admin.find();
-    const adminData = adminDatas[0];
 
-    // Verifies payment
-    const balanceIsNotValid =
-      userDetails.userEarnings.balance < adminData.membershipFee;
-    if (balanceIsNotValid) {
+    const adminData = await adminService.getAdminSettings();
+    const membershipFee = Number(adminData.membershipFee) || 1000;
+
+    if ((Number(validUser.balance) || 0) < membershipFee) {
       return res.status(406).json({
         failed: true,
         message: "Insufficient balance. Fund your wallet to continue.",
       });
     }
 
-    // Updates referrer earning details
-    referrerDetails.userEarnings = {
-      ...referrerDetails.userEarnings,
-      pendingEarnings:
-        Number(referrerDetails.userEarnings.pendingEarnings) -
-        0.6 * Number(adminData.membershipFee),
-      totalEarnings:
-        Number(referrerDetails.userEarnings.totalEarnings) +
-        0.6 * Number(adminData.membershipFee),
-      balance:
-        Number(referrerDetails.userEarnings.balance) +
-        0.6 * Number(adminData.membershipFee),
-    };
-    referrerDetails.walletDetails = {
-      ...referrerDetails.walletDetails,
-      balance:
-        Number(referrerDetails.walletDetails.balance) +
-        0.6 * Number(adminData.membershipFee),
-    };
+    // Deduct user balance
+    await userService.decrementBalance(validUser.id, membershipFee);
+    await userService.updateUser(validUser.id, { isMember: true });
 
-    // Updates user balance
-    userDetails.userEarnings = {
-      ...userDetails.userEarnings,
-      balance:
-        Number(userDetails.userEarnings.balance) -
-        Number(adminData.membershipFee),
-    };
-    userDetails.walletDetails = {
-      ...userDetails.walletDetails,
-      balance:
-        Number(userDetails.walletDetails.balance) -
-        Number(adminData.membershipFee),
-    };
+    // Referrer bonus
+    let referrer = await userService.findByUsername(validUser.referredBy);
+    if (referrer) {
+      const bonus = 0.6 * membershipFee;
+      await userService.incrementBalance(referrer.id, bonus);
+    }
 
-    // Makes user a member
-    await User.findByIdAndUpdate(req.user._id, { isMember: true });
-
-    // Saves user and referrer wallet details
-    await referrerDetails.save();
-    await userDetails.save();
-
-    // Creates notitfication
+    // Notification
     const notification = {
-      userId: req.user._id,
+      userId: validUser.id,
       title: "Registration Completed!",
-      message: `Congratulations ${req.user.firstname}, you are now a member of gigsflix, you are now eligible to enjoy all earning features available on this platform.`,
+      message: `Congratulations ${validUser.firstname}, you are now a member of Zargigs, you are now eligible to enjoy all earning features available on this platform.`,
       type: "verification",
     };
-
-    // Send notification to user
     await sendNotitfication(notification);
 
-    // Returns response
-    return res
-      .status(200)
-      .json({ failed: false, message: "You are now a member" });
+    return res.status(200).json({ failed: false, message: "You are now a member" });
   } catch (error) {
     next(error);
   }

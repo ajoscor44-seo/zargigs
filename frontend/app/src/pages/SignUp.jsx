@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react";
 import SignupLayout from "../Layouts/SignupLayout";
-import { useParams } from "react-router-dom/cjs/react-router-dom";
+import { useParams, useHistory } from "react-router-dom/cjs/react-router-dom";
 import PageSlider from "../components/PageSlider/PageSlider";
 import { useAuth } from "../context/AuthContext";
 
 const SignUp = ({ setSignedIn }) => {
-  const { signupUser, adminData } = useAuth();
+  const { signupUser, loginUser, fetchUserData, adminData, setDashboardMode } = useAuth();
+  const history = useHistory();
   const { username } = useParams();
-  const [formData, setFormData] = useState(
-    username ? { referredBy: username } : {}
-  );
+  const [formData, setFormData] = useState({
+    accountType: "earner",
+    ...(username ? { referredBy: username } : {}),
+  });
   const pagesData = [
     {
       bgColor: "bg-white",
-      title: `Sign Up on ${adminData?.appName || "Gigsflix"}`,
+      title: `Sign Up on ${adminData?.appName || "Zargigs"}`,
       info: "Registration is simple, fast and free!",
       formInputs: [
         {
@@ -40,14 +42,15 @@ const SignUp = ({ setSignedIn }) => {
         },
         {
           label: "Referrer's Username (Optional)",
-          note: `Please enter the username of the person who referred you to ${adminData?.appName}. You can leave this empty if you wish.`,
+          note: `Please enter the username of the person who referred you to ${adminData?.appName || "Zargigs"}. You can leave this empty if you wish.`,
           placeholder: "Enter Your Referrer's Username",
           icon: "referrer",
           type: "text",
           error: "An error occurred here",
           isError: false,
-          value: username || formData.referredBy,
+          value: username || formData.referredBy || "",
           name: "referredBy",
+          disabled: !!username,
         },
       ],
     },
@@ -64,7 +67,7 @@ const SignUp = ({ setSignedIn }) => {
           type: "text",
           error: "An error occurred here",
           isError: false,
-          value: formData.username,
+          value: formData.username || "",
           name: "username",
         },
         {
@@ -75,18 +78,18 @@ const SignUp = ({ setSignedIn }) => {
           type: "email",
           error: "An error occurred here",
           isError: false,
-          value: formData.email,
+          value: formData.email || "",
           name: "email",
         },
         {
           label: "Phone No",
-          note: "Please input your registered phone.",
+          note: "Please input your 10-digit registered phone number (without leading 0).",
           placeholder: "8012345678",
           icon: "phone",
           type: "tel",
           error: "An error occurred here",
           isError: false,
-          value: formData.phone,
+          value: formData.phone || "",
           name: "phone",
           maxLength: 10,
         },
@@ -94,29 +97,29 @@ const SignUp = ({ setSignedIn }) => {
     },
     {
       bgColor: "bg-white",
-      title: "Last Lap!",
-      info: "Make your account solely yours.",
+      title: "Security & Access",
+      info: "Create a secure password for your account.",
       formInputs: [
         {
           label: "Password",
-          note: "Password must contain atleast 6 Characters",
-          placeholder: "Password",
+          note: "Password must contain at least 6 characters",
+          placeholder: "Enter Password",
           icon: "password",
           type: "password",
           error: "An error occurred here",
           isError: false,
-          value: formData.password,
+          value: formData.password || "",
           name: "password",
         },
         {
           label: "Confirm Password",
-          note: "Password must contain atleast 6 Characters",
+          note: "Re-enter your password to confirm",
           placeholder: "Confirm Password",
           icon: "password",
           type: "password",
           error: "An error occurred here",
           isError: false,
-          value: formData.confirmPassword,
+          value: formData.confirmPassword || "",
           name: "confirmPassword",
         },
       ],
@@ -124,7 +127,7 @@ const SignUp = ({ setSignedIn }) => {
   ];
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [pages, setPages] = useState(pagesData);
+  const pages = pagesData;
 
   const handleInputError = (currentPage) => {
     if (currentPage == 0) {
@@ -189,48 +192,54 @@ const SignUp = ({ setSignedIn }) => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (error) setError(null);
   };
 
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
       const res = await signupUser(formData);
-      setIsLoading(false);
       if (res.failed) {
+        setIsLoading(false);
         return setError(
           res.message || "An error occurred. Please try again later."
         );
       } else {
         setError(null);
-        setPages(pagesData);
-        setSignedIn(formData.email);
-        sessionStorage.setItem("auth-user-email", formData.email);
-        return;
+        sessionStorage.removeItem("auth-user-email");
+        try {
+          await loginUser(formData.email.trim(), formData.password);
+          if (formData.accountType) {
+            setDashboardMode(formData.accountType);
+          }
+          await fetchUserData();
+          setIsLoading(false);
+          return history.push("/dashboard");
+        } catch (loginErr) {
+          setIsLoading(false);
+          return history.push("/login?registered=true");
+        }
       }
     } catch (error) {
+      setIsLoading(false);
       return console.error(error);
     }
   };
 
   return (
-    <div
-      className="flex flex-col justify-center items-center font-primary"
-      style={{ height: "100vh" }}
-    >
-      <SignupLayout>
-        <div className="w-auto flex-1 border py-5 rounded-sm">
-          <PageSlider
-            errorMsg={error}
-            setError={setError}
-            isLoading={isLoading}
-            pages={pages}
-            handleChange={handleChange}
-            handleSubmit={handleSubmit}
-            handleInputError={handleInputError}
-          />
-        </div>
-      </SignupLayout>
-    </div>
+    <SignupLayout referralUsername={username}>
+      <PageSlider
+        errorMsg={error}
+        setError={setError}
+        isLoading={isLoading}
+        pages={pages}
+        formData={formData}
+        adminData={adminData}
+        handleChange={handleChange}
+        handleSubmit={handleSubmit}
+        handleInputError={handleInputError}
+      />
+    </SignupLayout>
   );
 };
 

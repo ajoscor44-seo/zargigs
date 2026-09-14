@@ -1,38 +1,34 @@
-import Complaint from "../Models/complaint.model.js";
-import User from "../Models/user.model.js";
+import { notificationService } from "../services/supabaseDb.service.js";
+import { supabase } from "../config/supabase.config.js";
 import { ErrorHandler } from "../utils/error.js";
 import { sendNotitfication } from "../utils/notification.js";
 
 export const postComplaint = async (req, res, next) => {
   const { complaint, proof } = req.body;
+  const userId = req.user.id || req.user._id;
 
   try {
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
-    if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
-    }
+    const { data, error } = await supabase
+      .from("complaints")
+      .insert({
+        user_id: userId,
+        subject: complaint || "Support Request",
+        message: complaint || "",
+        status: "pending",
+      })
+      .select()
+      .single();
 
-    const newComplaint = new Complaint({
-      createdBy: req.user._id,
-      complaint,
-      screenshot: proof,
-      isResolved: false,
-    });
+    if (error) throw error;
 
-    await newComplaint.save();
-
-    // Creates notitfication
     const notification = {
-      userId: req.user._id,
+      userId,
       title: "Complaint Received",
-      message: `Your complaint "${complaint}" has been received by the support team and will be resolved soon, while that's done, visit the earning page to continue earning on gigsflix.`,
+      message: `Your complaint has been received by the support team and will be resolved soon.`,
       type: "notify",
     };
-
-    // Send notification to user
     await sendNotitfication(notification);
+
     return res.status(200).json({ failed: false, message: "Complaint Posted" });
   } catch (error) {
     next(error);
@@ -42,48 +38,30 @@ export const postComplaint = async (req, res, next) => {
 export const getAllComplaint = async (req, res, next) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
-  const { status } = req.query;
-
-  const complaintQuery = {};
-  if (status == "pending") complaintQuery.isResolved = false;
-  if (status == "resolved") complaintQuery.isResolved = true;
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
 
   try {
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
-    if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
-    }
+    const { data: complaints, count, error } = await supabase
+      .from("complaints")
+      .select("*, users:user_id(firstname, lastname, username, email)", { count: "exact" })
+      .order("created_at", { ascending: false })
+      .range(from, to);
 
-    const complaints = await Complaint.find(complaintQuery)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
+    if (error) throw error;
 
-    const complaints_ = await Promise.all(
-      complaints.map(async (complaint) => {
-        const { updatedAt, createdBy, createdAt, __v, _id, ...rest } =
-          complaint?.toObject();
-        const complaintPoster = await User.findOne({ _id: createdBy });
-        const {
-          updatedAt: posterUAt,
-          createdBy: posterCBy,
-          createdAt: posterCAt,
-          __v: posterV,
-          _id: posterId,
-          ...posterDetails
-        } = complaintPoster?.toObject();
+    const complaints_ = (complaints || []).map((c) => ({
+      id: c.id,
+      _id: c.id,
+      complaint: c.message,
+      message: c.message,
+      isResolved: c.status === "resolved",
+      status: c.status,
+      createdAt: c.created_at,
+      ...(c.users || {}),
+    }));
 
-        return {
-          id: _id,
-          ...posterDetails,
-          ...rest,
-        };
-      })
-    );
-
-    const totalCount = await Complaint.countDocuments();
+    const totalCount = count || 0;
     const totalPages = Math.ceil(totalCount / limit);
 
     return res.status(200).json({
@@ -102,49 +80,31 @@ export const getAllComplaint = async (req, res, next) => {
 export const getUserComplaint = async (req, res, next) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+  const userId = req.user.id || req.user._id;
 
   try {
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
-    if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
-    }
+    const { data: complaints, count, error } = await supabase
+      .from("complaints")
+      .select("*", { count: "exact" })
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .range(from, to);
 
-    const complaints = await Complaint.find({ createdBy: req.user._id })
-      .skip((page - 1) * limit)
-      .limit(limit);
+    if (error) throw error;
 
-    const complaints_ = await Promise.all(
-      complaints.map(async (complaint) => {
-        const {
-          updatedAt,
-          createdBy,
-          createdAt,
-          isResolved,
-          __v,
-          _id,
-          ...rest
-        } = complaint?.toObject();
-        const complaintPoster = await User.findOne({ _id: createdBy });
-        const {
-          updatedAt: posterUAt,
-          createdBy: posterCBy,
-          createdAt: posterCAt,
-          __v: posterV,
-          _id: posterId,
-          ...posterDetails
-        } = complaintPoster?.toObject();
+    const complaints_ = (complaints || []).map((c) => ({
+      id: c.id,
+      _id: c.id,
+      complaint: c.message,
+      message: c.message,
+      isResolved: c.status === "resolved",
+      status: c.status,
+      createdAt: c.created_at,
+    }));
 
-        return {
-          id: _id,
-          ...posterDetails,
-          ...rest,
-        };
-      })
-    );
-
-    const totalCount = await Complaint.countDocuments();
+    const totalCount = count || 0;
     const totalPages = Math.ceil(totalCount / limit);
 
     return res.status(200).json({
@@ -164,34 +124,24 @@ export const resolveComplaint = async (req, res, next) => {
   const { id } = req.query;
 
   try {
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
-    if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
+    const { data: complaint, error } = await supabase
+      .from("complaints")
+      .update({ status: "resolved" })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error || !complaint) {
+      const err = ErrorHandler(404, "Complaint not found");
+      return res.status(404).json(err);
     }
 
-    const complaint = await Complaint.findOneAndUpdate(
-      { _id: id },
-      {
-        isResolved: true,
-      }
-    );
-
-    if (!complaint) {
-      const error = ErrorHandler(404, "Complaint not found");
-      return res.status(404).json(error);
-    }
-
-    // Creates notitfication
     const notification = {
-      userId: req.user._id,
+      userId: complaint.user_id,
       title: "Issue Resolved!",
-      message: `Your complaint "${complaint.complaint}" has been resolved by the support team. Thanks for choosing gigsflix and don't forget the help section if you face any other error again.`,
+      message: `Your complaint has been resolved by the support team.`,
       type: "notify",
     };
-
-    // Send notification to user
     await sendNotitfication(notification);
 
     return res.status(200).json({

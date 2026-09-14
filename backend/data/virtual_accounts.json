@@ -1,0 +1,32 @@
+{
+  "e0a39436-7a77-4465-a1de-c17bd6c27b60": {
+    "bankName": "PAGA",
+    "accountNumber": "1078486871",
+    "accountName": "Adekiya",
+    "updatedAt": "2026-09-12T22:40:04.621Z"
+  },
+  "acct_1078486871": {
+    "userId": "joscor@wsv.com.ng",
+    "bankName": "PAGA",
+    "accountNumber": "1078486871",
+    "accountName": "Adekiya"
+  },
+  "acct_7005309527": {
+    "userId": "e0a39436-7a77-4465-a1de-c17bd6c27b60",
+    "bankName": "KUDA",
+    "accountNumber": "7005309527",
+    "accountName": "Adekiya"
+  },
+  "26a4cd85-1627-4d34-b046-e221e464281c": {
+    "bankName": "PAGA",
+    "accountNumber": "1078486871",
+    "accountName": "Adekiya",
+    "updatedAt": "2026-09-12T22:38:50.217Z"
+  },
+  "joscor@wsv.com.ng": {
+    "bankName": "PAGA",
+    "accountNumber": "1078486871",
+    "accountName": "Adekiya",
+    "updatedAt": "2026-09-12T22:40:04.622Z"
+  }
+}

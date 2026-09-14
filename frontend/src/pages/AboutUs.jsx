@@ -36,11 +36,7 @@ const AboutUs = () => {
     },
   ];
 
-  return (
-    <div className="border">
-      <Legal title={"About Us"} data={data} />
-    </div>
-  );
+  return <Legal title={"About Us"} data={data} />;
 };
 
 export default AboutUs;

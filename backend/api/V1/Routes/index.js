@@ -12,12 +12,16 @@ import announcementRoutes from "./announcement.route.js";
 import creatorRoutes from "./create-task.route.js";
 import earnerRoutes from "./earn-task.route.js";
 import fundingRoutes from "./funding.route.js";
+import marketplaceRoutes from "./marketplace.route.js";
+import walletRoutes from "./wallet.route.js";
 import authorizeAdmin from "../Middleware/authorization.js";
 import { subscribe } from "../utils/notification.js";
 
 const router = express.Router();
 
 router.use("/user", userRoutes);
+router.use("/wallet", walletRoutes);
+router.use("/marketplace", marketplaceRoutes);
 router.use("/activities", activityRoutes);
 router.use("/notifications", notificationRoutes);
 router.use("/tasks", tasksRoutes);

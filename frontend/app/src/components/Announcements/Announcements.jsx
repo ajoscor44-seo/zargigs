@@ -9,13 +9,11 @@ const Announcements = () => {
     try {
       const response = await axios.get("/api/v1/announcement");
 
-      if (response.data.failed) {
-        return error;
+      if (response.data && !response.data.failed && Array.isArray(response.data.data)) {
+        setAnnouncements(response.data.data);
       }
-
-      return setAnnouncements(response.data.data);
-    } catch (error) {
-      return error;
+    } catch (err) {
+      // Gracefully ignore error
     }
   };
 

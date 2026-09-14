@@ -1,56 +1,99 @@
 import React from "react";
-import { HiMiniSpeakerWave } from "react-icons/hi2";
-import { IoNotifications } from "react-icons/io5";
-import { TiWarning } from "react-icons/ti";
-import { MdTaskAlt } from "react-icons/md";
-import { FcAdvertising } from "react-icons/fc";
-import { BiMoneyWithdraw } from "react-icons/bi";
-import { GiWallet } from "react-icons/gi";
-import { RiVerifiedBadgeFill } from "react-icons/ri";
+import {
+  FiVolume2,
+  FiAlertTriangle,
+  FiCheckCircle,
+  FiDollarSign,
+  FiCreditCard,
+  FiShield,
+  FiBell,
+  FiClock,
+} from "react-icons/fi";
+import { RiMegaphoneLine } from "react-icons/ri";
 import formatDate from "../../hooks/formatDate";
 
 const Notification = ({ notification, markAsRead }) => {
-  const stateStyle = notification.read
-    ? "border"
-    : "border-l-4 border-green-500";
+  const getIconAndColor = (type) => {
+    switch (type) {
+      case "announcement":
+        return {
+          icon: <FiVolume2 size={18} />,
+          bg: "bg-amber-50 text-amber-600",
+        };
+      case "warning":
+        return {
+          icon: <FiAlertTriangle size={18} />,
+          bg: "bg-rose-50 text-rose-600",
+        };
+      case "task":
+        return {
+          icon: <FiCheckCircle size={18} />,
+          bg: "bg-emerald-50 text-emerald-600",
+        };
+      case "advert":
+        return {
+          icon: <RiMegaphoneLine size={18} />,
+          bg: "bg-purple-50 text-purple-600",
+        };
+      case "withdraw":
+        return {
+          icon: <FiCreditCard size={18} />,
+          bg: "bg-teal-50 text-teal-600",
+        };
+      case "fund":
+        return {
+          icon: <FiDollarSign size={18} />,
+          bg: "bg-blue-50 text-blue-600",
+        };
+      case "verification":
+        return {
+          icon: <FiShield size={18} />,
+          bg: "bg-emerald-50 text-emerald-600",
+        };
+      default:
+        return {
+          icon: <FiBell size={18} />,
+          bg: "bg-slate-100 text-slate-600",
+        };
+    }
+  };
+
+  const { icon, bg } = getIconAndColor(notification.type);
+
   return (
     <div
-      onClick={() => markAsRead(notification._id, notification.read)}
-      className={
-        stateStyle +
-        " hover:bg-slate-100 grid grid-flow-col gap-3 items-start font-primary p-4 cursor-pointer"
-      }
+      onClick={() => markAsRead(notification._id || notification.id, notification.read)}
+      className={`p-4 sm:p-5 flex items-start gap-4 transition-colors cursor-pointer hover:bg-slate-50/80 ${
+        !notification.read ? "bg-emerald-50/20" : ""
+      }`}
     >
-      <div className="w-12 h-12 rounded-full border-2 flex justify-center items-center overflow-hidden">
-        {notification.type == "announcement" ? (
-          <HiMiniSpeakerWave
-            size={30}
-            className="object-cover text-orange-600"
-          />
-        ) : notification.type == "warning" ? (
-          <TiWarning size={30} className="object-cover text-red-600" />
-        ) : notification.type == "task" ? (
-          <MdTaskAlt size={30} className="object-cover text-green-600" />
-        ) : notification.type == "advert" ? (
-          <FcAdvertising size={30} className="object-cover" />
-        ) : notification.type == "withdraw" ? (
-          <BiMoneyWithdraw size={30} className="object-cover text-green-300" />
-        ) : notification.type == "fund" ? (
-          <GiWallet size={30} className="object-cover text-sky-400" />
-        ) : notification.type == "verification" ? (
-          <RiVerifiedBadgeFill
-            size={30}
-            className="object-cover text-green-500"
-          />
-        ) : (
-          <IoNotifications size={30} className="object-cover text-blue-400" />
-        )}
+      <div
+        className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center shrink-0 ${bg}`}
+      >
+        {icon}
       </div>
-      <div className="flex flex-col">
-        <h2 className="font-bold">{notification.title}</h2>
-        <span className="text-sm">{notification.message}</span>
-        <div className="flex justify-end items-center mt-2">
-          <span className="text-xs">{formatDate(notification.createdAt)}</span>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between gap-2 mb-1">
+          <h4
+            className={`text-xs sm:text-sm font-bold truncate ${
+              !notification.read ? "text-slate-900" : "text-slate-700"
+            }`}
+          >
+            {notification.title}
+          </h4>
+          {!notification.read && (
+            <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+          )}
+        </div>
+
+        <p className="text-xs text-slate-500 font-normal leading-relaxed mb-2">
+          {notification.message}
+        </p>
+
+        <div className="flex items-center gap-1 text-[11px] text-slate-400 font-medium">
+          <FiClock size={12} />
+          <span>{formatDate(notification.createdAt)}</span>
         </div>
       </div>
     </div>
@@ -58,3 +101,4 @@ const Notification = ({ notification, markAsRead }) => {
 };
 
 export default Notification;
+

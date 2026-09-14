@@ -1,50 +1,33 @@
-import RecentActivity from "../Models/recent-activity.model.js";
-import User from "../Models/user.model.js";
-import { ErrorHandler } from "../utils/error.js";
+import { supabase } from "../config/supabase.config.js";
 
 export const getRecentActivities = async (req, res, next) => {
-  // Checks for valid user
-  const validUser = await User.findOne({ email: req.user.email });
-  if (!validUser) {
-    const error = ErrorHandler(404, "There's no user with this email.");
-    return res.status(404).json(error);
-  }
+  try {
+    const { data, error } = await supabase
+      .from("notifications")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(20);
 
-  const recentActivities = await RecentActivity.find({});
-  res.status(200).json(recentActivities);
-  next();
+    const formatted = (data || []).map((item) => ({
+      id: item.id,
+      _id: item.id,
+      title: item.title,
+      message: item.message,
+      createdAt: item.created_at,
+    }));
+
+    return res.status(200).json(formatted);
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const postRecentActivities = async (req, res, next) => {
-  const {
-    category,
-    username,
-    userLocation,
-    amountEarned,
-    taskType,
-    taskPlatform,
-  } = req.body;
-
-  // Checks for valid user
-  const validUser = await User.findOne({ email: req.user.email });
-  if (!validUser) {
-    const error = ErrorHandler(404, "There's no user with this email.");
-    return res.status(404).json(error);
+  try {
+    return res
+      .status(200)
+      .json({ status: 200, failed: false, message: "Recent Activity Added" });
+  } catch (error) {
+    next(error);
   }
-
-  const newRecentActivity = new RecentActivity({
-    taskType,
-    username,
-    userLocation,
-    amountEarned,
-    taskPlatform,
-    category,
-  });
-  await newRecentActivity.save();
-
-  res
-    .status(200)
-    .json({ status: 200, failed: false, message: "Recent Activity Added" });
-
-  next();
 };

@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import FormInput from "../FormInput/FormInput";
+import React from "react";
 import religions from "../../data/religions";
-import { IoArrowForward } from "react-icons/io5";
 import { useAuth } from "../../context/AuthContext";
 import { FaSpinner } from "react-icons/fa6";
+import { FiCalendar, FiArrowLeft, FiCheck } from "react-icons/fi";
 
 const SetBirthReligion = ({
   setActivePage,
@@ -19,115 +18,128 @@ const SetBirthReligion = ({
 }) => {
   const { adminData } = useAuth();
 
-  // Handles change in religion selection
-  const handleChange = (e) => {
-    return setSelectedReligion(e.target.value);
+  const handleReligionChange = (e) => {
+    setSelectedReligion(e.target.value);
   };
 
-  // Handles the date of birth changes
   const handleDOBChange = (e) => {
-    return setUserDOB({
+    setUserDOB({
       ...userDOB,
       [e.target.name]: e.target.value,
     });
   };
 
   return (
-    <div
-      className="font-primary mt-4 mx-3 flex flex-col justify-center"
-      style={{ maxWidth: "400px" }}
-    >
-      <div className="bg-white rounded mb-20 shadow-2xl">
-        <span className="flex justify-between items-center px-3 py-2 border-b text-sm">
-          <h2 className="font-bold">More About You</h2>{" "}
-        </span>
+    <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100/80 space-y-6">
+      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <button
+          onClick={() => setActivePage("bank-details")}
+          className="p-2 text-slate-500 hover:bg-slate-100 rounded-xl transition-colors flex items-center gap-1 text-xs font-bold cursor-pointer"
+        >
+          <FiArrowLeft size={16} />
+          <span>Back</span>
+        </button>
+      </div>
 
-        <div className="p-3 flex flex-col gap-2">
-          <div className="flex flex-col gap-2 py-0">
-            <button
-              onClick={() => setActivePage("upload-profile-pic")}
-              className="bg-gray-400 flex items-center justify-center gap-1 text-white p-2 w-fit rounded"
+      <div className="text-center space-y-2">
+        <div className="w-14 h-14 rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto shadow-sm">
+          <FiCalendar size={28} />
+        </div>
+        <h2 className="text-xl font-extrabold text-slate-900">
+          Birthday & Preferences
+        </h2>
+        <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
+          Tell us a little more about yourself so we can match you with age and community-tailored social tasks.
+        </p>
+      </div>
+
+      <div className="space-y-4 pt-2">
+        <div>
+          <label className="block text-xs font-bold text-slate-600 mb-1.5">
+            Date of Birth
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            <select
+              name="day"
+              value={userDOB?.day || ""}
+              onChange={handleDOBChange}
+              className="bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-xs sm:text-sm px-3 py-3.5 rounded-2xl border border-slate-200 focus:border-emerald-500 outline-none transition-all"
             >
-              <span>Back</span>
-              <span>
-                <IoArrowForward />
-              </span>
-            </button>
-            <p className="text-sm font-semibold">
-              Let's know about you so we can personalise your experience on
-              {adminData?.appName}
-            </p>
+              {days.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
 
-            <span className="flex flex-col gap-2">
-              <h2 className="text-sm font-semibold">Add Your Birthday</h2>
-              <p className="text-sm text-slate-500">
-                Get more tasks that is in line with your birthday. Enter your
-                correct date of birth.{" "}
-                <span className="text-sky-500 font-bold">
-                  No one will see this information
-                </span>
-              </p>
-            </span>
+            <select
+              name="month"
+              value={userDOB?.month || ""}
+              onChange={handleDOBChange}
+              className="bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-xs sm:text-sm px-3 py-3.5 rounded-2xl border border-slate-200 focus:border-emerald-500 outline-none transition-all"
+            >
+              {months.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
+
+            <select
+              name="year"
+              value={userDOB?.year || ""}
+              onChange={handleDOBChange}
+              className="bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-xs sm:text-sm px-3 py-3.5 rounded-2xl border border-slate-200 focus:border-emerald-500 outline-none transition-all"
+            >
+              <option value="">Year</option>
+              {years.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
           </div>
+        </div>
 
-          <div className="flex flex-col">
-            <div className="grid grid-cols-3 gap-3">
-              <FormInput
-                useSelect={true}
-                selections={days}
-                value={userDOB?.day}
-                name={"day"}
-                handleChange={handleDOBChange}
-                hideDropIcon={true}
-              />
-              <FormInput
-                useSelect={true}
-                selections={months}
-                value={userDOB?.month}
-                name={"month"}
-                handleChange={handleDOBChange}
-                hideDropIcon={true}
-              />
-              <FormInput
-                useSelect={true}
-                selections={["Year", ...years]}
-                value={userDOB?.year}
-                name={"year"}
-                handleChange={handleDOBChange}
-                hideDropIcon={true}
-              />
-            </div>
-            <div className="mt-3">
-              <FormInput
-                useSelect={true}
-                selections={religions}
-                value={selectedReligion}
-                name={"religion"}
-                handleChange={handleChange}
-                label={"What's Your Religion?"}
-                note={
-                  "Please select your religion so we can personalise your tasks according to your what you believe in."
-                }
-                hideDropIcon={true}
-              />
-            </div>
-          </div>
-
-          <button
-            onClick={uploadUserDetails}
-            disabled={loading}
-            className="bg-green-500 text-white text-centre font-semibold text-sm py-3 rounded"
+        <div>
+          <label className="block text-xs font-bold text-slate-600 mb-1.5">
+            Religion / Belief (Optional)
+          </label>
+          <select
+            value={selectedReligion || ""}
+            onChange={handleReligionChange}
+            className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-sm px-4 py-3.5 rounded-2xl border border-slate-200 focus:border-emerald-500 outline-none transition-all"
           >
-            {!loading ? (
-              <span>PROCEED TO DASHBOARD</span>
-            ) : (
-              <FaSpinner size={25} />
-            )}
-          </button>
+            <option value="">Select Religion</option>
+            {religions.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
+
+      <button
+        onClick={uploadUserDetails}
+        disabled={loading}
+        className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold rounded-2xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm disabled:opacity-50"
+      >
+        {loading ? (
+          <>
+            <FaSpinner className="animate-spin" size={18} />
+            <span>Completing Setup...</span>
+          </>
+        ) : (
+          <>
+            <FiCheck size={18} />
+            <span>Complete & Enter Dashboard</span>
+          </>
+        )}
+      </button>
     </div>
   );
 };
 
 export default SetBirthReligion;
+

@@ -1,123 +1,70 @@
-import Transfer from "../Models/transfer.model.js";
+import { userService, walletService, notificationService } from "../services/supabaseDb.service.js";
+import { supabase } from "../config/supabase.config.js";
 import bcryptjs from "bcryptjs";
 import numeral from "numeral";
-import User from "../Models/user.model.js ";
 import { ErrorHandler } from "../utils/error.js";
-import userDetails from "../Models/user-details.model.js";
 import { sendNotitfication } from "../utils/notification.js";
 
 export const makeTransfer = async (req, res, next) => {
   try {
-    const { receiver, amount: transferAmount, password, charges } = req.body;
-    const amount = Math.abs(transferAmount);
+    const { receiver, amount: transferAmount, password, charges = 0 } = req.body;
+    const amount = Math.abs(Number(transferAmount));
+
     if (receiver.toLowerCase() === req.user.username.toLowerCase()) {
-      const error = ErrorHandler(404, "You cannot transfer to yourself MUMU");
-      return res.status(404).json(error);
+      const error = ErrorHandler(400, "You cannot transfer to yourself");
+      return res.status(400).json(error);
     }
-    const receiverU = await User.findOne({ username: receiver.toLowerCase() });
-    if (!receiverU) {
+
+    const receiverUser = await userService.findByUsername(receiver.toLowerCase());
+    if (!receiverUser) {
       const error = ErrorHandler(404, "Username does not exist.");
       return res.status(404).json(error);
     }
-    const validUser = await User.findOne({ _id: req.user._id });
-    const validUserDetails = await userDetails.findOne({
-      userId: req.user._id,
-    });
-    const validReceiverDetails = await userDetails.findOne({
-      userId: receiverU._id,
-    });
 
-    if (!validUserDetails) {
-      const error = ErrorHandler(404, "User details does not exist.");
-      return res.status(404).json(error);
-    }
+    const senderId = req.user.id || req.user._id;
+    const senderUser = await userService.findById(senderId);
 
-    if (!validReceiverDetails) {
-      const error = ErrorHandler(404, "Receiver details does not exist.");
-      return res.status(404).json(error);
-    }
-
-    if (!receiverU) {
-      const error = ErrorHandler(404, "Receiver does not exist.");
+    if (!senderUser) {
+      const error = ErrorHandler(404, "Sender does not exist.");
       return res.status(404).json(error);
     }
 
     // Validates password
-    const validPassword =
-      password && bcryptjs.compareSync(password, validUser.password || "");
+    const validPassword = password && bcryptjs.compareSync(password, senderUser.password || "");
     if (!validPassword) {
       const error = ErrorHandler(401, "Wrong Password");
       return res.status(401).json(error);
     }
 
-    // Validates amount to be transferred
-    const validAmount =
-      validUserDetails.userEarnings.balance > amount + charges;
-    if (!validAmount) {
+    const totalDeduction = amount + Number(charges);
+    if ((Number(senderUser.balance) || 0) < totalDeduction) {
       const error = ErrorHandler(406, "Insufficient balance");
       return res.status(406).json(error);
     }
 
-    // Stores transfer
-    const newTransfer = new Transfer({
-      sender: req.user._id,
-      senderUsername: req.user.username,
-      receiver: receiverU._id,
-      receiverUsername: receiverU.username,
-      amountSent: amount,
-      status: "pending",
-    });
-    await newTransfer.save();
+    // Execute transfer
+    await userService.decrementBalance(senderId, totalDeduction);
+    await userService.incrementBalance(receiverUser.id, amount);
+    await walletService.createTransfer(senderId, receiverUser.id, amount, `Transfer to ${receiverUser.username}`);
 
-    // Updates balances and amount withdrawn
-    const newUserBalance =
-      validUserDetails.userEarnings.balance - amount - charges;
-    const newUserAmountWithdrawn =
-      validUserDetails.userEarnings.amountWithdrawn + amount + charges;
-    const newReceiverBalance =
-      validReceiverDetails.userEarnings.balance + amount;
-
-    // Updates users balances
-    await validUserDetails.updateOne({
-      userEarnings: {
-        ...validUserDetails.userEarnings,
-        balance: newUserBalance,
-        amountWithdrawn: newUserAmountWithdrawn,
-      },
-    });
-    await validReceiverDetails.updateOne({
-      userEarnings: {
-        ...validReceiverDetails.userEarnings,
-        balance: newReceiverBalance,
-      },
-    });
-    await Transfer.findByIdAndUpdate(newTransfer._id, { status: "successful" });
-
-    // Sends notification to users
-    const senderNotitfication = {
-      userId: req.user._id,
+    // Send notifications
+    const senderNotification = {
+      userId: senderId,
       title: "Transfer Successful",
-      message: `Your transfer of ₦${numeral(amount).format("0,0.00")} to ${
-        receiverU.username
-      } is successful.`,
+      message: `Your transfer of ₦${numeral(amount).format("0,0.00")} to ${receiverUser.username} is successful.`,
       type: "verification",
     };
-    const receiverNotitfication = {
-      userId: receiverU._id,
+    const receiverNotification = {
+      userId: receiverUser.id,
       title: "Credit Alert!",
-      message: `You just received ₦${numeral(amount).format("0,0.00")} from ${
-        req.user.username
-      }. Check your balance and transfer history for confirmation.`,
+      message: `You just received ₦${numeral(amount).format("0,0.00")} from ${req.user.username}. Check your balance and transfer history for confirmation.`,
       type: "withdraw",
     };
 
-    // Send notification to user
-    await sendNotitfication(receiverNotitfication);
-    await sendNotitfication(senderNotitfication);
+    await sendNotitfication(receiverNotification);
+    await sendNotitfication(senderNotification);
 
-    return res
-      .status(200)
-      .json({ failed: false, message: "Transfer successful" });
+    return res.status(200).json({ failed: false, message: "Transfer successful" });
   } catch (error) {
     next(error);
   }
@@ -125,31 +72,30 @@ export const makeTransfer = async (req, res, next) => {
 
 export const getUserTransfers = async (req, res, next) => {
   try {
-    const transfers = await Transfer.find({
-      $or: [
-        { sender: req.user._id, senderUsername: req.user.username },
-        { receiver: req.user._id, receiverUsername: req.user.username },
-      ],
-    });
+    const userId = req.user.id || req.user._id;
+    const { data: transfers, error } = await supabase
+      .from("transfers")
+      .select("*")
+      .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
+      .order("created_at", { ascending: false });
 
-    if (!transfers) {
-      const error = ErrorHandler(404, "No transfer history");
-      return res.status(404).json(error);
-    }
+    if (error) throw error;
 
-    const transfers_ = transfers.map((transfer) => {
-      const { __v, _id, updatedAt, sender, receiver, ...rest } =
-        transfer.toObject();
-
-      return {
-        id: _id,
-        ...rest,
-      };
-    });
+    const formatted = (transfers || []).map((t) => ({
+      id: t.id,
+      _id: t.id,
+      sender: t.sender_id,
+      receiver: t.receiver_id,
+      amountSent: t.amount,
+      amount: t.amount,
+      narration: t.narration,
+      status: t.status,
+      createdAt: t.created_at,
+    }));
 
     return res.status(200).json({
       failed: false,
-      data: transfers_,
+      data: formatted,
     });
   } catch (error) {
     next(error);
@@ -158,7 +104,12 @@ export const getUserTransfers = async (req, res, next) => {
 
 export const getTransfers = async (req, res, next) => {
   try {
-    //
+    const { data: transfers, error } = await supabase
+      .from("transfers")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    return res.status(200).json({ failed: false, data: transfers });
   } catch (error) {
     next(error);
   }

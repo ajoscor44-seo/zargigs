@@ -9,7 +9,7 @@ const adminSchema = new mongoose.Schema(
     appName: {
       type: String,
       required: true,
-      default: "Gigsflix",
+      default: "Zargigs",
     },
     membershipFee: {
       type: Number,
@@ -34,7 +34,7 @@ const adminSchema = new mongoose.Schema(
     businessMail: {
       type: String,
       required: true,
-      default: "gigsflixtechnologies@gmail.com",
+      default: "zargigstechnologies@gmail.com",
     },
     fundingAccount: {
       type: Object({

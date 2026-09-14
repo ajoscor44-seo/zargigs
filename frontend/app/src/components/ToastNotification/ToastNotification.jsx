@@ -1,43 +1,49 @@
-import React, { useRef } from "react";
+import React from "react";
 import "./ToastNotification.css";
-import { FaCircleCheck } from "react-icons/fa6";
-import { TiDelete, TiWarning } from "react-icons/ti";
+import { FaCircleCheck, FaCircleXmark, FaTriangleExclamation } from "react-icons/fa6";
 
 const ToastNotification = ({ toastNotification }) => {
+  const isSuccess = toastNotification?.errorType === "success";
+  const isDanger =
+    toastNotification?.errorType === "danger" ||
+    toastNotification?.errorType === "error" ||
+    toastNotification?.errorType === "failed";
+
   return (
-    <div className="toast_container">
+    <div className="toast_item">
       <div
-        className="toast_box"
-        style={{
-          color: `var(--${toastNotification.errorType})`,
-          borderInlineStart: `4px solid var(--${toastNotification.errorType})`,
-        }}
+        className={`toast_card ${
+          isSuccess
+            ? "toast_success"
+            : isDanger
+            ? "toast_danger"
+            : "toast_warning"
+        }`}
       >
-        <div className="toast_info">
-          <div className="toast_icon">
-            {toastNotification.errorType === "success" ? (
-              <FaCircleCheck size={25} />
-            ) : toastNotification.errorType === "danger" ? (
-              <TiDelete size={25} />
-            ) : (
-              <TiWarning size={25} />
-            )}
-          </div>
-          <div>{toastNotification?.msg}</div>
+        <div className="toast_icon_wrap">
+          {isSuccess ? (
+            <FaCircleCheck className="toast_icon_svg icon_success" />
+          ) : isDanger ? (
+            <FaCircleXmark className="toast_icon_svg icon_danger" />
+          ) : (
+            <FaTriangleExclamation className="toast_icon_svg icon_warning" />
+          )}
         </div>
+
+        <div className="toast_body">
+          <div className="toast_badge">
+            {isSuccess ? "Success" : isDanger ? "Error" : "Notice"}
+          </div>
+          <p className="toast_msg">
+            {toastNotification?.msg || toastNotification?.message || "Notification"}
+          </p>
+        </div>
+
         <div
-          className="toast_timeline"
-          style={{
-            content: "''",
-            position: "absolute",
-            left: "4px",
-            bottom: "0",
-            width: "100%",
-            height: "3px",
-            background: `var(--${toastNotification.errorType})`,
-            animation: "toastLoad 3s linear forwards",
-          }}
-        ></div>
+          className={`toast_progress_bar ${
+            isSuccess ? "progress_success" : isDanger ? "progress_danger" : "progress_warning"
+          }`}
+        />
       </div>
     </div>
   );

@@ -1,67 +1,52 @@
-@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-  --danger: #dc143c;
-  --warning: #ffa500;
-  --light: #ffffff;
-  --success: #049e04;
+  --primary: #10b981;
+  --primary-dark: #059669;
+  --secondary: #0ea5e9;
+  --accent: #f59e0b;
+  --dark: #0f172a;
 }
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+body {
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  color: #1e293b;
+  background-color: #ffffff;
+  overflow-x: hidden;
+}
+
+.font-primary {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #0284c7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #e0f2fe 100%);
+}
+
 .nav_text {
-  @apply font-primary text-sm font-semibold text-gray-500 cursor-pointer px-1 py-3 lg:py-0 border-b-2 border-white hover:bg-gray-100 lg:hover:bg-slate-50 lg:hover:border-green-500  rounded-sm transition duration-300;
+  @apply font-semibold text-sm text-slate-600 hover:text-emerald-600 cursor-pointer px-3 py-2 rounded-lg transition-all duration-200;
 }
 
-.btn {
-  @apply py-2 px-3 font-medium shadow-sm tracking-wider text-sm font-primary hover:opacity-70 whitespace-nowrap transition-colors duration-500;
+.btn-primary {
+  @apply px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40 hover:-translate-y-0.5 transition-all duration-300 inline-flex items-center justify-center gap-2;
 }
 
-.footer_head {
-  @apply font-medium text-xl font-primary mb-3;
+.btn-secondary {
+  @apply px-6 py-3 bg-white text-slate-700 hover:text-emerald-700 font-bold text-sm rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-300 hover:-translate-y-0.5 transition-all duration-300 inline-flex items-center justify-center gap-2;
 }
 
-.footer_list {
-  @apply text-sm flex flex-col gap-2 mb-5 font-primary font-medium;
-}
-
-.footer_list-item {
-  @apply hover:text-primary hover:underline cursor-pointer;
-}
-
-.methodInfo {
-  @apply py-1 font-primary;
-}
-
-.methodNote {
-  font-size: 10px;
-}
-
-.undernav {
-  margin-top: 70px;
-}
-
-.fullHeight {
-  min-height: 100vh;
-}
-
-.highBase {
-  margin-bottom: 150px;
-}
-
-.disabledBtn {
-  opacity: 0.5;
-}
-
-.numberInputWithoutControl,
-.numberInputWithoutControl::-webkit-inner-spin-button,
-.numberInputWithoutControl::-webkit-outer-spin-button {
-  /* Chrome, Safari, Edge, Opera */
-  -webkit-appearance: none;
-  margin: 0;
-
-  /* Firefox */
-  -moz-appearance: textfield;
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }

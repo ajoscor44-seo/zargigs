@@ -7,22 +7,29 @@ export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-const AuthProvider = ({ children }) => {
-  const [adminData, setAdminData] = useState({});
-  const [loading, setLoading] = useState(true);
+const defaultAdminData = {
+  appName: "Gigsflix",
+  membershipFee: 1000,
+  withdrawalCharges: 50,
+  minWithdrawal: 1000,
+  referralBonus: 500,
+};
 
-  // Gets admin data
+const AuthProvider = ({ children }) => {
+  const [adminData, setAdminData] = useState(defaultAdminData);
+
+  // Gets admin data asynchronously
   const getAdminData = async () => {
     try {
-      setLoading(true);
       const response = await axios.get(
         `/api/v1/admin-data?no-cache=${new Date().getTime()}`
       );
 
-      setAdminData(response.data[0]);
-      return setLoading(false);
+      if (response?.data && response.data.length > 0) {
+        setAdminData(response.data[0]);
+      }
     } catch (error) {
-      return console.error(error);
+      console.warn("Using default platform data:", error?.message);
     }
   };
 
@@ -33,9 +40,10 @@ const AuthProvider = ({ children }) => {
   const AuthValue = {
     adminData,
   };
+
   return (
     <AuthContext.Provider value={AuthValue}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };

@@ -1,10 +1,9 @@
 import express from "express";
 import http from "http";
-import mongoose from "mongoose";
 import useragent from "express-useragent";
 import blockDesktopsMiddleware from "./api/V1/Middleware/blockDesktops.middleware.js";
 import dotenv from "dotenv";
-import authRoutes from "../backend/api/V1/Routes/auth.route.js";
+import authRoutes from "./api/V1/Routes/auth.route.js";
 import v1Routes from "./api/V1/Routes/index.js";
 dotenv.config();
 import cors from "cors";
@@ -19,6 +18,12 @@ import {
   sendEmail,
   sendResetPasswordLink,
 } from "./api/V1/Controllers/auth.controller.js";
+import {
+  handlePocketfiWebhook,
+  getBankList,
+  verifyBankAccount,
+} from "./api/V1/Controllers/pocketfi.controller.js";
+import { getPublicMarketplaceTasks } from "./api/V1/Controllers/marketplace.controller.js";
 import connectDb from "./db/db.js";
 import webPush from "web-push";
 import approveTasks from "./api/V1/utils/approver.js";
@@ -31,23 +36,25 @@ connectDb();
 // Port Number
 const PORT = process.env.PORT || 5000;
 
-// Configure web pusher
-webPush.setVapidDetails(
-  "mailto:gigsflixtechnologies@gmail.com",
-  process.env.VAPID_PUB_KEY,
-  process.env.VAPID_PRI_KEY
-);
+// Configure web pusher if keys are available
+if (process.env.VAPID_PUB_KEY && process.env.VAPID_PRI_KEY) {
+  webPush.setVapidDetails(
+    "mailto:zargigstechnologies@gmail.com",
+    process.env.VAPID_PUB_KEY,
+    process.env.VAPID_PRI_KEY
+  );
+}
 
 // Configure CORS
 const corsOptions = {
   origin:
     process.env.NODE_ENV !== "production"
       ? [
-          process.env.DEV_CLIENT_URL,
-          process.env.DEV_ADMIN_URL,
-          process.env.DEV_HOME_URL,
-          process.env.DEV_LIVE_MC_URL,
-          process.env.DEV_MC_URL,
+          process.env.DEV_CLIENT_URL || "http://localhost:5173",
+          process.env.DEV_ADMIN_URL || "http://localhost:5174",
+          process.env.DEV_HOME_URL || "http://localhost:3000",
+          process.env.DEV_LIVE_MC_URL || "http://localhost:5175",
+          process.env.DEV_MC_URL || "http://localhost:5176",
         ]
       : [
           process.env.PROD_CLIENT_URL,
@@ -72,10 +79,33 @@ app.use(blockDesktopsMiddleware);
 // Rate limits user
 app.use(limiter);
 
-// Parses json bodies
-app.use(express.json());
+// Parses json bodies & captures raw body for webhook signature verification
+app.use(
+  express.json({
+    verify: (req, res, buf) => {
+      req.rawBody = buf;
+    },
+  })
+);
 app.use(cookieParser());
 app.use(morgan("tiny"));
+
+// Public Webhooks & Utilities
+app.get("/api/v1/webhook/pocketfi", (req, res) =>
+  res.status(200).json({ status: "ok", message: "PocketFi Webhook endpoint is active." })
+);
+app.get("/api/webhook/pocketfi", (req, res) =>
+  res.status(200).json({ status: "ok", message: "PocketFi Webhook endpoint is active." })
+);
+app.post("/api/v1/webhook/pocketfi", handlePocketfiWebhook);
+app.post("/api/webhook/pocketfi", handlePocketfiWebhook);
+app.post("/api/v1/webhook", handlePocketfiWebhook);
+app.post("/webhook/pocketfi", handlePocketfiWebhook);
+app.post("/webhook", handlePocketfiWebhook);
+app.get("/api/v1/wallet/public-banks", getBankList);
+app.post("/api/v1/wallet/public-verify-account", verifyBankAccount);
+app.get("/api/v1/marketplace/public-tasks", getPublicMarketplaceTasks);
+app.get("/api/v1/public-tasks", getPublicMarketplaceTasks);
 
 app.get("/api/v1/auto-approve", approveTasks);
 app.post("/api/v1/fund-wallet", fundLocalWallet);
@@ -90,7 +120,7 @@ app.use("/api/auth", authRoutes);
 // Authenticate User with token
 app.use(authenticateToken);
 
-//Protected Routes
+// Protected Routes
 app.use("/api/v1", v1Routes);
 
 app.use((err, req, res, next) => {
@@ -105,22 +135,18 @@ app.use((err, req, res, next) => {
 
 server.listen(PORT, () => {
   console.log(`Server running on Port: ${PORT}`);
-});
 
-const closeDBConnection = async () => {
-  try {
-    await mongoose.connection.close();
-    console.log("MongoDb connection closed");
-  } catch (error) {
-    console.log("Error closing mongo db connection");
-  }
-};
+  // Auto-approve tasks older than 24 hours immediately on startup and every 15 minutes
+  approveTasks().catch((err) => console.error("Initial auto-approve run error:", err));
+  setInterval(() => {
+    approveTasks().catch((err) => console.error("Periodic auto-approve error:", err));
+  }, 15 * 60 * 1000);
+});
 
 const gracefulShutdown = (signal) => {
   console.log(`Received ${signal}. Shutting down gracefully...`);
   server.close(async () => {
     console.log("HTTP server closed");
-    await closeDBConnection();
     process.exit(0);
   });
 
@@ -134,7 +160,4 @@ process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
 process.on("SIGUSR2", () => gracefulShutdown("SIGUSR2"));
 
-process.on("exit", async () => {
-  console.log("Process exit event triggered");
-  await closeDBConnection();
-});
+export default app;

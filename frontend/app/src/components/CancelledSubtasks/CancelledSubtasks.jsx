@@ -27,10 +27,10 @@ const CancelledSubtasks = ({
           })}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center text-gray-300 p-2 gap-2 h-96">
+        <div className="py-12 px-4 flex flex-col items-center justify-center text-center max-w-md mx-auto">
           <NoData
             textBelow={
-              "You do not have any CANCELLED task here yet. Your CANCELLED tasks will appear on this page."
+              "You do not have any cancelled tasks."
             }
           />
         </div>

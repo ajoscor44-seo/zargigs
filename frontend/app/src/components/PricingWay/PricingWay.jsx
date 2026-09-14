@@ -1,72 +1,78 @@
 import React from "react";
-import { BiLike } from "react-icons/bi";
-import {
-  FaCommentDots,
-  FaFacebook,
-  FaInstagram,
-  FaLink,
-  FaRetweet,
-  FaShare,
-  FaSpotify,
-  FaTelegram,
-  FaTiktok,
-  FaTwitter,
-  FaWhatsapp,
-  FaYoutube,
-} from "react-icons/fa6";
-import { IoLogoAppleAppstore } from "react-icons/io5";
-import { SiAudiomack } from "react-icons/si";
-import { SlUserFollowing } from "react-icons/sl";
-import playStoreImage from "../../assets/images/playstore-icon.png";
-import { MdGetApp } from "react-icons/md";
 import ItemIcon from "../ItemIcon/ItemIcon";
 
 const PricingWay = ({ way, addSelectBtn, wayDescription }) => {
-  return (
-    <div className="hover:bg-slate-50 p-4 flex gap-2">
-      <div className="flex flex-col items-center gap-2">
-        <ItemIcon
-          platform={way?.platformName}
-          size={60}
-          playstoreSize={"w-20 h-20"}
-        />
+  const platformsList = Array.isArray(way?.platforms)
+    ? way.platforms
+    : typeof way?.platforms === "string"
+    ? way.platforms.split(",").map((s) => s.trim())
+    : [way?.platformName || "website"];
 
-        {addSelectBtn ? (
-          <button className="btn border">SELECT</button>
-        ) : (
-          <span></span>
-        )}
-      </div>
-      <div className="flex-1">
-        <div className="flex flex-col gap-1 border-b pb-1">
-          <h1 className="text-sm font-extrabold">{way.title}</h1>
-          <span className="text-xs">
-            Pricings:{" "}
-            <span className="font-extrabold">
-              ₦{way.amountToPay} per engagement
-            </span>
-          </span>
+  const price = way?.amountToPay ?? way?.price ?? 10;
+
+  return (
+    <div className="group relative bg-white border border-slate-200/80 hover:border-emerald-400/80 rounded-2xl p-4 sm:p-5 transition-all duration-200 hover:shadow-md hover:shadow-emerald-500/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex items-center gap-3.5 flex-1">
+        <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-slate-50 border border-slate-200/60 p-2.5 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+          <ItemIcon
+            platform={way?.platformName || "website"}
+            size={36}
+            playstoreSize={"w-9 h-9"}
+          />
         </div>
-        <div>
-          <p className="font-semibold leading-4 mt-2 methodNote">
-            {wayDescription}
+
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-1">
+            <h3 className="font-bold text-slate-900 text-sm sm:text-base group-hover:text-emerald-700 transition-colors">
+              {way?.title || "Task Package"}
+            </h3>
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+              Verified Workers
+            </span>
+          </div>
+
+          <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-2">
+            {wayDescription || way?.description || "Get high quality engagement from real users."}
           </p>
-          <div className="methodNote font-extrabold mt-1 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span>Platforms: </span>
-              <span className="flex items-center gap-1">
-                {way.platforms.map((platform, i) => (
+
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-semibold text-slate-400">
+              Platforms:
+            </span>
+            <div className="flex items-center gap-1">
+              {platformsList.map((platform, i) => (
+                <span
+                  key={i}
+                  className="p-1 bg-slate-50 border border-slate-200/60 rounded-lg flex items-center justify-center"
+                  title={platform}
+                >
                   <ItemIcon
-                    key={i}
                     platform={platform}
-                    size={15}
-                    playstoreSize={"w-5 h-5"}
+                    size={12}
+                    playstoreSize={"w-3 h-3"}
                   />
-                ))}
-              </span>
+                </span>
+              ))}
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100 gap-2">
+        <div className="text-left sm:text-right">
+          <span className="block text-[10px] uppercase font-bold tracking-wider text-slate-400">
+            Price per task
+          </span>
+          <span className="text-base sm:text-lg font-black text-slate-900">
+            ₦{price}
+          </span>
+        </div>
+
+        {addSelectBtn && (
+          <button className="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-600/20">
+            Create Order →
+          </button>
+        )}
       </div>
     </div>
   );

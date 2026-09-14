@@ -1,56 +1,88 @@
 import React from "react";
 import { Link } from "react-router-dom/cjs/react-router-dom";
-import OAuth from "../components/OAuth/OAuth";
 import { useAuth } from "../context/AuthContext";
+import logo from "../assets/png/logo-color.png";
+import { FaArrowLeft, FaGift } from "react-icons/fa6";
 
-const SignupLayout = ({ children }) => {
+const SignupLayout = ({ children, referralUsername }) => {
   const { adminData } = useAuth();
+  const appName = adminData?.appName || "Zargigs";
 
   return (
-    <div
-      className="flex flex-col rounded p-4"
-      style={{ maxHeight: "100vh", width: "100%", maxWidth: "400px" }}
-    >
-      <div className="flex items-center gap-2 mb-4">
-        <img className="w-10 rounded" src={adminData?.appLogo} />
-        <div className="flex items-start flex-col">
-          <h2 className="text-2xl font-primary font-bold">
-            {adminData?.appName}
-          </h2>
-          <span className="h-1 w-6 rounded-full bg-green-500"></span>
-        </div>
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center py-8 sm:py-12 px-4 sm:px-6 font-primary">
+      {/* Top Header: Brand & Back to Home */}
+      <div className="w-full max-w-lg sm:max-w-xl mx-auto flex items-center justify-between mb-6">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors bg-white px-3 py-1.5 rounded-full border border-slate-200/80 shadow-xs"
+        >
+          <FaArrowLeft size={11} />
+          <span>Back to Home</span>
+        </Link>
+
+        <Link to="/" className="flex items-center gap-2">
+          <img src={logo} alt={appName} className="h-8 w-auto rounded-lg" />
+          <span className="font-black text-lg text-slate-900 tracking-tight">
+            {appName}
+          </span>
+        </Link>
       </div>
-      {children}
-      <div className="flex flex-col justify-center bg-white items-center">
-        <p className="text-center text-sm px-8 mx-4">
-          By signing up, you agree to our{" "}
-          <Link to="/terms">
-            <span>
-              <a
-                className="text-primary font-semibold hover:underline"
-                href="https://gigsflix.com/terms"
-              >
-                Terms
-              </a>{" "}
-              and{" "}
-              <a
-                className="text-primary font-semibold hover:underline"
-                href="https://gigsflix.com/privacy-policy"
-              >
-                Privacy Policy
-              </a>
-            </span>
-          </Link>
-        </p>
-        <div className="flex items-center gap-2">
-          <p className="text-sm font-semibold text-slate-600">
-            Already have an account on {adminData?.appName}?
+
+      {/* Main Centered Signup Card */}
+      <div className="w-full max-w-lg sm:max-w-xl mx-auto bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-6 sm:p-8 transition-all">
+        {/* Referral Welcome Banner if available */}
+        {referralUsername && (
+          <div className="mb-6 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center gap-3 shadow-xs">
+            <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white font-black flex items-center justify-center text-xs uppercase shrink-0 shadow-xs">
+              <FaGift size={14} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-bold text-slate-800">
+                  Invited by @{referralUsername}
+                </span>
+                <span className="text-[10px] bg-emerald-100 text-emerald-700 font-extrabold px-1.5 py-0.5 rounded-full">
+                  Special Bonus
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 truncate">
+                Sign up to claim daily earning rewards & payouts.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Step Form Content */}
+        {children}
+
+        {/* Card Footer */}
+        <div className="mt-6 pt-5 border-t border-slate-100 text-center space-y-2.5">
+          <p className="text-[11px] text-slate-400 leading-relaxed max-w-sm mx-auto">
+            By registering, you agree to our{" "}
+            <Link
+              to="/terms"
+              className="text-emerald-600 font-semibold hover:underline"
+            >
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link
+              to="/privacy-policy"
+              className="text-emerald-600 font-semibold hover:underline"
+            >
+              Privacy Policy
+            </Link>
+            .
           </p>
-          <Link to="/login">
-            <span className="text-green-500 text-xs font-semibold hover:underline">
-              LOG IN NOW
-            </span>
-          </Link>
+          <p className="text-xs text-slate-600 font-medium">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="font-bold text-emerald-600 hover:text-emerald-700 hover:underline"
+            >
+              Sign In
+            </Link>
+          </p>
         </div>
       </div>
     </div>

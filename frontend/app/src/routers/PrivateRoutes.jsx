@@ -9,21 +9,21 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     <Route
       {...rest}
       render={(props) => {
-        return currentUser.isBanned ? (
-          <Redirect to="/login" />
-        ) : currentUser && currentUser.isEmailVerified && currentUser.gender ? (
-          <Component {...props} />
-        ) : currentUser &&
-          currentUser.isEmailVerified &&
-          !currentUser.gender ? (
-          <Redirect to="/input-user-info" />
-        ) : currentUser && !currentUser.isEmailVerified ? (
-          <Redirect to="/login" />
-        ) : (
-          <Redirect to="/login" />
-        );
+        if (!currentUser) {
+          return <Redirect to="/login" />;
+        }
+        if (currentUser.isBanned) {
+          return <Redirect to="/login" />;
+        }
+        if (!currentUser.isEmailVerified) {
+          return <Redirect to="/login" />;
+        }
+        if (!currentUser.gender) {
+          return <Redirect to="/input-user-info" />;
+        }
+        return <Component {...props} />;
       }}
-    ></Route>
+    />
   );
 };
 

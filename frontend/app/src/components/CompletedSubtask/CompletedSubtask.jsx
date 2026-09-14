@@ -27,10 +27,10 @@ const CompletedSubtask = ({
           })}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center text-gray-300 p-2 gap-2 h-96">
+        <div className="py-12 px-4 flex flex-col items-center justify-center text-center max-w-md mx-auto">
           <NoData
             textBelow={
-              "You do not have any COMPLETED task here yet. Your COMPLETED tasks will appear on this page."
+              "You have not completed any tasks in this category yet. Your completed tasks and earnings will appear here."
             }
           />
         </div>

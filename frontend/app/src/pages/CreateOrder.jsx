@@ -1,126 +1,315 @@
-import React, { useState } from "react";
-import BackNav from "../components/BackNav/BackNav";
-import { useParams } from "react-router-dom/cjs/react-router-dom";
+import React, { useState, useEffect, useMemo } from "react";
+import ClientLayout from "../components/ClientLayout/ClientLayout";
+import { useParams, useHistory, Link } from "react-router-dom/cjs/react-router-dom";
 import PricingWay from "../components/PricingWay/PricingWay";
-import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
 import FormInput from "../components/FormInput/FormInput";
-import PayAmountBar from "../components/PayAmountBar/PayAmountBar";
 import allStates from "../data/states";
 import religions from "../data/religions";
 import axios from "axios";
 import ToastNotification from "../components/ToastNotification/ToastNotification";
 import { useAuth } from "../context/AuthContext";
+import { FaSpinner, FaUsers, FaArrowLeft } from "react-icons/fa6";
+import numeral from "numeral";
+
+const fallbackEngagementPackages = [
+  {
+    id: "eng_ig_follow",
+    _id: "eng_ig_follow",
+    title: "Get Real Instagram Followers",
+    platformName: "instagram",
+    amountToPay: 10,
+    amountToEarn: 5,
+    pathToPage: "/order/instagram-followers",
+    platforms: ["instagram"],
+    description: "Get real, active Nigerian users to follow your Instagram page or brand account.",
+  },
+  {
+    id: "eng_ig_like",
+    _id: "eng_ig_like",
+    title: "Get Instagram Post Likes",
+    platformName: "instagram",
+    amountToPay: 6,
+    amountToEarn: 3,
+    pathToPage: "/order/instagram-likes",
+    platforms: ["instagram"],
+    description: "Boost your Instagram photos, reels, and carousel posts with real likes.",
+  },
+  {
+    id: "eng_ig_comment",
+    _id: "eng_ig_comment",
+    title: "Get Custom Instagram Comments",
+    platformName: "instagram",
+    amountToPay: 20,
+    amountToEarn: 10,
+    pathToPage: "/order/instagram-comments",
+    platforms: ["instagram"],
+    description: "Get meaningful, relevant custom comments on your Instagram posts to drive conversation.",
+  },
+  {
+    id: "eng_tiktok_follow",
+    _id: "eng_tiktok_follow",
+    title: "Get TikTok Followers",
+    platformName: "tiktok",
+    amountToPay: 10,
+    amountToEarn: 5,
+    pathToPage: "/order/tiktok-followers",
+    platforms: ["tiktok"],
+    description: "Grow your TikTok profile rapidly with real Nigerian followers.",
+  },
+  {
+    id: "eng_tiktok_like",
+    _id: "eng_tiktok_like",
+    title: "Get TikTok Video Likes",
+    platformName: "tiktok",
+    amountToPay: 6,
+    amountToEarn: 3,
+    pathToPage: "/order/tiktok-likes",
+    platforms: ["tiktok"],
+    description: "Trigger the TikTok FYP algorithm by getting real user likes on your videos.",
+  },
+  {
+    id: "eng_yt_sub",
+    _id: "eng_yt_sub",
+    title: "Get YouTube Subscribers",
+    platformName: "youtube",
+    amountToPay: 30,
+    amountToEarn: 15,
+    pathToPage: "/order/youtube-subscribers",
+    platforms: ["youtube"],
+    description: "Gain genuine channel subscribers to accelerate your YouTube monetization.",
+  },
+  {
+    id: "eng_yt_like",
+    _id: "eng_yt_like",
+    title: "Get YouTube Video Likes",
+    platformName: "youtube",
+    amountToPay: 15,
+    amountToEarn: 8,
+    pathToPage: "/order/youtube-likes",
+    platforms: ["youtube"],
+    description: "Increase video rankings and engagement metrics on YouTube.",
+  },
+  {
+    id: "eng_twitter_follow",
+    _id: "eng_twitter_follow",
+    title: "Get Twitter / X Followers",
+    platformName: "twitter",
+    amountToPay: 10,
+    amountToEarn: 5,
+    pathToPage: "/order/twitter-followers",
+    platforms: ["twitter"],
+    description: "Build social proof and authority on X (Twitter) with real followers.",
+  },
+  {
+    id: "eng_twitter_rt",
+    _id: "eng_twitter_rt",
+    title: "Get Twitter / X Retweets & Quotes",
+    platformName: "twitter",
+    amountToPay: 15,
+    amountToEarn: 8,
+    pathToPage: "/order/twitter-retweets",
+    platforms: ["twitter"],
+    description: "Amplify your message across Nigerian Twitter with genuine retweets and quotes.",
+  },
+  {
+    id: "eng_fb_follow",
+    _id: "eng_fb_follow",
+    title: "Get Facebook Page Followers",
+    platformName: "facebook",
+    amountToPay: 10,
+    amountToEarn: 5,
+    pathToPage: "/order/facebook-follows",
+    platforms: ["facebook"],
+    description: "Increase follower count and credibility for your Facebook page.",
+  },
+  {
+    id: "eng_app_review",
+    _id: "eng_app_review",
+    title: "Download & Review Mobile App",
+    platformName: "playstore",
+    amountToPay: 50,
+    amountToEarn: 25,
+    pathToPage: "/order/playstore-reviews",
+    platforms: ["playstore", "applestore"],
+    description: "Get real users to download your Android or iOS app and leave positive reviews.",
+  },
+  {
+    id: "eng_spotify_stream",
+    _id: "eng_spotify_stream",
+    title: "Spotify & Music Streams / Follows",
+    platformName: "spotify",
+    amountToPay: 20,
+    amountToEarn: 10,
+    pathToPage: "/order/spotify-streams",
+    platforms: ["spotify", "audiomack"],
+    description: "Boost your song stream count and artist profile saves across music platforms.",
+  },
+];
 
 const CreateOrder = () => {
-  const { engagementCreator } = useAuth();
+  const { engagementCreator, getEngagementCreator, fetchUserData, currentUser } = useAuth();
+  const history = useHistory();
+  const params = useParams();
+  const slug = params.slug;
+
   const [toastNotifications, setToastNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [amountToPay, setAmountToPay] = useState(0);
   const [error, setError] = useState(null);
-  const params = useParams();
-  const slug = params.slug;
-  const wayToCreateEngagement = engagementCreator.find(
-    (wayToCreateEngagementTask) => {
-      return wayToCreateEngagementTask.pathToPage == "/order/" + slug;
+
+  useEffect(() => {
+    if (getEngagementCreator) {
+      getEngagementCreator();
     }
-  );
+  }, []);
+
+  const allPackages = useMemo(() => {
+    return engagementCreator && engagementCreator.length > 0
+      ? engagementCreator
+      : fallbackEngagementPackages;
+  }, [engagementCreator]);
+
+  const wayToCreateEngagement = useMemo(() => {
+    const matched = allPackages.find((way) => {
+      const waySlug = way.pathToPage
+        ? way.pathToPage.replace("/order/", "")
+        : way.slug || way.platformName;
+      return waySlug === slug || way.pathToPage === "/order/" + slug;
+    });
+    return matched || fallbackEngagementPackages[0];
+  }, [allPackages, slug]);
+
   const statesName = allStates.map((state) => state.name);
 
   // Task data object
   const [taskData, setTaskData] = useState({
-    title: wayToCreateEngagement.title,
+    title: wayToCreateEngagement?.title,
     taskType: "engagement",
     gender: undefined,
     location: undefined,
     religion: undefined,
     link: undefined,
     numberOfTasks: undefined,
-    payId: wayToCreateEngagement.id,
-    earnId: wayToCreateEngagement.earnId,
+    payId: wayToCreateEngagement?.id || wayToCreateEngagement?._id,
+    earnId: wayToCreateEngagement?.earnId,
     customComment: undefined,
-    taskPlatform: wayToCreateEngagement.platformName.toLowerCase(),
+    taskPlatform: wayToCreateEngagement?.platformName?.toLowerCase(),
   });
 
-  // Toast Notification
-  const showToast = (notificationObj) => {
-    setToastNotifications([...toastNotifications, notificationObj]);
+  useEffect(() => {
+    if (wayToCreateEngagement) {
+      setTaskData((prev) => ({
+        ...prev,
+        title: wayToCreateEngagement.title,
+        payId: wayToCreateEngagement.id || wayToCreateEngagement._id,
+        earnId: wayToCreateEngagement.earnId,
+        taskPlatform: wayToCreateEngagement.platformName?.toLowerCase(),
+      }));
+      if (taskData.numberOfTasks) {
+        setAmountToPay(
+          Number(taskData.numberOfTasks) * Number(wayToCreateEngagement.amountToPay || 0)
+        );
+      }
+    }
+  }, [wayToCreateEngagement]);
 
-    const toastTimeout = setTimeout(() => {
-      setToastNotifications([]);
-      clearTimeout(toastTimeout);
-    }, 3100);
+  const showToast = (props) => {
+    const id = Date.now();
+    const newToast = {
+      id,
+      msg: props.msg,
+      errorType: props.errorType,
+    };
+    setToastNotifications((prevToasts) => [...prevToasts, newToast]);
   };
 
   const handleChange = (e) => {
-    setTaskData({
-      ...taskData,
-      [e.target.name]: e.target.value,
-    });
+    const val = e.target.value;
+    if (e.target.name === "numberOfTasks") {
+      setAmountToPay(Number(val || 0) * Number(wayToCreateEngagement?.amountToPay || 0));
+    }
+    setTaskData((prev) => ({
+      ...prev,
+      [e.target.name]: val,
+    }));
   };
 
-  // Adds new task
-  const addNewtask = async (taskData) => {
-    return await axios
-      .post("/api/v1/tasks/engagements", taskData)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error) => {
-        setLoading(false);
-        return error.response.data;
+  const addNewtask = async (payload) => {
+    try {
+      const response = await axios.post("/api/v1/tasks/engagements", payload, {
+        headers: {
+          "x-user-id": currentUser?.id || currentUser?._id || "",
+        },
       });
+      return response.data;
+    } catch (err) {
+      setLoading(false);
+      return err.response?.data || { status: false, message: "Server error occurred" };
+    }
   };
 
-  // Creates New Task
   const createNewtask = async () => {
     try {
-      if (!taskData.numberOfTasks) {
-        return setError("Input A valid Number of Engagements.");
+      if (!taskData.numberOfTasks || Number(taskData.numberOfTasks) <= 0) {
+        return setError("Please enter a valid number of engagements.");
       }
-      if (!taskData.gender || taskData.gender == "Select Gender") {
-        return setError("Select A Gender.");
+      if (!taskData.gender || taskData.gender === "Select Gender") {
+        return setError("Please select a target gender category.");
       }
-      if (!taskData.location) {
-        return setError("Select A Location.");
+      if (!taskData.location || taskData.location === "Select Location") {
+        return setError("Please select a target location.");
       }
-      if (!taskData.religion) {
-        return setError("Select A Religion.");
+      if (!taskData.religion || taskData.religion === "Select Religion") {
+        return setError("Please select a target religion.");
       }
-      if (!taskData.link) {
-        return setError("Input the link to your profile or page.");
+      if (!taskData.link || taskData.link.trim().length === 0) {
+        return setError("Please provide the direct link to your page or post.");
       }
+
       setError(null);
       setLoading(true);
-      const tasksProcessed = await addNewtask(taskData);
 
-      if (tasksProcessed.status) {
-        if (!tasksProcessed.failed) {
-          showToast({
-            msg: `${tasksProcessed.message}`,
-            errorType: "success",
-          });
+      const amountToPayUnit = Number(wayToCreateEngagement?.amountToPay) || 20;
+      const amountToEarnUnit = Number(wayToCreateEngagement?.amountToEarn) || Math.round(amountToPayUnit * 0.7);
 
-          const toastTimeout = setTimeout(() => {
-            setToastNotifications([]);
-            window.location.href = "/order";
-            clearTimeout(toastTimeout);
-          }, 2500);
-          return setLoading(false);
-        }
+      const finalPayload = {
+        ...taskData,
+        userId: currentUser?.id || currentUser?._id,
+        creatorId: currentUser?.id || currentUser?._id,
+        email: currentUser?.email,
+        username: currentUser?.username,
+        title: wayToCreateEngagement?.title || taskData.title,
+        payId: wayToCreateEngagement?.id || wayToCreateEngagement?._id || taskData.payId,
+        amountToPay: amountToPayUnit,
+        amountToEarn: amountToEarnUnit,
+        taskPlatform: wayToCreateEngagement?.platformName?.toLowerCase() || "social",
+      };
+
+      const tasksProcessed = await addNewtask(finalPayload);
+
+      if (!tasksProcessed.failed && (tasksProcessed.status || tasksProcessed.data || tasksProcessed.message?.toLowerCase().includes("success"))) {
         showToast({
-          msg: `${tasksProcessed.message}`,
-          errorType: "danger",
+          msg: `${tasksProcessed.message || "Order launched successfully!"}`,
+          errorType: "success",
         });
+
+        await fetchUserData();
+
+        setTimeout(() => {
+          setToastNotifications([]);
+          history.push("/order-history");
+        }, 1200);
         return setLoading(false);
       }
+
       showToast({
-        msg: `${tasksProcessed.message}`,
+        msg: `${tasksProcessed.message || "Failed to create order"}`,
         errorType: "danger",
       });
       return setLoading(false);
-    } catch (error) {
+    } catch (err) {
       showToast({
-        msg: `${error.response.data.message}`,
+        msg: `${err.response?.data?.message || "An unexpected error occurred"}`,
         errorType: "danger",
       });
       return setLoading(false);
@@ -128,145 +317,223 @@ const CreateOrder = () => {
   };
 
   return (
-    <div>
-      <BackNav
-        pageName={"Engagement on " + wayToCreateEngagement.platformName}
-        usePath={true}
-        pathToGo={"/order"}
-      />
-      <div className="underBackNav font-primary mb-28">
-        <PricingWay
-          way={wayToCreateEngagement}
-          wayDescription={wayToCreateEngagement.description}
-        />
-        {error && (
-          <p className="fixed top-12 z-10 w-full text-center bg-red-200 text-red-500 rounded py-1 font-semibold">
-            {error}
+    <ClientLayout>
+      <div className="font-primary text-slate-800 space-y-6">
+        {/* Header */}
+        <div className="pb-2 border-b border-slate-200/70">
+          <div className="flex items-center gap-2 mb-1">
+            <Link
+              to="/order"
+              className="text-xs font-bold text-slate-400 hover:text-emerald-600 transition-colors"
+            >
+              ← All Engagement Services
+            </Link>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+            <FaUsers className="text-emerald-600" />
+            <span>Create Engagement Order</span>
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
+            Boost your metrics with verified social actions from active Nigerian members.
           </p>
+        </div>
+
+        {/* Error Alert */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4 text-xs font-bold flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+            <span>{error}</span>
+          </div>
         )}
-        <div className="p-4 border-t flex flex-col gap-3">
-          <FormInput
-            type={"number"}
-            fullRounded
-            placeholder={`No. Of ${wayToCreateEngagement.platformName} Engagements`}
-            label={`Number of ${wayToCreateEngagement.platformName} Engagements You Want`}
-            note={`This is the desired number of ${wayToCreateEngagement.platformName} Engagements you want us to get for you.`}
-            errorMsg={"Please input a valid number"}
-            name={"numberOfTasks"}
-            handleChange={(e) => {
-              handleChange(e);
-              return setAmountToPay(
-                Number(e.target.value) *
-                  Number(wayToCreateEngagement.amountToPay)
-              );
-            }}
-          />
-          {wayToCreateEngagement.platformName.toLowerCase() ===
-          "allcomments" ? (
-            <FormInput
-              type={"text"}
-              fullRounded
-              useTextArea
-              placeholder={`Custom comment you want to see on your post`}
-              label={"Custom comment you want people to say on your post"}
-              note={
-                "This is the custom comment you want people to say on your post."
-              }
-              errorMsg={"Please input a meaningful comment"}
-              name={"customComment"}
-              handleChange={handleChange}
-            />
-          ) : (
-            <div></div>
-          )}
-          <FormInput
-            label={"Select Gender"}
-            placeholder={"Select Gender"}
-            useSelect
-            selections={[
-              "Select Gender",
-              "All Genders",
-              "Male",
-              "Female",
-              "Transgender",
-              "Custom",
-              "Others",
-            ]}
-            note={
-              "You can select the kind of gender whether male or female that you want to see your task. For example, if you are selling women fashion items, you can select the Female gender so your task will be shown to only females. Select 'All Gender' if you want to target all genders"
-            }
-            errorMsg={"Please select a gender category"}
-            handleChange={handleChange}
-            name={"gender"}
-          />
-          <FormInput
-            label={"Select Location"}
-            placeholder={"Select Location"}
-            useSelect
-            selections={["Select Location", "All Nigeria", ...statesName]}
-            note={
-              "You can target and select a particular location where your task or advert will be mostly shown. Select 'All Nigeria' if you want to target every location in Nigeria"
-            }
-            errorMsg={"Please select a location"}
-            name={"location"}
-            handleChange={handleChange}
-          />
-          <FormInput
-            label={"Select Religion"}
-            placeholder={"Select Religion"}
-            useSelect
-            selections={["Select Religion", "All Religions", ...religions]}
-            note={
-              "You can target people of a particular religion or belief. Your advert and task will be shown to the particular religion you select. Select 'All Religion' if you want to target all religion."
-            }
-            errorMsg={"Please select a religion"}
-            name={"religion"}
-            handleChange={handleChange}
-          />
-          <FormInput
-            label={
-              "Your Page/Profile Link (e.g Instagram, Twitter, Website or Tiktok Page Link)"
-            }
-            placeholder={"Enter Your Link"}
-            fullRounded
-            icon={"link"}
-            note={
-              "Enter the link to your page or profile you want people to engage. Ensure this link points directly to your page or profile and NOT a post."
-            }
-            errorMsg={"Please input the link to your page"}
-            name={"link"}
-            handleChange={handleChange}
-          />
-          <FormInput
-            label={"Describe The Task (Optional)"}
-            placeholder={"Enter A Description"}
-            note={
-              "Describe the task you want people to perform on your page or profile. Ensure this description describes the type of task you selected."
-            }
-            useTextArea
-            errorMsg={"Please input the link to your page"}
-            name={"description"}
-            handleChange={handleChange}
-          />
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          {/* Left Column (8 cols) */}
+          <div className="md:col-span-8 space-y-6">
+            {wayToCreateEngagement && (
+              <PricingWay
+                way={wayToCreateEngagement}
+                wayDescription={wayToCreateEngagement.description}
+              />
+            )}
+
+            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs space-y-5">
+              <div className="border-b border-slate-100 pb-3">
+                <h2 className="text-sm font-extrabold uppercase tracking-wider text-slate-400">
+                  Targeting & Quantity
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Specify demographic filters and target volume for this order.
+                </p>
+              </div>
+
+              <FormInput
+                type="number"
+                fullRounded={true}
+                placeholder="e.g. 100"
+                label={`Number of ${wayToCreateEngagement?.platformName || "Engagements"} Desired`}
+                note="Enter the total number of actions/followers you want."
+                name="numberOfTasks"
+                value={taskData.numberOfTasks || ""}
+                handleChange={handleChange}
+              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormInput
+                  label="Target Gender"
+                  placeholder="Select Gender"
+                  useSelect={true}
+                  selections={[
+                    "Select Gender",
+                    "All Genders",
+                    "Male",
+                    "Female",
+                    "Transgender",
+                    "Custom",
+                    "Others",
+                  ]}
+                  note="Select your target audience gender."
+                  name="gender"
+                  handleChange={handleChange}
+                />
+
+                <FormInput
+                  label="Target Location"
+                  placeholder="Select Location"
+                  useSelect={true}
+                  selections={["Select Location", "All Nigeria", ...statesName]}
+                  note="Select state to focus reach or All Nigeria."
+                  name="location"
+                  handleChange={handleChange}
+                />
+              </div>
+
+              <FormInput
+                label="Target Religion"
+                placeholder="Select Religion"
+                useSelect={true}
+                selections={["Select Religion", "All Religions", ...religions]}
+                note="Select 'All Religions' for universal reach."
+                name="religion"
+                handleChange={handleChange}
+              />
+
+              <FormInput
+                label="Page or Post Link"
+                placeholder="https://instagram.com/yourhandle or post URL"
+                note="Provide the direct link for earners to follow, like, or engage with."
+                name="link"
+                value={taskData.link || ""}
+                handleChange={handleChange}
+              />
+
+              {slug?.includes("comment") && (
+                <FormInput
+                  label="Custom Comments Guidelines (Optional)"
+                  placeholder="e.g., Mention how fast delivery was, or say Great product!"
+                  useTextArea={true}
+                  note="Specify comments theme or exact phrases you'd like users to post."
+                  name="customComment"
+                  handleChange={handleChange}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Right Column (4 cols) */}
+          <div className="md:col-span-4 space-y-6">
+            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs space-y-5 sticky top-24">
+              <h3 className="text-sm font-black uppercase tracking-wider text-slate-400">
+                Order Summary
+              </h3>
+
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/60 space-y-3 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500 font-medium">Service:</span>
+                  <strong className="text-slate-900 font-bold capitalize">
+                    {wayToCreateEngagement?.platformName || "Social"}
+                  </strong>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500 font-medium">Rate Per Action:</span>
+                  <strong className="text-slate-900 font-mono">
+                    ₦{numeral(wayToCreateEngagement?.amountToPay || 0).format("0,0.00")}
+                  </strong>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500 font-medium">Quantity:</span>
+                  <strong className="text-slate-900 font-bold">
+                    {numeral(taskData.numberOfTasks || 0).format("0,0")}
+                  </strong>
+                </div>
+                <div className="flex items-center justify-between pt-2.5 border-t border-slate-200">
+                  <span className="text-slate-600 font-extrabold">Total Cost:</span>
+                  <span className="text-base font-black text-emerald-600 font-mono">
+                    ₦{numeral(amountToPay).format("0,0.00")}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between pt-1 border-t border-slate-100 text-[11px]">
+                  <span className="text-slate-400 font-medium">Your Wallet Balance:</span>
+                  <span className="font-bold text-slate-700 font-mono">
+                    ₦{numeral(currentUser?.balance || 0).format("0,0.00")}
+                  </span>
+                </div>
+              </div>
+
+              {amountToPay > (currentUser?.balance || 0) && amountToPay > 0 && (
+                <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs space-y-1.5">
+                  <div className="flex items-center justify-between font-black">
+                    <span>⚠️ Insufficient Wallet Balance</span>
+                    <Link
+                      to="/fund-wallet"
+                      className="text-emerald-700 hover:text-emerald-900 underline font-black"
+                    >
+                      + Fund Wallet
+                    </Link>
+                  </div>
+                  <p className="text-[11px] text-rose-600 font-medium leading-relaxed">
+                    Total cost (₦{numeral(amountToPay).format("0,0.00")}) exceeds your balance (₦{numeral(currentUser?.balance || 0).format("0,0.00")}). You can reduce count to <strong>{Math.floor((Number(currentUser?.balance || 0)) / Number(wayToCreateEngagement?.amountToPay || 10))}</strong> or top up your wallet.
+                  </p>
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={createNewtask}
+                disabled={loading || amountToPay <= 0 || amountToPay > (currentUser?.balance || 0)}
+                className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm rounded-2xl shadow-xs transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <FaSpinner className="animate-spin" size={16} />
+                    <span>Processing Order...</span>
+                  </>
+                ) : amountToPay > (currentUser?.balance || 0) && amountToPay > 0 ? (
+                  <span>Insufficient Balance — Fund Wallet</span>
+                ) : (
+                  <span>Submit & Launch Order</span>
+                )}
+              </button>
+
+              <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/60 text-xs text-emerald-800 space-y-1.5">
+                <div className="font-bold flex items-center gap-1.5 text-emerald-950">
+                  <span>⚡</span>
+                  <span>Instant Distribution</span>
+                </div>
+                <p className="text-[11px] text-emerald-700 leading-relaxed">
+                  Tasks are automatically queued and delivered to active verified earners immediately upon order launch.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="toast_cover">
+          {toastNotifications?.map((toast) => (
+            <ToastNotification key={toast.id} toastNotification={toast} />
+          ))}
         </div>
       </div>
-
-      <PayAmountBar
-        feeTitle={"You will pay"}
-        fee={amountToPay}
-        btnText={"Submit and Make Payment"}
-        handleClick={createNewtask}
-        disable={loading}
-      />
-      <ClientMenuBar />
-      <div className="toast_cover">
-        {toastNotifications?.map((toastNotification, i) => {
-          return (
-            <ToastNotification key={i} toastNotification={toastNotification} />
-          );
-        })}
-      </div>
-    </div>
+    </ClientLayout>
   );
 };
 

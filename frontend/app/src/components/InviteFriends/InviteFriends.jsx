@@ -1,35 +1,47 @@
 import React, { useRef, useState } from "react";
-import BackNav from "../BackNav/BackNav";
-import { BsCopy } from "react-icons/bs";
-import { FaWhatsapp, FaTwitter, FaFacebook, FaLinkedin } from "react-icons/fa6";
+import ClientLayout from "../ClientLayout/ClientLayout";
+import {
+  FiCopy,
+  FiCheck,
+  FiShare2,
+  FiGift,
+  FiUsers,
+  FiExternalLink,
+} from "react-icons/fi";
+import { FaWhatsapp, FaTwitter, FaFacebook, FaLinkedin, FaTelegram } from "react-icons/fa6";
 import userPic from "../../assets/images/user-image.png";
 import CopyToClipboard from "../../hooks/CopyToClipboard";
 import { useAuth } from "../../context/AuthContext";
 
 const InviteFriends = () => {
-  const { currentUser } = useAuth();
-  const app_url =
-    import.meta.env.VITE_NODE_ENV !== "production"
-      ? import.meta.env.VITE_DEV_APP_URL
-      : import.meta.env.VITE_PROD_APP_URL;
-  const { adminData } = useAuth();
-  const message = `Introducing ${adminData?.appName}: Where Engagement Meets Earning and Growth! Dive into a platform that not only rewards you for social tasks like liking, sharing, and commenting but also elevates your social media presence. Ideal for those looking to amplify their digital influence or businesses aiming to extend their reach. 
-
-At ${adminData?.appName}, your everyday social interactions have value. Beyond earning rewards, users with over 1,000 followers unlock the potential to advertise for others, turning their social media prowess into profit. It's a dual advantage—grow your following and monetize your influence effortlessly. 
-    
-For businesses and individuals looking to advertise, ${adminData?.appName} offers a unique opportunity. Leverage our community of engaged social media users to boost your products or services. It's simple, efficient, and effective, ensuring your brand reaches the audience it deserves. 
-    
-Why join ${adminData?.appName}? It's more than just a platform; it's a community where engagement translates into rewards, growth, and visibility. Whether you're here to enhance your social media presence, earn from advertising, or promote your products, ${adminData?.appName} is your go-to destination. 
-    
-To get started, simply visit ${app_url}/ref/${currentUser.username} to register on the app. You will thank me later.`;
-  const briefMessage = `Discover ${adminData?.appName}, a dynamic platform that rewards social media engagement and boosts your online presence. Perfect for influencers and businesses, ${adminData?.appName} offers a unique chance to earn by liking, sharing, and commenting, or even advertising if you have over 1,000 followers. Join our community to grow your influence, advertise efficiently, and enhance your brand's reach. Start your rewarding journey at ${adminData?.appName} by registering at ${app_url}/ref/${currentUser.username}.`;
+  const { currentUser, adminData } = useAuth();
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedMessage, setCopiedMessage] = useState(false);
   const messageRef = useRef(null);
 
-  const copyToClipboard = (messageRef) => {
-    const textIsCopied = CopyToClipboard(messageRef);
+  const app_url =
+    import.meta.env.VITE_NODE_ENV !== "production"
+      ? import.meta.env.VITE_DEV_APP_URL || "http://localhost:5173"
+      : import.meta.env.VITE_PROD_APP_URL || "https://www.zargigs.com";
 
-    alert("Copied: " + textIsCopied);
-    messageRef.current.style.display = "block";
+  const referralLink = `${app_url}/ref/${currentUser?.username || "user"}`;
+
+  const message = `Introducing ${adminData?.appName || "Zargigs"}: Where Engagement Meets Earning and Growth! Dive into a platform that rewards you for social tasks like liking, following, and commenting while elevating your social media influence.\n\nEarn daily rewards, withdraw directly to your bank account, or advertise your business to thousands of verified users.\n\nRegister using my link to get started: ${referralLink}`;
+
+  const briefMessage = `Discover ${adminData?.appName || "Zargigs"}, earn daily by completing simple social media tasks or advertise to thousands! Join today: ${referralLink}`;
+
+  const handleCopyLink = () => {
+    navigator.clipboard?.writeText(referralLink);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 3000);
+  };
+
+  const handleCopyMessage = () => {
+    if (messageRef.current) {
+      CopyToClipboard(messageRef);
+      setCopiedMessage(true);
+      setTimeout(() => setCopiedMessage(false), 3000);
+    }
   };
 
   const encodedText = encodeURIComponent(message);
@@ -37,72 +49,213 @@ To get started, simply visit ${app_url}/ref/${currentUser.username} to register 
   const whatsappLink = `https://api.whatsapp.com/send?text=${encodedText}`;
   const twitterLink = `https://twitter.com/share?text=${encodedBriefText}`;
   const linkedInLink = `https://www.linkedin.com/sharing/share-offsite/?text=${encodedBriefText}`;
+  const telegramLink = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodedBriefText}`;
+  const facebookLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`;
 
   return (
-    <div className="relative">
-      <BackNav
-        pageName={"Invite Friends"}
-        usePath={true}
-        pathToGo={"/user-details"}
-      />
-      <button
-        onClick={() => copyToClipboard(messageRef)}
-        className="absolute z-20 flex right-3 top-4 items-center gap-2 px-2 py-1 rounded-full text-white bg-green-500"
-      >
-        <span className="font-semibold text-sm">Copy Message</span>
-        <BsCopy />
-      </button>
-      <div className="underBackNav px-4 font-primary">
-        <div className="flex mt-3">
-          <div className="px-1">
-            <img
-              src={currentUser.image || userPic}
-              alt="User Profile Pic"
-              className="w-16 h-16 object-cover"
-            />
+    <ClientLayout>
+      <div className="space-y-6">
+        {/* Top Header */}
+        <div className="pb-2 border-b border-slate-200/70">
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            Invite & Earn (60% Commission)
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
+            Share your unique referral link and earn instant 60% cash rewards whenever your friends upgrade to VIP membership.
+          </p>
+        </div>
+
+        {/* 2-Column Responsive Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          {/* Left Column (7 cols): Main Hero & Ready-to-Post Pitch */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* Hero Card */}
+            <div className="bg-emerald-700 rounded-3xl p-6 sm:p-7 text-white shadow-sm border border-emerald-800">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-800 flex items-center justify-center">
+                  <FiGift size={20} className="text-white" />
+                </div>
+                <span className="text-xs font-black tracking-wider uppercase text-emerald-200">
+                  Affiliate Program
+                </span>
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight mb-2">
+                Earn 60% Commission on Every Referral!
+              </h2>
+              <p className="text-xs sm:text-sm text-emerald-100 leading-relaxed font-normal mb-5">
+                Share your personal invite link. When your friends register and upgrade to a Pro member, you get paid instant cash bonuses directly into your wallet.
+              </p>
+
+              {/* Quick Copy Link Box */}
+              <div className="bg-emerald-800 rounded-2xl p-2 sm:p-2.5 flex items-center justify-between border border-emerald-600/40 gap-2">
+                <span className="text-xs font-mono font-semibold truncate text-emerald-100 px-2">
+                  {referralLink}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleCopyLink}
+                  className="px-4 py-2 bg-white text-emerald-800 hover:bg-emerald-50 active:scale-95 font-black text-xs rounded-xl transition-all shadow-xs flex items-center gap-1.5 shrink-0 cursor-pointer"
+                >
+                  {copiedLink ? (
+                    <>
+                      <FiCheck size={14} className="text-emerald-700" />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <FiCopy size={14} />
+                      <span>Copy Link</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Personalized Pitch Message */}
+            <div className="bg-white rounded-3xl p-6 shadow-xs border border-slate-200/80 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div>
+                  <h3 className="font-extrabold text-sm text-slate-900">
+                    Ready-to-Post Pitch
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Copy and paste on your social feeds, WhatsApp group, or status
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopyMessage}
+                  className="px-3.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                >
+                  {copiedMessage ? (
+                    <>
+                      <FiCheck size={14} />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <FiCopy size={14} />
+                      <span>Copy Pitch</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <textarea
+                ref={messageRef}
+                rows={6}
+                readOnly
+                className="w-full p-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs text-slate-700 leading-relaxed font-mono outline-hidden resize-none focus:bg-white focus:border-emerald-500 transition-all select-all"
+                defaultValue={message}
+              />
+            </div>
           </div>
 
-          <div className="flex-1">
-            <textarea
-              ref={messageRef}
-              rows={25}
-              className="border outline-none text-xs w-full p-3"
-              defaultValue={message}
-            ></textarea>
-          </div>
-        </div>
-        <div className="flex flex-col gap-2 px-5">
-          <h2 className="font-bold border-b">Share on:</h2>
-          <div className="flex justify-between">
-            <a href={whatsappLink}>
-              <div className="text-sm flex flex-col items-center cursor-pointer">
-                <FaWhatsapp className="text-primary" size={30} />
-                <span>WhatsApp</span>
+          {/* Right Column (5 cols): Social Share & How It Works */}
+          <div className="lg:col-span-5 space-y-6">
+            {/* Social Share Grid */}
+            <div className="bg-white rounded-3xl p-6 shadow-xs border border-slate-200/80 space-y-4">
+              <div className="pb-2 border-b border-slate-100">
+                <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider">
+                  Instant 1-Click Social Share
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Click any platform to share your pre-formatted referral pitch
+                </p>
               </div>
-            </a>
-            <a href="https://www.facebook.com">
-              <div className="text-sm flex flex-col items-center cursor-pointer">
-                <FaFacebook className="text-blue-600" size={30} />
-                <span>Facebook</span>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                <a
+                  href={whatsappLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-all group border border-emerald-100 hover:scale-102"
+                >
+                  <FaWhatsapp size={24} className="group-hover:scale-110 transition-transform text-emerald-600" />
+                  <span className="text-xs font-bold mt-1.5 text-slate-700">WhatsApp</span>
+                </a>
+                <a
+                  href={telegramLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-sky-50 hover:bg-sky-100 text-sky-700 transition-all group border border-sky-100 hover:scale-102"
+                >
+                  <FaTelegram size={24} className="group-hover:scale-110 transition-transform text-sky-500" />
+                  <span className="text-xs font-bold mt-1.5 text-slate-700">Telegram</span>
+                </a>
+                <a
+                  href={twitterLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-900 transition-all group border border-slate-200 hover:scale-102"
+                >
+                  <FaTwitter size={24} className="group-hover:scale-110 transition-transform" />
+                  <span className="text-xs font-bold mt-1.5 text-slate-700">X / Twitter</span>
+                </a>
+                <a
+                  href={facebookLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-blue-50 hover:bg-blue-100 text-blue-700 transition-all group border border-blue-100 hover:scale-102"
+                >
+                  <FaFacebook size={24} className="group-hover:scale-110 transition-transform text-blue-600" />
+                  <span className="text-xs font-bold mt-1.5 text-slate-700">Facebook</span>
+                </a>
+                <a
+                  href={linkedInLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 transition-all group border border-indigo-100 hover:scale-102"
+                >
+                  <FaLinkedin size={24} className="group-hover:scale-110 transition-transform text-indigo-600" />
+                  <span className="text-xs font-bold mt-1.5 text-slate-700">LinkedIn</span>
+                </a>
               </div>
-            </a>
-            <a href={twitterLink}>
-              <div className="text-sm flex flex-col items-center cursor-pointer">
-                <FaTwitter className="text-blue-400" size={30} />
-                <span>Twitter</span>
+            </div>
+
+            {/* How It Works 3-Step Card */}
+            <div className="bg-slate-900 text-white rounded-3xl p-6 shadow-lg space-y-4">
+              <div className="flex items-center gap-2">
+                <FiUsers className="text-emerald-400" size={18} />
+                <h3 className="text-sm font-extrabold text-white uppercase tracking-wider">
+                  How Referral Bonuses Work
+                </h3>
               </div>
-            </a>
-            <a href={linkedInLink}>
-              <div className="text-sm flex flex-col items-center cursor-pointer">
-                <FaLinkedin className="text-blue-500" size={30} />
-                <span>LinkedIn</span>
+              <div className="space-y-3 text-xs text-slate-300">
+                <div className="flex items-start gap-3">
+                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center shrink-0 text-[11px] border border-emerald-500/30">
+                    1
+                  </span>
+                  <p>
+                    <strong className="text-white">Share Your Link:</strong> Send your link to friends, groups, and social followers.
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center shrink-0 text-[11px] border border-emerald-500/30">
+                    2
+                  </span>
+                  <p>
+                    <strong className="text-white">They Activate:</strong> When your friend upgrades to VIP Pro Member, our system verifies the registration.
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center shrink-0 text-[11px] border border-emerald-500/30">
+                    3
+                  </span>
+                  <p>
+                    <strong className="text-white">Instant 60% Payout:</strong> Receive 60% commission automatically credited directly to your bank-withdrawable balance.
+                  </p>
+                </div>
               </div>
-            </a>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </ClientLayout>
   );
 };
 
 export default InviteFriends;
+

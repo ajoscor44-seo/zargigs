@@ -65,11 +65,7 @@ const PrivacyPolicy = () => {
     },
   ];
 
-  return (
-    <div className="border">
-      <Legal title={"Privacy Policy"} data={policies} />
-    </div>
-  );
+  return <Legal title={"Privacy Policy"} data={policies} />;
 };
 
 export default PrivacyPolicy;

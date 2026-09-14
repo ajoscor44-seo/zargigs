@@ -38,11 +38,7 @@ const RefundPolicy = () => {
     },
   ];
 
-  return (
-    <div className="border">
-      <Legal title={"Refund Policy"} data={policies} />
-    </div>
-  );
+  return <Legal title={"Refund Policy"} data={policies} />;
 };
 
 export default RefundPolicy;

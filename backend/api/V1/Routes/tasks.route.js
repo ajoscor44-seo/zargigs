@@ -17,10 +17,13 @@ import {
   sanctionTask,
   getUserTasksHistory,
   sanctionAllTask,
+  getUserOrders,
 } from "../Controllers/tasks.controller.js";
 
 const router = express.Router();
 
+router.get("/user-orders", getUserOrders);
+router.get("/orders", getUserOrders);
 router.get("/", getTasks);
 router.get("/history", getUserTasksHistory);
 router.get("/task/:id", getTask);

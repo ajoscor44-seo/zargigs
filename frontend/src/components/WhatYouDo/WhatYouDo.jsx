@@ -1,6 +1,6 @@
 import React from "react";
-import postAdvertImg from "../../assets/png/post-advert.png";
 import man_member from "../../assets/images/blackman-with-phone.png";
+import { FaHeart, FaShareNodes, FaArrowRight, FaWallet, FaShieldHeart, FaCoins } from "react-icons/fa6";
 
 const WhatYouDo = () => {
   const app_url =
@@ -8,105 +8,104 @@ const WhatYouDo = () => {
       ? import.meta.env.VITE_DEV_APP_URL
       : import.meta.env.VITE_PROD_APP_URL;
 
+  const memberSteps = [
+    {
+      icon: <FaHeart size={20} className="text-rose-500" />,
+      bg: "bg-rose-50 border-rose-100",
+      title: "1. Like, Follow & Engage",
+      desc: "Earn cash rewards instantly by simply following handles, liking posts, commenting, and subscribing to channels.",
+    },
+    {
+      icon: <FaShareNodes size={20} className="text-blue-500" />,
+      bg: "bg-blue-50 border-blue-100",
+      title: "2. Post & Reshare Adverts",
+      desc: "Post sponsor flyers and videos to your WhatsApp status, Facebook timeline, Twitter feed, or Instagram story.",
+    },
+    {
+      icon: <FaWallet size={20} className="text-emerald-500" />,
+      bg: "bg-emerald-50 border-emerald-100",
+      title: "3. Direct Instant Withdrawals",
+      desc: "Get your earnings transferred directly to your local bank account swiftly with zero hidden processing charges.",
+    },
+  ];
+
   return (
-    <div className="bg-white px-4 py-10 grid lg:grid-cols-2 lg:pt-20 lg:px-72 lg:justify-center lg:items-start">
-      <div className="lg:order-2">
-        <img
-          src={man_member}
-          className="mb-10 p-2 object-cover mx-auto"
-          style={{ height: "420px" }}
-        />
-      </div>
-      <div>
-        <div className="flex items-center flex-col">
-          <h2 className="text-3xl font-primary font-bold">For Members</h2>
-          <span className="h-1 w-10 rounded-full bg-green-500"></span>
-        </div>
+    <section className="py-20 bg-slate-50 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          {/* Left Column: Member Features */}
+          <div className="lg:col-span-7">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold tracking-wide uppercase mb-4">
+              For Earners & Social Media Users
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              Turn Your Daily Screen Time Into <span className="text-emerald-600">Daily Cash</span>
+            </h2>
+            <p className="mt-4 text-slate-600 text-base sm:text-lg leading-relaxed">
+              You already spend hours liking and sharing content every day. Now get paid directly for every single social action you perform on your favorite platforms.
+            </p>
 
-        <div className="flex flex-col items-center mt-5 gap-10 py-3">
-          <div className="grid grid-flow-col gap-3 items-start">
-            <div className="service_icon border p-4 rounded-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-8 h-8 text-blue-500 transition duration-500 hover:rotate-180"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282m0 0h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 0 1-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 9.953 4.167 9.5 5 9.5h1.053c.472 0 .745.556.5.96a8.958 8.958 0 0 0-1.302 4.665c0 1.194.232 2.333.654 3.375Z"
-                />
-              </svg>
+            {/* Steps Container */}
+            <div className="mt-8 space-y-4">
+              {memberSteps.map((step, idx) => (
+                <div
+                  key={idx}
+                  className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-4"
+                >
+                  <div className={`w-12 h-12 rounded-xl border flex items-center justify-center shrink-0 ${step.bg}`}>
+                    {step.icon}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-base">
+                      {step.title}
+                    </h3>
+                    <p className="mt-1 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                      {step.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <div>
-              <p className="font-bold text-lg font-primary">
-                Like and Share Posts
-              </p>
-              <p className="font-medium text-sm font-primary mt-2 pr-2">
-                Earn by engaging with content. Simply like or share posts from
-                various brands and get rewarded for your interactions.
-              </p>
+            {/* CTA button */}
+            <div className="mt-8 flex items-center gap-4">
+              <a
+                href={`${app_url}/signup`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-slate-900 text-white font-semibold text-sm hover:bg-slate-800 shadow-md shadow-slate-900/10 hover:shadow-lg transition-all duration-200"
+              >
+                <span>Join As An Earner</span>
+                <FaArrowRight size={14} />
+              </a>
             </div>
           </div>
-          <div className="grid grid-flow-col gap-3 items-start">
-            <div className="service_icon border p-4 rounded-full">
+
+          {/* Right Column: Image */}
+          <div className="lg:col-span-5 relative">
+            <div className="relative mx-auto max-w-md lg:max-w-none">
+              <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400/20 to-emerald-400/20 rounded-3xl blur-2xl -z-10" />
               <img
-                className="w-8 h-8"
-                src={postAdvertImg}
-                alt="postAdvertImg"
+                src={man_member}
+                alt="Earn with Gigsflix"
+                className="w-full rounded-2xl shadow-xl object-cover ring-1 ring-slate-900/5 aspect-4/5"
               />
-            </div>
 
-            <div>
-              <p className="font-bold text-lg font-primary">Post Adverts</p>
-              <p className="font-medium text-sm font-primary mt-2 pr-2">
-                Leverage your audience by posting sponsored content. We connect
-                you with brands that resonate with your followers, ensuring
-                authenticity and engagement.
-              </p>
+              {/* Floating Earning Pill */}
+              <div className="absolute -top-4 -left-4 sm:left-6 bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-lg border border-slate-100 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+                  <FaCoins size={18} />
+                </div>
+                <div>
+                  <div className="text-xs font-semibold text-slate-500">Daily Payouts</div>
+                  <div className="text-base font-bold text-slate-900">Instant Wallet Crediting</div>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="grid grid-flow-col gap-3 items-start">
-            <div className="service_icon border p-4 rounded-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-8 h-8 text-orange-400 transition duration-500 hover:rotate-180"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"
-                />
-              </svg>
-            </div>
-
-            <div>
-              <p className="font-bold text-lg font-primary">Flexible Earning</p>
-              <p className="font-medium text-sm font-primary mt-2 pr-2">
-                Our platform offers a variety of earning opportunities to suit
-                your interests and social media habits. Choose what fits you
-                best and start earning today.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start">
-            <a href={`${app_url}/signup`} target="_blank">
-              <button className="btn bg-green-500 rounded-sm text-white">
-                Get Started
-              </button>
-            </a>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

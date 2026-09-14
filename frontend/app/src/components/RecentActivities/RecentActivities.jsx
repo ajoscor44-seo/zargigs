@@ -3,28 +3,29 @@ import RecentActivity from "../RecentActivity/RecentActivity";
 import { useAuth } from "../../context/AuthContext";
 
 const RecentActivities = ({ recentActivities }) => {
-  const { adminData } = useAuth()
+  const { adminData } = useAuth();
   
+  if (!Array.isArray(recentActivities) || recentActivities.length === 0) return null;
+
   return (
-    <div className="bg-white px-4 py-2 recentactivities mb-12 pb-5 border-t">
-      <div className="font-primary mb-2">
-        <h2 className="font-bold text-lg">Recent Activities</h2>
-        <p className="text-sm text-primary">
-          See what Gigflates are doing on {adminData?.appName}
+    <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
+      <div className="font-primary pb-2 border-b border-slate-100">
+        <h2 className="font-black text-base sm:text-lg text-slate-900">Recent Platform Activities</h2>
+        <p className="text-xs text-slate-500">
+          Real-time completed tasks and payouts across {adminData?.appName || "Zargigs"}
         </p>
       </div>
-      <div className="recentActivities">
-        {recentActivities.map((recentActivity) => {
-          return (
-            <RecentActivity
-              key={recentActivity._id}
-              recentActivity={recentActivity}
-            />
-          );
-        })}
+      <div className="space-y-2.5">
+        {recentActivities.map((recentActivity, idx) => (
+          <RecentActivity
+            key={recentActivity?._id || recentActivity?.id || idx}
+            recentActivity={recentActivity}
+          />
+        ))}
       </div>
     </div>
   );
 };
 
 export default RecentActivities;
+

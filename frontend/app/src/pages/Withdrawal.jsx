@@ -1,13 +1,14 @@
 import React from "react";
 import Withdraw from "../components/Withdraw/Withdraw";
-import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
+import ClientLayout from "../components/ClientLayout/ClientLayout";
 
 const Withdrawal = () => {
   return (
-    <div>
-      <Withdraw />
-      <ClientMenuBar />
-    </div>
+    <ClientLayout>
+      <div className="py-6">
+        <Withdraw />
+      </div>
+    </ClientLayout>
   );
 };
 

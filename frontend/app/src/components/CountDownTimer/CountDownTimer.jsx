@@ -1,68 +1,95 @@
 import React, { useState, useEffect } from "react";
 
 const CountdownTimer = ({ totalSeconds }) => {
-  // Initialize timer state e.g 3600 seconds (1 hour)
-  const [secondsLeft, setSecondsLeft] = useState(totalSeconds);
+  const sanitizeSeconds = (val) => {
+    const num = Number(val);
+    return Number.isFinite(num) && num > 0 ? Math.floor(num) : 0;
+  };
+
+  const [secondsLeft, setSecondsLeft] = useState(() => sanitizeSeconds(totalSeconds));
 
   useEffect(() => {
-    // Set up the interval
+    setSecondsLeft(sanitizeSeconds(totalSeconds));
+  }, [totalSeconds]);
+
+  useEffect(() => {
+    if (secondsLeft <= 0) return;
+
     const intervalId = setInterval(() => {
-      if (secondsLeft > 0) {
-        return setSecondsLeft((secondsLeft) => secondsLeft - 1);
-      }
-      clearInterval(intervalId);
-      return () => setSecondsLeft(0); // Ensure the timer shows 0 and does not go negative
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(intervalId);
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
 
-    // Clear the interval on component unmount
     return () => clearInterval(intervalId);
-  }, [secondsLeft]);
+  }, [secondsLeft > 0]);
 
-  // Helper function to format seconds into hours minutes seconds
-  function startTimer(seconds) {
-    const days = Math.floor(seconds / 86400);
-    const hours = Math.floor((seconds % 86400) / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secondsLeft = seconds % 60;
+  function formatTimeValues(seconds) {
+    const safeSec = sanitizeSeconds(seconds);
+    const days = Math.floor(safeSec / 86400);
+    const hours = Math.floor((safeSec % 86400) / 3600);
+    const minutes = Math.floor((safeSec % 3600) / 60);
+    const secs = safeSec % 60;
 
-    const formatTime = (time) => {
-      return time < 10 ? "0" + time : time;
-    };
-
+    const pad = (num) => (num < 10 ? `0${num}` : `${num}`);
     return {
-      days: formatTime(days),
-      hours: formatTime(hours),
-      minutes: formatTime(minutes),
-      seconds: formatTime(secondsLeft),
+      days: pad(days),
+      hours: pad(hours),
+      minutes: pad(minutes),
+      seconds: pad(secs),
     };
   }
 
-  const timeObject = startTimer(secondsLeft);
+  const time = formatTimeValues(secondsLeft);
 
   return (
-    <div className="flex justify-between pb-2">
-      <span className="border p-2 rounded-sm text-center">
-        <h2 className="font-bold text-2xl text-green-500">{timeObject.days}</h2>
-        <span className="font-semibold text-sm text-center">Days</span>
-      </span>
-      <span className="border p-2 rounded-sm text-center">
-        <h2 className="font-bold text-2xl text-green-500">
-          {timeObject.hours}
-        </h2>
-        <span className="font-semibold text-sm text-center">Hours</span>
-      </span>
-      <span className="border p-2 rounded-sm text-center">
-        <h2 className="font-bold text-2xl text-green-500">
-          {timeObject.minutes}
-        </h2>
-        <span className="font-semibold text-sm text-center">Minutes</span>
-      </span>
-      <span className="border p-2 rounded-sm text-center">
-        <h2 className="font-bold text-2xl text-green-500">
-          {timeObject.seconds}
-        </h2>
-        <span className="font-semibold text-sm text-center">Seconds</span>
-      </span>
+    <div className="flex items-center justify-center gap-1.5 sm:gap-2 font-primary shrink-0 select-none">
+      {Number(time.days) > 0 && (
+        <>
+          <div className="bg-slate-900 text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl text-center min-w-[38px] sm:min-w-[46px] shadow-sm flex flex-col items-center justify-center border border-slate-800">
+            <span className="block text-xs sm:text-sm font-black leading-none text-emerald-400 font-mono tabular-nums">
+              {time.days}
+            </span>
+            <span className="text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase tracking-wider block mt-1">
+              Days
+            </span>
+          </div>
+          <span className="text-amber-800 font-black text-xs sm:text-sm -mt-3 sm:-mt-3.5">:</span>
+        </>
+      )}
+
+      <div className="bg-slate-900 text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl text-center min-w-[38px] sm:min-w-[46px] shadow-sm flex flex-col items-center justify-center border border-slate-800">
+        <span className="block text-xs sm:text-sm font-black leading-none text-emerald-400 font-mono tabular-nums">
+          {time.hours}
+        </span>
+        <span className="text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase tracking-wider block mt-1">
+          Hrs
+        </span>
+      </div>
+      <span className="text-amber-800 font-black text-xs sm:text-sm -mt-3 sm:-mt-3.5">:</span>
+
+      <div className="bg-slate-900 text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl text-center min-w-[38px] sm:min-w-[46px] shadow-sm flex flex-col items-center justify-center border border-slate-800">
+        <span className="block text-xs sm:text-sm font-black leading-none text-emerald-400 font-mono tabular-nums">
+          {time.minutes}
+        </span>
+        <span className="text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase tracking-wider block mt-1">
+          Min
+        </span>
+      </div>
+      <span className="text-amber-800 font-black text-xs sm:text-sm -mt-3 sm:-mt-3.5">:</span>
+
+      <div className="bg-slate-900 text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl text-center min-w-[38px] sm:min-w-[46px] shadow-sm flex flex-col items-center justify-center border border-slate-800">
+        <span className="block text-xs sm:text-sm font-black leading-none text-emerald-400 font-mono tabular-nums">
+          {time.seconds}
+        </span>
+        <span className="text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase tracking-wider block mt-1">
+          Sec
+        </span>
+      </div>
     </div>
   );
 };

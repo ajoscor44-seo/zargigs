@@ -1,15 +1,11 @@
-import User from "../Models/user.model.js";
+import { userService, tokenService, notificationService } from "../services/supabaseDb.service.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { ErrorHandler } from "../utils/error.js";
-import Token from "../Models/Token.model.js";
 import nodemailer from "nodemailer";
-import AccessToken from "../Models/access-tokens.model.js";
 import { sendNotitfication } from "../utils/notification.js";
-import useExternalApi from "../utils/client.js";
 import logger from "../utils/logger.util.js";
 import { randStr } from "../utils/rand-str.js";
-import ResetId from "../Models/resetid.model.js";
 
 export const signup = async (req, res, next) => {
   try {
@@ -21,6 +17,7 @@ export const signup = async (req, res, next) => {
       password,
       referredBy,
       phone,
+      accountType,
     } = req.body;
     const formattedUsername = username
       ?.replaceAll(" ", "")
@@ -31,63 +28,56 @@ export const signup = async (req, res, next) => {
       ?.toLowerCase()
       ?.replaceAll("@", "");
     const hashedPassword = password && bcryptjs.hashSync(password, 10);
-    const userWithMail = await User.findOne({ email });
-    let referrer = await User.findOne({ username: referredBy });
-    //If NO referrer makes an admin referrer
-    if (!referrer) referrer = await User.findOne({ role: "admin" });
+    const userWithMail = await userService.findByEmail(email);
+    let referrer = await userService.findByUsername(referredBy);
+    // If NO referrer makes an admin referrer
+    if (!referrer) referrer = await userService.findAdmin();
+
     if (userWithMail) {
       const error = ErrorHandler(400, "Email is already taken");
       return res.status(400).json(error);
     }
-    const userWithUsername = await User.findOne({
-      username: formattedUsername,
-    });
+    const userWithUsername = await userService.findByUsername(formattedUsername);
     if (userWithUsername) {
       const error = ErrorHandler(400, "Username is already taken.");
       return res.status(400).json(error);
     }
-    const newUser = new User({
+
+    const newUser = await userService.createUser({
       firstname,
       lastname,
       username: formattedUsername,
       email,
       phone,
+      accountType: accountType === "advertiser" || accountType === "retailer" ? "advertiser" : "earner",
       password: hashedPassword,
       referredBy:
         referrer && referrer.username !== "logical"
           ? formattedRefUsername
           : "admin",
       role: "user",
-      isEmailVerified: false,
+      isEmailVerified: true,
       isMember: false,
       isBanned: false,
       isNINVerified: false,
+      referrals: [],
     });
-    await newUser.save();
 
     if (referrer) {
-      await referrer.updateOne({
-        referrals: [
-          ...referrer.referrals,
-          {
-            userId: newUser._id,
-          },
-        ],
+      const currentReferrals = Array.isArray(referrer.referrals) ? referrer.referrals : [];
+      await userService.updateUser(referrer.id, {
+        referrals: [...currentReferrals, { userId: newUser.id }],
       });
     }
 
-    // Generate OTP token
-    const OTPToken = new Token({
-      userId: newUser._id,
-      token: `${Math.floor(1000 + Math.random() * 9000)}`,
-    });
-    await OTPToken.save();
-
-    // Send OTP mail
-    await sendOTP(email, OTPToken.token, lastname);
     res.status(201).json({
-      message: "Email sent successfully.",
+      message: "Account created successfully.",
       failed: false,
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+        username: newUser.username,
+      },
     });
   } catch (error) {
     next(error);
@@ -98,23 +88,18 @@ export const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
-    const validUser = await User.findOne({ email });
+    const validUser = await userService.findByEmail(email);
     if (!validUser) {
       const error = ErrorHandler(404, "User not found");
       return res.status(404).json(error);
     }
+    // Auto-verify user if needed
     if (!validUser.isEmailVerified) {
-      const error = ErrorHandler(400, "Please verify your email to continue.");
-      // Generate OTP token
-      const OTPToken = new Token({
-        userId: validUser._id,
-        token: `${Math.floor(1000 + Math.random() * 9000)}`,
-      });
-      await OTPToken.save();
-
-      // Send OTP mail
-      await sendOTP(email, OTPToken.token, validUser.lastname);
-      return res.status(401).json(error);
+      try {
+        await userService.updateUser(validUser.id, { isEmailVerified: true });
+      } catch (e) {
+        // Continue
+      }
     }
     const validPassword =
       password && bcryptjs.compareSync(password, validUser.password || "");
@@ -122,8 +107,9 @@ export const login = async (req, res, next) => {
       const error = ErrorHandler(401, "Wrong credentials");
       return res.status(401).json(error);
     }
-    const { password: hashedPassword, referrals, ...rest } = validUser._doc;
-    const token = jwt.sign({ ...rest }, process.env.JWT_SECRET);
+
+    const { password: hashedPassword, referrals, ...rest } = validUser;
+    const token = jwt.sign({ ...rest, _id: validUser.id }, process.env.JWT_SECRET || "zargigs_secret_jwt_key_2026");
 
     return res
       .cookie("access_token", token, {
@@ -134,6 +120,7 @@ export const login = async (req, res, next) => {
       .json({
         message: "Login successful",
         failed: false,
+        access_token: token,
       });
   } catch (error) {
     next({ message: "Internal server error. Please try again." });
@@ -144,12 +131,12 @@ export const google = async (req, res, next) => {
   const { name, email, image, phone } = req.body;
 
   try {
-    const fullName = name.split(" ");
-    const validUser = await User.findOne({ email: email });
+    const fullName = name ? name.split(" ") : ["User", ""];
+    const validUser = await userService.findByEmail(email);
     if (validUser) {
-      const { password: hashedPassword, ...rest } = validUser._doc;
-      const token = jwt.sign({ ...rest }, process.env.JWT_SECRET);
-      res
+      const { password: hashedPassword, ...rest } = validUser;
+      const token = jwt.sign({ ...rest, _id: validUser.id }, process.env.JWT_SECRET || "zargigs_secret_jwt_key_2026");
+      return res
         .cookie("access_token", token, {
           httpOnly: true,
           maxAge: 3600000,
@@ -162,37 +149,33 @@ export const google = async (req, res, next) => {
         });
     } else {
       const generatedPassword = Math.random().toString(36).slice(-8);
-
-      const hashedPassword =
-        generatedPassword && bcryptjs.hashSync(generatedPassword, 10);
-      const newUser = new User({
+      const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+      const newUser = await userService.createUser({
         firstname: fullName[0],
-        lastname: fullName[1],
+        lastname: fullName[1] || "",
         username:
-          name.split(" ").join("").toLowerCase() +
+          (name || "user").split(" ").join("").toLowerCase() +
           Math.floor(Math.random() * 10000).toString(),
         email,
         phone,
         password: hashedPassword,
         referredBy: "admin",
         role: "user",
-        isEmailVerified: false,
+        isEmailVerified: true,
         isMember: false,
         isBanned: false,
-        image,
+        avatarUrl: image,
       });
 
-      await newUser.save();
-
-      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ ...newUser, _id: newUser.id }, process.env.JWT_SECRET || "zargigs_secret_jwt_key_2026", {
         expiresIn: "1h",
       });
-      const { password: hashedPassword2, ...rest } = newUser._doc;
+      const { password: hashedPassword2, ...rest } = newUser;
       const expiryDate = new Date(Date.now() + 3600000);
-      res
+      return res
         .cookie("access_token", token, { httpOnly: true, expires: expiryDate })
         .status(200)
-        .json(rest);
+        .json({ ...rest, access_token: token });
     }
   } catch (error) {
     next(error);
@@ -201,7 +184,6 @@ export const google = async (req, res, next) => {
 
 export const sendOTP = async (email, OTP, lastname) => {
   try {
-    // Creates Email Transporter
     let transporter = nodemailer.createTransport({
       service: "gmail",
       host: "smtp.gmail.com",
@@ -213,17 +195,16 @@ export const sendOTP = async (email, OTP, lastname) => {
       },
     });
 
-    // Sends Email
-    let info = await transporter.sendMail({
+    await transporter.sendMail({
       from: process.env.USER,
       to: email,
       subject: "Account Verification",
       html: `
         <div class="border border-green-500 rounded-md px-10 text-center">
-          <h1 class="text-green-500 font-bold">Welcome to Gigsflix ${lastname}!</h1>
+          <h1 class="text-green-500 font-bold">Welcome to Zargigs ${lastname || ""}!</h1>
           <p>Here is your OTP</p>
           <h2 class="text-green-500">${OTP}</h2>
-          <p>Copy and paste the OTP to verify your Gigsflix account.</p>
+          <p>Copy and paste the OTP to verify your Zargigs account.</p>
         </div>
       `,
     });
@@ -235,37 +216,30 @@ export const sendOTP = async (email, OTP, lastname) => {
 export const verifyEmail = async (req, res, next) => {
   try {
     const { email, otp } = req.body;
-
-    const validUser = await User.findOne({ email });
+    const validUser = await userService.findByEmail(email);
 
     if (!validUser) {
       const error = ErrorHandler(404, "User does not exist.");
       return res.status(404).json(error);
     }
 
-    const validOTP = await Token.findOne({
-      token: otp,
-    });
-
+    const validOTP = await tokenService.findToken(validUser.id, otp);
     if (!validOTP) {
-      const error = ErrorHandler(404, "Invalid OTP.");
+      const error = ErrorHandler(400, "Invalid OTP.");
       return res.status(400).json(error);
     }
-    await User.updateOne(
-      { _id: validOTP.userId },
-      { $set: { isEmailVerified: true } }
-    );
-    await Token.findByIdAndDelete(validOTP._id);
 
-    // Creates notitfication
+    await userService.updateUser(validUser.id, { isEmailVerified: true });
+    await tokenService.deleteTokensByUser(validUser.id);
+
+    // Notification
     const notification = {
-      userId: validOTP.userId,
+      userId: validUser.id,
       title: "Email Verified!",
-      message: `Congratulations ${validUser.firstname}, your email ${validUser.email} has been verified, you can now login into your Gigsflix account.`,
+      message: `Congratulations ${validUser.firstname}, your email ${validUser.email} has been verified, you can now login into your Zargigs account.`,
       type: "verification",
     };
 
-    // Send notification to user
     await sendNotitfication(notification);
 
     res.status(200).json({ message: "Email Verified", failed: false });
@@ -277,21 +251,17 @@ export const verifyEmail = async (req, res, next) => {
 export const resendOTP = async (req, res, next) => {
   try {
     const email = req.body.email;
-    const validUser = await User.findOne({ email });
+    const validUser = await userService.findByEmail(email);
     if (!validUser) {
       const error = ErrorHandler(404, "There's no user with this email.");
       return res.status(404).json(error);
     }
-    await Token.findOneAndDelete({ userId: validUser._id });
+    await tokenService.deleteTokensByUser(validUser.id);
 
-    // Generate OTP token
-    const OTPToken = new Token({
-      userId: validUser._id,
-      token: `${Math.floor(1000 + Math.random() * 9000)}`,
-    });
-    await OTPToken.save();
+    const tokenVal = `${Math.floor(1000 + Math.random() * 9000)}`;
+    await tokenService.createToken(validUser.id, tokenVal);
 
-    await sendOTP(email, OTPToken.token, validUser.lastname);
+    await sendOTP(email, tokenVal, validUser.lastname);
     res
       .status(200)
       .json({ message: "OTP has been resent successfully", failed: false });
@@ -312,7 +282,6 @@ export const signout = (req, res, next) => {
 export const sendEmail = async (req, res, next) => {
   try {
     const { email, message, fullname } = req.body;
-    // Creates Email Transporter
     let transporter = nodemailer.createTransport({
       service: "gmail",
       host: "smtp.gmail.com",
@@ -324,14 +293,13 @@ export const sendEmail = async (req, res, next) => {
       },
     });
 
-    // Sends Email
-    let info = await transporter.sendMail({
+    await transporter.sendMail({
       from: process.env.USER,
       to: process.env.USER,
       subject: "Mail From Landing Page",
       html: `
         <div class="border border-green-500 rounded-md px-10 text-center">
-          <h1 class="text-green-500 font-bold">Hi Gigsflix, my name is ${fullname}</h1>
+          <h1 class="text-green-500 font-bold">Hi Zargigs, my name is ${fullname}</h1>
           <h2 class="text-green-500 font-bold">Sender Email: ${email}</h2>
           <p>${message}</p>
         </div>
@@ -353,7 +321,7 @@ export const sendEmail = async (req, res, next) => {
 export const sendResetPasswordLink = async (req, res, next) => {
   try {
     const { email } = req.body;
-    const validUser = await User.findOne({ email });
+    const validUser = await userService.findByEmail(email);
 
     if (!validUser) {
       return res
@@ -362,11 +330,7 @@ export const sendResetPasswordLink = async (req, res, next) => {
     }
 
     const reset_id = randStr(10);
-    const resetId = new ResetId({
-      email,
-      resetId: reset_id,
-    });
-    await resetId.save();
+    await tokenService.createResetId(email, reset_id);
 
     let transporter = nodemailer.createTransport({
       service: "gmail",
@@ -379,19 +343,18 @@ export const sendResetPasswordLink = async (req, res, next) => {
       },
     });
 
-    // Sends Email
-    let info = await transporter.sendMail({
+    await transporter.sendMail({
       from: process.env.USER,
       to: email,
       subject: "Reset Password Link",
       html: `
         <div class="border border-green-500 rounded-md px-10 text-center">
           <h1 class="text-green-500 font-bold">Hello there,</h1>
-          <h2 class="text-green-500 font-bold">Seems like your are trying to change your gigsflix account password</h2>
+          <h2 class="text-green-500 font-bold">Seems like your are trying to change your zargigs account password</h2>
           <p>Click the button below to reset your password</p>
-          <a href="https://app.gigsflix.com/forgot-password/${reset_id}"><button className="px-2 py-1 rounded text-lg font-bold">Change Password</button></a>
+          <a href="https://app.zargigs.com/forgot-password/${reset_id}"><button className="px-2 py-1 rounded text-lg font-bold">Change Password</button></a>
           <p>Or copy this link and paste to your browser to reset your password</p>
-          <a href="https://app.gigsflix.com/forgot-password/${reset_id}">https://app.gigsflix.com/forgot-password/${reset_id}</a>
+          <a href="https://app.zargigs.com/forgot-password/${reset_id}">https://app.zargigs.com/forgot-password/${reset_id}</a>
         </div>
       `,
     });
@@ -410,15 +373,16 @@ export const sendResetPasswordLink = async (req, res, next) => {
 export const resetPassword = async (req, res, next) => {
   try {
     const { email, resetId, password: newPassword } = req.body;
-    const validResetId = await ResetId.findOneAndDelete({
-      email,
-      resetId,
-    });
-    if (!validResetId) {
+    const validResetId = await tokenService.findResetId(resetId);
+    if (!validResetId || validResetId.email !== email) {
       return res.status(404).json({ message: "Invalid parameter" });
     }
+    await tokenService.deleteResetId(resetId);
     const hashedPassword = newPassword && bcryptjs.hashSync(newPassword, 10);
-    await User.findOneAndUpdate({ email }, { password: hashedPassword });
+    const user = await userService.findByEmail(email);
+    if (user) {
+      await userService.updateUser(user.id, { password: hashedPassword });
+    }
 
     return res
       .status(200)

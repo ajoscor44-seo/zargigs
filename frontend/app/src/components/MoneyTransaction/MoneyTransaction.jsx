@@ -1,35 +1,33 @@
 import React from "react";
-import { FaMoneyBillTransfer, FaWallet } from "react-icons/fa6";
-import { CiBank } from "react-icons/ci";
+import { FaMoneyBillTransfer, FaWallet, FaBuildingColumns } from "react-icons/fa6";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const MoneyTransaction = () => {
   return (
-    <div className="bg-white px-4 py-3 flex justify-between items-center">
-      <div>
-        <Link to="/fund-wallet">
-          <button className="moneyTrans">
-            <FaWallet className="font-bold" />
-            FUND
-          </button>
-        </Link>
-      </div>
-      <div>
-        <Link to="/withdraw">
-          <button className="moneyTrans">
-            <CiBank size={20} className="font-bold" />
-            WITHDRAW
-          </button>
-        </Link>
-      </div>
-      <div>
-        <Link to="/transfer">
-          <button className="moneyTrans">
-            <FaMoneyBillTransfer className="font-bold" />
-            TRANSFER
-          </button>
-        </Link>
-      </div>
+    <div className="grid grid-cols-3 gap-2">
+      <Link
+        to="/fund-wallet"
+        className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs border border-slate-200/90 shadow-2xs transition-all hover:border-slate-300"
+      >
+        <FaWallet size={12} className="text-emerald-600 shrink-0" />
+        <span className="truncate">Fund</span>
+      </Link>
+
+      <Link
+        to="/withdraw"
+        className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs border border-slate-200/90 shadow-2xs transition-all hover:border-slate-300"
+      >
+        <FaBuildingColumns size={12} className="text-slate-700 shrink-0" />
+        <span className="truncate">Withdraw</span>
+      </Link>
+
+      <Link
+        to="/transfer"
+        className="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs border border-slate-200/90 shadow-2xs transition-all hover:border-slate-300"
+      >
+        <FaMoneyBillTransfer size={12} className="text-slate-700 shrink-0" />
+        <span className="truncate">Transfer</span>
+      </Link>
     </div>
   );
 };

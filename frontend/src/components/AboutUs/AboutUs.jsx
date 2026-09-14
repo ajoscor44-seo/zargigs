@@ -1,44 +1,65 @@
 import React from "react";
 import { useAuth } from "../../context/LandingContext";
+import { FaUsersRays, FaShieldHalved, FaBoltLightning } from "react-icons/fa6";
 
 const AboutUs = () => {
   const { adminData } = useAuth();
-  return (
-    <div className="bg-white px-4 py-10">
-      <div className="flex items-center flex-col">
-        <h2 className="text-3xl font-primary font-bold">About Us</h2>
-        <span className="h-1 w-10 rounded-full bg-green-500"></span>
-      </div>
+  const appName = adminData?.appName || "Gigsflix";
 
-      <div className="flex flex-col items-center mt-5 gap-3">
-        <p className="font-primary text-center text-md">
-          Welcome to{" "}
-          <span className="font-bold text-primary">{adminData?.appName || "Gigsflix"}</span>,
-          your go-to platform for monetizing your social media presence!.
-        </p>
-        <p className="font-primary text-center text-md">
-          At{" "}
-          <span className="font-bold text-primary">{adminData?.appName}</span>,
-          we believe in the power of social media and the potential it holds for
-          earning opportunities.
-        </p>
-        <span className="font-primary text-center text-md font-extrabold">
-          {" "}
-          Whether you are a social media enthusiast or a content creator looking
-          for ways to earn, we've got you covered.
-        </span>
-        <p className="font-primary text-center text-md">
-          Our platform is designed to be user-friendly and accessible to
-          everyone, regardless of the size of your following.
-        </p>
-        <p className="font-primary font-extrabold text-center text-md">
-          It’s time to make your social media work for you.{" "}
-        </p>
-        <span className="font-bold text-center text-orange-500">
-          Welcome to the future of social media monetization!
-        </span>
+  const pillars = [
+    {
+      icon: <FaUsersRays size={24} className="text-emerald-500" />,
+      title: "Community Driven",
+      desc: "Built to empower creators and regular social media users by rewarding authentic daily activities.",
+    },
+    {
+      icon: <FaShieldHalved size={24} className="text-blue-500" />,
+      title: "100% Transparent",
+      desc: "Zero hidden charges, verifiable task approvals, and direct payouts to registered local accounts.",
+    },
+    {
+      icon: <FaBoltLightning size={24} className="text-amber-500" />,
+      title: "Instant Scaling",
+      desc: "Connect thousands of brand campaigns with active, high-intent audiences within minutes.",
+    },
+  ];
+
+  return (
+    <section className="py-20 bg-white relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold tracking-wide uppercase mb-3">
+            About Our Mission
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+            The Future of <span className="text-emerald-600">Social Media Monetization</span>
+          </h2>
+          <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
+            Welcome to <span className="font-bold text-slate-900">{appName}</span> — the next-generation bridge connecting high-growth brands with verified social media creators and active everyday earners.
+          </p>
+        </div>
+
+        {/* 3 Pillar Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          {pillars.map((pillar, idx) => (
+            <div
+              key={idx}
+              className="p-6 sm:p-8 rounded-2xl border border-slate-100 bg-slate-50/70 hover:bg-white hover:border-emerald-200 hover:shadow-lg transition-all duration-300 flex flex-col"
+            >
+              <div className="w-12 h-12 rounded-xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-center mb-4">
+                {pillar.icon}
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">
+                {pillar.title}
+              </h3>
+              <p className="text-slate-600 text-sm leading-relaxed">
+                {pillar.desc}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

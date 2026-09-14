@@ -1,27 +1,20 @@
-import Announcement from "../Models/announcement.model.js";
-import User from "../Models/user.model.js";
+import { supabase } from "../config/supabase.config.js";
 import { ErrorHandler } from "../utils/error.js";
 
 export const postAnnouncement = async (req, res, next) => {
-  const { announcement } = req.body;
+  const { announcement, title = "Announcement" } = req.body;
 
   try {
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
-    if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
-    }
+    const { data, error } = await supabase
+      .from("announcements")
+      .insert({ title, content: announcement || req.body.content || "", is_active: true })
+      .select()
+      .single();
 
-    const newAnnouncement = new Announcement({
-      createdBy: req.user._id,
-      announcement,
-    });
-
-    await newAnnouncement.save();
+    if (error) throw error;
     return res
       .status(200)
-      .json({ failed: false, message: "Announcemnet Posted" });
+      .json({ failed: false, message: "Announcement Posted" });
   } catch (error) {
     next(error);
   }
@@ -29,24 +22,21 @@ export const postAnnouncement = async (req, res, next) => {
 
 export const getAnnouncement = async (req, res, next) => {
   try {
-    // Checks for valid user
-    const validUser = await User.findOne({ email: req.user.email });
-    if (!validUser) {
-      const error = ErrorHandler(404, "There's no user with this email.");
-      return res.status(404).json(error);
-    }
+    const { data: announcements, error } = await supabase
+      .from("announcements")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-    const announcements = await Announcement.find();
+    if (error) throw error;
 
-    const announcements_ = announcements.map((announcement) => {
-      const { updatedAt, createdBy, createdAt, __v, _id, ...rest } =
-        announcement?.toObject();
-
-      return {
-        id: _id,
-        ...rest,
-      };
-    });
+    const announcements_ = (announcements || []).map((a) => ({
+      id: a.id,
+      _id: a.id,
+      announcement: a.content,
+      content: a.content,
+      title: a.title,
+      createdAt: a.created_at,
+    }));
 
     return res.status(200).json({
       failed: false,
@@ -60,8 +50,8 @@ export const getAnnouncement = async (req, res, next) => {
 export const deleteAnnouncement = async (req, res, next) => {
   try {
     const { id } = req.query;
-    await Announcement.findByIdAndDelete(id);
-    res.end();
+    await supabase.from("announcements").delete().eq("id", id);
+    return res.status(200).json({ failed: false, message: "Deleted" });
   } catch (error) {
     next(error);
   }

@@ -2,8 +2,8 @@ self.addEventListener("push", function (event) {
   const data = event.data.json();
   const options = {
     body: data.body,
-    icon: "./gigsflix_logo_white.png",
-    badge: "./gigsflix_logo_white.png",
+    icon: "./gigflix_logo_white.png",
+    badge: "./gigflix_logo_white.png",
   };
 
   event.waitUntil(self.registration.showNotification(data.title, options));

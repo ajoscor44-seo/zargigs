@@ -1,13 +1,12 @@
 import React from "react";
 import FundWallet from "../components/FundWallet/FundWallet";
-import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
+import ClientLayout from "../components/ClientLayout/ClientLayout";
 
 const FundWallets = () => {
   return (
-    <div>
+    <ClientLayout>
       <FundWallet />
-      <ClientMenuBar />
-    </div>
+    </ClientLayout>
   );
 };
 

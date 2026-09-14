@@ -1,19 +1,15 @@
-import Notification from "../Models/notification.model.js";
-import Subscription from "../Models/subscription.model.js";
+import { notificationService } from "../services/supabaseDb.service.js";
+import { supabase } from "../config/supabase.config.js";
 import logger from "./logger.util.js";
 import webpush from "web-push";
 
 export const sendNotitfication = async (notification) => {
   try {
-    const newNotification = new Notification({
-      userId: notification.userId,
-      title: notification.title,
-      message: notification.message,
-      type: notification.type,
-      read: false,
-    });
-
-    return await newNotification.save();
+    return await notificationService.createNotification(
+      notification.userId,
+      notification.title,
+      notification.message
+    );
   } catch (error) {
     return logger.error(error.message);
   }
@@ -21,17 +17,16 @@ export const sendNotitfication = async (notification) => {
 
 export const sendPushNotitfication = async (notification) => {
   try {
-    const subscriptions = Subscription.find({});
+    const { data: subscriptions } = await supabase.from("subscriptions").select("*");
+    if (!subscriptions || !subscriptions.length) return;
 
     Promise.all(
-      subscriptions.map((subscription) =>
-        webpush.sendNotification(subscription, JSON.stringify(notification))
+      subscriptions.map((sub) =>
+        webpush.sendNotification(sub, JSON.stringify(notification))
       )
     )
       .then(() => logger.info("Notification sent successfully."))
-      .catch((err) => {
-        logger.error("Error sending notification");
-      });
+      .catch(() => logger.error("Error sending notification"));
   } catch (error) {
     return logger.error(error.message);
   }
@@ -40,9 +35,13 @@ export const sendPushNotitfication = async (notification) => {
 export const subscribe = async (req, res, next) => {
   try {
     const subscriptionData = req.body;
-    const validSubscription = await Subscription.findOne({
-      userId: req.user._id,
-    });
+    const userId = req.user.id || req.user._id;
+
+    const { data: validSubscription } = await supabase
+      .from("subscriptions")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
 
     if (validSubscription) {
       return res.status(200).json({
@@ -50,16 +49,13 @@ export const subscribe = async (req, res, next) => {
       });
     }
 
-    const subscription = new Subscription({
-      endpoint: subscriptionData.endpoint,
-      expirationTime: subscriptionData.expirationTime,
-      keys: {
-        p256dh: subscriptionData.keys.p256dh,
-        auth: subscriptionData.keys.auth,
-      },
-      userId: req.user._id,
+    await supabase.from("subscriptions").insert({
+      user_id: userId,
+      plan_name: "push_notification",
+      amount: 0,
+      status: "active",
+      expires_at: new Date(Date.now() + 365 * 86400000).toISOString(),
     });
-    await subscription.save();
 
     return res.status(201).json({
       message: "You have successfully subscribed for push notification",
@@ -70,25 +66,5 @@ export const subscribe = async (req, res, next) => {
 };
 
 export const sendPushNotification = async (notification) => {
-  try {
-    const subscriptions = await Subscription.find({});
-
-    const payload = JSON.stringify(notification);
-
-    subscriptions.forEach((subscription) => {
-      const pushSubscription = {
-        endpoint: subscription.endpoint,
-        keys: {
-          p256dh: subscription.keys.p256dh,
-          auth: subscription.keys.auth,
-        },
-      };
-
-      webpush
-        .sendNotification(pushSubscription, payload)
-        .catch((error) => console.error("Error sending notification:", error));
-    });
-  } catch (error) {
-    return logger.error(error.message);
-  }
+  return await sendPushNotitfication(notification);
 };

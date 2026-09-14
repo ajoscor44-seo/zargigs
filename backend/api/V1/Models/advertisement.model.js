@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { storage } from "../config/firebase.config.js";
+import { deleteFromSupabaseStorage } from "../config/supabase.config.js";
 
 const advertisementSchema = new mongoose.Schema(
   {
@@ -52,22 +52,14 @@ advertisementSchema.methods.timeLeftInSeconds = function () {
   return (this.expiresAt.getTime() - now.getTime()) / 1000;
 };
 
-advertisementSchema.post("remove", function (doc) {
+advertisementSchema.post("remove", async function (doc) {
   const fileUrl = doc.banner;
-
-  // Create a reference to the file to delete
-  const fileRef = storage.refFromURL(fileUrl);
-
-  fileRef
-    .delete()
-    .then(function () {
-      console.log("File deleted from Firebase Storage after document removal");
-    })
-    .catch(function (error) {
-      console.error("Error deleting file from Firebase Storage:", error);
-    });
+  if (fileUrl) {
+    await deleteFromSupabaseStorage("advertisements", fileUrl);
+  }
 });
 
 const Advertisement = mongoose.model("advertisement", advertisementSchema);
 
 export default Advertisement;
+

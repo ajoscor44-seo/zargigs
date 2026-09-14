@@ -1,78 +1,58 @@
-import Advertisement from "../Models/advertisement.model.js";
+import { advertService, userService } from "../services/supabaseDb.service.js";
+import { supabase } from "../config/supabase.config.js";
 import { processPayment } from "./tasks.controller.js";
 
 export const getAdvertisements = async (req, res, next) => {
   try {
-    const advertisements = await Advertisement.find({});
-
-    const formattedAdvertisements = advertisements.map((advertisement) => {
-      const {
-        __v,
-        _id,
-        postedBy,
-        createdAt,
-        updatedAt,
-        expiresAt,
-        duration,
-        ...rest
-      } = advertisement.toObject();
-
-      return {
-        id: _id,
-        ...rest,
-      };
-    });
-
+    const advertisements = await advertService.getActiveAdvertisements();
     return res.status(200).json({
       failed: false,
-      data: formattedAdvertisements,
+      data: advertisements,
     });
   } catch (error) {
-    console.log(error);
+    console.error("getAdvertisements error:", error);
     next(error);
   }
 };
 
 export const getUserAdvertisements = async (req, res, next) => {
   try {
-    const advertisements = await Advertisement.find({ postedBy: req.user._id });
-    const formattedAdvertisements = advertisements.map((advertisement) => {
-      const { __v, _id, postedBy, createdAt, updatedAt, ...rest } =
-        advertisement.toObject();
+    const userId = req.user?.id || req.user?._id || req.headers["x-user-id"] || req.query.userId || req.query.user_id;
+    let query = supabase.from("advertisements").select("*").order("created_at", { ascending: false });
 
-      return {
-        id: _id,
-        ...rest,
-      };
+    if (userId) {
+      query = query.eq("posted_by", userId);
+    }
+
+    const { data: advertisements, error } = await query;
+
+    if (error) throw error;
+
+    return res.status(200).json({
+      failed: false,
+      data: (advertisements || []).map((ad) => ({ id: ad.id, _id: ad.id, ...ad })),
     });
-
-    return res
-      .status(200)
-      .json({ failed: false, data: formattedAdvertisements });
   } catch (error) {
-    console.log(error);
+    console.error("getUserAdvertisements error:", error);
     next(error);
   }
 };
 
 export const getAllAdvertisements = async (req, res, next) => {
   try {
-    const advertisements = await Advertisement.find({});
-    const formattedAdvertisements = advertisements.map((advertisement) => {
-      const { __v, _id, createdAt, updatedAt, ...rest } =
-        advertisement.toObject();
+    const { data: advertisements, error } = await supabase
+      .from("advertisements")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-      return {
-        id: _id,
-        ...rest,
-      };
+    if (error) throw error;
+
+    return res.status(200).json({
+      failed: false,
+      data: (advertisements || []).map((ad) => ({ id: ad.id, _id: ad.id, ...ad })),
     });
-
-    return res
-      .status(200)
-      .json({ failed: false, data: formattedAdvertisements });
   } catch (error) {
-    console.log(error);
+    console.error("getAllAdvertisements error:", error);
     next(error);
   }
 };
@@ -80,31 +60,32 @@ export const getAllAdvertisements = async (req, res, next) => {
 export const createAdvertisement = async (req, res, next) => {
   try {
     const { name, link, banner, description, duration } = req.body;
+    const userId = req.user.id || req.user._id;
+
     const paymentResponse = await processPayment(
       Number(duration) * 1500,
-      "gigflix advert",
-      req.user._id
+      "zargigs advert",
+      userId
     );
-    console.log(paymentResponse);
+
     if (paymentResponse.failed) {
       return res.status(400).json(paymentResponse);
     }
 
-    const newAdvertisement = new Advertisement({
+    await advertService.createAdvertisement({
       name,
       link,
       banner,
       description,
       duration: Number(duration),
-      postedBy: req.user._id,
+      postedBy: userId,
     });
-    await newAdvertisement.save();
 
     return res
       .status(201)
       .json({ failed: false, message: "Advert created successfully" });
   } catch (error) {
-    console.log(error);
+    console.error("createAdvertisement error:", error);
     next(error);
   }
 };
@@ -112,11 +93,10 @@ export const createAdvertisement = async (req, res, next) => {
 export const deleteAdvertisement = async (req, res, next) => {
   try {
     const id = req.params.id;
-    await Advertisement.findByIdAndDelete(id);
-
-    return res.status(200).json({ failed: true, message: "Rest Abeg" });
+    await supabase.from("advertisements").delete().eq("id", id);
+    return res.status(200).json({ failed: false, message: "Advertisement deleted successfully" });
   } catch (error) {
-    console.log(error);
+    console.error("deleteAdvertisement error:", error);
     next(error);
   }
 };

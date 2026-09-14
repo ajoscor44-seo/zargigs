@@ -1,13 +1,14 @@
 import React from "react";
-import ClientMenuBar from "../components/ClientMenuBar/ClientMenuBar";
+import ClientLayout from "../components/ClientLayout/ClientLayout";
 import Transfer from "../components/Transfer/Transfer";
 
 const TransferPage = () => {
   return (
-    <div>
-      <Transfer />
-      <ClientMenuBar />
-    </div>
+    <ClientLayout>
+      <div className="py-6">
+        <Transfer />
+      </div>
+    </ClientLayout>
   );
 };
 

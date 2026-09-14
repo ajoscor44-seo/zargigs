@@ -66,11 +66,7 @@ const TermsOfUse = () => {
     },
   ];
 
-  return (
-    <div className="border">
-      <Legal title={"Term Of Use"} data={terms} />
-    </div>
-  );
+  return <Legal title={"Terms Of Use"} data={terms} />;
 };
 
 export default TermsOfUse;

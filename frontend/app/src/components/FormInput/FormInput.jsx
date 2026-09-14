@@ -6,11 +6,11 @@ import {
   FaPhone,
   FaTag,
   FaUser,
+  FaUsers,
 } from "react-icons/fa6";
 import { MdEmail } from "react-icons/md";
 import { PiWarningCircle } from "react-icons/pi";
 import { TfiMenuAlt } from "react-icons/tfi";
-import referreIcon from "../../assets/png/referrer-icon.png";
 
 const FormInput = ({
   icon,
@@ -25,119 +25,129 @@ const FormInput = ({
   useSelect,
   selections,
   value,
+  defaultValue,
   name,
   handleChange,
   hideDropIcon,
   maxLength,
+  disabled,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
+  const isControlled = value !== undefined;
+
   return (
     <div className="flex flex-col mt-1">
-      <span className="text-xs font-semibold mb-2">{label}</span>
+      {label && (
+        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+          <span>{label}</span>
+          {maxLength && (
+            <span className="text-[10px] text-slate-400 font-normal">
+              {value?.length || 0}/{maxLength}
+            </span>
+          )}
+        </label>
+      )}
       {useTextArea ? (
         <textarea
-          className="border rounded outline-none p-2"
+          className={`w-full p-3.5 rounded-xl border bg-slate-50/50 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:bg-white transition-all resize-none ${
+            isError
+              ? "border-red-300 focus:ring-red-500/20 focus:border-red-500"
+              : "border-slate-200 focus:ring-emerald-500/20 focus:border-emerald-500"
+          }`}
           placeholder={placeholder}
-          rows={5}
-          value={value}
-          onChange={(e) => handleChange(e)}
+          rows={4}
+          {...(isControlled ? { value: value || "" } : { defaultValue })}
+          onChange={handleChange}
           name={name}
+          disabled={disabled}
         ></textarea>
       ) : (
         <div
-          className={
-            fullRounded
-              ? "border rounded-full flex items-center py-4 pl-4 pr-1 gap-2" +
-                (icon == "referrer" && value ? " bg-slate-50 opacity-60" : " ")
-              : "border rounded flex items-center py-4 pl-4 pr-1 gap-2"
-          }
+          className={`group flex items-center px-3.5 py-3 rounded-xl border transition-all ${
+            disabled ? "opacity-60 bg-slate-100 cursor-not-allowed" : ""
+          } ${
+            isError
+              ? "border-red-300 bg-red-50/30 focus-within:ring-2 focus-within:ring-red-500/20 focus-within:border-red-500"
+              : "border-slate-200 bg-slate-50/50 focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500 focus-within:bg-white"
+          }`}
         >
-          <div className="text-slate-600">
-            {icon == "password" ? (
-              <FaLock />
-            ) : icon == "link" ? (
-              <FaTag size={20} />
-            ) : icon == "email" ? (
-              <MdEmail size={20} />
-            ) : icon == "phone" ? (
-              <FaPhone size={20} />
-            ) : icon == "user" ? (
-              <FaUser size={20} />
-            ) : icon == "referrer" ? (
-              <img
-                className="w-6 h-6 object-cover"
-                src={referreIcon}
-                alt="Referrer Icon"
-              />
+          <div className="text-slate-400 group-focus-within:text-emerald-600 transition-colors mr-3 shrink-0">
+            {icon === "password" ? (
+              <FaLock size={15} />
+            ) : icon === "link" ? (
+              <FaTag size={15} />
+            ) : icon === "email" ? (
+              <MdEmail size={17} />
+            ) : icon === "phone" ? (
+              <FaPhone size={14} />
+            ) : icon === "user" ? (
+              <FaUser size={14} />
+            ) : icon === "referrer" ? (
+              <FaUsers size={16} />
             ) : (
-              <TfiMenuAlt size={20} />
+              <TfiMenuAlt size={15} />
             )}
           </div>
           <div className="flex-1">
             {useSelect ? (
               <select
-                className={
-                  hideDropIcon
-                    ? "w-full outline-none hideDropIcon"
-                    : "w-full outline-none"
-                }
+                className="w-full bg-transparent outline-none text-slate-900 text-sm font-medium cursor-pointer"
                 name={name}
                 onChange={handleChange}
-                defaultValue={value}
+                {...(isControlled ? { value: value || "" } : { defaultValue })}
+                disabled={disabled}
               >
-                {selections.map((selection) => {
-                  return (
+                {selections &&
+                  selections.map((selection) => (
                     <option
                       key={selection}
                       value={selection}
-                      className="p-4 text-xs text-slate-600 font-semibold"
+                      className="p-2 text-sm text-slate-700"
                     >
                       {selection}
                     </option>
-                  );
-                })}
+                  ))}
               </select>
             ) : (
               <input
-                className="w-full outline-none placeholder:text-sm"
-                type={icon == "password" && showPassword ? "text" : type}
+                className="w-full bg-transparent outline-none text-slate-900 text-sm font-medium placeholder:text-slate-400 placeholder:font-normal"
+                type={icon === "password" && showPassword ? "text" : type}
                 placeholder={placeholder}
-                disabled={icon == "referrer" && value}
+                disabled={disabled}
                 name={name}
-                value={value}
+                {...(isControlled ? { value: value ?? "" } : { defaultValue })}
                 maxLength={maxLength}
-                onChange={(e) => handleChange(e)}
+                onChange={handleChange}
               />
             )}
           </div>
-          <div>
-            {isError ? (
-              <PiWarningCircle size={20} className="text-red-400" />
-            ) : (
-              <div></div>
+          <div className="flex items-center gap-2 ml-2">
+            {isError && (
+              <PiWarningCircle size={18} className="text-red-500 shrink-0" />
             )}
-            {icon == "password" ? (
-              <span
-                className="text-gray-400"
+            {icon === "password" && (
+              <button
+                type="button"
+                className="text-slate-400 hover:text-slate-600 transition-colors p-1 cursor-pointer"
                 onClick={() => setShowPassword(!showPassword)}
+                aria-label="Toggle password visibility"
               >
-                {showPassword ? <FaEyeSlash size={25} /> : <FaEye size={25} />}
-              </span>
-            ) : (
-              <div></div>
+                {showPassword ? <FaEyeSlash size={15} /> : <FaEye size={15} />}
+              </button>
             )}
           </div>
         </div>
       )}
-      <span
-        className={
-          "methodNote leading-4 mt-1 font-semibold " +
-          (isError ? "text-red-400" : "text-slate-500")
-        }
-      >
-        {isError ? errorMsg : note}
-      </span>
+      {(note || isError) && (
+        <span
+          className={`text-[11px] mt-1.5 font-medium leading-relaxed ${
+            isError ? "text-red-500 font-semibold" : "text-slate-500"
+          }`}
+        >
+          {isError ? errorMsg : note}
+        </span>
+      )}
     </div>
   );
 };

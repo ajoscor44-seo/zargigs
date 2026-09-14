@@ -27,10 +27,10 @@ const InReviewSubtask = ({
           })}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center text-gray-300 p-2 gap-2 h-96">
+        <div className="py-12 px-4 flex flex-col items-center justify-center text-center max-w-md mx-auto">
           <NoData
             textBelow={
-              "You do not have any IN REVIEW task here yet. Your IN REVIEW tasks will appear on this page."
+              "You do not have any tasks in review yet. Once you submit proof for a task, it will appear here."
             }
           />
         </div>
