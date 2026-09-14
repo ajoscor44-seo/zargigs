@@ -92,7 +92,7 @@ const NavBar = ({
 
       {/* Mobile Drawer */}
       {menuOpen && (
-        <div className="lg:hidden bg-white border-b border-slate-100 shadow-xl px-4 pt-2 pb-6 animate-fadeIn">
+        <div className="lg:hidden bg-white border-b border-slate-200 shadow-2xl px-4 pt-2 pb-6 animate-fadeIn">
           <div className="flex flex-col gap-1 py-2">
             {tabs.map((tab) => (
               <button
