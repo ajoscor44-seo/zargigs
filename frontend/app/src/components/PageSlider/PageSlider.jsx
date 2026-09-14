@@ -1,6 +1,18 @@
 import React, { useState } from "react";
-import FormInput from "../FormInput/FormInput";
-import { FaArrowLeft, FaArrowRight, FaSpinner, FaCheck, FaShieldHalved } from "react-icons/fa6";
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaSpinner,
+  FaCheck,
+  FaShieldHalved,
+  FaUser,
+  FaLock,
+  FaPhone,
+  FaUsers,
+  FaEye,
+  FaEyeSlash,
+} from "react-icons/fa6";
+import { MdEmail } from "react-icons/md";
 import OAuth from "../OAuth/OAuth";
 
 const PageSlider = ({
@@ -12,16 +24,19 @@ const PageSlider = ({
   handleSubmit,
   handleInputError,
   formData,
+  referralUsername,
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const stepLabels = [
-    { name: "Personal", desc: "Names & Referrer" },
-    { name: "Account", desc: "Handle & Contact" },
-    { name: "Security", desc: "Create Password" },
+    { name: "Account Details", step: 1 },
+    { name: "Security & Handle", step: 2 },
   ];
 
-  const nextPage = () => {
+  const nextPage = (e) => {
+    if (e) e.preventDefault();
     const inputError = handleInputError(currentPage);
     if (inputError) {
       return;
@@ -43,51 +58,49 @@ const PageSlider = ({
 
   return (
     <div className="flex flex-col">
-      {/* Compact Step Progress Bar */}
-      <div className="mb-6">
-        <div className="grid grid-cols-3 gap-2 relative">
+      {/* Ultra Compact Step Progress */}
+      <div className="mb-4">
+        <div className="flex items-center justify-between gap-2">
           {stepLabels.map((step, idx) => {
             const isDone = idx < currentPage;
             const isCurrent = idx === currentPage;
 
             return (
-              <div
+              <button
                 key={idx}
+                type="button"
                 onClick={() => {
                   if (idx < currentPage) {
                     if (setError) setError(null);
                     setCurrentPage(idx);
                   }
                 }}
-                className={`flex flex-col items-center text-center p-2 rounded-2xl transition-all ${
+                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl text-xs font-bold transition-all ${
                   isCurrent
-                    ? "bg-emerald-50/80 border border-emerald-200/80 shadow-xs"
+                    ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
                     : isDone
-                    ? "bg-slate-50 hover:bg-slate-100 cursor-pointer"
-                    : "opacity-40"
+                    ? "bg-slate-100 text-emerald-700 hover:bg-slate-200 cursor-pointer"
+                    : "bg-slate-50 text-slate-400 opacity-60"
                 }`}
               >
-                <div
-                  className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-bold text-[11px] mb-1 transition-all ${
+                <span
+                  className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-extrabold ${
                     isDone
-                      ? "bg-emerald-600 text-white shadow-xs"
+                      ? "bg-emerald-600 text-white"
                       : isCurrent
-                      ? "bg-emerald-600 text-white ring-3 ring-emerald-100"
+                      ? "bg-emerald-600 text-white"
                       : "bg-slate-200 text-slate-500"
                   }`}
                 >
-                  {isDone ? <FaCheck size={10} /> : idx + 1}
-                </div>
-                <div className="text-[11px] font-extrabold text-slate-800 tracking-tight">
-                  {step.name}
-                </div>
-              </div>
+                  {isDone ? <FaCheck size={8} /> : idx + 1}
+                </span>
+                <span className="truncate">{step.name}</span>
+              </button>
             );
           })}
         </div>
 
-        {/* Continuous Active Line */}
-        <div className="w-full bg-slate-100 h-1 rounded-full mt-2.5 overflow-hidden">
+        <div className="w-full bg-slate-100 h-1 rounded-full mt-2 overflow-hidden">
           <div
             className="bg-emerald-500 h-full rounded-full transition-all duration-300"
             style={{ width: `${((currentPage + 1) / pages.length) * 100}%` }}
@@ -95,159 +108,318 @@ const PageSlider = ({
         </div>
       </div>
 
-      {/* Step Header */}
-      <div className="text-center mb-5">
-        <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+      {/* Step Title Header */}
+      <div className="text-center mb-3">
+        <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
           {activePage.title}
         </h2>
-        <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+        <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
           {activePage.info}
         </p>
       </div>
 
       {/* Error Alert */}
       {errorMsg && (
-        <div className="mb-4 p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2">
+        <div className="mb-3 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
-          <span>{errorMsg}</span>
+          <span className="truncate">{errorMsg}</span>
         </div>
       )}
 
-      {/* Account Intent Selection on Step 1 */}
+      {/* STEP 1: Account Intent & Basic Info */}
       {currentPage === 0 && (
-        <div className="mb-5 space-y-2">
-          <label className="block text-[11px] font-black uppercase tracking-wider text-slate-500">
-            What is your main goal?
-          </label>
-          <div className="grid grid-cols-2 gap-2.5">
-            {/* Option 1: Earner */}
-            <button
-              type="button"
-              onClick={() => handleChange({ target: { name: "accountType", value: "earner" } })}
-              className={`p-3 rounded-2xl border-2 text-left transition-all relative flex flex-col justify-between cursor-pointer ${
-                (formData?.accountType || "earner") === "earner"
-                  ? "border-emerald-500 bg-emerald-50/60 shadow-xs ring-2 ring-emerald-500/20"
-                  : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50"
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-base">⚡</span>
+        <form onSubmit={nextPage} className="space-y-3">
+          {/* Account Role Selector */}
+          <div>
+            <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1.5">
+              Select Your Role
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() =>
+                  handleChange({ target: { name: "accountType", value: "earner" } })
+                }
+                className={`p-2 sm:p-2.5 rounded-xl border text-left transition-all flex items-center gap-2 cursor-pointer ${
+                  (formData?.accountType || "earner") === "earner"
+                    ? "border-emerald-500 bg-emerald-50/70 ring-1 ring-emerald-500/20 shadow-xs"
+                    : "border-slate-200 bg-white hover:border-slate-300"
+                }`}
+              >
+                <span className="text-sm">⚡</span>
+                <div className="min-w-0 flex-1">
+                  <div className="font-bold text-xs text-slate-900">Task Earner</div>
+                  <div className="text-[9px] text-slate-500 truncate">Earn daily cash</div>
+                </div>
                 {(formData?.accountType || "earner") === "earner" && (
-                  <span className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[8px]">
+                  <span className="w-3.5 h-3.5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[7px] shrink-0">
                     <FaCheck />
                   </span>
                 )}
-              </div>
-              <div>
-                <div className="font-black text-xs text-slate-900">Earn Money</div>
-                <p className="text-[10px] text-slate-500 leading-tight font-normal mt-0.5">
-                  Complete daily microtasks & earn cash.
-                </p>
-              </div>
-            </button>
+              </button>
 
-            {/* Option 2: Advertiser */}
+              <button
+                type="button"
+                onClick={() =>
+                  handleChange({ target: { name: "accountType", value: "advertiser" } })
+                }
+                className={`p-2 sm:p-2.5 rounded-xl border text-left transition-all flex items-center gap-2 cursor-pointer ${
+                  formData?.accountType === "advertiser"
+                    ? "border-purple-500 bg-purple-50/70 ring-1 ring-purple-500/20 shadow-xs"
+                    : "border-slate-200 bg-white hover:border-slate-300"
+                }`}
+              >
+                <span className="text-sm">📢</span>
+                <div className="min-w-0 flex-1">
+                  <div className="font-bold text-xs text-slate-900">Advertiser</div>
+                  <div className="text-[9px] text-slate-500 truncate">Promote campaigns</div>
+                </div>
+                {formData?.accountType === "advertiser" && (
+                  <span className="w-3.5 h-3.5 rounded-full bg-purple-600 text-white flex items-center justify-center text-[7px] shrink-0">
+                    <FaCheck />
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* First Name & Last Name (Side by Side) */}
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Firstname
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+                  <FaUser size={11} />
+                </div>
+                <input
+                  type="text"
+                  name="firstname"
+                  required
+                  placeholder="John"
+                  value={formData?.firstname || ""}
+                  onChange={handleChange}
+                  className="w-full pl-7 pr-2.5 py-2 sm:py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Lastname
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+                  <FaUser size={11} />
+                </div>
+                <input
+                  type="text"
+                  name="lastname"
+                  required
+                  placeholder="Doe"
+                  value={formData?.lastname || ""}
+                  onChange={handleChange}
+                  className="w-full pl-7 pr-2.5 py-2 sm:py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Email Address */}
+          <div>
+            <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+              Email Address
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+                <MdEmail size={14} />
+              </div>
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="john.doe@example.com"
+                value={formData?.email || ""}
+                onChange={handleChange}
+                className="w-full pl-7 pr-3 py-2 sm:py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all"
+              />
+            </div>
+          </div>
+
+          {/* Phone Number & Referrer (Side by Side) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Phone Number
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+                  <FaPhone size={11} />
+                </div>
+                <input
+                  type="tel"
+                  name="phone"
+                  required
+                  placeholder="08012345678"
+                  value={formData?.phone || ""}
+                  onChange={handleChange}
+                  className="w-full pl-7 pr-3 py-2 sm:py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Referral Code (Optional)
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+                  <FaUsers size={12} />
+                </div>
+                <input
+                  type="text"
+                  name="referredBy"
+                  placeholder="admin"
+                  disabled={!!referralUsername}
+                  value={formData?.referredBy || ""}
+                  onChange={handleChange}
+                  className="w-full pl-7 pr-3 py-2 sm:py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all disabled:opacity-60"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Button */}
+          <div className="pt-2">
             <button
               type="button"
-              onClick={() => handleChange({ target: { name: "accountType", value: "advertiser" } })}
-              className={`p-3 rounded-2xl border-2 text-left transition-all relative flex flex-col justify-between cursor-pointer ${
-                formData?.accountType === "advertiser" || formData?.accountType === "retailer"
-                  ? "border-purple-500 bg-purple-50/60 shadow-xs ring-2 ring-purple-500/20"
-                  : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50"
-              }`}
+              onClick={nextPage}
+              className="w-full py-2.5 sm:py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-black text-xs sm:text-sm shadow-md shadow-emerald-500/25 hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-base">📢</span>
-                {(formData?.accountType === "advertiser" || formData?.accountType === "retailer") && (
-                  <span className="w-4 h-4 rounded-full bg-purple-600 text-white flex items-center justify-center text-[8px]">
-                    <FaCheck />
-                  </span>
-                )}
-              </div>
-              <div>
-                <div className="font-black text-xs text-slate-900">Promote & Grow</div>
-                <p className="text-[10px] text-slate-500 leading-tight font-normal mt-0.5">
-                  Post campaigns & get engagements.
-                </p>
-              </div>
+              <span>Next: Set Password</span>
+              <FaArrowRight size={11} />
             </button>
           </div>
-        </div>
+
+          {/* Google OAuth on Step 1 */}
+          <div className="pt-2 border-t border-slate-100">
+            <OAuth setError={setError} text="Sign up with Google" />
+          </div>
+        </form>
       )}
 
-      {/* Form Fields */}
-      <div className="space-y-3.5 mb-5">
-        {activePage.formInputs.map((formInput) => (
-          <div key={formInput.name}>
-            <FormInput
-              label={formInput.label}
-              placeholder={formInput.placeholder}
-              note={formInput.note}
-              fullRounded={false}
-              type={formInput.type}
-              icon={formInput.icon}
-              isError={formInput.isError}
-              errorMsg={formInput.error}
-              value={
-                formData && formData[formInput.name] !== undefined
-                  ? formData[formInput.name]
-                  : (formInput.value ?? "")
-              }
-              name={formInput.name}
-              disabled={formInput.disabled}
-              handleChange={handleChange}
-              maxLength={formInput.maxLength}
-            />
+      {/* STEP 2: Handle & Security */}
+      {currentPage === 1 && (
+        <form onSubmit={nextPage} className="space-y-3">
+          {/* Username */}
+          <div>
+            <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+              Username Handle
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400 font-mono text-xs">
+                @
+              </div>
+              <input
+                type="text"
+                name="username"
+                required
+                placeholder="yourhandle"
+                value={formData?.username || ""}
+                onChange={handleChange}
+                className="w-full pl-7 pr-3 py-2 sm:py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all"
+              />
+            </div>
           </div>
-        ))}
-      </div>
 
-      {/* Navigation Buttons */}
-      <div className="flex items-center justify-between gap-2.5 pt-1">
-        {currentPage > 0 ? (
-          <button
-            type="button"
-            disabled={isLoading}
-            onClick={prevPage}
-            className="py-3 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:scale-98 text-slate-700 font-bold text-xs sm:text-sm transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
-          >
-            <FaArrowLeft size={11} />
-            <span>Back</span>
-          </button>
-        ) : (
-          <div />
-        )}
+          {/* Password */}
+          <div>
+            <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+              Create Password (min. 6 characters)
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+                <FaLock size={11} />
+              </div>
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                required
+                placeholder="••••••••"
+                value={formData?.password || ""}
+                onChange={handleChange}
+                className="w-full pl-7 pr-9 py-2 sm:py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
+              >
+                {showPassword ? <FaEyeSlash size={13} /> : <FaEye size={13} />}
+              </button>
+            </div>
+          </div>
 
-        <button
-          type="button"
-          disabled={isLoading}
-          onClick={nextPage}
-          className="flex-1 py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-black text-xs sm:text-sm shadow-md shadow-emerald-500/25 hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-        >
-          {isLoading ? (
-            <>
-              <FaSpinner className="animate-spin" size={15} />
-              <span>Creating Account...</span>
-            </>
-          ) : currentPage === pages.length - 1 ? (
-            <>
-              <FaShieldHalved size={14} />
-              <span>Complete Free Registration</span>
-            </>
-          ) : (
-            <>
-              <span>Continue</span>
-              <FaArrowRight size={12} />
-            </>
-          )}
-        </button>
-      </div>
+          {/* Confirm Password */}
+          <div>
+            <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+              Confirm Password
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+                <FaLock size={11} />
+              </div>
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                required
+                placeholder="••••••••"
+                value={formData?.confirmPassword || ""}
+                onChange={handleChange}
+                className="w-full pl-7 pr-9 py-2 sm:py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
+              >
+                {showConfirmPassword ? <FaEyeSlash size={13} /> : <FaEye size={13} />}
+              </button>
+            </div>
+          </div>
 
-      {/* Social Google Signup on First Step */}
-      {currentPage === 0 && (
-        <div className="mt-4 pt-3 border-t border-slate-100">
-          <OAuth setError={setError} text="Sign up with Google" />
-        </div>
+          {/* Buttons: Back & Complete */}
+          <div className="flex items-center gap-2 pt-2">
+            <button
+              type="button"
+              disabled={isLoading}
+              onClick={prevPage}
+              className="py-2.5 px-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:scale-98 text-slate-700 font-bold text-xs transition-all flex items-center gap-1 cursor-pointer shadow-xs"
+            >
+              <FaArrowLeft size={10} />
+              <span>Back</span>
+            </button>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="flex-1 py-2.5 sm:py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-black text-xs sm:text-sm shadow-md shadow-emerald-500/25 hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              {isLoading ? (
+                <>
+                  <FaSpinner className="animate-spin" size={14} />
+                  <span>Creating Account...</span>
+                </>
+              ) : (
+                <>
+                  <FaShieldHalved size={13} />
+                  <span>Complete Free Signup</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       )}
     </div>
   );
