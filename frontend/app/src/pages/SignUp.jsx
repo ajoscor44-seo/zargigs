@@ -206,12 +206,19 @@ const SignUp = ({ setSignedIn }) => {
         );
       } else {
         setError(null);
+        if (formData.accountType) {
+          setDashboardMode(formData.accountType);
+        }
+
+        if (res.requiresVerification) {
+          sessionStorage.setItem("auth-user-email", formData.email.trim());
+          setIsLoading(false);
+          return history.push("/verify-email");
+        }
+
         sessionStorage.removeItem("auth-user-email");
         try {
           await loginUser(formData.email.trim(), formData.password);
-          if (formData.accountType) {
-            setDashboardMode(formData.accountType);
-          }
           await fetchUserData();
           setIsLoading(false);
           return history.push("/dashboard");
@@ -222,7 +229,7 @@ const SignUp = ({ setSignedIn }) => {
       }
     } catch (error) {
       setIsLoading(false);
-      return console.error(error);
+      return setError(error.message || "An error occurred during registration.");
     }
   };
 

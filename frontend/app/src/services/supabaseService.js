@@ -91,11 +91,13 @@ export const authService = {
 
   async signUp({ email, password, firstname, lastname, username, phone, accountType, referredBy }) {
     const formattedUsername = username?.replaceAll(" ", "").toLowerCase().replaceAll("@", "");
+    const emailRedirectTo = typeof window !== "undefined" ? `${window.location.origin}/verify-email` : undefined;
 
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
+        emailRedirectTo,
         data: {
           firstname,
           lastname,
@@ -120,7 +122,7 @@ export const authService = {
           username: formattedUsername || email.split("@")[0],
           phone: phone || "",
           referred_by: referredBy || "admin",
-          is_email_verified: true,
+          is_email_verified: !!data.session,
           balance: 0,
           pending_balance: 0,
         });
@@ -158,9 +160,44 @@ export const authService = {
     if (error) throw error;
   },
 
+  async verifyOtp({ email, token, tokenHash, type = "signup" }) {
+    let params = { type };
+    if (tokenHash) {
+      params.token_hash = tokenHash;
+    } else {
+      params.email = email;
+      params.token = token;
+    }
+    const { data, error } = await supabase.auth.verifyOtp(params);
+    if (error) throw error;
+    return data;
+  },
+
+  async resendVerification({ email, type = "signup" }) {
+    const emailRedirectTo = typeof window !== "undefined" ? `${window.location.origin}/verify-email` : undefined;
+    const { data, error } = await supabase.auth.resend({
+      type,
+      email,
+      options: {
+        emailRedirectTo,
+      },
+    });
+    if (error) throw error;
+    return data;
+  },
+
   async resetPassword(email) {
+    const emailRedirectTo = typeof window !== "undefined" ? `${window.location.origin}/forgot-password` : undefined;
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + "/forgot-password",
+      redirectTo: emailRedirectTo,
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  async updatePassword(password) {
+    const { data, error } = await supabase.auth.updateUser({
+      password,
     });
     if (error) throw error;
     return data;

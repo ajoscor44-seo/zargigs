@@ -640,8 +640,18 @@ const AuthProvider = ({ children }) => {
         referredBy: formData.referredBy,
       });
 
-      await fetchUserData();
-      return { failed: false, message: "Account created successfully.", user: data.user };
+      if (data?.session) {
+        await fetchUserData();
+      }
+      return {
+        failed: false,
+        message: data?.session
+          ? "Account created successfully."
+          : "Account created! Please check your email for the verification code/link.",
+        user: data?.user,
+        session: data?.session,
+        requiresVerification: !data?.session,
+      };
     } catch (error) {
       return { failed: true, message: error.message || "Failed to sign up." };
     }
@@ -655,17 +665,40 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const verifyUserEmail = async () => {
-    // Supabase auto-verifies or handles email confirmation links
-    return { failed: false, message: "Email verified successfully." };
+  const verifyUserEmail = async (email, token, tokenHash, type = "signup") => {
+    try {
+      const data = await authService.verifyOtp({ email, token, tokenHash, type });
+      await fetchUserData();
+      return { failed: false, message: "Email verified successfully.", user: data?.user };
+    } catch (error) {
+      throw new Error(error.message || "Invalid or expired verification code.");
+    }
   };
 
-  const resendOTP = async (email) => {
+  const resendOTP = async (email, type = "signup") => {
     try {
-      await authService.resetPassword(email);
+      await authService.resendVerification({ email, type });
       return { failed: false, message: "Verification code sent to your email." };
     } catch (error) {
-      throw Error(error.message || "Failed to send reset email");
+      throw new Error(error.message || "Failed to send verification email.");
+    }
+  };
+
+  const resetUserPassword = async (email) => {
+    try {
+      await authService.resetPassword(email);
+      return { failed: false, message: "Password reset instructions sent to your email." };
+    } catch (error) {
+      throw new Error(error.message || "Failed to send password reset email.");
+    }
+  };
+
+  const updateUserPassword = async (newPassword) => {
+    try {
+      const data = await authService.updatePassword(newPassword);
+      return { failed: false, message: "Password updated successfully." };
+    } catch (error) {
+      throw new Error(error.message || "Failed to update password.");
     }
   };
 
@@ -682,12 +715,14 @@ const AuthProvider = ({ children }) => {
     signupUser,
     OAuthUser,
     verifyUserEmail,
+    resendOTP,
+    resetUserPassword,
+    updateUserPassword,
     getEngagementEarners,
     getAdvertEarners,
     getEngagementCreator,
     getAdvertCreator,
     getAdminData,
-    resendOTP,
     dashboardMode,
     setDashboardMode,
     switchDashboardMode,
