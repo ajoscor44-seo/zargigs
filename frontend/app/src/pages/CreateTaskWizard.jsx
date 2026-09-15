@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ClientLayout from "../components/ClientLayout/ClientLayout";
 import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { supabase } from "../config/supabase.config";
 import axios from "axios";
 import numeral from "numeral";
 import {
@@ -205,7 +206,7 @@ const TEMPLATES = [
 ];
 
 const CreateTaskWizard = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, fetchUserData } = useAuth();
   const history = useHistory();
 
   const [step, setStep] = useState(1);
@@ -394,9 +395,16 @@ const CreateTaskWizard = () => {
         return;
       }
 
-      if (!isBalanceSufficient) {
+      const totalParticipants = Number(taskData.totalSlots || 5);
+      const rewardUnit = Number(taskData.rewardPerWorker || 300);
+      const budget = totalParticipants * rewardUnit;
+      const fee = Math.round((budget * 30) / 100);
+      const requiredEscrow = budget + fee;
+
+      const userBal = parseFloat(currentUser?.balance || 0);
+      if (userBal < requiredEscrow) {
         setErrorMsg(
-          `Insufficient wallet balance. You need ₦${numeral(totalEscrow).format(
+          `Insufficient wallet balance. You need ₦${numeral(requiredEscrow).format(
             "0,0.00"
           )} to fund this campaign.`
         );
@@ -421,30 +429,89 @@ const CreateTaskWizard = () => {
       }
 
       const payload = {
-        ...taskData,
+        creator_id: currentUser?.id,
+        title: taskData.title.trim(),
+        category: taskData.category || "custom",
+        reward_per_worker: rewardUnit,
+        total_slots: totalParticipants,
+        slots_remaining: totalParticipants,
+        slots_completed: 0,
+        amount_paid: requiredEscrow,
+        status: "pending",
+        moderation_status: "pending",
         instructions: combinedInstructions,
-        steps: cleanSteps,
         guidelines: cleanSteps,
-        targetUrl: taskData.targetUrl?.trim() || null,
         target_url: taskData.targetUrl?.trim() || null,
-        userId: currentUser?.id,
-        creatorId: currentUser?.id,
-        email: currentUser?.email,
-        username: currentUser?.username,
+        survey_questions: taskData.hasSurvey ? taskData.surveyQuestions : null,
+        proof_types: taskData.proofTypes || ["screenshot"],
+        proof_instructions: taskData.proofInstructions || "Please upload clear screenshot proof.",
+        targeting: taskData.targeting,
+        estimated_minutes: taskData.estimatedMinutes || 10,
+        reservation_time_limit_mins: taskData.reservationTimeLimitMins || 30,
+        review_window_hours: taskData.reviewWindowHours || 48,
+        created_at: new Date().toISOString(),
       };
 
-      const res = await axios.post("/api/v1/marketplace/tasks/create", payload, {
-        headers: {
-          "x-user-id": currentUser?.id,
-        },
-      });
+      // 1. Deduct escrow from creator balance
+      const newBal = userBal - requiredEscrow;
+      const { error: balErr } = await supabase
+        .from("users")
+        .update({ balance: newBal, updated_at: new Date().toISOString() })
+        .eq("id", currentUser?.id);
 
-      if (res.data?.success) {
-        history.push("/tasks");
+      if (balErr) throw new Error("Failed to process escrow deduction. Please try again.");
+
+      // 2. Insert into marketplace_tasks with status = 'pending'
+      const { data: createdTask, error: taskErr } = await supabase
+        .from("marketplace_tasks")
+        .insert(payload)
+        .select()
+        .single();
+
+      if (taskErr) {
+        // Rollback balance on failure
+        await supabase.from("users").update({ balance: userBal }).eq("id", currentUser?.id);
+        throw taskErr;
       }
+
+      // 3. Log escrow transaction
+      try {
+        await supabase.from("transactions").insert({
+          user_id: currentUser?.id,
+          amount: requiredEscrow,
+          type: "debit",
+          category: "task_creation",
+          status: "successful",
+          reference: `ESC-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          description: `Campaign Escrow Budget for "${taskData.title.trim()}" (${totalParticipants} workers @ ₦${rewardUnit} + 30% platform fee)`,
+          created_at: new Date().toISOString(),
+        });
+      } catch (txErr) {
+        console.warn("Transaction log notice:", txErr);
+      }
+
+      // 4. In-app notification to creator
+      try {
+        await supabase.from("notifications").insert({
+          user_id: currentUser?.id,
+          title: "Campaign Submitted for Review ⏳",
+          message: `Your campaign "${taskData.title.trim()}" was submitted and is in pending review. Our team will verify and publish it live for earners shortly!`,
+          type: "info",
+          is_read: false,
+          created_at: new Date().toISOString(),
+        });
+      } catch (notifErr) {
+        console.warn("Notification notice:", notifErr);
+      }
+
+      // Refresh auth user data
+      if (fetchUserData) await fetchUserData();
+
+      setSubmitting(false);
+      history.push("/tasks");
     } catch (err) {
-      console.error(err);
-      setErrorMsg(err.response?.data?.message || err.message || "Failed to publish task campaign.");
+      console.error("handleSubmitCampaign error:", err);
+      setErrorMsg(err.response?.data?.message || err.message || "Failed to submit task campaign.");
       setSubmitting(false);
     }
   };

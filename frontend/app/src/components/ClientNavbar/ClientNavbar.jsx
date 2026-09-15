@@ -5,6 +5,7 @@ import { FaCrown } from "react-icons/fa6";
 import { Link, useLocation, useHistory } from "react-router-dom/cjs/react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
+import logo from "../../assets/png/logo-color.png";
 
 const ClientNavbar = () => {
   const { currentUser, adminData, dashboardMode, switchDashboardMode } = useAuth();
@@ -50,7 +51,7 @@ const ClientNavbar = () => {
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2.5 text-decoration-none group">
             <img
-              src="/logo.png"
+              src={logo}
               alt={adminData?.appName || "DocsZar"}
               className="h-8 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform"
             />

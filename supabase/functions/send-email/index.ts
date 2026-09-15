@@ -20,25 +20,24 @@ const wrapHtml = (title: string, content: string) => `
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${title}</title>
 </head>
-<body style="margin: 0; padding: 24px 12px; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
-  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 580px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; box-shadow: 0 4px 24px rgba(15, 23, 42, 0.08); overflow: hidden; border: 1px solid #e2e8f0;">
-    <!-- Premium Brand Header -->
+<body style="margin: 0; padding: 28px 12px; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 580px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); overflow: hidden; border: 1px solid #e2e8f0;">
+    <!-- Clean Minimalist Brand Header -->
     <tr>
-      <td style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 32px 24px; text-align: center; border-bottom: 3px solid #10b981;">
-        <div style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); width: 46px; height: 46px; border-radius: 14px; line-height: 46px; text-align: center; color: #ffffff; font-weight: 900; font-size: 24px; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);">
-          Z
+      <td style="background-color: #ffffff; padding: 28px 24px 20px 24px; text-align: center; border-bottom: 2px solid #f1f5f9;">
+        <div style="display: inline-block;">
+          <span style="font-size: 26px; font-weight: 900; letter-spacing: -0.5px; color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+            Docs<span style="color: #10b981;">Zar</span>
+          </span>
         </div>
-        <h1 style="color: #ffffff; font-size: 24px; font-weight: 900; margin: 0; letter-spacing: -0.5px;">
-          Docs<span style="color: #34d399;">Zar</span>
-        </h1>
-        <p style="color: #94a3b8; font-size: 12px; margin: 4px 0 0 0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
-          Nigeria's #1 Social Microtasks & Growth Hub
+        <p style="color: #64748b; font-size: 11px; margin: 4px 0 0 0; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px;">
+          Social Microtasks & Growth Hub
         </p>
       </td>
     </tr>
     <!-- Main Email Body -->
     <tr>
-      <td style="padding: 32px 24px; color: #334155; font-size: 15px; line-height: 1.7;">
+      <td style="padding: 32px 28px; color: #334155; font-size: 15px; line-height: 1.7;">
         ${content}
       </td>
     </tr>
@@ -54,7 +53,7 @@ const wrapHtml = (title: string, content: string) => `
         <div style="font-size: 11px;">
           <a href="https://www.docszar.com/dashboard" style="color: #10b981; text-decoration: none; font-weight: 700; margin: 0 8px;">Dashboard</a> &bull;
           <a href="https://www.docszar.com/help-support" style="color: #10b981; text-decoration: none; font-weight: 700; margin: 0 8px;">Support Center</a> &bull;
-          <a href="https://www.docszar.com/terms" style="color: #10b981; text-decoration: none; font-weight: 700; margin: 0 8px;">Privacy & Terms</a>
+          <a href="https://wa.me/2349027662488" style="color: #10b981; text-decoration: none; font-weight: 700; margin: 0 8px;">WhatsApp: 090 2766 2488</a>
         </div>
       </td>
     </tr>
