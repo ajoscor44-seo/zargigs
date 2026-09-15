@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ClientLayout from "../components/ClientLayout/ClientLayout";
 import { FaHistory } from "react-icons/fa";
-import { IoInformationCircleOutline, IoLogoWhatsapp } from "react-icons/io5";
+import { IoInformationCircleOutline } from "react-icons/io5";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import EarnWithAds from "../components/EarnWithAds/EarnWithAds";
 import EarnWithTasks from "../components/EarnWithTasks/EarnWithTasks";
@@ -116,31 +116,6 @@ const Earn = () => {
             </div>
           </div>
         )}
-
-        {/* WhatsApp Channel Banner */}
-        <a
-          href="https://whatsapp.com/channel/0029Vaiyg0FFcovzni47lR34"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-between gap-3 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200/80 rounded-2xl p-4 mb-6 transition-colors group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/20">
-              <IoLogoWhatsapp size={22} />
-            </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-emerald-950">
-                Join our VIP Update Channel
-              </h4>
-              <p className="text-[11px] text-emerald-700">
-                Get notified immediately whenever high-paying tasks drop
-              </p>
-            </div>
-          </div>
-          <span className="text-xs font-bold text-emerald-700 group-hover:translate-x-0.5 transition-transform">
-            Join Now →
-          </span>
-        </a>
 
         {/* Segmented Control Tabs */}
         <div className="bg-slate-200/70 p-1.5 rounded-2xl flex gap-1.5 mb-6 max-w-md mx-auto">
