@@ -456,22 +456,46 @@ const AuthProvider = ({ children }) => {
       }
 
       let profile = await userService.getProfile(authUser.id, authUser.email);
-      
+      const meta = authUser.user_metadata || {};
+      const googleAvatar =
+        meta.avatar_url ||
+        meta.picture ||
+        meta.avatarUrl ||
+        (authUser.identities && authUser.identities[0]?.identity_data?.avatar_url) ||
+        (authUser.identities && authUser.identities[0]?.identity_data?.picture) ||
+        "";
+
       // If profile doesn't exist yet in the public users table, create it from auth metadata
       if (!profile) {
-        const meta = authUser.user_metadata || {};
         profile = await userService.upsertUser({
           id: authUser.id,
           email: authUser.email,
-          firstname: meta.firstname || meta.full_name?.split(" ")[0] || "User",
-          lastname: meta.lastname || meta.full_name?.split(" ").slice(1).join(" ") || "",
+          firstname: meta.firstname || meta.given_name || meta.full_name?.split(" ")[0] || "User",
+          lastname: meta.lastname || meta.family_name || meta.full_name?.split(" ").slice(1).join(" ") || "",
           username: meta.username || authUser.email?.split("@")[0] || "user",
           phone: meta.phone || authUser.phone || "",
-          avatar_url: meta.avatar_url || meta.picture || "",
+          avatar_url: googleAvatar,
           is_email_verified: true,
           balance: 0,
           pending_balance: 0,
         });
+      } else {
+        // If profile exists but has no avatar in DB and Google avatar is available, sync it
+        if ((!profile.avatar_url && !profile.avatarUrl && !profile.image) && googleAvatar) {
+          profile.avatar_url = googleAvatar;
+          profile.avatarUrl = googleAvatar;
+          profile.image = googleAvatar;
+          userService.updateProfile(authUser.id, { avatarUrl: googleAvatar }).catch(() => {});
+        }
+      }
+
+      if (profile) {
+        profile.googleAvatar = googleAvatar;
+        if (!profile.avatarUrl && !profile.image && googleAvatar) {
+          profile.avatarUrl = googleAvatar;
+          profile.image = googleAvatar;
+          profile.avatar_url = googleAvatar;
+        }
       }
 
       setCurrentUser(profile);

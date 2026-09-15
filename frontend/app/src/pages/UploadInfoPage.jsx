@@ -22,7 +22,17 @@ const UploadInfoPage = () => {
   const currentYear = new Date().getFullYear() - 13;
   const years = [...Array.from({ length: 100 }, (_, i) => currentYear - i)];
 
-  const [image, setImage] = useState(undefined);
+  const [image, setImage] = useState(() => {
+    return (
+      currentUser?.avatarUrl ||
+      currentUser?.avatar_url ||
+      currentUser?.image ||
+      currentUser?.googleAvatar ||
+      currentUser?.user_metadata?.avatar_url ||
+      currentUser?.user_metadata?.picture ||
+      undefined
+    );
+  });
   const [religion, setReligion] = useState(undefined);
   const [bank, setBank] = useState(undefined);
   const [userLocation, setUserLocation] = useState({});
@@ -40,6 +50,21 @@ const UploadInfoPage = () => {
     }
     return "Android";
   });
+
+  useEffect(() => {
+    if (currentUser) {
+      const detected =
+        currentUser.avatarUrl ||
+        currentUser.avatar_url ||
+        currentUser.image ||
+        currentUser.googleAvatar ||
+        currentUser.user_metadata?.avatar_url ||
+        currentUser.user_metadata?.picture;
+      if (detected && !image) {
+        setImage(detected);
+      }
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     const updateDaysInMonth = () => {
