@@ -11,7 +11,7 @@ const SetLocation = ({
   setSelectedGender,
   statesData,
 }) => {
-  const { currentUser, adminData } = useAuth();
+  const { currentUser } = useAuth();
 
   const genders = ["Male", "Female", "Other"];
   const states = statesData?.map((state) => state.name) || [];
@@ -47,29 +47,29 @@ const SetLocation = ({
   };
 
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100/80 space-y-6">
-      <div className="text-center space-y-2">
-        <div className="w-14 h-14 rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto shadow-sm">
-          <FiCheckCircle size={28} />
+    <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm border border-slate-100/80 space-y-4">
+      <div className="text-center space-y-1">
+        <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
+          <FiCheckCircle size={20} />
         </div>
-        <h2 className="text-xl font-extrabold text-slate-900">
-          Welcome, {currentUser?.firstname || "Member"}!
+        <h2 className="text-lg font-black text-slate-900 tracking-tight">
+          Welcome, {currentUser?.firstname || "Earner"}!
         </h2>
-        <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
-          Your account is ready! Let's personalize your experience by setting your gender and location so you receive tasks targeted to your area.
+        <p className="text-[11px] sm:text-xs text-slate-500 max-w-sm mx-auto">
+          Set your gender and location to receive targeted microtasks in your area.
         </p>
       </div>
 
-      <div className="space-y-4 pt-2">
+      <div className="space-y-3 pt-1">
         <div>
-          <label className="block text-xs font-bold text-slate-600 mb-1.5 flex items-center gap-1.5">
-            <FiUser size={14} className="text-emerald-600" />
+          <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1 flex items-center gap-1">
+            <FiUser size={12} className="text-emerald-600" />
             <span>Gender</span>
           </label>
           <select
             value={selectedGender}
             onChange={handleGenderChange}
-            className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-sm px-4 py-3.5 rounded-2xl border border-slate-200 focus:border-emerald-500 outline-none transition-all"
+            className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none transition-all cursor-pointer"
           >
             {genders.map((g) => (
               <option key={g} value={g}>
@@ -79,36 +79,37 @@ const SetLocation = ({
           </select>
         </div>
 
-        <div>
-          <label className="block text-xs font-bold text-slate-600 mb-1.5 flex items-center gap-1.5">
-            <FiMapPin size={14} className="text-emerald-600" />
-            <span>State of Residence</span>
-          </label>
-          <select
-            name="state"
-            value={userLocation?.state || ""}
-            onChange={handleLocationChange}
-            className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-sm px-4 py-3.5 rounded-2xl border border-slate-200 focus:border-emerald-500 outline-none transition-all"
-          >
-            <option value="">Select State</option>
-            {states.map((st) => (
-              <option key={st} value={st}>
-                {st}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {userLocation?.state && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div>
-            <label className="block text-xs font-bold text-slate-600 mb-1.5">
-              Local Government Area (LGA)
+            <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1 flex items-center gap-1">
+              <FiMapPin size={12} className="text-emerald-600" />
+              <span>State</span>
+            </label>
+            <select
+              name="state"
+              value={userLocation?.state || ""}
+              onChange={handleLocationChange}
+              className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none transition-all cursor-pointer"
+            >
+              <option value="">Select State</option>
+              {states.map((st) => (
+                <option key={st} value={st}>
+                  {st}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+              Local Govt (LGA)
             </label>
             <select
               name="LGA"
+              disabled={!userLocation?.state}
               value={userLocation?.LGA || ""}
               onChange={handleLocationChange}
-              className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-sm px-4 py-3.5 rounded-2xl border border-slate-200 focus:border-emerald-500 outline-none transition-all"
+              className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none transition-all disabled:opacity-50 cursor-pointer"
             >
               <option value="">Select LGA</option>
               {currentLgas.map((lga) => (
@@ -118,19 +119,19 @@ const SetLocation = ({
               ))}
             </select>
           </div>
-        )}
+        </div>
       </div>
 
       <button
+        type="button"
         onClick={setLocation}
-        className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold rounded-2xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm"
+        className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-black rounded-xl shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer text-xs sm:text-sm"
       >
-        <span>Continue to Profile Photo</span>
-        <FiArrowRight size={16} />
+        <span>Continue to Photo</span>
+        <FiArrowRight size={14} />
       </button>
     </div>
   );
 };
 
 export default SetLocation;
-

@@ -27,8 +27,12 @@ export const formatRecord = (record) => {
   if (formatted.is_email_verified !== undefined && formatted.isEmailVerified === undefined) {
     formatted.isEmailVerified = formatted.is_email_verified;
   }
-  if (formatted.is_member !== undefined && formatted.isMember === undefined) {
-    formatted.isMember = formatted.is_member;
+  if (formatted.is_member !== undefined) {
+    formatted.isMember = Boolean(formatted.is_member === true);
+  } else if (formatted.isMember !== undefined) {
+    formatted.isMember = Boolean(formatted.isMember === true);
+  } else {
+    formatted.isMember = false;
   }
   if (formatted.is_banned !== undefined && formatted.isBanned === undefined) {
     formatted.isBanned = formatted.is_banned;
@@ -92,24 +96,73 @@ export const authService = {
   async signUp({ email, password, firstname, lastname, username, phone, accountType, referredBy }) {
     const formattedUsername = username?.replaceAll(" ", "").toLowerCase().replaceAll("@", "");
     const emailRedirectTo = typeof window !== "undefined" ? `${window.location.origin}/verify-email` : undefined;
+    const cleanEmail = (email || "").trim().toLowerCase();
+
+    // Check if email already exists in users table
+    if (cleanEmail) {
+      try {
+        const { data: existingEmail } = await supabase
+          .from("users")
+          .select("id, email")
+          .eq("email", cleanEmail)
+          .maybeSingle();
+
+        if (existingEmail) {
+          throw new Error("An account with this email address already exists. Please log in.");
+        }
+      } catch (err) {
+        if (err.message?.includes("already exists")) throw err;
+      }
+    }
+
+    // Check if username already exists in users table
+    if (formattedUsername) {
+      try {
+        const { data: existingUsername } = await supabase
+          .from("users")
+          .select("id, username")
+          .eq("username", formattedUsername)
+          .maybeSingle();
+
+        if (existingUsername) {
+          throw new Error("This username is already taken. Please choose another username.");
+        }
+      } catch (err) {
+        if (err.message?.includes("already taken")) throw err;
+      }
+    }
 
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: cleanEmail,
       password,
       options: {
         emailRedirectTo,
         data: {
-          firstname,
-          lastname,
-          username: formattedUsername || email.split("@")[0],
-          phone: phone || "",
+          firstname: (firstname || "").trim() || "User",
+          lastname: (lastname || "").trim() || "",
+          username: formattedUsername || cleanEmail.split("@")[0],
+          phone: phone ? String(phone).trim() : "",
           account_type: accountType === "advertiser" ? "advertiser" : "earner",
-          referred_by: referredBy || "admin",
+          referred_by: (referredBy || "").trim() || "admin",
+          is_member: false,
         },
       },
     });
 
-    if (error) throw error;
+    if (error) {
+      if (
+        error.message?.toLowerCase().includes("user already registered") ||
+        error.message?.toLowerCase().includes("already registered") ||
+        error.message?.toLowerCase().includes("email address is already")
+      ) {
+        throw new Error("An account with this email address already exists. Please log in.");
+      }
+      throw error;
+    }
+
+    if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      throw new Error("An account with this email address already exists. Please log in.");
+    }
 
     // Ensure a corresponding user row exists in the users table
     if (data?.user) {
@@ -117,18 +170,27 @@ export const authService = {
         await userService.upsertUser({
           id: data.user.id,
           email: data.user.email,
-          firstname: firstname || "",
-          lastname: lastname || "",
-          username: formattedUsername || email.split("@")[0],
-          phone: phone || "",
-          referred_by: referredBy || "admin",
+          firstname: (firstname || "").trim() || "User",
+          lastname: (lastname || "").trim() || "",
+          username: formattedUsername || cleanEmail.split("@")[0],
+          phone: phone ? String(phone).trim() : "",
+          referred_by: (referredBy || "").trim() || "admin",
           is_email_verified: !!data.session,
+          is_member: false,
           balance: 0,
           pending_balance: 0,
         });
       } catch (err) {
         console.warn("User row upsert notice:", err);
       }
+
+      // Send Welcome Email from Joscor of ZAR
+      try {
+        emailService.sendWelcomeEmail({
+          to: data.user.email,
+          name: (firstname || "").trim() || formattedUsername || "Earner",
+        }).catch(() => {});
+      } catch {}
     }
 
     return data;
@@ -249,6 +311,7 @@ export const userService = {
           profile.gender = details.gender || profile.gender;
           profile.state = details.state || profile.state;
           profile.lga = details.lga || profile.lga;
+          profile.location = details.state ? (details.lga ? `${details.lga}, ${details.state}` : details.state) : (data.location || details?.state || undefined);
           profile.bankName = details.bank_name || profile.bankName || profile.bank_name || "";
           profile.accountNumber = details.account_number || profile.accountNumber || profile.account_number || "";
           profile.accountName = details.account_name || profile.accountName || profile.account_name || "";
@@ -258,6 +321,7 @@ export const userService = {
             accountName: details.account_name || profile.accountName || profile.account_name || "",
           };
         } else {
+          profile.location = profile.location || profile.state || undefined;
           profile.bankDetails = {
             bankName: profile.bankName || profile.bank_name || "",
             accountNumber: profile.accountNumber || profile.account_number || "",
@@ -265,6 +329,7 @@ export const userService = {
           };
         }
       } catch {
+        profile.location = profile.location || profile.state || undefined;
         profile.bankDetails = {
           bankName: profile.bankName || profile.bank_name || "",
           accountNumber: profile.accountNumber || profile.account_number || "",
@@ -375,7 +440,7 @@ export const userService = {
         .eq("username", chosenUsername)
         .maybeSingle();
 
-      if (userWithUsername) {
+      if (userWithUsername && userWithUsername.id !== userData.id) {
         chosenUsername = `${chosenUsername}_${Math.floor(1000 + Math.random() * 9000)}`;
       }
     } catch {
@@ -391,6 +456,7 @@ export const userService = {
       username: chosenUsername,
       phone: userData.phone || "",
       is_email_verified: userData.is_email_verified ?? true,
+      is_member: false,
       balance: userData.balance ?? 0,
       pending_balance: userData.pending_balance ?? 0,
       referred_by: userData.referred_by || "admin",
@@ -450,6 +516,73 @@ export const userService = {
     }
 
     return await this.getProfile(userId);
+  },
+  async becomeMember(userId, fee = 1000) {
+    if (!userId) throw new Error("User ID is required");
+
+    const profile = await this.getProfile(userId);
+    if (!profile) throw new Error("User not found");
+    if (profile.isMember) return { success: true, message: "You are already a Pro member." };
+
+    const currentBalance = Number(profile.balance || 0);
+    if (currentBalance < fee) {
+      throw new Error(`Insufficient wallet balance (₦${currentBalance.toLocaleString()}). Please fund your wallet with at least ₦${fee.toLocaleString()} first.`);
+    }
+
+    const newBalance = currentBalance - fee;
+
+    // Deduct fee & activate membership
+    const { error: updateErr } = await supabase
+      .from("users")
+      .update({
+        is_member: true,
+        balance: newBalance,
+      })
+      .eq("id", userId);
+
+    if (updateErr) throw updateErr;
+
+    // Record membership fee transaction
+    try {
+      await supabase.from("funding").insert({
+        user_id: userId,
+        amount: -fee,
+        reference: `mem_${Date.now()}`,
+        payment_method: "Wallet Balance (Membership)",
+        status: "success",
+      });
+    } catch {}
+
+    // Trigger referral commission (60%) if user has a valid referrer
+    if (profile.referredBy && profile.referredBy !== "admin") {
+      try {
+        const bonusAmount = Math.round(fee * 0.6);
+        const { data: referrer } = await supabase
+          .from("users")
+          .select("id, balance, email")
+          .eq("username", profile.referredBy.toLowerCase())
+          .maybeSingle();
+
+        if (referrer) {
+          const refNewBal = Number(referrer.balance || 0) + bonusAmount;
+          await supabase
+            .from("users")
+            .update({ balance: refNewBal })
+            .eq("id", referrer.id);
+
+          await supabase.from("notifications").insert({
+            user_id: referrer.id,
+            title: "Referral Commission Received! 🎁",
+            message: `You received ₦${bonusAmount.toLocaleString()} instant bonus for referring @${profile.username}!`,
+            type: "referral",
+          });
+        }
+      } catch (err) {
+        console.warn("Referral payout notice:", err);
+      }
+    }
+
+    return { success: true, message: "VIP Pro Membership activated successfully!" };
   },
 };
 
@@ -1299,5 +1432,33 @@ export const adminService = {
         },
       };
     }
+  },
+};
+
+// ==============================================================================
+// 6. TRANSACTIONAL EMAIL SERVICE (SendByte via Supabase Edge Function)
+// ==============================================================================
+
+export const emailService = {
+  async sendEmail({ to, subject, type, data, name, senderName = "Joscor of ZAR" }) {
+    if (!to) return null;
+    try {
+      const res = await supabase.functions.invoke("send-email", {
+        body: { to, subject, type, data, name, senderName },
+      });
+      return res.data;
+    } catch (err) {
+      console.warn("Failed to dispatch transactional email:", err.message);
+      return null;
+    }
+  },
+
+  async sendWelcomeEmail({ to, name }) {
+    return this.sendEmail({
+      to,
+      name,
+      type: "welcome_email",
+      senderName: "Joscor of ZAR",
+    });
   },
 };

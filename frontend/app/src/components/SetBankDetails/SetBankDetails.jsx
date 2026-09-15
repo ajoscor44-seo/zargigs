@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { FiCreditCard, FiArrowRight, FiArrowLeft, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
+import { FiCreditCard, FiArrowRight, FiArrowLeft, FiCheckCircle } from "react-icons/fi";
 import { FaSpinner } from "react-icons/fa6";
 import axios from "axios";
 
@@ -37,153 +37,139 @@ const SetBankDetails = ({
   selectedBank,
   setSelectedBank,
 }) => {
-  const { currentUser } = useAuth();
   const [bankList, setBankList] = useState(FALLBACK_BANKS);
-  const [selectedBankCode, setSelectedBankCode] = useState("");
   const [verifying, setVerifying] = useState(false);
-  const [verificationSuccess, setVerificationSuccess] = useState(false);
-  const [verificationError, setVerificationError] = useState(null);
+  const [isVerified, setIsVerified] = useState(Boolean(bankDetails?.accountName));
+  const [validationError, setValidationError] = useState(null);
 
-  // Fetch complete bank list from API
+  // Fetch live bank list if available
   useEffect(() => {
-    const fetchBanks = async () => {
+    const fetchLiveBanks = async () => {
       try {
         const res = await axios.get("/api/v1/wallet/public-banks");
-        if (res.data?.banks && res.data.banks.length > 0) {
+        if (res.data?.banks && Array.isArray(res.data.banks) && res.data.banks.length > 0) {
           setBankList(res.data.banks);
         }
-      } catch (err) {
-        console.warn("Using fallback bank list:", err.message);
+      } catch {
+        // Fallback already in state
       }
     };
-    fetchBanks();
+    fetchLiveBanks();
   }, []);
 
-  const handleBankChange = (e) => {
-    const bankName = e.target.value;
-    setSelectedBank(bankName);
-    const found = bankList.find((b) => b.name === bankName);
-    const code = found ? found.code : "";
-    setSelectedBankCode(code);
-    setVerificationSuccess(false);
-    setVerificationError(null);
-
-    // Auto verify if 10-digit account number is already typed
-    if (bankDetails?.accountNumber?.length === 10) {
-      verifyAccount(bankDetails.accountNumber, code || bankName);
-    }
-  };
-
-  const handleBankDetailsChange = (e) => {
-    const { name, value } = e.target;
-    const cleanValue = name === "accountNumber" ? value.replace(/[^0-9]/g, "") : value;
-
-    setBankDetails({
-      ...bankDetails,
-      [name]: cleanValue,
-    });
-
-    if (name === "accountNumber") {
-      setVerificationSuccess(false);
-      setVerificationError(null);
-
-      if (cleanValue.length === 10 && selectedBank) {
-        verifyAccount(cleanValue, selectedBankCode || selectedBank);
-      }
-    }
-  };
-
-  const verifyAccount = async (accountNum, bankIdent) => {
-    if (!accountNum || accountNum.length !== 10 || !bankIdent) return;
+  const verifyWithPocketFi = async (accNum, bankName) => {
+    if (!accNum || accNum.length !== 10 || !bankName) return;
+    const foundBank = bankList.find((b) => b.name === bankName);
+    const bankCode = foundBank?.code || bankName;
 
     try {
       setVerifying(true);
-      setVerificationError(null);
-      setError(null);
+      setValidationError(null);
 
       const res = await axios.post("/api/v1/wallet/public-verify-account", {
-        accountNumber: accountNum,
-        bankCode: bankIdent,
-        bankName: selectedBank,
+        accountNumber: accNum,
+        bankCode,
+        bankName,
       });
 
       if (res.data?.status === "success" && res.data.accountName) {
-        setVerificationSuccess(true);
-        setBankDetails((prev) => ({
-          ...prev,
-          accountNumber: accountNum,
+        setBankDetails({
+          ...bankDetails,
+          accountNumber: accNum,
           accountName: res.data.accountName,
-        }));
+        });
+        setIsVerified(true);
+        setValidationError(null);
       } else {
-        setVerificationSuccess(false);
-        setVerificationError("Could not verify account name. Please verify bank and account number.");
+        setIsVerified(false);
+        setValidationError(res.data?.message || "Could not verify account name with PocketFi.");
       }
     } catch (err) {
-      setVerificationSuccess(false);
-      const errMsg = err.response?.data?.message || "Account verification failed. Please check the account number.";
-      setVerificationError(errMsg);
+      setIsVerified(false);
+      // Soft validation fallback: allow manual name if API endpoint is unreachable
+      console.warn("PocketFi validation note:", err.message);
     } finally {
       setVerifying(false);
     }
   };
 
-  const setDetails = () => {
-    if (!selectedBank) {
-      return setError("Please select your bank.");
+  const handleBankChange = (e) => {
+    const newBank = e.target.value;
+    setSelectedBank(newBank);
+    setIsVerified(false);
+    if (bankDetails?.accountNumber?.length === 10 && newBank) {
+      verifyWithPocketFi(bankDetails.accountNumber, newBank);
     }
-    if (!bankDetails?.accountNumber || bankDetails.accountNumber.length !== 10) {
-      return setError("Please provide a valid 10-digit account number.");
-    }
-    if (!bankDetails?.accountName) {
-      return setError("Please wait for account name verification or enter your registered name.");
-    }
+  };
 
-    setError(null);
+  const handleAccountNumberChange = (e) => {
+    const cleanNum = e.target.value.replace(/[^0-9]/g, "").slice(0, 10);
+    setBankDetails({
+      ...bankDetails,
+      accountNumber: cleanNum,
+    });
+    setIsVerified(false);
+    setValidationError(null);
+
+    if (cleanNum.length === 10 && selectedBank) {
+      verifyWithPocketFi(cleanNum, selectedBank);
+    }
+  };
+
+  const handleAccountNameChange = (e) => {
+    setBankDetails({
+      ...bankDetails,
+      accountName: e.target.value,
+    });
+  };
+
+  const setDetails = () => {
+    if (setError) setError(null);
     setActivePage("birth-religion");
   };
 
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100/80 space-y-6">
-      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+    <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm border border-slate-100/80 space-y-4">
+      <div className="flex items-center justify-between pb-2 border-b border-slate-100">
         <button
           onClick={() => setActivePage("upload-profile-pic")}
-          className="p-2 text-slate-500 hover:bg-slate-100 rounded-xl transition-colors flex items-center gap-1 text-xs font-bold cursor-pointer"
+          className="p-1 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold cursor-pointer"
         >
-          <FiArrowLeft size={16} />
+          <FiArrowLeft size={14} />
           <span>Back</span>
         </button>
 
         <button
           onClick={() => setActivePage("birth-religion")}
-          className="text-xs font-bold text-slate-400 hover:text-emerald-600 transition-colors py-1 px-3"
+          className="text-xs font-bold text-slate-400 hover:text-emerald-600 transition-colors py-0.5 px-2 cursor-pointer"
         >
           Skip for now
         </button>
       </div>
 
-      <div className="text-center space-y-2">
-        <div className="w-14 h-14 rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto shadow-sm">
-          <FiCreditCard size={28} />
+      <div className="text-center space-y-1">
+        <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
+          <FiCreditCard size={20} />
         </div>
-        <h2 className="text-xl font-extrabold text-slate-900">
+        <h2 className="text-lg font-black text-slate-900 tracking-tight">
           Payout Bank Details
         </h2>
-        <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
-          Provide your Nigerian bank account. We automatically verify your account details with the banking network.
+        <p className="text-[11px] sm:text-xs text-slate-500 max-w-sm mx-auto">
+          Add your bank account for instant PocketFi earnings validation & payouts.
         </p>
       </div>
 
-      <div className="space-y-4 pt-2">
+      <div className="space-y-3 pt-1">
         <div>
-          <label className="block text-xs font-bold text-slate-600 mb-1.5">
+          <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
             Bank Name
           </label>
           <select
             value={selectedBank || ""}
             onChange={handleBankChange}
-            className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-sm px-4 py-3.5 rounded-2xl border border-slate-200 focus:border-emerald-500 outline-none transition-all"
+            className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none transition-all cursor-pointer"
           >
-            <option value="">Select your bank</option>
+            <option value="">Select bank</option>
             {bankList.map((b, idx) => (
               <option key={`${b.code || b.name}-${idx}`} value={b.name}>
                 {b.name}
@@ -192,76 +178,71 @@ const SetBankDetails = ({
           </select>
         </div>
 
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-xs font-bold text-slate-600">
-              10-Digit Account Number
-            </label>
-            {verifying && (
-              <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
-                <FaSpinner className="animate-spin" size={12} />
-                <span>Verifying with bank...</span>
-              </span>
-            )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider">
+                Account Number
+              </label>
+              {verifying && (
+                <span className="flex items-center gap-1 text-[9px] text-emerald-600 font-bold">
+                  <FaSpinner className="animate-spin" size={9} />
+                  <span>Validating PocketFi...</span>
+                </span>
+              )}
+            </div>
+            <input
+              type="text"
+              maxLength={10}
+              name="accountNumber"
+              value={bankDetails?.accountNumber || ""}
+              onChange={handleAccountNumberChange}
+              placeholder="0123456789"
+              className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none transition-all font-mono"
+            />
           </div>
-          <input
-            type="text"
-            maxLength={10}
-            name="accountNumber"
-            value={bankDetails?.accountNumber || ""}
-            onChange={handleBankDetailsChange}
-            placeholder="e.g. 0123456789"
-            className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-sm px-4 py-3.5 rounded-2xl border border-slate-200 focus:border-emerald-500 outline-none transition-all font-mono"
-          />
+
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider">
+                Account Name
+              </label>
+              {isVerified && (
+                <span className="flex items-center gap-0.5 text-[9px] text-emerald-600 font-bold">
+                  <FiCheckCircle size={10} />
+                  <span>PocketFi Verified</span>
+                </span>
+              )}
+            </div>
+            <input
+              type="text"
+              name="accountName"
+              value={bankDetails?.accountName || ""}
+              onChange={handleAccountNameChange}
+              placeholder="Account holder name"
+              className={`w-full font-semibold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border outline-none transition-all ${
+                isVerified
+                  ? "bg-emerald-50/50 border-emerald-300 text-emerald-900 font-bold"
+                  : "bg-slate-50 hover:bg-slate-100/60 focus:bg-white border-slate-200 text-slate-800 focus:border-emerald-500"
+              }`}
+            />
+          </div>
         </div>
 
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-xs font-bold text-slate-600">
-              Verified Account Name
-            </label>
-            {verificationSuccess && (
-              <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
-                <FiCheckCircle size={13} />
-                <span>Verified by Bank</span>
-              </span>
-            )}
-          </div>
-          <input
-            type="text"
-            name="accountName"
-            value={bankDetails?.accountName || ""}
-            onChange={handleBankDetailsChange}
-            placeholder={verifying ? "Verifying name..." : "e.g. John Adebayo Doe"}
-            className={`w-full text-slate-800 font-semibold text-sm px-4 py-3.5 rounded-2xl border outline-none transition-all ${
-              verificationSuccess
-                ? "bg-emerald-50/50 border-emerald-300 text-emerald-900 font-bold"
-                : "bg-slate-50 hover:bg-slate-100/60 focus:bg-white border-slate-200 focus:border-emerald-500"
-            }`}
-          />
-          {verificationError && (
-            <p className="text-[11px] text-rose-500 font-semibold mt-1.5 flex items-center gap-1">
-              <FiAlertCircle size={13} />
-              <span>{verificationError}</span>
-            </p>
-          )}
-          {!verificationError && (
-            <p className="text-[11px] text-slate-400 mt-1">
-              {verificationSuccess
-                ? "✓ Account verified successfully with banking network."
-                : "Enter your 10-digit number to automatically verify account holder name."}
-            </p>
-          )}
-        </div>
+        {validationError && (
+          <p className="text-[10px] text-amber-600 font-semibold">
+            {validationError}
+          </p>
+        )}
       </div>
 
       <button
+        type="button"
         onClick={setDetails}
-        disabled={verifying}
-        className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold rounded-2xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm disabled:opacity-50"
+        className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-black rounded-xl shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer text-xs sm:text-sm"
       >
         <span>Save Bank & Continue</span>
-        <FiArrowRight size={16} />
+        <FiArrowRight size={14} />
       </button>
     </div>
   );

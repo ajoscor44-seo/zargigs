@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { FiCamera, FiArrowRight, FiArrowLeft, FiUser, FiCheck } from "react-icons/fi";
+import { FiCamera, FiArrowRight, FiArrowLeft } from "react-icons/fi";
 import { FaSpinner } from "react-icons/fa6";
 import { uploadFileToSupabase } from "../../config/supabase.config";
 
@@ -50,30 +50,30 @@ const UploadProfilePic = ({ setActivePage, image, setImage }) => {
   };
 
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100/80 space-y-6">
-      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+    <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm border border-slate-100/80 space-y-4">
+      <div className="flex items-center justify-between pb-2 border-b border-slate-100">
         <button
           onClick={() => setActivePage("location")}
-          className="p-2 text-slate-500 hover:bg-slate-100 rounded-xl transition-colors flex items-center gap-1 text-xs font-bold cursor-pointer"
+          className="p-1 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold cursor-pointer"
         >
-          <FiArrowLeft size={16} />
+          <FiArrowLeft size={14} />
           <span>Back</span>
         </button>
 
         <button
           onClick={() => setActivePage("bank-details")}
-          className="text-xs font-bold text-slate-400 hover:text-emerald-600 transition-colors py-1 px-3"
+          className="text-xs font-bold text-slate-400 hover:text-emerald-600 transition-colors py-0.5 px-2"
         >
           Skip for now
         </button>
       </div>
 
-      <div className="text-center space-y-2">
-        <h2 className="text-xl font-extrabold text-slate-900">
-          Upload Your Profile Photo
+      <div className="text-center space-y-1">
+        <h2 className="text-lg font-black text-slate-900 tracking-tight">
+          Profile Photo
         </h2>
-        <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
-          Add a picture so other community members and advertisers can recognize your profile.
+        <p className="text-[11px] sm:text-xs text-slate-500 max-w-sm mx-auto">
+          Add an avatar so advertisers recognize your task submissions.
         </p>
       </div>
 
@@ -83,11 +83,11 @@ const UploadProfilePic = ({ setActivePage, image, setImage }) => {
         </p>
       )}
 
-      {/* Avatar Picker Circle */}
-      <div className="flex justify-center py-4">
+      {/* Compact Avatar Picker */}
+      <div className="flex justify-center py-2">
         <div
           onClick={selectProfilePic}
-          className="relative w-36 h-36 rounded-3xl bg-slate-100 border-2 border-dashed border-slate-300 hover:border-emerald-500 flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden group shadow-inner"
+          className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-slate-100 border-2 border-dashed border-slate-300 hover:border-emerald-500 flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden group shadow-inner"
         >
           <input
             type="file"
@@ -105,21 +105,19 @@ const UploadProfilePic = ({ setActivePage, image, setImage }) => {
             />
           ) : isUploading ? (
             <div className="flex flex-col items-center gap-1 text-emerald-600">
-              <FaSpinner className="animate-spin" size={28} />
-              <span className="text-[11px] font-bold">{imagePercentage}%</span>
+              <FaSpinner className="animate-spin" size={20} />
+              <span className="text-[10px] font-bold">{imagePercentage}%</span>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-2 text-slate-400 group-hover:text-emerald-600 transition-colors">
-              <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center">
-                <FiCamera size={24} />
-              </div>
-              <span className="text-xs font-bold">Choose Photo</span>
+            <div className="flex flex-col items-center gap-1 text-slate-400 group-hover:text-emerald-600 transition-colors">
+              <FiCamera size={20} />
+              <span className="text-[10px] font-bold">Choose Photo</span>
             </div>
           )}
 
           {image && (
-            <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-bold transition-opacity">
-              Change Photo
+            <div className="absolute inset-0 bg-slate-900/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold transition-opacity">
+              Change
             </div>
           )}
         </div>
@@ -127,14 +125,13 @@ const UploadProfilePic = ({ setActivePage, image, setImage }) => {
 
       <button
         onClick={() => setActivePage("bank-details")}
-        className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold rounded-2xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm"
+        className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-black rounded-xl shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer text-xs sm:text-sm"
       >
         <span>{image ? "Use Photo & Continue" : "Continue"}</span>
-        <FiArrowRight size={16} />
+        <FiArrowRight size={14} />
       </button>
     </div>
   );
 };
 
 export default UploadProfilePic;
-

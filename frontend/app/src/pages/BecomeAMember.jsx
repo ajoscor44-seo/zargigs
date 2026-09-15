@@ -26,7 +26,9 @@ const BecomeAMember = () => {
   const becomeAMember = async () => {
     try {
       setDisableBtn(true);
-      await axios.put("/api/v1/user/become-a-member");
+      const userId = currentUser?._id || currentUser?.id;
+      const fee = adminData?.membershipFee || 1000;
+      await userService.becomeMember(userId, fee);
       await fetchUserData();
       setJustUpgraded(true);
       showToast({
@@ -36,7 +38,7 @@ const BecomeAMember = () => {
       setDisableBtn(false);
     } catch (error) {
       showToast({
-        msg: `${error?.response?.data?.message || "Payment failed. Please ensure wallet is funded."}`,
+        msg: `${error?.message || "Payment failed. Please ensure wallet is funded."}`,
         errorType: "danger",
       });
       setDisableBtn(false);

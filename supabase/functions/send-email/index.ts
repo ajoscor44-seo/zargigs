@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { SmtpClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,7 +10,7 @@ const SENDBYTE_API_KEY = Deno.env.get("SENDBYTE_API_KEY");
 const SMTP_HOST = Deno.env.get("SMTP_HOST") || "smtp.sendbyte.africa";
 const SMTP_PORT = 587;
 const SENDER_EMAIL = "support@docszar.com";
-const SENDER_NAME = "DocsZar Notifications";
+const DEFAULT_SENDER_NAME = "Joscor of ZAR";
 
 const wrapHtml = (title: string, content: string) => `
 <!DOCTYPE html>
@@ -22,24 +21,25 @@ const wrapHtml = (title: string, content: string) => `
   <title>${title}</title>
 </head>
 <body style="margin: 0; padding: 24px 12px; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 560px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #e2e8f0;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 580px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #e2e8f0;">
     <!-- Header -->
     <tr>
       <td style="background-color: #0f172a; padding: 28px 24px; text-align: center;">
-        <div style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); width: 40px; height: 40px; border-radius: 10px; line-height: 40px; text-align: center; color: #ffffff; font-weight: 800; font-size: 20px; margin-bottom: 8px;">D</div>
+        <div style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); width: 42px; height: 42px; border-radius: 12px; line-height: 42px; text-align: center; color: #ffffff; font-weight: 800; font-size: 22px; margin-bottom: 8px;">D</div>
         <h1 style="color: #ffffff; font-size: 22px; font-weight: 800; margin: 0; letter-spacing: -0.5px;">Docs<span style="color: #34d399;">Zar</span></h1>
+        <p style="color: #94a3b8; font-size: 12px; margin: 4px 0 0 0; font-weight: 500;">Nigeria's #1 Social Microtasks & Growth Platform</p>
       </td>
     </tr>
     <!-- Content -->
     <tr>
-      <td style="padding: 32px 24px; color: #1e293b; font-size: 15px; line-height: 1.6;">
+      <td style="padding: 32px 24px; color: #1e293b; font-size: 15px; line-height: 1.65;">
         ${content}
       </td>
     </tr>
     <!-- Footer -->
     <tr>
       <td style="background-color: #f8fafc; padding: 20px 24px; text-align: center; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b;">
-        <p style="margin: 0 0 6px 0;">This is an automated notification from your DocsZar account.</p>
+        <p style="margin: 0 0 6px 0;">Sent with ❤️ from the ZAR & DocsZar Team.</p>
         <p style="margin: 0; color: #94a3b8; font-size: 11px;">&copy; ${new Date().getFullYear()} DocsZar Technologies &bull; <a href="https://www.docszar.com" style="color: #10b981; text-decoration: none;">www.docszar.com</a></p>
       </td>
     </tr>
@@ -54,7 +54,7 @@ serve(async (req) => {
   }
 
   try {
-    const { to, subject, type, data, name } = await req.json();
+    const { to, subject, type, data, name, senderName } = await req.json();
 
     if (!to) {
       return new Response(JSON.stringify({ error: "Missing recipient 'to' email" }), {
@@ -65,10 +65,41 @@ serve(async (req) => {
 
     let emailSubject = subject || "DocsZar Account Notification";
     let bodyHtml = "";
+    const activeSender = senderName || DEFAULT_SENDER_NAME;
 
     const greeting = name ? `Hello ${name},` : "Hello,";
 
     switch (type) {
+      case "welcome_email":
+        emailSubject = `🎉 Welcome to DocsZar, ${name || "Earner"}! (A note from Joscor)`;
+        bodyHtml = wrapHtml(emailSubject, `
+          <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin-top: 0;">Welcome to DocsZar! 🎉</h2>
+          <p>${greeting}</p>
+          <p>I'm <strong>Joscor</strong>, and I want to personally welcome you to the <strong>DocsZar / ZAR community</strong>! 🚀</p>
+          <p>Whether your goal is to earn steady income by performing verified social media tasks, or to scale your brand and social presence across Nigeria, you're in the right place.</p>
+          
+          <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 20px; margin: 24px 0;">
+            <h3 style="color: #166534; font-size: 16px; margin: 0 0 12px 0; font-weight: 700;">Quick Tips to Get Started:</h3>
+            <ul style="margin: 0; padding-left: 20px; color: #15803d; font-size: 14px; line-height: 1.8;">
+              <li><strong>Complete your profile & bank details</strong> to unlock instant payouts.</li>
+              <li><strong>Browse daily tasks</strong> on WhatsApp, Instagram, TikTok, and Twitter to start earning immediately.</li>
+              <li><strong>Invite friends with your referral link</strong> to earn instant 60% bonuses on activations.</li>
+            </ul>
+          </div>
+
+          <div style="text-align: center; margin: 28px 0;">
+            <a href="https://www.docszar.com/dashboard" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 15px; display: inline-block; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);">Go to My Dashboard &rarr;</a>
+          </div>
+
+          <p style="margin-bottom: 24px;">If you ever have any questions, suggestions, or need help with your account, our support team and I are always just a click away.</p>
+
+          <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+            <p style="margin: 0; font-weight: 800; color: #0f172a; font-size: 15px;">Joscor</p>
+            <p style="margin: 2px 0 0 0; font-size: 13px; color: #64748b;">Founder & Team Lead, ZAR & DocsZar</p>
+          </div>
+        `);
+        break;
+
       case "wallet_funded":
         emailSubject = `💰 Wallet Deposit Confirmed: ₦${Number(data?.amount || 0).toLocaleString()}`;
         bodyHtml = wrapHtml(emailSubject, `
@@ -169,7 +200,7 @@ serve(async (req) => {
     });
 
     await client.send({
-      from: `${SENDER_NAME} <${SENDER_EMAIL}>`,
+      from: `${activeSender} <${SENDER_EMAIL}>`,
       to,
       subject: emailSubject,
       html: bodyHtml,
@@ -189,3 +220,4 @@ serve(async (req) => {
     );
   }
 });
+
