@@ -17,6 +17,7 @@ import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { userService, bankService } from "../../services/supabaseService";
+import { NIGERIAN_BANKS } from "../../data/nigerianBanks";
 import axios from "axios";
 import ToastNotification from "../ToastNotification/ToastNotification";
 
@@ -31,7 +32,7 @@ const Withdraw = () => {
 
   // PocketFi Bank Linking Modal States
   const [showBankModal, setShowBankModal] = useState(false);
-  const [bankList, setBankList] = useState([]);
+  const [bankList, setBankList] = useState(NIGERIAN_BANKS);
   const [selectedBankName, setSelectedBankName] = useState("");
   const [selectedBankCode, setSelectedBankCode] = useState("");
   const [accountNumber, setAccountNumber] = useState("");

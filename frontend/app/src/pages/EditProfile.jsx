@@ -3,6 +3,7 @@ import ClientLayout from "../components/ClientLayout/ClientLayout";
 import { useAuth } from "../context/AuthContext";
 import { uploadFileToSupabase } from "../config/supabase.config";
 import { userService, bankService } from "../services/supabaseService";
+import { NIGERIAN_BANKS } from "../data/nigerianBanks";
 import {
   FiCamera,
   FiUser,
@@ -17,7 +18,7 @@ const EditProfile = () => {
   const { currentUser, fetchUserData } = useAuth();
   const fileInputRef = useRef(null);
 
-  const [bankList, setBankList] = useState([]);
+  const [bankList, setBankList] = useState(NIGERIAN_BANKS);
   const [verifyingBank, setVerifyingBank] = useState(false);
   const [bankVerified, setBankVerified] = useState(false);
 

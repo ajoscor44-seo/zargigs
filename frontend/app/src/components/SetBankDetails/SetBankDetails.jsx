@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { FiCreditCard, FiArrowRight, FiArrowLeft, FiCheckCircle, FiSearch, FiAlertCircle } from "react-icons/fi";
 import { FaSpinner } from "react-icons/fa6";
 import { bankService } from "../../services/supabaseService";
+import { NIGERIAN_BANKS } from "../../data/nigerianBanks";
 
 const SetBankDetails = ({
   setActivePage,
@@ -11,9 +12,9 @@ const SetBankDetails = ({
   selectedBank,
   setSelectedBank,
 }) => {
-  const [bankList, setBankList] = useState([]);
+  const [bankList, setBankList] = useState(NIGERIAN_BANKS);
   const [bankSearch, setBankSearch] = useState("");
-  const [loadingBanks, setLoadingBanks] = useState(true);
+  const [loadingBanks, setLoadingBanks] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [isVerified, setIsVerified] = useState(Boolean(bankDetails?.accountName));
   const [validationError, setValidationError] = useState(null);
@@ -23,15 +24,12 @@ const SetBankDetails = ({
     let isMounted = true;
     const loadBanks = async () => {
       try {
-        setLoadingBanks(true);
         const banks = await bankService.getBanks();
         if (isMounted && banks && banks.length > 0) {
           setBankList(banks);
         }
       } catch (err) {
         console.warn("Failed to load PocketFi banks:", err.message);
-      } finally {
-        if (isMounted) setLoadingBanks(false);
       }
     };
     loadBanks();

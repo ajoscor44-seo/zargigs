@@ -1,4 +1,6 @@
 import { supabase } from "../config/supabase.config";
+import { NIGERIAN_BANKS } from "../data/nigerianBanks";
+
 
 /**
  * Normalizes Supabase records to match frontend property names (camelCase, _id mapping)
@@ -1498,13 +1500,13 @@ const POPULAR_BANK_CODES = [
   "120001", // 9PSB
 ];
 
-let cachedBanks = null;
+let cachedBanks = [...NIGERIAN_BANKS];
 
 export const bankService = {
-  // Fetch full live list of Nigerian banks from PocketFi (674+ banks)
+  // Fetch full live list of Nigerian banks from PocketFi with robust instant fallback
   async getBanks() {
     if (cachedBanks && cachedBanks.length > 0) {
-      return cachedBanks;
+      // Refresh asynchronously in background if needed
     }
 
     try {
@@ -1566,7 +1568,7 @@ export const bankService = {
       // Continue to fallback
     }
 
-    return [];
+    return cachedBanks && cachedBanks.length > 0 ? cachedBanks : NIGERIAN_BANKS;
   },
 
   // Verify Bank Account name using PocketFi
