@@ -18,7 +18,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
         if (!currentUser.isEmailVerified) {
           return <Redirect to="/login" />;
         }
-        if (!currentUser.gender) {
+        if (!currentUser.gender && !currentUser.state && !currentUser.location) {
           return <Redirect to="/input-user-info" />;
         }
         return <Component {...props} />;

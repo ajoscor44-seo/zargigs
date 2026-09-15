@@ -109,6 +109,7 @@ const UploadInfoPage = () => {
         deviceType: selectedDevice,
         state: userLocation?.state,
         lga: userLocation?.LGA,
+        religion: religion || "",
         avatarUrl: image || currentUser?.avatarUrl,
         bankName: bank || bankDetail?.bankName,
         accountNumber: bankDetail?.accountNumber,
@@ -126,7 +127,7 @@ const UploadInfoPage = () => {
 
       await fetchUserData();
       setLoading(false);
-      return history.push("/dashboard");
+      window.location.href = "/dashboard";
     } catch (err) {
       setLoading(false);
       return setError(err.message || "Failed to complete account setup.");

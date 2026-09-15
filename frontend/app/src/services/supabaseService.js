@@ -309,33 +309,38 @@ export const userService = {
           .eq("user_id", data.id)
           .maybeSingle();
 
-        if (details) {
-          profile.gender = details.gender || profile.gender;
-          profile.state = details.state || profile.state;
-          profile.lga = details.lga || profile.lga;
-          profile.location = details.state ? (details.lga ? `${details.lga}, ${details.state}` : details.state) : (data.location || details?.state || undefined);
-          profile.bankName = details.bank_name || profile.bankName || profile.bank_name || "";
-          profile.accountNumber = details.account_number || profile.accountNumber || profile.account_number || "";
-          profile.accountName = details.account_name || profile.accountName || profile.account_name || "";
-          profile.bankDetails = {
-            bankName: details.bank_name || profile.bankName || profile.bank_name || "",
-            accountNumber: details.account_number || profile.accountNumber || profile.account_number || "",
-            accountName: details.account_name || profile.accountName || profile.account_name || "",
-          };
-        } else {
-          profile.location = profile.location || profile.state || undefined;
-          profile.bankDetails = {
-            bankName: profile.bankName || profile.bank_name || "",
-            accountNumber: profile.accountNumber || profile.account_number || "",
-            accountName: profile.accountName || profile.account_name || "",
-          };
-        }
-      } catch {
-        profile.location = profile.location || profile.state || undefined;
+        profile.gender = details?.gender || data.gender || profile.gender || "";
+        profile.state = details?.state || data.state || profile.state || "";
+        profile.lga = details?.lga || data.lga || profile.lga || "";
+        profile.device = details?.device || data.device || profile.device || "Android";
+        profile.religion = details?.religion || data.religion || profile.religion || "";
+        profile.location = profile.state
+          ? profile.lga
+            ? `${profile.lga}, ${profile.state}`
+            : profile.state
+          : data.location || profile.location || "";
+        
+        const resolvedBankName = details?.bank_name || data.bank_name || profile.bankName || profile.bank_name || "";
+        const resolvedAcctNum = details?.account_number || data.account_number || profile.accountNumber || profile.account_number || "";
+        const resolvedAcctName = details?.account_name || data.account_name || profile.accountName || profile.account_name || "";
+
+        profile.bankName = resolvedBankName;
+        profile.accountNumber = resolvedAcctNum;
+        profile.accountName = resolvedAcctName;
         profile.bankDetails = {
-          bankName: profile.bankName || profile.bank_name || "",
-          accountNumber: profile.accountNumber || profile.account_number || "",
-          accountName: profile.accountName || profile.account_name || "",
+          bankName: resolvedBankName,
+          accountNumber: resolvedAcctNum,
+          accountName: resolvedAcctName,
+        };
+      } catch {
+        profile.gender = data.gender || profile.gender || "";
+        profile.state = data.state || profile.state || "";
+        profile.lga = data.lga || profile.lga || "";
+        profile.location = profile.state || data.location || profile.location || "";
+        profile.bankDetails = {
+          bankName: data.bank_name || profile.bankName || profile.bank_name || "",
+          accountNumber: data.account_number || profile.accountNumber || profile.account_number || "",
+          accountName: data.account_name || profile.accountName || profile.account_name || "",
         };
       }
 
@@ -489,6 +494,16 @@ export const userService = {
     if (updates.avatarUrl !== undefined) userPayload.avatar_url = updates.avatarUrl;
     if (updates.image !== undefined) userPayload.avatar_url = updates.image;
     if (updates.isMember !== undefined) userPayload.is_member = updates.isMember;
+    if (updates.gender !== undefined) userPayload.gender = updates.gender;
+    if (updates.state !== undefined) userPayload.state = updates.state;
+    if (updates.lga !== undefined) userPayload.lga = updates.lga;
+    if (updates.device !== undefined || updates.deviceType !== undefined || updates.device_type !== undefined) {
+      userPayload.device = updates.device || updates.deviceType || updates.device_type;
+    }
+    if (updates.religion !== undefined) userPayload.religion = updates.religion;
+    if (updates.bankName !== undefined) userPayload.bank_name = updates.bankName;
+    if (updates.accountNumber !== undefined) userPayload.account_number = updates.accountNumber;
+    if (updates.accountName !== undefined) userPayload.account_name = updates.accountName;
 
     if (Object.keys(userPayload).length > 0) {
       await supabase
@@ -506,6 +521,7 @@ export const userService = {
     if (updates.state !== undefined) detailsPayload.state = updates.state;
     if (updates.country !== undefined) detailsPayload.country = updates.country;
     if (updates.lga !== undefined) detailsPayload.lga = updates.lga;
+    if (updates.religion !== undefined) detailsPayload.religion = updates.religion;
     if (updates.bankName !== undefined) detailsPayload.bank_name = updates.bankName;
     if (updates.accountNumber !== undefined) detailsPayload.account_number = updates.accountNumber;
     if (updates.accountName !== undefined) detailsPayload.account_name = updates.accountName;
@@ -518,6 +534,21 @@ export const userService = {
       } catch (err) {
         console.warn("Details update notice:", err);
       }
+    }
+
+    // Also update Supabase Auth user metadata
+    try {
+      await supabase.auth.updateUser({
+        data: {
+          gender: updates.gender,
+          state: updates.state,
+          lga: updates.lga,
+          device: updates.device || updates.deviceType,
+          completed_onboarding: true,
+        },
+      });
+    } catch {
+      // Handled gracefully
     }
 
     return await this.getProfile(userId);

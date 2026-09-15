@@ -9,23 +9,21 @@ const UploadProfilePrivateRoute = ({ component: Component, ...rest }) => {
     <Route
       {...rest}
       render={(props) => {
-        return currentUser.isBanned ? (
-          <Redirect to="/login" />
-        ) : currentUser &&
-          currentUser.isEmailVerified &&
-          !currentUser.location &&
-          !currentUser.religion ? (
-          <Component {...props} />
-        ) : currentUser &&
-          currentUser.isEmailVerified &&
-          currentUser.location &&
-          currentUser.religion ? (
-          <Redirect to="/" />
-        ) : (
-          <Redirect to="/signup" />
-        );
+        if (!currentUser) {
+          return <Redirect to="/login" />;
+        }
+        if (currentUser.isBanned) {
+          return <Redirect to="/login" />;
+        }
+        if (!currentUser.isEmailVerified) {
+          return <Redirect to="/login" />;
+        }
+        if (currentUser.gender || currentUser.location || currentUser.state) {
+          return <Redirect to="/dashboard" />;
+        }
+        return <Component {...props} />;
       }}
-    ></Route>
+    />
   );
 };
 
