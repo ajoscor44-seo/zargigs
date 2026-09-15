@@ -2,8 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import ClientLayout from "../components/ClientLayout/ClientLayout";
 import { useAuth } from "../context/AuthContext";
 import { uploadFileToSupabase } from "../config/supabase.config";
-import { userService } from "../services/supabaseService";
-import axios from "axios";
+import { userService, bankService } from "../services/supabaseService";
 import {
   FiCamera,
   FiUser,
@@ -14,36 +13,11 @@ import {
 } from "react-icons/fi";
 import { FaSpinner } from "react-icons/fa6";
 
-const FALLBACK_BANKS = [
-  { name: "Opay Digital Services Limited", code: "100004" },
-  { name: "PALMPAY", code: "100033" },
-  { name: "Moniepoint Microfinance Bank", code: "090405" },
-  { name: "Kuda Bank", code: "090267" },
-  { name: "Access Bank", code: "000014" },
-  { name: "Guaranty Trust Bank (GTB)", code: "000013" },
-  { name: "First Bank of Nigeria", code: "000016" },
-  { name: "United Bank For Africa (UBA)", code: "000004" },
-  { name: "Zenith Bank", code: "000015" },
-  { name: "Fidelity Bank", code: "000007" },
-  { name: "Wema Bank", code: "000017" },
-  { name: "Sterling Bank", code: "000001" },
-  { name: "Stanbic IBTC Bank", code: "000012" },
-  { name: "Union Bank Of Nigeria", code: "000018" },
-  { name: "First City Monument Bank (FCMB)", code: "000003" },
-  { name: "Polaris Bank", code: "000008" },
-  { name: "Ecobank Nigeria", code: "000010" },
-  { name: "VFD Microfinance Bank", code: "090110" },
-  { name: "Providus Bank", code: "000023" },
-  { name: "Jaiz Bank", code: "000006" },
-  { name: "Taj Bank", code: "000026" },
-  { name: "9 Payment Service Bank (9PSB)", code: "120001" },
-];
-
 const EditProfile = () => {
   const { currentUser, fetchUserData } = useAuth();
   const fileInputRef = useRef(null);
 
-  const [bankList, setBankList] = useState(FALLBACK_BANKS);
+  const [bankList, setBankList] = useState([]);
   const [verifyingBank, setVerifyingBank] = useState(false);
   const [bankVerified, setBankVerified] = useState(false);
 
@@ -65,12 +39,12 @@ const EditProfile = () => {
   useEffect(() => {
     const fetchBanks = async () => {
       try {
-        const res = await axios.get("/api/v1/wallet/public-banks");
-        if (res.data?.banks && res.data.banks.length > 0) {
-          setBankList(res.data.banks);
+        const banks = await bankService.getBanks();
+        if (banks && banks.length > 0) {
+          setBankList(banks);
         }
       } catch (err) {
-        console.warn("Using fallback banks in EditProfile:", err.message);
+        console.warn("Failed to load PocketFi banks:", err.message);
       }
     };
     fetchBanks();
@@ -86,6 +60,7 @@ const EditProfile = () => {
         firstname: currentUser.firstname || "",
         lastname: currentUser.lastname || "",
         gender: currentUser.gender || "Male",
+        device: currentUser.device || currentUser.deviceType || currentUser.device_type || "Android",
         bankName:
           currentUser.bankDetails?.bankName ||
           currentUser.walletDetails?.bankName ||
@@ -108,20 +83,16 @@ const EditProfile = () => {
 
     try {
       setVerifyingBank(true);
-      const foundBank = bankList.find((b) => b.name === bankName);
-      const bankCode = foundBank ? foundBank.code : bankName;
+      const foundBank = bankList.find((b) => b.name?.toLowerCase() === bankName?.toLowerCase());
+      const bankCode = foundBank ? foundBank.code : "";
 
-      const res = await axios.post("/api/v1/wallet/public-verify-account", {
-        accountNumber: accountNum,
-        bankCode: bankCode,
-        bankName: bankName,
-      });
+      const res = await bankService.verifyAccount(accountNum, bankCode, bankName);
 
-      if (res.data?.status === "success" && res.data.accountName) {
+      if (res?.status === "success" && res.accountName) {
         setBankVerified(true);
         setFormData((prev) => ({
           ...prev,
-          accountName: res.data.accountName,
+          accountName: res.accountName,
         }));
       } else {
         setBankVerified(false);
@@ -204,6 +175,8 @@ const EditProfile = () => {
         firstname: formData.firstname,
         lastname: formData.lastname,
         gender: formData.gender,
+        device: formData.device,
+        deviceType: formData.device,
         bankName: formData.bankName,
         accountNumber: formData.accountNumber,
         accountName: formData.accountName,
@@ -345,20 +318,38 @@ const EditProfile = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-1.5">
-                      Gender
-                    </label>
-                    <select
-                      name="gender"
-                      value={formData.gender}
-                      onChange={handleChange}
-                      className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-sm px-4 py-3 rounded-2xl border border-slate-200 focus:border-emerald-500 outline-none transition-all"
-                    >
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                        Gender
+                      </label>
+                      <select
+                        name="gender"
+                        value={formData.gender}
+                        onChange={handleChange}
+                        className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-sm px-4 py-3 rounded-2xl border border-slate-200 focus:border-emerald-500 outline-none transition-all"
+                      >
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                        Phone OS (Device)
+                      </label>
+                      <select
+                        name="device"
+                        value={formData.device}
+                        onChange={handleChange}
+                        className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-800 font-semibold text-sm px-4 py-3 rounded-2xl border border-slate-200 focus:border-emerald-500 outline-none transition-all"
+                      >
+                        <option value="Android">Android</option>
+                        <option value="iPhone">iPhone (iOS)</option>
+                        <option value="Both">Both (Android & iPhone)</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>

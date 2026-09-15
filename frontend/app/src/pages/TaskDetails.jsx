@@ -9,6 +9,7 @@ import formatDate from "../hooks/formatDate";
 import CopyToClipboard from "../hooks/CopyToClipboard";
 import { useAuth } from "../context/AuthContext";
 import DownloadPermissionChecker from "../components/CheckPermissions/CheckPermissions";
+import { triggerConfetti } from "../utils/confetti";
 import {
   FiCopy,
   FiCheck,
@@ -258,6 +259,7 @@ const TaskDetails = () => {
       }
 
       setSubmitting(false);
+      triggerConfetti();
       await fetchUserData();
       if (!slug || slug === "null" || slug === "undefined") {
         return history.push("/tasks-history");

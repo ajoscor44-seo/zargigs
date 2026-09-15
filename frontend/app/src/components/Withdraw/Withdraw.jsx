@@ -16,43 +16,9 @@ import { FaSpinner } from "react-icons/fa6";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { userService } from "../../services/supabaseService";
+import { userService, bankService } from "../../services/supabaseService";
 import axios from "axios";
 import ToastNotification from "../ToastNotification/ToastNotification";
-
-const FALLBACK_POCKETFI_BANKS = [
-  { name: "Opay Digital Services Limited", code: "100004" },
-  { name: "PALMPAY", code: "100033" },
-  { name: "Moniepoint Microfinance Bank", code: "090405" },
-  { name: "Kuda Bank", code: "090267" },
-  { name: "Access Bank", code: "000014" },
-  { name: "Guaranty Trust Bank (GTB)", code: "000013" },
-  { name: "First Bank of Nigeria", code: "000016" },
-  { name: "United Bank For Africa (UBA)", code: "000004" },
-  { name: "Zenith Bank", code: "000015" },
-  { name: "Fidelity Bank", code: "000007" },
-  { name: "Wema Bank", code: "000017" },
-  { name: "Sterling Bank", code: "000001" },
-  { name: "Stanbic IBTC Bank", code: "000012" },
-  { name: "Union Bank Of Nigeria", code: "000018" },
-  { name: "First City Monument Bank (FCMB)", code: "000003" },
-  { name: "Polaris Bank", code: "000008" },
-  { name: "Ecobank Nigeria", code: "000010" },
-  { name: "VFD Microfinance Bank", code: "090110" },
-  { name: "Rubies Bank", code: "090175" },
-  { name: "Providus Bank", code: "000023" },
-  { name: "Jaiz Bank", code: "000006" },
-  { name: "Taj Bank", code: "000026" },
-  { name: "Titan Trust Bank", code: "000025" },
-  { name: "9 Payment Service Bank (9PSB)", code: "120001" },
-  { name: "Hope PSBank", code: "120002" },
-  { name: "Momo Payment Service Bank", code: "120003" },
-  { name: "Smartcash PSB", code: "120004" },
-  { name: "FairMoney Microfinance Bank", code: "090551" },
-  { name: "Raven Bank", code: "090403" },
-  { name: "Dot Microfinance Bank", code: "090470" },
-  { name: "Carbon", code: "100026" },
-];
 
 const Withdraw = () => {
   const [toastNotifications, setToastNotifications] = useState([]);
@@ -65,7 +31,7 @@ const Withdraw = () => {
 
   // PocketFi Bank Linking Modal States
   const [showBankModal, setShowBankModal] = useState(false);
-  const [bankList, setBankList] = useState(FALLBACK_POCKETFI_BANKS);
+  const [bankList, setBankList] = useState([]);
   const [selectedBankName, setSelectedBankName] = useState("");
   const [selectedBankCode, setSelectedBankCode] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
@@ -98,13 +64,13 @@ const Withdraw = () => {
 
   const hasBankAccount = Boolean(currentBankName && currentAccountNumber && currentAccountName);
 
-  // Load live PocketFi bank list
+  // Load live PocketFi bank list (674+ Nigerian banks)
   useEffect(() => {
     const fetchPocketfiBanks = async () => {
       try {
-        const res = await axios.get("/api/v1/wallet/public-banks");
-        if (res.data?.banks && Array.isArray(res.data.banks) && res.data.banks.length > 0) {
-          setBankList(res.data.banks);
+        const banks = await bankService.getBanks();
+        if (banks && banks.length > 0) {
+          setBankList(banks);
         }
       } catch (err) {
         console.warn("Using default PocketFi bank list:", err.message);
@@ -116,7 +82,7 @@ const Withdraw = () => {
   // Initialize modal state from current user
   const openBankModal = () => {
     setSelectedBankName(currentBankName);
-    const found = bankList.find((b) => b.name === currentBankName);
+    const found = bankList.find((b) => b.name?.toLowerCase() === currentBankName?.toLowerCase());
     setSelectedBankCode(found?.code || "");
     setAccountNumber(currentAccountNumber);
     setAccountName(currentAccountName);
@@ -159,23 +125,19 @@ const Withdraw = () => {
       setVerifyingBank(true);
       setBankModalError(null);
 
-      const res = await axios.post("/api/v1/wallet/public-verify-account", {
-        accountNumber: accNum,
-        bankCode: code || name,
-        bankName: name,
-      });
+      const res = await bankService.verifyAccount(accNum, code, name);
 
-      if (res.data?.status === "success" && res.data.accountName) {
-        setAccountName(res.data.accountName);
+      if (res?.status === "success" && res.accountName) {
+        setAccountName(res.accountName);
         setBankVerified(true);
       } else {
         setBankVerified(false);
-        setBankModalError(res.data?.message || "Could not verify account name with PocketFi.");
+        setBankModalError("Could not verify account name with PocketFi.");
       }
     } catch (err) {
       setBankVerified(false);
       setBankModalError(
-        err.response?.data?.message ||
+        err.message ||
           "PocketFi account verification failed. Please verify your account number and bank."
       );
     } finally {

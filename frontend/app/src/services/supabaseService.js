@@ -498,6 +498,9 @@ export const userService = {
     // Update user_details table if details provided
     const detailsPayload = {};
     if (updates.gender !== undefined) detailsPayload.gender = updates.gender;
+    if (updates.device !== undefined || updates.deviceType !== undefined || updates.device_type !== undefined) {
+      detailsPayload.device = updates.device || updates.deviceType || updates.device_type;
+    }
     if (updates.state !== undefined) detailsPayload.state = updates.state;
     if (updates.country !== undefined) detailsPayload.country = updates.country;
     if (updates.lga !== undefined) detailsPayload.lga = updates.lga;
@@ -1462,3 +1465,338 @@ export const emailService = {
     });
   },
 };
+
+// ==============================================================================
+// 7. POCKETFI BANK LIST & VERIFICATION SERVICE
+// ==============================================================================
+
+const POCKETFI_BEARER_TOKEN = "32438|LO9iG4rLGLnVzywfVDlhGoji0JWTpYywEIc3KHGxf837cb4b";
+const POCKETFI_API_BASE = "https://api.pocketfi.ng/api/v1";
+
+const POPULAR_BANK_CODES = [
+  "100004", // Opay
+  "100033", // Palmpay
+  "090405", // Moniepoint
+  "090267", // Kuda
+  "000014", // Access Bank
+  "000013", // GTBank
+  "000016", // First Bank
+  "000015", // Zenith Bank
+  "000004", // UBA
+  "000007", // Fidelity Bank
+  "000017", // Wema Bank
+  "000001", // Sterling Bank
+  "000012", // Stanbic IBTC
+  "000018", // Union Bank
+  "000003", // FCMB
+  "000008", // Polaris Bank
+  "000010", // Ecobank
+  "090110", // VFD MFB
+  "000023", // Providus Bank
+  "000006", // Jaiz Bank
+  "000026", // Taj Bank
+  "120001", // 9PSB
+];
+
+let cachedBanks = null;
+
+export const bankService = {
+  // Fetch full live list of Nigerian banks from PocketFi (674+ banks)
+  async getBanks() {
+    if (cachedBanks && cachedBanks.length > 0) {
+      return cachedBanks;
+    }
+
+    try {
+      // 1. Direct call to PocketFi API
+      const res = await fetch(`${POCKETFI_API_BASE}/payout/bank-list`, {
+        headers: {
+          Authorization: `Bearer ${POCKETFI_BEARER_TOKEN}`,
+          Accept: "application/json",
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const rawBanks = Array.isArray(data?.banks) ? data.banks : [];
+        if (rawBanks.length > 0) {
+          const formatted = rawBanks.map((b) => ({
+            id: b.id || b.code,
+            code: String(b.code).trim(),
+            name: String(b.name).trim(),
+          }));
+
+          // Sort with popular Nigerian banks first, then alphabetically
+          formatted.sort((a, b) => {
+            const aPop = POPULAR_BANK_CODES.indexOf(a.code);
+            const bPop = POPULAR_BANK_CODES.indexOf(b.code);
+            if (aPop !== -1 && bPop !== -1) return aPop - bPop;
+            if (aPop !== -1) return -1;
+            if (bPop !== -1) return 1;
+            return a.name.localeCompare(b.name);
+          });
+
+          cachedBanks = formatted;
+          return formatted;
+        }
+      }
+    } catch (err) {
+      console.warn("Direct PocketFi bank fetch notice:", err.message);
+    }
+
+    // 2. Try Supabase Edge Function proxy
+    try {
+      const edgeRes = await fetch("https://itzqsxmjyjfgtbolfhmq.supabase.co/functions/v1/pocketfi-banks", {
+        headers: { Accept: "application/json" },
+      });
+      if (edgeRes.ok) {
+        const data = await edgeRes.json();
+        const rawBanks = Array.isArray(data?.banks) ? data.banks : [];
+        if (rawBanks.length > 0) {
+          const formatted = rawBanks.map((b) => ({
+            id: b.id || b.code,
+            code: String(b.code).trim(),
+            name: String(b.name).trim(),
+          }));
+          cachedBanks = formatted;
+          return formatted;
+        }
+      }
+    } catch {
+      // Continue to fallback
+    }
+
+    return [];
+  },
+
+  // Verify Bank Account name using PocketFi
+  async verifyAccount(accountNumber, bankCode, bankName) {
+    const cleanNum = String(accountNumber || "").replace(/\D/g, "").trim();
+    if (!cleanNum || cleanNum.length !== 10) {
+      throw new Error("Please enter a valid 10-digit Nigerian account number.");
+    }
+
+    let codeToUse = String(bankCode || "").trim();
+
+    // If bankCode is missing, resolve it from bankName via cached list
+    if (!codeToUse && bankName && cachedBanks) {
+      const matched = cachedBanks.find(
+        (b) => b.name.toLowerCase() === bankName.toLowerCase()
+      );
+      if (matched) codeToUse = matched.code;
+    }
+
+    if (!codeToUse) {
+      throw new Error("Please select a bank to verify account.");
+    }
+
+    try {
+      // 1. Direct call to PocketFi verification endpoint
+      const res = await fetch(`${POCKETFI_API_BASE}/payout/verify-bank`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${POCKETFI_BEARER_TOKEN}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          account_number: cleanNum,
+          bank_code: codeToUse,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data?.status === "success" && data.account_name) {
+        return {
+          status: "success",
+          accountName: data.account_name,
+          bankCode: data.bank_code || codeToUse,
+        };
+      } else {
+        throw new Error(data?.message || "Could not verify account name with PocketFi.");
+      }
+    } catch (err) {
+      // 2. Try Supabase Edge Function proxy
+      try {
+        const edgeRes = await fetch("https://itzqsxmjyjfgtbolfhmq.supabase.co/functions/v1/pocketfi-banks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ accountNumber: cleanNum, bankCode: codeToUse }),
+        });
+        const edgeData = await edgeRes.json();
+        if (edgeRes.ok && edgeData?.status === "success" && edgeData.account_name) {
+          return {
+            status: "success",
+            accountName: edgeData.account_name,
+            bankCode: edgeData.bank_code || codeToUse,
+          };
+        }
+      } catch {}
+
+      throw new Error(err.message || "Failed to verify bank account with PocketFi.");
+    }
+  },
+};
+
+// ==============================================================================
+// 8. DAILY STREAK & CHECK-IN REWARDS SERVICE
+// ==============================================================================
+
+const DAILY_REWARDS = [
+  { day: 1, reward: 5, label: "Day 1" },
+  { day: 2, reward: 10, label: "Day 2" },
+  { day: 3, reward: 15, label: "Day 3" },
+  { day: 4, reward: 20, label: "Day 4" },
+  { day: 5, reward: 25, label: "Day 5" },
+  { day: 6, reward: 35, label: "Day 6" },
+  { day: 7, reward: 50, label: "Day 7", isMega: true },
+];
+
+export const streakService = {
+  getRewardsList() {
+    return DAILY_REWARDS;
+  },
+
+  getTodayDateString() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  },
+
+  getYesterdayDateString() {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  },
+
+  async getStreakStatus(userId) {
+    if (!userId) return null;
+    const today = this.getTodayDateString();
+    const yesterday = this.getYesterdayDateString();
+
+    try {
+      const { data } = await supabase
+        .from("tokens")
+        .select("token")
+        .eq("user_id", userId)
+        .ilike("token", "daily_streak:%")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      let streakData = {
+        currentStreak: 0,
+        lastCheckinDate: null,
+        canClaimToday: true,
+        todayReward: DAILY_REWARDS[0].reward,
+        nextDayNumber: 1,
+        totalClaimed: 0,
+      };
+
+      if (data?.token && data.token.startsWith("daily_streak:")) {
+        try {
+          const parsed = JSON.parse(data.token.replace("daily_streak:", ""));
+          streakData = { ...streakData, ...parsed };
+        } catch {}
+      }
+
+      if (streakData.lastCheckinDate === today) {
+        streakData.canClaimToday = false;
+        streakData.nextDayNumber = (streakData.currentStreak % 7) + 1;
+        streakData.todayReward = DAILY_REWARDS[Math.min(Math.max(streakData.currentStreak - 1, 0), 6)]?.reward || 5;
+      } else if (streakData.lastCheckinDate === yesterday) {
+        streakData.canClaimToday = true;
+        const nextDay = (streakData.currentStreak % 7) + 1;
+        streakData.nextDayNumber = nextDay;
+        streakData.todayReward = DAILY_REWARDS[nextDay - 1]?.reward || 5;
+      } else {
+        streakData.canClaimToday = true;
+        streakData.nextDayNumber = 1;
+        streakData.todayReward = DAILY_REWARDS[0].reward;
+      }
+
+      return streakData;
+    } catch {
+      return {
+        currentStreak: 0,
+        lastCheckinDate: null,
+        canClaimToday: true,
+        todayReward: 5,
+        nextDayNumber: 1,
+        totalClaimed: 0,
+      };
+    }
+  },
+
+  async claimDailyStreak(userId) {
+    if (!userId) throw new Error("User ID is required");
+    const status = await this.getStreakStatus(userId);
+    if (!status.canClaimToday) {
+      throw new Error("You have already checked in today! Come back tomorrow for your next reward.");
+    }
+
+    const today = this.getTodayDateString();
+    const newStreak = status.nextDayNumber;
+    const rewardAmount = DAILY_REWARDS[newStreak - 1]?.reward || 5;
+
+    // 1. Get current balance & update in users table
+    const { data: userRow } = await supabase
+      .from("users")
+      .select("balance")
+      .eq("id", userId)
+      .single();
+
+    const currentBal = Number(userRow?.balance || 0);
+    const newBal = currentBal + rewardAmount;
+
+    await supabase
+      .from("users")
+      .update({ balance: newBal })
+      .eq("id", userId);
+
+    // 2. Insert transaction
+    await supabase.from("transactions").insert({
+      user_id: userId,
+      amount: rewardAmount,
+      fee: 0,
+      type: "bonus",
+      status: "completed",
+      description: `Day ${newStreak} Daily Login Streak Bonus 🔥`,
+    }).catch(() => {});
+
+    // 3. Insert notification
+    await supabase.from("notifications").insert({
+      user_id: userId,
+      title: "Daily Login Bonus Claimed! 🔥",
+      message: `You earned ₦${rewardAmount}.00 for your Day ${newStreak} check-in streak. Keep logging in daily to unlock the Day 7 Mega Bonus!`,
+      is_read: false,
+    }).catch(() => {});
+
+    // 4. Update streak token
+    const newStreakData = {
+      currentStreak: newStreak,
+      lastCheckinDate: today,
+      totalClaimed: (status.totalClaimed || 0) + rewardAmount,
+    };
+
+    await supabase
+      .from("tokens")
+      .delete()
+      .eq("user_id", userId)
+      .ilike("token", "daily_streak:%")
+      .catch(() => {});
+
+    await supabase.from("tokens").insert({
+      user_id: userId,
+      token: `daily_streak:${JSON.stringify(newStreakData)}`,
+    });
+
+    return {
+      success: true,
+      day: newStreak,
+      reward: rewardAmount,
+      newBalance: newBal,
+    };
+  },
+};
+
+

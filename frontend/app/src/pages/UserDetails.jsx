@@ -32,6 +32,9 @@ import {
   FaClockRotateLeft,
   FaListCheck,
   FaBullhorn,
+  FaAndroid,
+  FaApple,
+  FaMobileScreenButton,
 } from "react-icons/fa6";
 
 const UserDetails = () => {
@@ -216,6 +219,20 @@ const UserDetails = () => {
                           {location.LGA}, {location.state}
                         </span>
                       </Link>
+
+                      {(currentUser?.device || currentUser?.device_type) && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-50 text-slate-700 text-[11px] font-bold rounded-lg border border-slate-200/80">
+                          {String(currentUser?.device || currentUser?.device_type).toLowerCase().includes("iphone") ||
+                          String(currentUser?.device || currentUser?.device_type).toLowerCase().includes("ios") ? (
+                            <FaApple size={11} className="text-slate-800" />
+                          ) : String(currentUser?.device || currentUser?.device_type).toLowerCase().includes("android") ? (
+                            <FaAndroid size={11} className="text-emerald-500" />
+                          ) : (
+                            <FaMobileScreenButton size={11} className="text-emerald-600" />
+                          )}
+                          <span>{currentUser?.device || currentUser?.device_type}</span>
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

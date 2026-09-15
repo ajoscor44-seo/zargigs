@@ -52,6 +52,7 @@ import AboutUs from "./pages/AboutUs.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 import RefundPolicy from "./pages/RefundPolicy.jsx";
 import TermsOfUse from "./pages/TermsOfUse.jsx";
+import VerifyEmail from "./components/VerifyEmail/VerifyEmail.jsx";
 
 const RootRoute = () => {
   const { currentUser } = useAuth();
@@ -91,6 +92,7 @@ function App() {
             <Route exact path="/ref/:username" component={RegistrationPage} />
             <Route exact path="/signup" component={RegistrationPage} />
             <Route exact path="/login" component={Authentication} />
+            <Route exact path="/verify-email" component={VerifyEmail} />
             <Route
               path="/forgot-password/:resetId?"
               component={ForgotPassword}

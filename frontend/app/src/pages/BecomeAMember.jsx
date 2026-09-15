@@ -6,6 +6,8 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import ToastNotification from "../components/ToastNotification/ToastNotification";
 import { FaCrown, FaCheckCircle, FaWallet, FaShieldAlt } from "react-icons/fa";
+import { userService } from "../services/supabaseService";
+import { triggerConfetti } from "../utils/confetti";
 
 const BecomeAMember = () => {
   const [toastNotifications, setToastNotifications] = useState([]);
@@ -26,11 +28,17 @@ const BecomeAMember = () => {
   const becomeAMember = async () => {
     try {
       setDisableBtn(true);
-      const userId = currentUser?._id || currentUser?.id;
+      const userId = currentUser?.id || currentUser?._id;
+      if (!userId) {
+        showToast({ msg: "Please login to activate membership", errorType: "danger" });
+        setDisableBtn(false);
+        return;
+      }
       const fee = adminData?.membershipFee || 1000;
       await userService.becomeMember(userId, fee);
       await fetchUserData();
       setJustUpgraded(true);
+      triggerConfetti();
       showToast({
         msg: "🎉 Congratulations! You are now a lifetime VIP PRO Member!",
         errorType: "success",

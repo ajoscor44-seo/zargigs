@@ -360,43 +360,73 @@ CREATE POLICY "Allow Deletes Profile Pics" ON storage.objects FOR DELETE USING (
 CREATE POLICY "Allow Deletes Proof Of Works" ON storage.objects FOR DELETE USING (bucket_id = 'proof_of_works');
 
 -- ==============================================================================
--- 28. DISABLE ROW LEVEL SECURITY (RLS) FOR BACKEND-MANAGED ACCESS
+-- 28. ENABLE ROW LEVEL SECURITY (RLS) FOR DATA PROTECTION
 -- ==============================================================================
--- Since the Node.js API backend handles authentication & business logic,
--- we disable RLS on all tables so backend CRUD operations execute seamlessly.
-ALTER TABLE IF EXISTS public.users DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.user_details DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.tokens DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.access_tokens DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.reset_ids DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.advertisements DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.advert_tasks DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.engagement_tasks DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.create_advert_config DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.create_engagement_config DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.earn_advert_config DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.earn_engagement_config DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.allocated_tasks DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.in_review_tasks DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.completed_tasks DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.pending_tasks DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.failed_tasks DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.cancelled_tasks DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.proof_of_work DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.funding DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.transfers DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.withdrawal_requests DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.notifications DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.announcements DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.complaints DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.subscriptions DISABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.admin_settings DISABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.users DROP COLUMN IF EXISTS password;
 
--- Grant schema permissions to public/anon/authenticated roles
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.users
+    WHERE id = auth.uid() AND (role = 'admin' OR role = 'superadmin')
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+ALTER TABLE IF EXISTS public.users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.user_details ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.tokens ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.access_tokens ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.reset_ids ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.advertisements ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.advert_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.engagement_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.create_advert_config ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.create_engagement_config ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.earn_advert_config ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.earn_engagement_config ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.allocated_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.in_review_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.completed_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.pending_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.failed_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.cancelled_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.proof_of_work ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.funding ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.transfers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.withdrawal_requests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.announcements ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.complaints ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.admin_settings ENABLE ROW LEVEL SECURITY;
+
+-- Base RLS policies
+CREATE POLICY "users_select_policy" ON public.users FOR SELECT USING (true);
+CREATE POLICY "users_insert_policy" ON public.users FOR INSERT WITH CHECK (auth.uid() = id OR auth.uid() IS NULL);
+CREATE POLICY "users_update_policy" ON public.users FOR UPDATE USING (auth.uid() = id OR public.is_admin());
+
+CREATE POLICY "user_details_user_policy" ON public.user_details FOR ALL USING (user_id = auth.uid() OR public.is_admin());
+CREATE POLICY "tokens_user_policy" ON public.tokens FOR ALL USING (user_id = auth.uid() OR public.is_admin());
+CREATE POLICY "withdrawals_user_policy" ON public.withdrawal_requests FOR ALL USING (user_id = auth.uid() OR public.is_admin());
+CREATE POLICY "funding_user_policy" ON public.funding FOR ALL USING (user_id = auth.uid() OR public.is_admin());
+CREATE POLICY "transfers_user_policy" ON public.transfers FOR ALL USING (sender_id = auth.uid() OR receiver_id = auth.uid() OR public.is_admin());
+CREATE POLICY "notifications_user_policy" ON public.notifications FOR ALL USING (user_id = auth.uid() OR public.is_admin());
+
+CREATE POLICY "advertisements_select_all" ON public.advertisements FOR SELECT USING (true);
+CREATE POLICY "advert_tasks_select_all" ON public.advert_tasks FOR SELECT USING (true);
+CREATE POLICY "engagement_tasks_select_all" ON public.engagement_tasks FOR SELECT USING (true);
+
+CREATE POLICY "config_advert_select" ON public.create_advert_config FOR SELECT USING (true);
+CREATE POLICY "config_engagement_select" ON public.create_engagement_config FOR SELECT USING (true);
+CREATE POLICY "config_earn_advert_select" ON public.earn_advert_config FOR SELECT USING (true);
+CREATE POLICY "config_earn_engagement_select" ON public.earn_engagement_config FOR SELECT USING (true);
+CREATE POLICY "admin_settings_select" ON public.admin_settings FOR SELECT USING (true);
+CREATE POLICY "announcements_select" ON public.announcements FOR SELECT USING (true);
+
+-- Grant schema permissions
 GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
 GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
 GRANT ALL ON ALL ROUTINES IN SCHEMA public TO anon, authenticated, service_role;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated, service_role;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO anon, authenticated, service_role;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON ROUTINES TO anon, authenticated, service_role;

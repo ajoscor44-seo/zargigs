@@ -33,6 +33,13 @@ const UploadInfoPage = () => {
     year: new Date().getFullYear() - 18,
   });
   const [selectedGender, setSelectedGender] = useState("Male");
+  const [selectedDevice, setSelectedDevice] = useState(() => {
+    if (typeof navigator !== "undefined") {
+      if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) return "iPhone";
+      if (/Android/i.test(navigator.userAgent)) return "Android";
+    }
+    return "Android";
+  });
 
   useEffect(() => {
     const updateDaysInMonth = () => {
@@ -61,6 +68,10 @@ const UploadInfoPage = () => {
       setLoading(false);
       return setError("Please select a gender.");
     }
+    if (!selectedDevice) {
+      setLoading(false);
+      return setError("Please select your phone operating system (Android or iPhone).");
+    }
     if (!userLocation?.state || !userLocation?.LGA) {
       setLoading(false);
       return setError("Please select your State and LGA.");
@@ -69,6 +80,8 @@ const UploadInfoPage = () => {
     try {
       await userService.updateProfile(userId, {
         gender: selectedGender,
+        device: selectedDevice,
+        deviceType: selectedDevice,
         state: userLocation?.state,
         lga: userLocation?.LGA,
         avatarUrl: image || currentUser?.avatarUrl,
@@ -96,7 +109,7 @@ const UploadInfoPage = () => {
   };
 
   const steps = [
-    { id: "location", label: "Location", icon: <FiMapPin size={13} /> },
+    { id: "location", label: "Profile", icon: <FiMapPin size={13} /> },
     { id: "upload-profile-pic", label: "Photo", icon: <FiCamera size={13} /> },
     { id: "bank-details", label: "Bank", icon: <FiCreditCard size={13} /> },
     { id: "birth-religion", label: "Details", icon: <FiUserCheck size={13} /> },
@@ -172,6 +185,8 @@ const UploadInfoPage = () => {
               setUserLocation={setUserLocation}
               selectedGender={selectedGender}
               setSelectedGender={setSelectedGender}
+              selectedDevice={selectedDevice}
+              setSelectedDevice={setSelectedDevice}
               statesData={statesData}
             />
           ) : activePage === "bank-details" ? (

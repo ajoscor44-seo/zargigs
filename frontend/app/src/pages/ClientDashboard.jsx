@@ -4,6 +4,7 @@ import ClientDashboardCard from "../components/ClientDashboardCard/ClientDashboa
 import ClientsEarnings from "../components/ClientEarnings/ClientsEarnings";
 import MoneyTransaction from "../components/MoneyTransaction/MoneyTransaction";
 import Announcements from "../components/Announcements/Announcements";
+import DailyStreakCard from "../components/DailyStreak/DailyStreakCard";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { Link } from "react-router-dom/cjs/react-router-dom";
@@ -240,6 +241,9 @@ const ClientDashboard = () => {
             {/* ------------------------------------------------------------ */}
             {isEarner ? (
               <>
+                {/* 0. Daily Login Streak Rewards */}
+                <DailyStreakCard />
+
                 {/* 1. Earner Hub Banner */}
                 <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-5">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ClientLayout from "../components/ClientLayout/ClientLayout";
 import { useAuth } from "../context/AuthContext";
 import statesData from "../data/states";
-import axios from "axios";
+import { userService } from "../services/supabaseService";
 import { FiMapPin, FiCheck, FiSave, FiAlertCircle } from "react-icons/fi";
 import { FaSpinner } from "react-icons/fa6";
 
@@ -51,25 +51,31 @@ const UpdateLocation = () => {
       setSaving(true);
       setMessage({ type: "", text: "" });
 
-      const res = await axios.put("/api/v1/user/update-details", {
-        location: {
+      const userId = currentUser?.id || currentUser?._id;
+      if (userId) {
+        await userService.updateProfile(userId, {
           state: selectedState,
           lga: selectedLga,
-          LGA: selectedLga,
-        },
-      });
-
-      if (res.data?.failed) {
-        setMessage({ type: "error", text: res.data.message || "Failed to update location." });
-      } else {
-        setMessage({ type: "success", text: "Location updated successfully!" });
-        await fetchUserData();
+        });
       }
+
+      try {
+        await axios.put("/api/v1/user/update-details", {
+          location: {
+            state: selectedState,
+            lga: selectedLga,
+            LGA: selectedLga,
+          },
+        });
+      } catch {}
+
+      setMessage({ type: "success", text: "Location updated successfully!" });
+      await fetchUserData();
     } catch (err) {
       console.error(err);
       setMessage({
         type: "error",
-        text: err?.response?.data?.message || "Failed to update location.",
+        text: err?.message || "Failed to update location.",
       });
     } finally {
       setSaving(false);

@@ -42,7 +42,26 @@ const Login = () => {
 
       if (res.failed) {
         setIsLoading(false);
-        return setError(res.message || "Invalid credentials.");
+        const errMsg = res.message || "Invalid credentials.";
+        if (
+          errMsg.toLowerCase().includes("not confirmed") ||
+          errMsg.toLowerCase().includes("verify") ||
+          errMsg.toLowerCase().includes("not verified")
+        ) {
+          sessionStorage.setItem("auth-user-email", formData.email.trim());
+          return setError(
+            <span>
+              {errMsg}{" "}
+              <Link
+                to={`/verify-email?email=${encodeURIComponent(formData.email.trim())}`}
+                className="font-bold underline text-emerald-700 hover:text-emerald-800 ml-1"
+              >
+                Verify email now →
+              </Link>
+            </span>
+          );
+        }
+        return setError(errMsg);
       } else {
         setIsLoading(false);
         setError(null);

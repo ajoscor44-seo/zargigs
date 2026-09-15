@@ -1,6 +1,7 @@
 import React from "react";
 import { useAuth } from "../../context/AuthContext";
 import { FiCheckCircle, FiMapPin, FiUser, FiArrowRight } from "react-icons/fi";
+import { FaAndroid, FaApple, FaMobileScreenButton } from "react-icons/fa6";
 
 const SetLocation = ({
   setActivePage,
@@ -9,6 +10,8 @@ const SetLocation = ({
   setUserLocation,
   selectedGender,
   setSelectedGender,
+  selectedDevice,
+  setSelectedDevice,
   statesData,
 }) => {
   const { currentUser } = useAuth();
@@ -19,6 +22,27 @@ const SetLocation = ({
     statesData?.find((state) => state.name === userLocation?.state)?.lgas?.map(
       (lga) => lga.name
     ) || [];
+
+  const deviceOptions = [
+    {
+      id: "Android",
+      label: "Android",
+      sub: "Google Play Store",
+      icon: <FaAndroid className="text-emerald-500" size={18} />,
+    },
+    {
+      id: "iPhone",
+      label: "iPhone (iOS)",
+      sub: "Apple App Store",
+      icon: <FaApple className="text-slate-800" size={18} />,
+    },
+    {
+      id: "Both",
+      label: "Both",
+      sub: "Android & iPhone",
+      icon: <FaMobileScreenButton className="text-emerald-600" size={18} />,
+    },
+  ];
 
   const handleGenderChange = (e) => {
     setSelectedGender(e.target.value);
@@ -34,6 +58,9 @@ const SetLocation = ({
   const setLocation = () => {
     if (!selectedGender) {
       return setError("Please select your gender.");
+    }
+    if (!selectedDevice) {
+      return setError("Please select your phone operating system (Android or iPhone).");
     }
     if (!userLocation?.state) {
       return setError("Please select your state of residence.");
@@ -56,11 +83,47 @@ const SetLocation = ({
           Welcome, {currentUser?.firstname || "Earner"}!
         </h2>
         <p className="text-[11px] sm:text-xs text-slate-500 max-w-sm mx-auto">
-          Set your gender and location to receive targeted microtasks in your area.
+          Set your device type and location to receive targeted microtasks & app download gigs.
         </p>
       </div>
 
-      <div className="space-y-3 pt-1">
+      <div className="space-y-3.5 pt-1">
+        {/* Device Selection (Android vs iPhone) */}
+        <div>
+          <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+            <span className="flex items-center gap-1">
+              <FaMobileScreenButton size={12} className="text-emerald-600" />
+              <span>What Phone Do You Use?</span>
+            </span>
+            <span className="text-[9px] text-slate-400 font-normal">For targeted app tasks</span>
+          </label>
+
+          <div className="grid grid-cols-3 gap-2">
+            {deviceOptions.map((opt) => {
+              const isSelected = (selectedDevice || "Android") === opt.id;
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setSelectedDevice(opt.id)}
+                  className={`p-2.5 rounded-xl border text-center transition-all flex flex-col items-center justify-center gap-1 cursor-pointer ${
+                    isSelected
+                      ? "border-emerald-500 bg-emerald-50/50 shadow-xs ring-1 ring-emerald-500 text-emerald-950 font-bold"
+                      : "border-slate-200 bg-slate-50 hover:bg-slate-100/70 text-slate-700"
+                  }`}
+                >
+                  <div className="p-1 rounded-lg bg-white shadow-2xs">
+                    {opt.icon}
+                  </div>
+                  <span className="text-xs font-bold leading-tight">{opt.label}</span>
+                  <span className="text-[9px] text-slate-400 leading-none">{opt.sub}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Gender Selection */}
         <div>
           <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1 flex items-center gap-1">
             <FiUser size={12} className="text-emerald-600" />
@@ -79,6 +142,7 @@ const SetLocation = ({
           </select>
         </div>
 
+        {/* Location Selection: State & LGA */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div>
             <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1 flex items-center gap-1">

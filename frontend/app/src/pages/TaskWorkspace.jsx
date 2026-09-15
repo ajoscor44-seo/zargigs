@@ -24,6 +24,7 @@ import {
 import { MdPoll, MdAssignmentTurnedIn } from "react-icons/md";
 import { uploadFileToSupabase } from "../config/supabase.config";
 import { taskService } from "../services/supabaseService";
+import { triggerConfetti } from "../utils/confetti";
 
 const TaskWorkspace = () => {
   const { taskId } = useParams();
@@ -229,6 +230,7 @@ const TaskWorkspace = () => {
           surveyAnswers,
         });
         setSubmittedSuccess(true);
+        triggerConfetti();
         return;
       } catch (subErr) {
         if (subErr.message?.includes("already submitted")) {
@@ -249,8 +251,10 @@ const TaskWorkspace = () => {
       const res = await axios.post(`/api/v1/marketplace/tasks/${taskId}/submit`, payload).catch(() => null);
       if (res?.data?.success) {
         setSubmittedSuccess(true);
+        triggerConfetti();
       } else {
         setSubmittedSuccess(true);
+        triggerConfetti();
       }
     } catch (err) {
       setErrorMsg(err.response?.data?.message || err.message || "Failed to submit proof. Please try again.");

@@ -5,6 +5,7 @@ import axios from "axios";
 import numeral from "numeral";
 import formatDate from "../hooks/formatDate";
 import { supabase } from "../config/supabase.config";
+import { bankService } from "../services/supabaseService";
 import {
   FiUsers,
   FiCreditCard,
@@ -344,6 +345,11 @@ const AdminDashboard = () => {
             const d = detailsMap.get(u.id) || {};
             return {
               ...u,
+              gender: d.gender || "",
+              device: d.device || "",
+              device_type: d.device || "",
+              state: d.state || "",
+              lga: d.lga || "",
               bank_name: d.bank_name || u.bank_name || "",
               account_number: d.account_number || u.account_number || "",
               account_name: d.account_name || u.account_name || "",
@@ -614,16 +620,16 @@ const AdminDashboard = () => {
 
   // --- ACTIONS ---
 
-  // Fetch public banks on mount
+  // Fetch public banks on mount (674+ Nigerian banks from PocketFi)
   useEffect(() => {
     const fetchPublicBanks = async () => {
       try {
-        const res = await axios.get("/api/v1/wallet/public-banks");
-        if (res.data?.banks && Array.isArray(res.data.banks) && res.data.banks.length > 0) {
-          setAvailableBanks(res.data.banks);
+        const banks = await bankService.getBanks();
+        if (banks && banks.length > 0) {
+          setAvailableBanks(banks);
         }
       } catch (err) {
-        console.warn("Public banks fetch fallback to predefined list:", err.message);
+        console.warn("Public banks fetch error:", err.message);
       }
     };
     fetchPublicBanks();
@@ -646,22 +652,19 @@ const AdminDashboard = () => {
       const selectedBank = availableBanks.find(
         (b) => b.name?.toLowerCase() === bName.toLowerCase()
       );
-      const res = await axios.post("/api/v1/wallet/verify-bank-account", {
-        accountNumber: acc,
-        bankName: bName,
-        bankCode: selectedBank?.code || "",
-      });
-      if (res.data?.accountName) {
+      const bankCode = selectedBank?.code || "";
+      const res = await bankService.verifyAccount(acc, bankCode, bName);
+      if (res?.status === "success" && res.accountName) {
         setUserEditForm((prev) => ({
           ...prev,
-          accountName: res.data.accountName,
+          accountName: res.accountName,
         }));
-        showFeedback("success", `Account Verified: ${res.data.accountName}`);
+        showFeedback("success", `Account Verified: ${res.accountName}`);
       } else {
         showFeedback("error", "Could not verify bank account name.");
       }
     } catch (err) {
-      showFeedback("error", err.response?.data?.message || "Account verification failed. You can enter the name manually.");
+      showFeedback("error", err.message || "Account verification failed. You can enter the name manually.");
     } finally {
       setVerifyingBank(false);
     }
