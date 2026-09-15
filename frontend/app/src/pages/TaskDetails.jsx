@@ -8,6 +8,7 @@ import { uploadFileToSupabase } from "../config/supabase.config";
 import formatDate from "../hooks/formatDate";
 import CopyToClipboard from "../hooks/CopyToClipboard";
 import { useAuth } from "../context/AuthContext";
+import { taskService } from "../services/supabaseService";
 import DownloadPermissionChecker from "../components/CheckPermissions/CheckPermissions";
 import { triggerConfetti } from "../utils/confetti";
 import {
@@ -196,6 +197,16 @@ const TaskDetails = () => {
     if (status?.toLowerCase() !== "pending") return;
     setLoading(true);
     try {
+      const taskId = id || taskDetails?.id || taskDetails?.parentId;
+      if (taskId && userRecordId) {
+        await taskService.cancelTask({
+          taskId: taskId,
+          userId: userRecordId,
+          taskType: taskDetails?.taskType || type || "advert",
+          reason: "User cancelled task from task details view",
+        });
+      }
+
       await axios.delete(
         `/api/v1/tasks/cancel-task/${id || taskDetails?.id}?type=${
           taskDetails?.taskType || type
@@ -203,12 +214,13 @@ const TaskDetails = () => {
         {
           headers: userRecordId ? { "x-user-id": userRecordId } : {},
         }
-      );
+      ).catch(() => null);
+
       setLoading(false);
       return history.push(`/earn/${slug}`);
     } catch (err) {
       setLoading(false);
-      setError(err?.response?.data?.message || "Failed to cancel task.");
+      setError(err?.response?.data?.message || err?.message || "Failed to cancel task.");
     }
   };
 

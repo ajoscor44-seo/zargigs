@@ -45,7 +45,7 @@ const Footer = () => {
                 <FaInstagram size={16} />
               </a>
               <a
-                href="https://wa.link/l2u70b"
+                href="https://wa.me/2349027662488"
                 target="_blank"
                 rel="noreferrer"
                 className="w-9 h-9 rounded-lg bg-slate-800 hover:bg-emerald-600 hover:text-white flex items-center justify-center text-slate-400 transition-colors"
@@ -115,8 +115,8 @@ const Footer = () => {
             <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">Help & Support</h3>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <a href="https://wa.link/l2u70b" target="_blank" rel="noreferrer" className="hover:text-emerald-400 transition-colors">
-                  WhatsApp Support
+                <a href="https://wa.me/2349027662488" target="_blank" rel="noreferrer" className="hover:text-emerald-400 transition-colors">
+                  WhatsApp Support (090 2766 2488)
                 </a>
               </li>
               <li>

@@ -266,6 +266,14 @@ const TaskWorkspace = () => {
   const handleReleaseSlot = async () => {
     if (window.confirm("Are you sure you want to cancel this task? Your slot will be released to other workers.")) {
       try {
+        if (taskId && currentUser?.id) {
+          await taskService.cancelTask({
+            taskId: taskId,
+            userId: currentUser.id,
+            taskType: task?.category || "marketplace",
+            reason: "Worker cancelled task in workspace and released reservation slot",
+          });
+        }
         if (task?.activeReservation?.id) {
           await axios.post(`/api/v1/marketplace/reservations/${task.activeReservation.id}/release`).catch(() => null);
         }

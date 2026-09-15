@@ -20,7 +20,8 @@ serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    const { userId, membershipFee = 1000 } = await req.json();
+    const body = await req.json();
+    const { userId, type = "vip_activation", amount = 1000 } = body;
 
     if (!userId) {
       return new Response(
@@ -29,21 +30,21 @@ serve(async (req) => {
       );
     }
 
-    // 1. Get the newly activated user
-    const { data: newUser, error: userErr } = await supabase
+    // 1. Get the newly activated/action user
+    const { data: activeUser, error: userErr } = await supabase
       .from("users")
       .select("id, username, firstname, lastname, referred_by")
       .eq("id", userId)
       .single();
 
-    if (userErr || !newUser) {
+    if (userErr || !activeUser) {
       return new Response(
         JSON.stringify({ success: false, message: "User not found." }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const referrerUsername = newUser.referred_by;
+    const referrerUsername = activeUser.referred_by;
 
     // Check if user was referred by a valid member
     if (!referrerUsername || referrerUsername === "admin" || referrerUsername === "logical") {
@@ -56,7 +57,7 @@ serve(async (req) => {
     // 2. Fetch the referrer
     const { data: referrer, error: refErr } = await supabase
       .from("users")
-      .select("id, username, balance")
+      .select("id, username, email, balance")
       .ilike("username", referrerUsername)
       .maybeSingle();
 
@@ -67,8 +68,38 @@ serve(async (req) => {
       );
     }
 
-    // 3. Compute 60% Referral Bonus
-    const bonus = Number(membershipFee) * 0.6; // 60% instant commission (₦600 on ₦1,000 fee)
+    // 3. Compute Commission based on type
+    let bonus = 0;
+    let desc = "";
+    let notifTitle = "";
+    let notifMsg = "";
+
+    if (type === "first_withdrawal") {
+      // 10% of 1st withdrawal
+      bonus = Math.round(Number(amount) * 0.1);
+      desc = `10% Referral commission from @${activeUser.username}'s first withdrawal of ₦${Number(amount).toLocaleString()}`;
+      notifTitle = "10% Referral Withdrawal Bonus! 💸";
+      notifMsg = `Great news! Your referral @${activeUser.username} made their first withdrawal. You earned ₦${bonus.toLocaleString()} commission!`;
+    } else if (type === "ad_spend") {
+      // 5% of first ad campaign spend
+      bonus = Math.round(Number(amount) * 0.05);
+      desc = `5% Referral commission from @${activeUser.username}'s first ad campaign of ₦${Number(amount).toLocaleString()}`;
+      notifTitle = "5% Advertiser Referral Bonus! 📢";
+      notifMsg = `Your referral @${activeUser.username} launched their first ad campaign. You earned ₦${bonus.toLocaleString()}!`;
+    } else {
+      // Default: 60% VIP Membership Activation (₦600 on ₦1,000 fee)
+      bonus = Math.round(Number(amount) * 0.6);
+      desc = `60% Referral commission from @${activeUser.username}'s VIP Membership activation`;
+      notifTitle = "60% VIP Referral Bonus Received! 🎁";
+      notifMsg = `Congratulations! Your friend @${activeUser.username} activated their VIP Membership. ₦${bonus.toLocaleString()} has been added to your wallet!`;
+    }
+
+    if (bonus <= 0) {
+      return new Response(
+        JSON.stringify({ success: true, message: "Bonus amount is zero." }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     // 4. Credit Referrer Wallet
     const currentRefBalance = Number(referrer.balance || 0);
@@ -102,16 +133,34 @@ serve(async (req) => {
       amount: bonus,
       type: "referral_bonus",
       status: "completed",
-      description: `60% Referral commission from @${newUser.username}'s VIP Membership activation`,
+      description: desc,
     });
 
-    // 6. Notify Referrer
+    // 6. Notify Referrer in-app
     await supabase.from("notifications").insert({
       user_id: referrer.id,
-      title: "60% Referral Bonus Received! 🎁",
-      message: `Congratulations! Your friend @${newUser.username} just activated their VIP Membership. ₦${bonus.toFixed(2)} has been deposited into your wallet!`,
+      title: notifTitle,
+      message: notifMsg,
       is_read: false,
     });
+
+    // 7. Send notification email if email function is available
+    try {
+      if (referrer.email) {
+        await supabase.functions.invoke("send-email", {
+          body: {
+            to: referrer.email,
+            template: "referral_earned",
+            data: {
+              amount: bonus,
+              referredUsername: activeUser.username,
+            },
+          },
+        });
+      }
+    } catch {
+      // Non-blocking
+    }
 
     return new Response(
       JSON.stringify({
@@ -129,3 +178,4 @@ serve(async (req) => {
     );
   }
 });
+

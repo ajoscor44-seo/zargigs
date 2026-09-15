@@ -119,7 +119,7 @@ const HelpSupport = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           {/* Channel 1: WhatsApp */}
           <a
-            href="https://wa.link/l2u70b"
+            href="https://wa.me/2349027662488?text=Hello%20DocsZar%20Support%2C%20I%20need%20assistance"
             target="_blank"
             rel="noreferrer"
             className="bg-white hover:bg-emerald-50/40 border border-slate-200/80 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-xs transition-all flex items-center justify-between gap-3 group cursor-pointer"
@@ -136,7 +136,7 @@ const HelpSupport = () => {
                   <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                 </div>
                 <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
-                  Fastest response • Available 24/7
+                  090 2766 2488 • Available 24/7
                 </p>
               </div>
             </div>

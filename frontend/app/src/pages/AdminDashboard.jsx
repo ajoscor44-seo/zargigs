@@ -225,13 +225,29 @@ const AdminDashboard = () => {
 
   // Platform Settings
   const [adminSettings, setAdminSettings] = useState({
+    id: "",
     appName: "DocsZar",
     membershipFee: 1000,
     withdrawalCharges: 50,
-    minWithdrawal: 1000,
+    minWithdrawal: 300,
     referralBonus: 600,
+    supportPhone: "090 2766 2488",
+    supportEmail: "contactdocszar@gmail.com",
+    fundingBankName: "Moniepoint MFB",
+    fundingAccountNumber: "8100000000",
+    fundingAccountName: "DOCSZAR ENTERPRISE",
   });
   const [savingSettings, setSavingSettings] = useState(false);
+
+  // Quick Wallet Credit/Debit Tool
+  const [walletModalUser, setWalletModalUser] = useState(null);
+  const [walletAdjustment, setWalletAdjustment] = useState({
+    type: "credit",
+    wallet: "balance",
+    amount: "",
+    reason: "Admin Adjustment",
+  });
+  const [adjustingWallet, setAdjustingWallet] = useState(false);
 
   // Announcements
   const [announcements, setAnnouncements] = useState([]);
@@ -488,15 +504,38 @@ const AdminDashboard = () => {
   const fetchAdminSettings = useCallback(async () => {
     setTabLoading((prev) => ({ ...prev, settings: true }));
     try {
-      const res = await axios.get("/api/v1/admin-data");
-      const s = res.data?.[0] || res.data || {};
-      setAdminSettings({
-        appName: s.appName || s.app_name || "DocsZar",
-        membershipFee: s.membershipFee || s.membership_fee || 1000,
-        withdrawalCharges: s.withdrawalCharges || s.min_withdrawal || 50,
-        minWithdrawal: s.minWithdrawal || s.min_withdrawal || 1000,
-        referralBonus: s.referralBonus || s.referral_bonus || 600,
-      });
+      const { data: sData } = await supabase
+        .from("admin_settings")
+        .select("*")
+        .limit(1)
+        .maybeSingle();
+
+      if (sData) {
+        setAdminSettings({
+          id: sData.id,
+          appName: sData.app_name || "DocsZar",
+          membershipFee: Number(sData.membership_fee) || 1000,
+          withdrawalCharges: Number(sData.withdrawal_charges) || 50,
+          minWithdrawal: Number(sData.min_withdrawal) || 300,
+          referralBonus: Number(sData.referral_bonus) || 600,
+          supportPhone: sData.support_phone || "090 2766 2488",
+          supportEmail: sData.support_email || "contactdocszar@gmail.com",
+          fundingBankName: sData.funding_bank_name || "Moniepoint MFB",
+          fundingAccountNumber: sData.funding_account_number || "8100000000",
+          fundingAccountName: sData.funding_account_name || "DOCSZAR ENTERPRISE",
+        });
+      } else {
+        const res = await axios.get("/api/v1/admin-data");
+        const s = res.data?.[0] || res.data || {};
+        setAdminSettings((prev) => ({
+          ...prev,
+          appName: s.appName || s.app_name || prev.appName,
+          membershipFee: s.membershipFee || s.membership_fee || prev.membershipFee,
+          withdrawalCharges: s.withdrawalCharges || prev.withdrawalCharges,
+          minWithdrawal: s.minWithdrawal || s.min_withdrawal || prev.minWithdrawal,
+          referralBonus: s.referralBonus || s.referral_bonus || prev.referralBonus,
+        }));
+      }
     } catch (err) {
       console.warn("fetchAdminSettings error:", err.message);
     } finally {
@@ -758,6 +797,9 @@ const AdminDashboard = () => {
           role: userEditForm.role,
           is_member: Boolean(userEditForm.isMember),
           is_banned: Boolean(userEditForm.isBanned),
+          is_email_verified: Boolean(userEditForm.isEmailVerified),
+          is_nin_verified: Boolean(userEditForm.isNINVerified),
+          updated_at: new Date().toISOString(),
         })
         .eq("id", userEditForm.id);
 
@@ -799,6 +841,92 @@ const AdminDashboard = () => {
       showFeedback("error", err.response?.data?.message || err.message || "Failed to update user profile");
     } finally {
       setSavingUser(false);
+    }
+  };
+
+  // Dedicated Wallet Credit / Debit Modal Handler
+  const openWalletModal = (user) => {
+    setWalletModalUser(user);
+    setWalletAdjustment({
+      type: "credit",
+      wallet: "balance",
+      amount: "",
+      reason: "Admin Wallet Adjustment",
+    });
+  };
+
+  const handleAdjustWallet = async (e) => {
+    e.preventDefault();
+    if (!walletModalUser) return;
+    const amt = Number(walletAdjustment.amount);
+    if (!amt || amt <= 0) {
+      showFeedback("error", "Please enter a valid positive amount in Naira (₦).");
+      return;
+    }
+
+    try {
+      setAdjustingWallet(true);
+      const userId = walletModalUser.id || walletModalUser._id;
+      const { data: freshUser, error: fetchErr } = await supabase
+        .from("users")
+        .select("balance, pending_balance")
+        .eq("id", userId)
+        .single();
+
+      if (fetchErr || !freshUser) {
+        throw new Error("Could not fetch user record from database.");
+      }
+
+      const currentBal = Number(freshUser.balance) || 0;
+      const currentPending = Number(freshUser.pending_balance) || 0;
+
+      let newBal = currentBal;
+      let newPending = currentPending;
+
+      if (walletAdjustment.wallet === "balance") {
+        newBal = walletAdjustment.type === "credit" ? currentBal + amt : Math.max(0, currentBal - amt);
+      } else {
+        newPending = walletAdjustment.type === "credit" ? currentPending + amt : Math.max(0, currentPending - amt);
+      }
+
+      const { error: updateErr } = await supabase
+        .from("users")
+        .update({
+          balance: newBal,
+          pending_balance: newPending,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", userId);
+
+      if (updateErr) throw updateErr;
+
+      // Log transaction record
+      try {
+        await supabase.from("transactions").insert({
+          user_id: userId,
+          amount: amt,
+          type: walletAdjustment.type === "credit" ? "credit" : "debit",
+          category: "admin_adjustment",
+          status: "successful",
+          reference: `ADM-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          description: `Admin ${walletAdjustment.type.toUpperCase()}: ${walletAdjustment.reason || "Wallet Adjustment"} (Previous: ₦${currentBal.toLocaleString()} -> New: ₦${newBal.toLocaleString()})`,
+          created_at: new Date().toISOString(),
+        });
+      } catch (txErr) {
+        console.warn("Transaction log error (non-fatal):", txErr);
+      }
+
+      showFeedback(
+        "success",
+        `Successfully ${walletAdjustment.type === "credit" ? "credited ₦" : "debited ₦"}${amt.toLocaleString()} to @${walletModalUser.username}'s ${walletAdjustment.wallet === "balance" ? "Available Balance" : "Pending Earnings"}!`
+      );
+      setWalletModalUser(null);
+      await fetchUsers();
+      await fetchAdminOverview();
+    } catch (err) {
+      showFeedback("error", err.message || "Failed to adjust user wallet");
+    } finally {
+      setAdjustingWallet(false);
     }
   };
 
@@ -1043,33 +1171,83 @@ const AdminDashboard = () => {
     }
   };
 
-  // Price Config Update
+  // Price Config Update with Direct Supabase Persistence
   const handleSavePriceItem = async (e) => {
     e.preventDefault();
     if (!editingPriceItem) return;
     try {
-      await axios.put("/api/v1/admin/pricing", editingPriceItem, {
-        headers: { "x-user-id": currentUser?.id },
-      });
-      showFeedback("success", `Pricing tier "${editingPriceItem.title}" updated!`);
+      const table = editingPriceItem.table || "create_advert_config";
+      const payload = {
+        title: editingPriceItem.title,
+        price: Number(editingPriceItem.price) || Number(editingPriceItem.fee) || 0,
+        fee: Number(editingPriceItem.fee) || Number(editingPriceItem.price) || 0,
+        description: editingPriceItem.description || "",
+      };
+
+      if (editingPriceItem.id) {
+        await supabase.from(table).update(payload).eq("id", editingPriceItem.id);
+      } else {
+        await supabase.from(table).insert(payload);
+      }
+
+      try {
+        await axios.put("/api/v1/admin/pricing", editingPriceItem, {
+          headers: { "x-user-id": currentUser?.id },
+        });
+      } catch (apiErr) {
+        // Supabase already updated successfully
+      }
+
+      showFeedback("success", `Pricing rate "${editingPriceItem.title}" updated in database!`);
       setEditingPriceItem(null);
       await fetchPricing();
     } catch (err) {
-      showFeedback("error", "Failed to update pricing item");
+      showFeedback("error", err.message || "Failed to update pricing item");
     }
   };
 
-  // Platform Settings Save
+  // Platform Settings Save with Direct Supabase Persistence
   const handleSaveSettings = async (e) => {
     e.preventDefault();
     try {
       setSavingSettings(true);
-      await axios.put("/api/v1/admin", adminSettings, {
-        headers: { "x-user-id": currentUser?.id },
-      });
-      showFeedback("success", "Admin platform settings updated successfully!");
+      const payload = {
+        app_name: adminSettings.appName || "DocsZar",
+        membership_fee: Number(adminSettings.membershipFee) || 1000,
+        min_withdrawal: Number(adminSettings.minWithdrawal) || 300,
+        withdrawal_charges: Number(adminSettings.withdrawalCharges) || 50,
+        referral_bonus: Number(adminSettings.referralBonus) || 600,
+        support_phone: adminSettings.supportPhone || "090 2766 2488",
+        support_email: adminSettings.supportEmail || "contactdocszar@gmail.com",
+        funding_bank_name: adminSettings.fundingBankName || "Moniepoint MFB",
+        funding_account_number: adminSettings.fundingAccountNumber || "8100000000",
+        funding_account_name: adminSettings.fundingAccountName || "DOCSZAR ENTERPRISE",
+        updated_at: new Date().toISOString(),
+      };
+
+      if (adminSettings.id) {
+        await supabase.from("admin_settings").update(payload).eq("id", adminSettings.id);
+      } else {
+        const { data: first } = await supabase.from("admin_settings").select("id").limit(1).maybeSingle();
+        if (first?.id) {
+          await supabase.from("admin_settings").update(payload).eq("id", first.id);
+        } else {
+          await supabase.from("admin_settings").insert(payload);
+        }
+      }
+
+      try {
+        await axios.put("/api/v1/admin", adminSettings, {
+          headers: { "x-user-id": currentUser?.id },
+        });
+      } catch (apiErr) {
+        // Handled via Supabase
+      }
+
+      showFeedback("success", "Platform settings, pricing, support info & settlement accounts updated successfully!");
+      await fetchAdminSettings();
     } catch (err) {
-      showFeedback("error", "Failed to save platform settings");
+      showFeedback("error", err.message || "Failed to save platform settings");
     } finally {
       setSavingSettings(false);
     }
@@ -1505,13 +1683,25 @@ const AdminDashboard = () => {
                               </span>
                             </td>
                             <td className="py-3.5 px-4 text-right">
-                              <button
-                                onClick={() => openUserEditor(u)}
-                                className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer flex items-center gap-1.5 ml-auto"
-                              >
-                                <FiEdit size={12} />
-                                <span>Edit Full Profile</span>
-                              </button>
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => openWalletModal(u)}
+                                  className="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300/80 font-bold text-xs shadow-2xs transition-colors cursor-pointer flex items-center gap-1.5"
+                                  title="Quick Credit / Debit Wallet"
+                                >
+                                  <FaWallet size={11} className="text-emerald-600" />
+                                  <span>Credit / Debit</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => openUserEditor(u)}
+                                  className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
+                                >
+                                  <FiEdit size={12} />
+                                  <span>Edit Full Profile</span>
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -1533,7 +1723,7 @@ const AdminDashboard = () => {
                   <h3 className="text-lg font-black text-slate-900">
                     Edit User: @{userEditForm.username}
                   </h3>
-                  <p className="text-xs text-slate-400">Modify user profile, wallet balance, and permissions</p>
+                  <p className="text-xs text-slate-400">Modify user profile, wallet balance, bank details, and roles</p>
                 </div>
                 <button
                   onClick={() => setEditingUser(null)}
@@ -1781,8 +1971,8 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
-                {/* Role, Member, Ban Switches */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                {/* Role, Member, Ban & Verification Switches */}
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2">
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">Role</label>
                     <select
@@ -1818,6 +2008,18 @@ const AdminDashboard = () => {
                       <option value="true">Banned / Blocked</option>
                     </select>
                   </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">NIN / Verification</label>
+                    <select
+                      value={userEditForm.isNINVerified ? "true" : "false"}
+                      onChange={(e) => setUserEditForm({ ...userEditForm, isNINVerified: e.target.value === "true" })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:border-emerald-500 outline-none"
+                    >
+                      <option value="true">Verified (NIN OK)</option>
+                      <option value="false">Unverified</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
@@ -1835,6 +2037,168 @@ const AdminDashboard = () => {
                   >
                     {savingUser ? <FaSpinner className="animate-spin" size={14} /> : <FiCheck size={14} />}
                     <span>Save Changes</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* DEDICATED WALLET CREDIT / DEBIT TOOL MODAL */}
+        {walletModalUser && (
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl space-y-5 border border-slate-100 animate-fadeIn">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                    <FaWallet size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-slate-900">
+                      Credit or Debit Wallet
+                    </h3>
+                    <p className="text-xs text-slate-500 font-medium">
+                      User: <strong>@{walletModalUser.username}</strong>
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setWalletModalUser(null)}
+                  className="p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 cursor-pointer"
+                >
+                  <FiX size={18} />
+                </button>
+              </div>
+
+              {/* Current Balances Card */}
+              <div className="p-4 rounded-2xl bg-slate-900 text-white grid grid-cols-2 gap-3 text-center">
+                <div className="p-2 rounded-xl bg-slate-800/80">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Available Balance</span>
+                  <span className="text-sm sm:text-base font-black text-emerald-400 font-mono">
+                    ₦{numeral(walletModalUser.balance || 0).format("0,0.00")}
+                  </span>
+                </div>
+                <div className="p-2 rounded-xl bg-slate-800/80">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Pending Earnings</span>
+                  <span className="text-sm sm:text-base font-black text-amber-400 font-mono">
+                    ₦{numeral(walletModalUser.pending_balance || walletModalUser.pendingBalance || 0).format("0,0.00")}
+                  </span>
+                </div>
+              </div>
+
+              <form onSubmit={handleAdjustWallet} className="space-y-4">
+                {/* Action Type Toggle */}
+                <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-2xl">
+                  <button
+                    type="button"
+                    onClick={() => setWalletAdjustment({ ...walletAdjustment, type: "credit" })}
+                    className={`py-2 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${
+                      walletAdjustment.type === "credit"
+                        ? "bg-emerald-600 text-white shadow-xs"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    + Credit (Add Money)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setWalletAdjustment({ ...walletAdjustment, type: "debit" })}
+                    className={`py-2 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${
+                      walletAdjustment.type === "debit"
+                        ? "bg-rose-600 text-white shadow-xs"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    - Debit (Deduct Money)
+                  </button>
+                </div>
+
+                {/* Target Wallet Select */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Select Target Wallet
+                  </label>
+                  <select
+                    value={walletAdjustment.wallet}
+                    onChange={(e) => setWalletAdjustment({ ...walletAdjustment, wallet: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:border-emerald-500 outline-none"
+                  >
+                    <option value="balance">Main Available Balance (Withdraw-able)</option>
+                    <option value="pending_balance">Pending Earnings Balance</option>
+                  </select>
+                </div>
+
+                {/* Amount Input */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Amount (₦)
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    step="any"
+                    required
+                    placeholder="e.g. 500, 1000, 5000"
+                    value={walletAdjustment.amount}
+                    onChange={(e) => setWalletAdjustment({ ...walletAdjustment, amount: e.target.value })}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-black font-mono text-slate-900 focus:bg-white focus:border-emerald-500 outline-none"
+                  />
+                  {/* Quick Preset Buttons */}
+                  <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                    {[500, 1000, 2000, 5000, 10000].map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setWalletAdjustment({ ...walletAdjustment, amount: String(preset) })}
+                        className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-bold font-mono transition-colors cursor-pointer"
+                      >
+                        +₦{preset.toLocaleString()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Reason Note */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Admin Reason / Note (Visible in Transaction History)
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Manual Bank Deposit Confirmed / Compensation / Task Payout"
+                    value={walletAdjustment.reason}
+                    onChange={(e) => setWalletAdjustment({ ...walletAdjustment, reason: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:border-emerald-500 outline-none"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2.5 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setWalletModalUser(null)}
+                    className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={adjustingWallet || !walletAdjustment.amount}
+                    className={`px-6 py-2.5 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-50 ${
+                      walletAdjustment.type === "credit"
+                        ? "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20"
+                        : "bg-rose-600 hover:bg-rose-700 shadow-rose-600/20"
+                    }`}
+                  >
+                    {adjustingWallet ? (
+                      <FaSpinner className="animate-spin" size={14} />
+                    ) : (
+                      <FiCheck size={14} />
+                    )}
+                    <span>
+                      {walletAdjustment.type === "credit" ? "Credit Wallet Now" : "Debit Wallet Now"}
+                    </span>
                   </button>
                 </div>
               </form>
@@ -2820,66 +3184,153 @@ const AdminDashboard = () => {
 
         {/* 8. PLATFORM SETTINGS */}
         {activeTab === "settings" && (
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-xs max-w-2xl space-y-6">
+          <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-xs max-w-3xl space-y-6">
             <div>
-              <h3 className="font-extrabold text-slate-900 text-lg">Master Platform Pricing & Fees</h3>
-              <p className="text-xs text-slate-400">Control system-wide membership costs, payout processing charges, and referral bonuses</p>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-black border border-emerald-200 mb-1.5">
+                <span>⚙️ System Configuration</span>
+              </div>
+              <h3 className="font-extrabold text-slate-900 text-xl">Platform Settings, Rates & Settlement</h3>
+              <p className="text-xs text-slate-400">Customize system-wide limits, fees, support phone numbers, and official settlement bank accounts</p>
             </div>
 
-            <form onSubmit={handleSaveSettings} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Platform Brand Name</label>
-                <input
-                  type="text"
-                  value={adminSettings.appName}
-                  onChange={(e) => setAdminSettings({ ...adminSettings, appName: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:bg-white focus:border-emerald-500 outline-none transition-all"
-                />
+            <form onSubmit={handleSaveSettings} className="space-y-6">
+              {/* Section 1: Financial & Platform Defaults */}
+              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-4">
+                <span className="text-xs font-black text-slate-900 uppercase tracking-wider block">
+                  💳 Financial Rules & Pricing Defaults
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Platform Brand Name</label>
+                    <input
+                      type="text"
+                      value={adminSettings.appName || ""}
+                      onChange={(e) => setAdminSettings({ ...adminSettings, appName: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:border-emerald-500 outline-none transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Membership Activation Fee (₦)</label>
+                    <input
+                      type="number"
+                      value={adminSettings.membershipFee || 0}
+                      onChange={(e) => setAdminSettings({ ...adminSettings, membershipFee: Number(e.target.value) })}
+                      className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:border-emerald-500 outline-none font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Minimum Withdrawal Limit (₦)</label>
+                    <input
+                      type="number"
+                      value={adminSettings.minWithdrawal || 300}
+                      onChange={(e) => setAdminSettings({ ...adminSettings, minWithdrawal: Number(e.target.value) })}
+                      className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:border-emerald-500 outline-none font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Withdrawal Fee / Charges (₦)</label>
+                    <input
+                      type="number"
+                      value={adminSettings.withdrawalCharges || 0}
+                      onChange={(e) => setAdminSettings({ ...adminSettings, withdrawalCharges: Number(e.target.value) })}
+                      className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:border-emerald-500 outline-none font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Referral VIP Bonus (₦)</label>
+                    <input
+                      type="number"
+                      value={adminSettings.referralBonus || 0}
+                      onChange={(e) => setAdminSettings({ ...adminSettings, referralBonus: Number(e.target.value) })}
+                      className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:border-emerald-500 outline-none font-mono"
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Membership Activation Fee (₦)</label>
-                  <input
-                    type="number"
-                    value={adminSettings.membershipFee}
-                    onChange={(e) => setAdminSettings({ ...adminSettings, membershipFee: Number(e.target.value) })}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:bg-white focus:border-emerald-500 outline-none transition-all font-mono"
-                  />
-                  <p className="text-[11px] text-slate-400 mt-1">One-time VIP earner activation cost</p>
-                </div>
+              {/* Section 2: Official Support Contacts */}
+              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-4">
+                <span className="text-xs font-black text-slate-900 uppercase tracking-wider block">
+                  📞 Official Support & WhatsApp Contacts
+                </span>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Withdrawal Fee / Charges (₦)</label>
-                  <input
-                    type="number"
-                    value={adminSettings.withdrawalCharges}
-                    onChange={(e) => setAdminSettings({ ...adminSettings, withdrawalCharges: Number(e.target.value) })}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:bg-white focus:border-emerald-500 outline-none transition-all font-mono"
-                  />
-                  <p className="text-[11px] text-slate-400 mt-1">Deducted per payout request</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Support Phone / WhatsApp Number</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 090 2766 2488"
+                      value={adminSettings.supportPhone || ""}
+                      onChange={(e) => setAdminSettings({ ...adminSettings, supportPhone: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:border-emerald-500 outline-none font-mono"
+                    />
+                    <p className="text-[10px] text-slate-400 mt-1">Displayed on Contact Us, Help Desk & WhatsApp links</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Support Email Address</label>
+                    <input
+                      type="email"
+                      placeholder="e.g. contactdocszar@gmail.com"
+                      value={adminSettings.supportEmail || ""}
+                      onChange={(e) => setAdminSettings({ ...adminSettings, supportEmail: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:border-emerald-500 outline-none"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Minimum Withdrawal Limit (₦)</label>
-                  <input
-                    type="number"
-                    value={adminSettings.minWithdrawal}
-                    onChange={(e) => setAdminSettings({ ...adminSettings, minWithdrawal: Number(e.target.value) })}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:bg-white focus:border-emerald-500 outline-none transition-all font-mono"
-                  />
+              {/* Section 3: Official Settlement Account for Manual Funding */}
+              <div className="p-5 rounded-2xl bg-emerald-50/50 border border-emerald-200/80 space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-emerald-950 uppercase tracking-wider block">
+                    🏛️ Official Settlement Bank Account (Manual Deposits)
+                  </span>
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                    Live On Deposit Page
+                  </span>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Referral VIP Bonus (₦)</label>
-                  <input
-                    type="number"
-                    value={adminSettings.referralBonus}
-                    onChange={(e) => setAdminSettings({ ...adminSettings, referralBonus: Number(e.target.value) })}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:bg-white focus:border-emerald-500 outline-none transition-all font-mono"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-emerald-900 mb-1.5">Bank Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Moniepoint MFB"
+                      value={adminSettings.fundingBankName || ""}
+                      onChange={(e) => setAdminSettings({ ...adminSettings, fundingBankName: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-white border border-emerald-300 rounded-xl text-xs font-bold text-slate-900 focus:border-emerald-600 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-emerald-900 mb-1.5">Account Number</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 8100000000"
+                      value={adminSettings.fundingAccountNumber || ""}
+                      onChange={(e) => setAdminSettings({ ...adminSettings, fundingAccountNumber: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-white border border-emerald-300 rounded-xl text-xs font-black text-slate-900 focus:border-emerald-600 outline-none font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-emerald-900 mb-1.5">Account Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. DOCSZAR ENTERPRISE"
+                      value={adminSettings.fundingAccountName || ""}
+                      onChange={(e) => setAdminSettings({ ...adminSettings, fundingAccountName: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-white border border-emerald-300 rounded-xl text-xs font-bold text-slate-900 focus:border-emerald-600 outline-none"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -2889,7 +3340,7 @@ const AdminDashboard = () => {
                 className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-black rounded-2xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer text-sm disabled:opacity-50"
               >
                 {savingSettings ? <FaSpinner className="animate-spin" size={16} /> : <FiCheck size={16} />}
-                <span>Save Platform Settings</span>
+                <span>Save Platform Settings & Settlement Info</span>
               </button>
             </form>
           </div>

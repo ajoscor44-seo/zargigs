@@ -115,7 +115,7 @@ function App() {
             <PrivateRoute path="/user-details" component={UserDetails} />
             <PrivateRoute path="/fund-wallet" component={FundWallets} />
             <PrivateRoute path="/fundings/:id" component={FundingDetails} />
-            <VerifiedMemberPrivateRoute
+            <PrivateRoute
               path="/withdraw"
               component={Withdrawal}
             />

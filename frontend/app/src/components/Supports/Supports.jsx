@@ -5,7 +5,7 @@ import { FiChevronRight } from "react-icons/fi";
 const Supports = () => {
   return (
     <a
-      href="https://wa.link/l2u70b"
+      href="https://wa.me/2349027662488?text=Hello%20DocsZar%20Support%2C%20I%20need%20assistance"
       target="_blank"
       rel="noreferrer"
       className="bg-white hover:bg-emerald-50/50 rounded-3xl p-6 shadow-sm border border-slate-100/80 transition-all flex items-center justify-between group cursor-pointer"
@@ -16,7 +16,7 @@ const Supports = () => {
         </div>
         <div>
           <h3 className="font-bold text-base text-slate-900 group-hover:text-emerald-700 transition-colors">
-            Official WhatsApp Live Desk
+            Official WhatsApp Live Desk (090 2766 2488)
           </h3>
           <p className="text-xs text-slate-400 mt-0.5">
             Tap to connect immediately with a verified customer specialist

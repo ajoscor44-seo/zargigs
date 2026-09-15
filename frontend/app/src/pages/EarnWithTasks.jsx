@@ -12,6 +12,7 @@ import { FaSpinner } from "react-icons/fa6";
 import NoData from "../components/NoData/NoData";
 import { RiErrorWarningFill } from "react-icons/ri";
 import { useAuth } from "../context/AuthContext";
+import { taskService } from "../services/supabaseService";
 
 const EarnWithTasks = () => {
   const { advertEarner, engagementEarner, currentUser } = useAuth();
@@ -179,6 +180,16 @@ const EarnWithTasks = () => {
     if (status?.toLowerCase() !== "pending") return;
     try {
       setLoading(true);
+
+      if (generatedTask?.id && currentUser?.id) {
+        await taskService.cancelTask({
+          taskId: generatedTask.id,
+          userId: currentUser.id,
+          taskType: taskType || "advert",
+          reason: "User cancelled pending task from generation queue",
+        });
+      }
+
       const queryParams = new URLSearchParams({
         type: taskType || "advert",
         platform: platformName || "whatsapp",
@@ -190,12 +201,13 @@ const EarnWithTasks = () => {
           "x-user-id": currentUser?.id,
         },
         timeout: 8000,
-      });
+      }).catch(() => null);
     } catch (err) {
       console.warn("cancelGeneratedTask error:", err);
     } finally {
       setGeneratedTask(null);
       setLoading(false);
+      getAllTasks();
     }
   };
 

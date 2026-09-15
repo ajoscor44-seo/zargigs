@@ -167,17 +167,52 @@ serve(async (req) => {
       .update({ balance: newBalance })
       .eq("id", userId);
 
-    // 5. Send Notification in Supabase
+    // 5. Insert Transaction Log in Supabase
+    try {
+      await supabase.from("transactions").insert({
+        user_id: userId,
+        amount: amount,
+        type: "deposit",
+        status: "completed",
+        description: `Dedicated Bank Transfer Deposit - Ref: ${reference}`,
+        metadata: { reference: reference, payment_method: "PocketFi Virtual Account" },
+      });
+    } catch (txErr) {
+      console.warn("Transaction record notice:", txErr);
+    }
+
+    // 6. Send In-App Notification in Supabase
     try {
       await supabase.from("notifications").insert({
         user_id: userId,
-        title: "Deposit Successful! 🎉",
-        message: `Your deposit of ₦${amount.toLocaleString()} via dedicated bank transfer was successful. Your balance is now ₦${newBalance.toLocaleString()}.`,
-        type: "fund",
-        read: false,
+        title: "Deposit Confirmed! 💰",
+        message: `Your deposit of ₦${amount.toLocaleString()} has been received and credited to your wallet. Your new balance is ₦${newBalance.toLocaleString()}.`,
+        is_read: false,
       });
-    } catch {
-      // ignore notification errors
+    } catch (notifErr) {
+      console.warn("Notification insert error:", notifErr);
+    }
+
+    // 7. Dispatch Transactional Email via send-email Edge Function
+    try {
+      const userEmail = userRow?.email || customer?.email || payload?.email;
+      if (userEmail) {
+        await supabase.functions.invoke("send-email", {
+          body: {
+            to: userEmail,
+            name: userRow?.username || userRow?.full_name || customer?.name,
+            type: "wallet_funded",
+            data: {
+              amount: amount,
+              paymentMethod: "PocketFi Dedicated Bank Transfer",
+              reference: reference,
+              newBalance: newBalance,
+            },
+          },
+        });
+      }
+    } catch (emailErr) {
+      console.warn("Deposit email notice:", emailErr);
     }
 
     console.log(`Successfully credited user ${userId} with ₦${amount}. New balance: ₦${newBalance}`);

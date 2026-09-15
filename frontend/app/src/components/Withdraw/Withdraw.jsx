@@ -16,14 +16,13 @@ import { FaSpinner } from "react-icons/fa6";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { userService, bankService } from "../../services/supabaseService";
+import { userService, bankService, walletService } from "../../services/supabaseService";
 import { NIGERIAN_BANKS } from "../../data/nigerianBanks";
-import axios from "axios";
 import ToastNotification from "../ToastNotification/ToastNotification";
 
 const Withdraw = () => {
   const [toastNotifications, setToastNotifications] = useState([]);
-  const { adminData, currentUser, fetchUserData } = useAuth();
+  const { adminData, currentUser, fetchUserData, dashboardMode } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [amount, setAmount] = useState("");
   const [withdrawalError, setWithdrawalError] = useState(null);
@@ -43,8 +42,13 @@ const Withdraw = () => {
   const [bankModalError, setBankModalError] = useState(null);
   const [savingBank, setSavingBank] = useState(false);
 
+  const isMember = Boolean(currentUser?.isMember || currentUser?.is_member);
+  const isAdvertiser = currentUser?.role === "advertiser" || currentUser?.accountType === "advertiser" || dashboardMode === "advertiser";
+  const isRestrictedAdvertiser = isAdvertiser && !isMember;
+
+  const minWithdrawal = adminData?.minWithdrawal || 300;
   const balance = currentUser?.balance || currentUser?.userEarnings?.balance || 0;
-  const charges = adminData?.withdrawalCharges || 0;
+  const charges = adminData?.withdrawalCharges || 50;
   const amountWithdrawable = balance > charges ? balance - charges : 0;
 
   const currentBankName =
@@ -190,43 +194,50 @@ const Withdraw = () => {
 
   const makeWithdrawal = async () => {
     try {
+      if (isRestrictedAdvertiser) {
+        return setWithdrawalError(
+          "Advertisers cannot withdraw unspent advertising funds unless they pay the ₦1,000 membership fee."
+        );
+      }
       if (!hasBankAccount) {
         setWithdrawalError("Please link your receiving bank account before requesting withdrawal.");
         openBankModal();
         return;
       }
-      if (!amount || !password) {
-        return setWithdrawalError("Please fill in both the amount and your login password.");
+      if (!amount) {
+        return setWithdrawalError("Please enter the amount you wish to withdraw.");
       }
-      if (Number(amount) < 100) {
-        return setWithdrawalError("Minimum withdrawal amount is ₦100.");
+      if (Number(amount) < minWithdrawal) {
+        return setWithdrawalError(`Minimum withdrawal amount is ₦${numeral(minWithdrawal).format("0,0")}.`);
       }
       if (Number(balance) - Number(amount) - Number(charges) < 0) {
         return setWithdrawalError("Insufficient wallet balance (including withdrawal charges).");
       }
-      const withdrawal_data = {
-        id: currentUser?.id,
-        withdrawalAmount: Number(amount),
-        charges,
-        password,
-      };
+
       setMakingWithdrawal(true);
-      const response = await axios.post(
-        "/api/v1/withdraw/request",
-        withdrawal_data
-      );
+      setWithdrawalError(null);
+
+      await walletService.requestWithdrawal({
+        userId: currentUser?.id,
+        amount: Number(amount),
+        bankName: currentBankName,
+        accountNumber: currentAccountNumber,
+        accountName: currentAccountName,
+      });
 
       setMakingWithdrawal(false);
       setWithdrawalError(null);
+      setAmount("");
+      setPassword("");
       await fetchUserData();
       showToast({
-        msg: `${response.data.message || "Withdrawal request submitted successfully"}`,
+        msg: "Withdrawal request submitted successfully! Funds will be transferred to your bank.",
         errorType: "success",
       });
     } catch (error) {
       setMakingWithdrawal(false);
       setWithdrawalError(
-        error.response?.data?.message || "Failed to process withdrawal request"
+        error.message || "Failed to process withdrawal request"
       );
     }
   };
@@ -243,9 +254,49 @@ const Withdraw = () => {
           Withdraw Earnings
         </h1>
         <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
-          Transfer your available task and affiliate earnings directly to your verified Nigerian bank account.
+          Transfer your available task and referral earnings directly to your verified Nigerian bank account.
         </p>
       </div>
+
+      {/* Free Plan Reassurance Banner */}
+      {!isAdvertiser && (
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs font-bold text-base">
+            ✓
+          </div>
+          <div>
+            <h3 className="text-xs sm:text-sm font-black text-emerald-900">
+              Free Plan Withdrawals Fully Supported
+            </h3>
+            <p className="text-[11px] sm:text-xs text-emerald-700 font-medium mt-0.5">
+              You do not need a paid VIP plan to withdraw. Task earners can withdraw anytime directly to their bank account (minimum ₦{numeral(minWithdrawal).format("0,0")}).
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Advertiser Restriction Alert */}
+      {isRestrictedAdvertiser && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-amber-50 border border-amber-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <span className="text-xl shrink-0">📢</span>
+            <div>
+              <h3 className="text-xs sm:text-sm font-black text-amber-900">
+                Advertiser Withdrawal Policy
+              </h3>
+              <p className="text-[11px] sm:text-xs text-amber-800 font-medium mt-0.5 leading-relaxed">
+                Advertisers cannot withdraw unspent advertising balance unless they pay the <strong>₦1,000 membership fee</strong>.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/become-a-member"
+            className="w-full sm:w-auto px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs text-center shadow-xs transition-colors shrink-0"
+          >
+            Pay ₦1,000 Fee to Withdraw →
+          </Link>
+        </div>
+      )}
 
       {/* Error Notification */}
       {withdrawalError && (
@@ -296,14 +347,14 @@ const Withdraw = () => {
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  placeholder="Enter amount (min ₦100)"
+                  placeholder={`Enter amount (min ₦${minWithdrawal})`}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-hidden text-base font-black text-slate-900 placeholder:text-slate-400 rounded-2xl transition-all"
                 />
               </div>
 
               {/* Quick Amount Presets */}
               <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                {[500, 1000, 2000, 5000].map((preset) => (
+                {[300, 500, 1000, 2000, 5000].map((preset) => (
                   <button
                     key={preset}
                     type="button"
@@ -313,7 +364,7 @@ const Withdraw = () => {
                     ₦{numeral(preset).format("0,0")}
                   </button>
                 ))}
-                {amountWithdrawable > 0 && (
+                {amountWithdrawable >= minWithdrawal && (
                   <button
                     type="button"
                     onClick={() => setAmount(amountWithdrawable.toString())}
@@ -355,25 +406,34 @@ const Withdraw = () => {
             </div>
 
             <div className="pt-2 space-y-3">
-              <button
-                type="button"
-                onClick={makeWithdrawal}
-                disabled={makingWithdrawal}
-                className={`w-full py-4 rounded-2xl text-white font-black text-sm flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer ${
-                  makingWithdrawal
-                    ? "bg-slate-300 text-slate-500 cursor-not-allowed"
-                    : "bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99]"
-                }`}
-              >
-                {makingWithdrawal ? (
-                  <>
-                    <FaSpinner className="animate-spin" size={16} />
-                    <span>Processing Payout...</span>
-                  </>
-                ) : (
-                  "Confirm & Withdraw Funds"
-                )}
-              </button>
+              {isRestrictedAdvertiser ? (
+                <Link
+                  to="/become-a-member"
+                  className="w-full py-4 rounded-2xl bg-amber-600 hover:bg-amber-700 active:scale-[0.99] text-white font-black text-sm flex items-center justify-center gap-2 shadow-sm transition-colors text-center cursor-pointer"
+                >
+                  Pay ₦1,000 Membership Fee to Withdraw
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={makeWithdrawal}
+                  disabled={makingWithdrawal}
+                  className={`w-full py-4 rounded-2xl text-white font-black text-sm flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer ${
+                    makingWithdrawal
+                      ? "bg-slate-300 text-slate-500 cursor-not-allowed"
+                      : "bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99]"
+                  }`}
+                >
+                  {makingWithdrawal ? (
+                    <>
+                      <FaSpinner className="animate-spin" size={16} />
+                      <span>Processing Payout...</span>
+                    </>
+                  ) : (
+                    "Confirm & Withdraw Funds"
+                  )}
+                </button>
+              )}
 
               <Link
                 to="/transaction-history"

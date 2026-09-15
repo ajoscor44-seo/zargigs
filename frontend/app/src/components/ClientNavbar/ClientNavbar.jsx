@@ -50,13 +50,10 @@ const ClientNavbar = () => {
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2.5 text-decoration-none group">
             <img
-              src={adminData?.appLogo || "/favicon.png"}
-              alt="Logo"
-              className="w-9 h-9 rounded-xl object-contain group-hover:scale-105 transition-transform shadow-xs"
+              src="/logo.png"
+              alt={adminData?.appName || "DocsZar"}
+              className="h-8 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform"
             />
-            <span className="text-xl font-black tracking-tight text-slate-800 uppercase font-primary">
-              {adminData?.appName || "DocsZar"}
-            </span>
           </Link>
         </div>
 

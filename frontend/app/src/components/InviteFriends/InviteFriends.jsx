@@ -220,32 +220,32 @@ const InviteFriends = () => {
               <div className="flex items-center gap-2">
                 <FiUsers className="text-emerald-400" size={18} />
                 <h3 className="text-sm font-extrabold text-white uppercase tracking-wider">
-                  How Referral Bonuses Work
+                  Two Ways You Earn From Referrals
                 </h3>
               </div>
-              <div className="space-y-3 text-xs text-slate-300">
+              <div className="space-y-3.5 text-xs text-slate-300">
                 <div className="flex items-start gap-3">
                   <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center shrink-0 text-[11px] border border-emerald-500/30">
                     1
                   </span>
                   <p>
-                    <strong className="text-white">Share Your Link:</strong> Send your link to friends, groups, and social followers.
+                    <strong className="text-white">₦600 on VIP Upgrades:</strong> When your referral upgrades to VIP Member (₦1,000 activation), you get an instant <strong>60% (₦600.00)</strong> cash commission.
                   </p>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center shrink-0 text-[11px] border border-emerald-500/30">
+                  <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center shrink-0 text-[11px] border border-amber-500/30">
                     2
                   </span>
                   <p>
-                    <strong className="text-white">They Activate:</strong> When your friend upgrades to VIP Pro Member, our system verifies the registration.
+                    <strong className="text-white">10% on Free User 1st Withdrawal:</strong> If they earn on the Free tier, you receive <strong>10% of their very first withdrawal</strong> straight into your wallet!
                   </p>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center shrink-0 text-[11px] border border-emerald-500/30">
+                  <span className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 font-bold flex items-center justify-center shrink-0 text-[11px] border border-blue-500/30">
                     3
                   </span>
                   <p>
-                    <strong className="text-white">Instant 60% Payout:</strong> Receive 60% commission automatically credited directly to your bank-withdrawable balance.
+                    <strong className="text-white">Instant Bank Withdrawals:</strong> All commission earnings are immediately available for direct withdrawal to any Nigerian bank.
                   </p>
                 </div>
               </div>

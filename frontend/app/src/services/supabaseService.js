@@ -1,6 +1,8 @@
 import { supabase } from "../config/supabase.config";
 import { NIGERIAN_BANKS } from "../data/nigerianBanks";
 
+export { supabase };
+
 
 /**
  * Normalizes Supabase records to match frontend property names (camelCase, _id mapping)
@@ -1044,6 +1046,91 @@ export const taskService = {
     }
   },
 
+  async cancelTask({ taskId, userId, taskType = "task", reason = "User cancelled task in progress" }) {
+    if (!userId || !taskId) return { success: false, message: "Missing task or user ID" };
+
+    try {
+      // 1. Sync record directly into cancelled_tasks table
+      await supabase.from("cancelled_tasks").insert({
+        user_id: userId,
+        task_id: taskId,
+        task_type: taskType,
+        reason: reason,
+      }).catch((err) => console.warn("cancelled_tasks insert notice:", err));
+
+      // 2. Mark active reservation as cancelled in task_reservations
+      await supabase
+        .from("task_reservations")
+        .update({ status: "cancelled" })
+        .eq("task_id", taskId)
+        .eq("worker_id", userId)
+        .eq("status", "active")
+        .catch(() => {});
+
+      // 3. Remove from pending_tasks and allocated_tasks if present
+      await supabase
+        .from("pending_tasks")
+        .delete()
+        .eq("task_id", taskId)
+        .eq("user_id", userId)
+        .catch(() => {});
+
+      await supabase
+        .from("allocated_tasks")
+        .delete()
+        .eq("task_id", taskId)
+        .eq("user_id", userId)
+        .catch(() => {});
+
+      // 4. Restore slot counts on marketplace_tasks
+      const { data: mktTask } = await supabase
+        .from("marketplace_tasks")
+        .select("slots_remaining, slots_reserved")
+        .eq("id", taskId)
+        .maybeSingle();
+
+      if (mktTask) {
+        await supabase
+          .from("marketplace_tasks")
+          .update({
+            slots_remaining: (mktTask.slots_remaining || 0) + 1,
+            slots_reserved: Math.max(0, (mktTask.slots_reserved || 1) - 1),
+          })
+          .eq("id", taskId)
+          .catch(() => {});
+      }
+
+      // 5. In-app notification
+      await supabase.from("notifications").insert({
+        user_id: userId,
+        title: "Task In Progress Cancelled",
+        message: "You cancelled the task. Your reservation was released back to the task pool with no penalty.",
+        is_read: false,
+      }).catch(() => {});
+
+      return { success: true, message: "Task cancelled and synced to database successfully." };
+    } catch (err) {
+      console.warn("cancelTask error:", err);
+      return { success: false, message: err.message || "Failed to cancel task." };
+    }
+  },
+
+  async getCancelledTasks(userId) {
+    if (!userId) return [];
+    try {
+      const { data, error } = await supabase
+        .from("cancelled_tasks")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+
+      if (error || !data) return [];
+      return formatRecord(data);
+    } catch {
+      return [];
+    }
+  },
+
   async getUserSubtasks(userId) {
     try {
       const { data } = await supabase
@@ -1201,6 +1288,33 @@ export const walletService = {
   },
 
   async requestWithdrawal({ userId, amount, bankName, accountNumber, accountName }) {
+    try {
+      const res = await supabase.functions.invoke("process-withdrawal", {
+        body: {
+          userId,
+          amount: Number(amount),
+          bankName,
+          accountNumber,
+          accountName,
+        },
+      });
+
+      if (res.data && res.data.success) {
+        return res.data;
+      }
+      if (res.data && res.data.message) {
+        throw new Error(res.data.message);
+      }
+      if (res.error) {
+        throw new Error(res.error.message || "Failed to process withdrawal");
+      }
+    } catch (err) {
+      if (err.message && !err.message.includes("FunctionsFetchError")) {
+        throw err;
+      }
+    }
+
+    // Direct database fallback if edge function is temporarily unreachable
     const payload = {
       user_id: userId,
       type: "withdrawal",
@@ -1215,6 +1329,16 @@ export const walletService = {
     };
 
     try {
+      await supabase.from("withdrawal_requests").insert({
+        user_id: userId,
+        amount: Number(amount),
+        charges: 50,
+        bank_name: bankName,
+        account_number: accountNumber,
+        account_name: accountName,
+        status: "pending",
+      });
+
       const { data } = await supabase
         .from("transactions")
         .insert(payload)
@@ -1222,8 +1346,8 @@ export const walletService = {
         .maybeSingle();
 
       return formatRecord(data) || payload;
-    } catch {
-      return payload;
+    } catch (dbErr) {
+      throw dbErr;
     }
   },
 
@@ -1444,8 +1568,8 @@ export const adminService = {
           appName: "DocsZar",
           membershipFee: 1000,
           withdrawalCharges: 50,
-          minWithdrawal: 1000,
-          referralBonus: 500,
+          minWithdrawal: 300,
+          referralBonus: 600,
           fundingAccount: {
             bankName: "Moniepoint",
             accountNumber: "8123456789",
@@ -1459,8 +1583,8 @@ export const adminService = {
         appName: "DocsZar",
         membershipFee: 1000,
         withdrawalCharges: 50,
-        minWithdrawal: 1000,
-        referralBonus: 500,
+        minWithdrawal: 300,
+        referralBonus: 600,
         fundingAccount: {
           bankName: "Moniepoint",
           accountNumber: "8123456789",

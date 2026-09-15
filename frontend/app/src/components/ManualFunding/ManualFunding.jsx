@@ -84,13 +84,13 @@ const ManualFunding = () => {
         </div>
 
         <a
-          href="https://wa.link/e08m07"
+          href="https://wa.me/2349027662488?text=Hello%20DocsZar%20Support%2C%20I%20have%20made%20a%20manual%20transfer%20deposit.%20Here%20is%20my%20proof"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all hover:scale-105 flex-shrink-0"
         >
           <IoLogoWhatsapp size={18} />
-          <span>Confirm on WhatsApp</span>
+          <span>Confirm on WhatsApp (090 2766 2488)</span>
         </a>
       </div>
     </div>

@@ -72,8 +72,8 @@ const ContactUs = () => {
                     <FaPhone size={16} />
                   </div>
                   <div>
-                    <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Phone Line</div>
-                    <div className="text-sm font-medium text-slate-800 mt-0.5">+234-91-241-9623</div>
+                    <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Phone / WhatsApp Line</div>
+                    <div className="text-sm font-medium text-slate-800 mt-0.5">090 2766 2488</div>
                   </div>
                 </div>
 

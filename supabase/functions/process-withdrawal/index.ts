@@ -37,7 +37,7 @@ serve(async (req) => {
       .select("min_withdrawal, withdrawal_charges, is_withdrawal_active")
       .single();
 
-    const minWithdrawal = Number(adminSettings?.min_withdrawal || 1000);
+    const minWithdrawal = Number(adminSettings?.min_withdrawal || 300);
     const fee = Number(adminSettings?.withdrawal_charges || 50);
 
     if (adminSettings?.is_withdrawal_active === false) {
@@ -57,7 +57,7 @@ serve(async (req) => {
     // 2. Fetch User & verify balance
     const { data: user, error: userErr } = await supabase
       .from("users")
-      .select("id, balance, is_member, is_banned")
+      .select("id, balance, is_member, is_banned, role, account_type")
       .eq("id", userId)
       .single();
 
@@ -75,9 +75,14 @@ serve(async (req) => {
       );
     }
 
-    if (!user.is_member) {
+    // Advertisers cannot withdraw unless they have paid the membership fee (is_member)
+    const isAdvertiser = user.role === "advertiser" || user.account_type === "advertiser";
+    if (isAdvertiser && !user.is_member) {
       return new Response(
-        JSON.stringify({ success: false, message: "Please activate your VIP membership to enable withdrawals." }),
+        JSON.stringify({
+          success: false,
+          message: "Advertisers cannot withdraw unspent advertising funds unless they pay the ₦1,000 membership fee.",
+        }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -124,10 +129,10 @@ serve(async (req) => {
     await supabase.from("transactions").insert({
       user_id: userId,
       amount: withdrawAmount,
-      fee: fee,
       type: "withdrawal",
       status: "pending",
       description: `Withdrawal request of ₦${withdrawAmount.toLocaleString()} to ${bankName} (${accountNumber})`,
+      metadata: { fee: fee, bank_name: bankName, account_number: accountNumber, account_name: accountName },
     });
 
     // 6. Notify user
@@ -137,6 +142,26 @@ serve(async (req) => {
       message: `Your withdrawal request for ₦${withdrawAmount.toLocaleString()} is being processed and will arrive in your bank account shortly.`,
       is_read: false,
     });
+
+    // 7. Check if this is the user's FIRST withdrawal and award 10% commission to referrer
+    try {
+      const { count } = await supabase
+        .from("withdrawal_requests")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId);
+
+      if ((count || 0) <= 1) {
+        await supabase.functions.invoke("referral-bonus", {
+          body: {
+            userId: userId,
+            type: "first_withdrawal",
+            amount: withdrawAmount,
+          },
+        });
+      }
+    } catch (refErr) {
+      console.warn("1st withdrawal referral commission notice:", refErr);
+    }
 
     return new Response(
       JSON.stringify({
