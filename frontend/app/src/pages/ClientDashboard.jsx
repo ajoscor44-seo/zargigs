@@ -66,6 +66,9 @@ const ClientDashboard = () => {
   const [hideProBanner, setHideProBanner] = useState(
     () => localStorage.getItem("hide_verified_pro_banner") === "true"
   );
+  const [hideVipBanner, setHideVipBanner] = useState(
+    () => localStorage.getItem("hide_vip_member_banner") === "true"
+  );
   const [recentActivities, setRecentActivities] = useState([]);
   const [myCampaigns, setMyCampaigns] = useState([]);
   const [copied, setCopied] = useState(false);
@@ -114,40 +117,54 @@ const ClientDashboard = () => {
 
   return (
     <ClientLayout>
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Top Announcements */}
         <Announcements />
 
         {/* 1. VIP MEMBERSHIP PROMOTION BANNER (Shown for non-members) */}
-        {!currentUser?.isMember ? (
-          <div className="relative overflow-hidden rounded-2xl bg-orange-600 p-5 sm:p-6 text-white shadow-sm border border-orange-700">
-            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
-              <div className="space-y-1.5 max-w-2xl">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-700 text-orange-100 text-xs font-black">
-                  <FaCrown size={12} className="text-orange-200" />
-                  <span>VIP MEMBER ACTIVATION</span>
+        {!currentUser?.isMember && !hideVipBanner ? (
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 p-3 sm:p-3.5 text-white shadow-xs border border-orange-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2.5 pr-6 sm:pr-0">
+              <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-sm text-white flex items-center justify-center shrink-0 shadow-xs">
+                <FaCrown size={15} className="text-amber-200" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-xs sm:text-sm font-black tracking-tight text-white">
+                    Upgrade to VIP Member (₦{numeral(membershipFee).format("0,0")})
+                  </span>
+                  <span className="px-1.5 py-0.2 rounded-full bg-black/20 text-[9px] font-bold text-orange-100">
+                    60% Referral Bonus
+                  </span>
                 </div>
-                <h2 className="text-xl sm:text-2xl font-black tracking-tight">
-                  Turn Your Social Media Into Daily Income — Activate Membership
-                </h2>
-                <p className="text-xs sm:text-sm text-orange-100 leading-relaxed font-medium">
-                  Pay a one-time activation fee of <strong>₦{numeral(membershipFee).format("0,0.00")}</strong> to unlock unlimited daily tasks, post adverts, earn 60% referral bonuses (₦600+ per friend), and withdraw earnings anytime directly to your bank account.
+                <p className="text-[11px] text-orange-100 leading-snug">
+                  Unlock unlimited tasks, post adverts, and instant direct bank withdrawals.
                 </p>
               </div>
+            </div>
 
-              <div className="shrink-0 w-full md:w-auto">
-                <Link
-                  to="/become-a-member"
-                  className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs sm:text-sm shadow-md transition-all cursor-pointer"
-                >
-                  <FaCrown size={14} className="text-amber-400" />
-                  <span>Activate Membership (₦{numeral(membershipFee).format("0,0")})</span>
-                  <FaArrowRight size={12} />
-                </Link>
-              </div>
+            <div className="flex items-center gap-1.5 self-start sm:self-auto shrink-0">
+              <Link
+                to="/become-a-member"
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs shadow-xs transition-all cursor-pointer"
+              >
+                <span>Activate (₦{numeral(membershipFee).format("0,0")})</span>
+                <FaArrowRight size={10} />
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  setHideVipBanner(true);
+                  localStorage.setItem("hide_vip_member_banner", "true");
+                }}
+                className="p-1 text-white/70 hover:text-white hover:bg-black/20 rounded-lg transition-colors cursor-pointer"
+                title="Dismiss banner"
+              >
+                <FiX size={15} />
+              </button>
             </div>
           </div>
-        ) : !hideProBanner ? (
+        ) : !hideProBanner && currentUser?.isMember ? (
           <div className="relative bg-emerald-50 border border-emerald-200/90 rounded-2xl p-4 sm:p-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 shadow-2xs">
             <div className="flex items-start sm:items-center gap-3 pr-6 sm:pr-0">
               <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs mt-0.5 sm:mt-0">

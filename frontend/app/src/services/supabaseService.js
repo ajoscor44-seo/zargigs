@@ -1602,7 +1602,7 @@ export const bankService = {
     return cachedBanks && cachedBanks.length > 0 ? cachedBanks : NIGERIAN_BANKS;
   },
 
-  // Verify Bank Account name using PocketFi
+  // Verify Bank Account name using PocketFi via Supabase Edge Function Proxy
   async verifyAccount(accountNumber, bankCode, bankName) {
     const cleanNum = String(accountNumber || "").replace(/\D/g, "").trim();
     if (!cleanNum || cleanNum.length !== 10) {
@@ -1624,49 +1624,33 @@ export const bankService = {
     }
 
     try {
-      // 1. Direct call to PocketFi verification endpoint
-      const res = await fetch(`${POCKETFI_API_BASE}/payout/verify-bank`, {
+      // Call Supabase Edge Function proxy (handles CORS & PocketFi securely)
+      const edgeRes = await fetch("https://itzqsxmjyjfgtbolfhmq.supabase.co/functions/v1/pocketfi-banks", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${POCKETFI_BEARER_TOKEN}`,
           "Content-Type": "application/json",
-          Accept: "application/json",
+          "Accept": "application/json",
         },
         body: JSON.stringify({
-          account_number: cleanNum,
-          bank_code: codeToUse,
+          accountNumber: cleanNum,
+          bankCode: codeToUse,
         }),
       });
 
-      const data = await res.json();
-      if (res.ok && data?.status === "success" && data.account_name) {
+      const edgeData = await edgeRes.json();
+      if (edgeRes.ok && (edgeData?.status === "success" || edgeData?.account_name || edgeData?.data?.account_name)) {
+        const resolvedName = edgeData.account_name || edgeData.data?.account_name || edgeData.accountName;
         return {
           status: "success",
-          accountName: data.account_name,
-          bankCode: data.bank_code || codeToUse,
+          accountName: resolvedName,
+          bankCode: edgeData.bank_code || codeToUse,
         };
       } else {
-        throw new Error(data?.message || "Could not verify account name with PocketFi.");
+        throw new Error(edgeData?.message || "Could not resolve bank account name.");
       }
     } catch (err) {
-      // 2. Try Supabase Edge Function proxy
-      try {
-        const edgeRes = await fetch("https://itzqsxmjyjfgtbolfhmq.supabase.co/functions/v1/pocketfi-banks", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ accountNumber: cleanNum, bankCode: codeToUse }),
-        });
-        const edgeData = await edgeRes.json();
-        if (edgeRes.ok && edgeData?.status === "success" && edgeData.account_name) {
-          return {
-            status: "success",
-            accountName: edgeData.account_name,
-            bankCode: edgeData.bank_code || codeToUse,
-          };
-        }
-      } catch {}
-
-      throw new Error(err.message || "Failed to verify bank account with PocketFi.");
+      console.warn("PocketFi bank verification notice:", err.message);
+      throw new Error(err.message || "Failed to verify bank account.");
     }
   },
 };
