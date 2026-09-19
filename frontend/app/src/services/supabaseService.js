@@ -1394,6 +1394,30 @@ export const walletService = {
     }
   },
 
+  async transferFunds({ senderId, receiverUsername, amount, charges = 0 }) {
+    try {
+      const { data, error } = await supabase.rpc("transfer_wallet_funds", {
+        p_sender_id: senderId,
+        p_receiver_username: receiverUsername,
+        p_amount: Number(amount),
+        p_charges: Number(charges || 0),
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data && data.success === false) {
+        throw new Error(data.message || "Transfer failed.");
+      }
+
+      return data;
+    } catch (err) {
+      console.error("transferFunds error:", err);
+      throw err;
+    }
+  },
+
   async requestWithdrawal({ userId, amount, bankName, accountNumber, accountName }) {
     try {
       const res = await supabase.functions.invoke("process-withdrawal", {

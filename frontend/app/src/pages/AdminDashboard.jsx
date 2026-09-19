@@ -158,6 +158,65 @@ const PricingSkeleton = () => (
   </div>
 );
 
+const TablePagination = ({ currentPage, totalItems, itemsPerPage = 10, onPageChange }) => {
+  const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+  if (totalItems <= itemsPerPage && totalPages <= 1) return null;
+
+  const startIdx = (currentPage - 1) * itemsPerPage + 1;
+  const endIdx = Math.min(currentPage * itemsPerPage, totalItems);
+
+  return (
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3.5 bg-slate-50 border-t border-slate-200/80 rounded-b-2xl text-xs text-slate-500 font-medium">
+      <div>
+        Showing <strong className="text-slate-900">{totalItems > 0 ? startIdx : 0}</strong> to{" "}
+        <strong className="text-slate-900">{endIdx}</strong> of{" "}
+        <strong className="text-slate-900">{totalItems}</strong> entries
+      </div>
+      <div className="flex items-center gap-1.5">
+        <button
+          type="button"
+          onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+          disabled={currentPage <= 1}
+          className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors shadow-2xs text-xs"
+        >
+          Previous
+        </button>
+
+        {Array.from({ length: totalPages }, (_, i) => i + 1)
+          .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+          .map((p, idx, arr) => {
+            const prev = arr[idx - 1];
+            return (
+              <React.Fragment key={p}>
+                {prev && p - prev > 1 && <span className="px-1 text-slate-400">...</span>}
+                <button
+                  type="button"
+                  onClick={() => onPageChange(p)}
+                  className={`w-7 h-7 rounded-lg font-bold transition-colors cursor-pointer text-xs flex items-center justify-center ${
+                    currentPage === p
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  {p}
+                </button>
+              </React.Fragment>
+            );
+          })}
+
+        <button
+          type="button"
+          onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+          disabled={currentPage >= totalPages}
+          className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors shadow-2xs text-xs"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const AdminDashboard = () => {
   const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
@@ -176,6 +235,14 @@ const AdminDashboard = () => {
     complaints: false,
   });
   const [feedback, setFeedback] = useState({ type: "", message: "" });
+
+  // Pagination states
+  const ITEMS_PER_PAGE = 10;
+  const [tasksPage, setTasksPage] = useState(1);
+  const [usersPage, setUsersPage] = useState(1);
+  const [withdrawalsPage, setWithdrawalsPage] = useState(1);
+  const [fundingsPage, setFundingsPage] = useState(1);
+  const [submissionsPage, setSubmissionsPage] = useState(1);
 
   // Overview Stats
   const [totals, setTotals] = useState({
@@ -270,37 +337,34 @@ const AdminDashboard = () => {
   const fetchAdminOverview = useCallback(async () => {
     setTabLoading((prev) => ({ ...prev, overview: true }));
     try {
-      const res = await axios.get("/api/v1/admin/users/totals", {
-        headers: { "x-user-id": currentUser?.id || currentUser?.uid },
-      });
-      if (res.data) {
+      const { data: users, count } = await supabase
+        .from("users")
+        .select("id, is_member, is_banned, balance", { count: "exact" });
+      if (users && users.length > 0) {
+        const members = users.filter((u) => u.is_member).length;
+        const banned = users.filter((u) => u.is_banned).length;
+        const balance = users.reduce((acc, u) => acc + (Number(u.balance) || 0), 0);
         setTotals({
-          totalUsers: res.data.meta?.total ?? res.data.totalUsers ?? 0,
-          totalMembers: res.data.meta?.members ?? res.data.totalMembers ?? 0,
-          totalBanned: res.data.meta?.banned ?? res.data.totalBanned ?? 0,
-          totalBalance: res.data.meta?.balance ?? res.data.totalBalance ?? 0,
+          totalUsers: count || users.length,
+          totalMembers: members,
+          totalBanned: banned,
+          totalBalance: balance,
         });
-      }
-    } catch (err) {
-      console.warn("fetchAdminOverview backend fallback to Supabase:", err.message);
-      try {
-        const { data: users, count } = await supabase
-          .from("users")
-          .select("id, is_member, is_banned, balance", { count: "exact" });
-        if (users) {
-          const members = users.filter((u) => u.is_member).length;
-          const banned = users.filter((u) => u.is_banned).length;
-          const balance = users.reduce((acc, u) => acc + (Number(u.balance) || 0), 0);
+      } else {
+        const res = await axios.get("/api/v1/admin/users/totals", {
+          headers: { "x-user-id": currentUser?.id || currentUser?.uid },
+        });
+        if (res.data) {
           setTotals({
-            totalUsers: count || users.length,
-            totalMembers: members,
-            totalBanned: banned,
-            totalBalance: balance,
+            totalUsers: res.data.meta?.total ?? res.data.totalUsers ?? 0,
+            totalMembers: res.data.meta?.members ?? res.data.totalMembers ?? 0,
+            totalBanned: res.data.meta?.banned ?? res.data.totalBanned ?? 0,
+            totalBalance: res.data.meta?.balance ?? res.data.totalBalance ?? 0,
           });
         }
-      } catch (dbErr) {
-        console.error("fetchAdminOverview supabase error:", dbErr);
       }
+    } catch (err) {
+      console.error("fetchAdminOverview error:", err);
     } finally {
       setTabLoading((prev) => ({ ...prev, overview: false }));
     }
@@ -309,22 +373,21 @@ const AdminDashboard = () => {
   const fetchWithdrawals = useCallback(async () => {
     setTabLoading((prev) => ({ ...prev, withdrawals: true }));
     try {
-      const res = await axios.get("/api/v1/admin/withdrawal-request?limit=100", {
-        headers: { "x-user-id": currentUser?.id || currentUser?.uid },
-      });
-      setWithdrawals(res.data?.data || []);
-    } catch (err) {
-      console.warn("fetchWithdrawals backend fallback to Supabase:", err.message);
-      try {
-        const { data } = await supabase
-          .from("withdrawal_requests")
-          .select("*, users:user_id(firstname, lastname, username, email, phone)")
-          .order("created_at", { ascending: false })
-          .limit(100);
-        if (data) setWithdrawals(data);
-      } catch (dbErr) {
-        console.error("fetchWithdrawals supabase error:", dbErr);
+      const { data } = await supabase
+        .from("withdrawal_requests")
+        .select("*, users:user_id(firstname, lastname, username, email, phone)")
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (data && data.length > 0) {
+        setWithdrawals(data);
+      } else {
+        const res = await axios.get("/api/v1/admin/withdrawal-request?limit=200", {
+          headers: { "x-user-id": currentUser?.id || currentUser?.uid },
+        });
+        setWithdrawals(res.data?.data || []);
       }
+    } catch (err) {
+      console.error("fetchWithdrawals error:", err);
     } finally {
       setTabLoading((prev) => ({ ...prev, withdrawals: false }));
     }
@@ -333,57 +396,54 @@ const AdminDashboard = () => {
   const fetchUsers = useCallback(async () => {
     setTabLoading((prev) => ({ ...prev, users: true }));
     try {
-      const res = await axios.get("/api/v1/admin/users?limit=100", {
-        headers: { "x-user-id": currentUser?.id || currentUser?.uid },
-      });
-      const data = res.data?.data || res.data?.users || [];
-      setUsersList(data);
-    } catch (err) {
-      console.warn("fetchUsers backend fallback to Supabase:", err.message);
-      try {
-        const { data: users } = await supabase
-          .from("users")
+      const { data: users } = await supabase
+        .from("users")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(200);
+
+      if (users && users.length > 0) {
+        const userIds = users.map((u) => u.id);
+        const { data: details } = await supabase
+          .from("user_details")
           .select("*")
-          .order("created_at", { ascending: false })
-          .limit(100);
+          .in("user_id", userIds);
 
-        if (users) {
-          const userIds = users.map((u) => u.id);
-          const { data: details } = await supabase
-            .from("user_details")
-            .select("*")
-            .in("user_id", userIds);
+        const detailsMap = new Map();
+        (details || []).forEach((d) => detailsMap.set(d.user_id, d));
 
-          const detailsMap = new Map();
-          (details || []).forEach((d) => detailsMap.set(d.user_id, d));
-
-          const merged = users.map((u) => {
-            const d = detailsMap.get(u.id) || {};
-            return {
-              ...u,
-              gender: d.gender || "",
-              device: d.device || "",
-              device_type: d.device || "",
-              state: d.state || "",
-              lga: d.lga || "",
-              bank_name: d.bank_name || u.bank_name || "",
-              account_number: d.account_number || u.account_number || "",
-              account_name: d.account_name || u.account_name || "",
-              bankDetails: {
-                bankName: d.bank_name || u.bank_name || "",
-                accountNumber: d.account_number || u.account_number || "",
-                accountName: d.account_name || u.account_name || "",
-              },
-              virtual_account_bank: d.virtual_account_bank || "",
-              virtual_account_number: d.virtual_account_number || "",
-              virtual_account_name: d.virtual_account_name || "",
-            };
-          });
-          setUsersList(merged);
-        }
-      } catch (dbErr) {
-        console.error("fetchUsers supabase error:", dbErr);
+        const merged = users.map((u) => {
+          const d = detailsMap.get(u.id) || {};
+          return {
+            ...u,
+            gender: d.gender || "",
+            device: d.device || "",
+            device_type: d.device || "",
+            state: d.state || "",
+            lga: d.lga || "",
+            bank_name: d.bank_name || u.bank_name || "",
+            account_number: d.account_number || u.account_number || "",
+            account_name: d.account_name || u.account_name || "",
+            bankDetails: {
+              bankName: d.bank_name || u.bank_name || "",
+              accountNumber: d.account_number || u.account_number || "",
+              accountName: d.account_name || u.account_name || "",
+            },
+            virtual_account_bank: d.virtual_account_bank || "",
+            virtual_account_number: d.virtual_account_number || "",
+            virtual_account_name: d.virtual_account_name || "",
+          };
+        });
+        setUsersList(merged);
+      } else {
+        const res = await axios.get("/api/v1/admin/users?limit=200", {
+          headers: { "x-user-id": currentUser?.id || currentUser?.uid },
+        });
+        const data = res.data?.data || res.data?.users || [];
+        setUsersList(data);
       }
+    } catch (err) {
+      console.error("fetchUsers error:", err);
     } finally {
       setTabLoading((prev) => ({ ...prev, users: false }));
     }
@@ -392,27 +452,27 @@ const AdminDashboard = () => {
   const fetchTasks = useCallback(async () => {
     setTabLoading((prev) => ({ ...prev, tasks: true }));
     try {
-      const res = await axios.get("/api/v1/admin/tasks", {
-        headers: { "x-user-id": currentUser?.id || currentUser?.uid },
-      });
-      setTasksList(res.data?.tasks || res.data?.data || []);
-    } catch (err) {
-      console.warn("fetchTasks backend fallback to Supabase:", err.message);
-      try {
-        const [mkt, adv, eng] = await Promise.allSettled([
-          supabase.from("marketplace_tasks").select("*, users:creator_id(username, email)").order("created_at", { ascending: false }).limit(100),
-          supabase.from("advert_tasks").select("*, users:user_id(username, email)").order("created_at", { ascending: false }).limit(100),
-          supabase.from("engagement_tasks").select("*, users:user_id(username, email)").order("created_at", { ascending: false }).limit(100),
-        ]);
-        const list = [
-          ...(mkt.status === "fulfilled" && mkt.value?.data ? mkt.value.data.map(t => ({ ...t, sourceTable: "marketplace_tasks", typeName: `Microtask (${t.category || "General"})` })) : []),
-          ...(adv.status === "fulfilled" && adv.value?.data ? adv.value.data.map(t => ({ ...t, sourceTable: "advert_tasks", typeName: "Social Advert" })) : []),
-          ...(eng.status === "fulfilled" && eng.value?.data ? eng.value.data.map(t => ({ ...t, sourceTable: "engagement_tasks", typeName: "Engagement Task" })) : []),
-        ];
+      const [mkt, adv, eng] = await Promise.allSettled([
+        supabase.from("marketplace_tasks").select("*, users:creator_id(username, email)").order("created_at", { ascending: false }).limit(200),
+        supabase.from("advert_tasks").select("*, users:user_id(username, email)").order("created_at", { ascending: false }).limit(200),
+        supabase.from("engagement_tasks").select("*, users:user_id(username, email)").order("created_at", { ascending: false }).limit(200),
+      ]);
+      const list = [
+        ...(mkt.status === "fulfilled" && mkt.value?.data ? mkt.value.data.map(t => ({ ...t, sourceTable: "marketplace_tasks", typeName: `Microtask (${t.category || "General"})` })) : []),
+        ...(adv.status === "fulfilled" && adv.value?.data ? adv.value.data.map(t => ({ ...t, sourceTable: "advert_tasks", typeName: `Social Advert (${t.platform || "Social"})` })) : []),
+        ...(eng.status === "fulfilled" && eng.value?.data ? eng.value.data.map(t => ({ ...t, sourceTable: "engagement_tasks", typeName: `Engagement Task (${t.platform || "Social"})` })) : []),
+      ];
+      list.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
+      if (list.length > 0) {
         setTasksList(list);
-      } catch (dbErr) {
-        console.error("fetchTasks supabase error:", dbErr);
+      } else {
+        const res = await axios.get("/api/v1/admin/tasks", {
+          headers: { "x-user-id": currentUser?.id || currentUser?.uid },
+        });
+        setTasksList(res.data?.tasks || res.data?.data || []);
       }
+    } catch (err) {
+      console.error("fetchTasks error:", err);
     } finally {
       setTabLoading((prev) => ({ ...prev, tasks: false }));
     }
@@ -421,22 +481,54 @@ const AdminDashboard = () => {
   const fetchSubmissions = useCallback(async () => {
     setTabLoading((prev) => ({ ...prev, submissions: true }));
     try {
-      const res = await axios.get("/api/v1/admin/submissions", {
-        headers: { "x-user-id": currentUser?.id || currentUser?.uid },
-      });
-      setSubmissions(res.data?.submissions || res.data?.data || []);
-    } catch (err) {
-      console.warn("fetchSubmissions backend fallback to Supabase:", err.message);
-      try {
-        const { data } = await supabase
-          .from("task_submissions")
-          .select("*, users:worker_id(username, email), marketplace_tasks:task_id(title, category)")
-          .order("created_at", { ascending: false })
-          .limit(100);
-        if (data) setSubmissions(data);
-      } catch (dbErr) {
-        console.error("fetchSubmissions supabase error:", dbErr);
+      const [taskSubs, proofWorks, compTasks] = await Promise.allSettled([
+        supabase.from("task_submissions").select("*, users:worker_id(username, email), marketplace_tasks:task_id(title, category)").order("created_at", { ascending: false }).limit(200),
+        supabase.from("proof_of_work").select("*, users:user_id(username, email)").order("created_at", { ascending: false }).limit(200),
+        supabase.from("completed_tasks").select("*, users:user_id(username, email)").order("created_at", { ascending: false }).limit(200),
+      ]);
+
+      const list1 = (taskSubs.status === "fulfilled" && taskSubs.value?.data) ? taskSubs.value.data.map(s => ({
+        ...s,
+        sourceTable: "task_submissions",
+        taskTitle: s.marketplace_tasks?.title || "Marketplace Task",
+        username: s.users?.username || "Earner",
+        reward: s.reward_amount || 100,
+        proof_url: (Array.isArray(s.proof_urls) ? s.proof_urls[0] : s.proof_urls) || null,
+        created_at: s.created_at
+      })) : [];
+
+      const list2 = (proofWorks.status === "fulfilled" && proofWorks.value?.data) ? proofWorks.value.data.map(p => ({
+        ...p,
+        sourceTable: "proof_of_work",
+        taskTitle: p.username_proof ? `Social Proof (@${p.username_proof})` : `Social Advert (${p.task_type || "Advert"})`,
+        username: p.users?.username || p.username_proof || "Earner",
+        reward: p.reward || 50,
+        proof_url: p.image_proof || p.screenshot || null,
+        created_at: p.created_at
+      })) : [];
+
+      const list3 = (compTasks.status === "fulfilled" && compTasks.value?.data) ? compTasks.value.data.map(c => ({
+        ...c,
+        sourceTable: "completed_tasks",
+        taskTitle: `Completed ${c.task_type || "Task"}`,
+        username: c.users?.username || "Earner",
+        reward: c.reward || 50,
+        proof_url: null,
+        created_at: c.created_at
+      })) : [];
+
+      const merged = [...list1, ...list2, ...list3];
+      merged.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+      if (merged.length > 0) {
+        setSubmissions(merged);
+      } else {
+        const res = await axios.get("/api/v1/admin/submissions", {
+          headers: { "x-user-id": currentUser?.id || currentUser?.uid },
+        });
+        setSubmissions(res.data?.submissions || res.data?.data || []);
       }
+    } catch (err) {
+      console.error("fetchSubmissions error:", err);
     } finally {
       setTabLoading((prev) => ({ ...prev, submissions: false }));
     }
@@ -445,22 +537,43 @@ const AdminDashboard = () => {
   const fetchFundings = useCallback(async () => {
     setTabLoading((prev) => ({ ...prev, fundings: true }));
     try {
-      const res = await axios.get("/api/v1/admin/fundings", {
-        headers: { "x-user-id": currentUser?.id || currentUser?.uid },
+      const [fundRes, txRes] = await Promise.allSettled([
+        supabase.from("funding").select("*, users:user_id(username, email)").order("created_at", { ascending: false }).limit(200),
+        supabase.from("transactions").select("*, users:user_id(username, email)").eq("type", "deposit").order("created_at", { ascending: false }).limit(200)
+      ]);
+
+      const fundList = (fundRes.status === "fulfilled" && fundRes.value?.data) ? fundRes.value.data : [];
+      const txList = (txRes.status === "fulfilled" && txRes.value?.data) ? txRes.value.data.map(tx => ({
+        id: tx.id,
+        user_id: tx.user_id,
+        amount: tx.amount,
+        reference: tx.metadata?.reference || tx.description || `TX-${tx.id?.slice(0, 8)}`,
+        payment_method: tx.metadata?.payment_method || "PocketFi Virtual Account",
+        status: tx.status === "completed" ? "success" : tx.status,
+        created_at: tx.created_at,
+        users: tx.users
+      })) : [];
+
+      const seenRef = new Set();
+      const mergedFundings = [];
+      [...fundList, ...txList].forEach(f => {
+        const key = f.reference || f.id;
+        if (!seenRef.has(key)) {
+          seenRef.add(key);
+          mergedFundings.push(f);
+        }
       });
-      setFundings(res.data?.fundings || res.data?.data || []);
-    } catch (err) {
-      console.warn("fetchFundings backend fallback to Supabase:", err.message);
-      try {
-        const { data } = await supabase
-          .from("funding")
-          .select("*, users:user_id(username, email)")
-          .order("created_at", { ascending: false })
-          .limit(100);
-        if (data) setFundings(data);
-      } catch (dbErr) {
-        console.error("fetchFundings supabase error:", dbErr);
+      mergedFundings.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+      if (mergedFundings.length > 0) {
+        setFundings(mergedFundings);
+      } else {
+        const res = await axios.get("/api/v1/admin/fundings", {
+          headers: { "x-user-id": currentUser?.id || currentUser?.uid },
+        });
+        setFundings(res.data?.fundings || res.data?.data || []);
       }
+    } catch (err) {
+      console.error("fetchFundings error:", err);
     } finally {
       setTabLoading((prev) => ({ ...prev, fundings: false }));
     }
@@ -1010,36 +1123,60 @@ const AdminDashboard = () => {
 
   // Task Actions & Moderation with Direct Supabase Persistence & Notifications
   const handleApproveTask = async (task) => {
+    const taskId = task.id || task._id;
+    if (!taskId) return;
     try {
-      setActionLoading((prev) => ({ ...prev, [task.id]: "approving" }));
-      const table = task.sourceTable || "marketplace_tasks";
+      setActionLoading((prev) => ({ ...prev, [taskId]: "approving" }));
 
-      // Direct Supabase update
-      const { error: dbErr } = await supabase
-        .from(table)
-        .update({
-          status: "active",
-          moderation_status: "approved",
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", task.id);
+      // Optimistic local state update for immediate responsive UI feedback
+      setTasksList((prev) =>
+        prev.map((t) =>
+          (t.id === taskId || t._id === taskId) ? { ...t, status: "active", moderation_status: "approved" } : t
+        )
+      );
 
-      if (dbErr) console.warn("Supabase update error:", dbErr);
+      // Direct Supabase update - execute on all 3 possible tables to ensure matching row is updated
+      await Promise.allSettled([
+        supabase
+          .from("marketplace_tasks")
+          .update({
+            status: "active",
+            moderation_status: "approved",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", taskId),
+        supabase
+          .from("advert_tasks")
+          .update({
+            status: "active",
+            moderation_status: "approved",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", taskId),
+        supabase
+          .from("engagement_tasks")
+          .update({
+            status: "active",
+            moderation_status: "approved",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", taskId),
+      ]);
 
-      // Try API as well
+      // Try API as well if backend handler exists
       try {
         await axios.put(
           "/api/v1/admin/task",
           {
-            id: task.id,
-            sourceTable: table,
+            id: taskId,
+            sourceTable: task.sourceTable || "marketplace_tasks",
             status: "active",
             moderationStatus: "approved",
           },
           { headers: { "x-user-id": currentUser?.id } }
         );
       } catch (apiErr) {
-        // Supabase already updated
+        // Backend optional
       }
 
       // In-app notification to creator
@@ -1062,32 +1199,62 @@ const AdminDashboard = () => {
       showFeedback("success", `Campaign "${task.title}" approved and published live to marketplace!`);
       await fetchTasks();
     } catch (err) {
+      console.error("Approve task error:", err);
       showFeedback("error", err.message || "Failed to approve task");
+      await fetchTasks();
     } finally {
-      setActionLoading((prev) => ({ ...prev, [task.id]: null }));
+      setActionLoading((prev) => ({ ...prev, [taskId]: null }));
     }
   };
 
   const handleDisapproveTask = async (task) => {
+    const taskId = task.id || task._id;
+    if (!taskId) return;
     const reason = window.prompt("Enter rejection reason for creator (escrow budget will be refunded to their wallet):", "Task does not follow community guidelines");
     if (reason === null) return;
 
     try {
-      setActionLoading((prev) => ({ ...prev, [task.id]: "rejecting" }));
-      const table = task.sourceTable || "marketplace_tasks";
+      setActionLoading((prev) => ({ ...prev, [taskId]: "rejecting" }));
       const creatorId = task.user_id || task.creator_id || task.userId || task.creatorId;
       const budgetToRefund = Number(task.amount_paid || task.total_budget || ((task.number_of_tasks || task.total_slots || 10) * (task.earner_fee || task.reward_per_worker || 50) * 1.3) || 0);
 
-      // Direct Supabase update
-      await supabase
-        .from(table)
-        .update({
-          status: "rejected",
-          moderation_status: "rejected",
-          moderation_notes: reason,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", task.id);
+      // Optimistic local state update
+      setTasksList((prev) =>
+        prev.map((t) =>
+          (t.id === taskId || t._id === taskId) ? { ...t, status: "rejected", moderation_status: "rejected", moderation_notes: reason } : t
+        )
+      );
+
+      // Direct Supabase update on all 3 tables
+      await Promise.allSettled([
+        supabase
+          .from("marketplace_tasks")
+          .update({
+            status: "rejected",
+            moderation_status: "rejected",
+            moderation_notes: reason,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", taskId),
+        supabase
+          .from("advert_tasks")
+          .update({
+            status: "rejected",
+            moderation_status: "rejected",
+            moderation_notes: reason,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", taskId),
+        supabase
+          .from("engagement_tasks")
+          .update({
+            status: "rejected",
+            moderation_status: "rejected",
+            moderation_notes: reason,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", taskId),
+      ]);
 
       // Refund escrow budget to creator wallet
       if (creatorId && budgetToRefund > 0) {
@@ -1114,8 +1281,8 @@ const AdminDashboard = () => {
         await axios.put(
           "/api/v1/admin/task",
           {
-            id: task.id,
-            sourceTable: table,
+            id: taskId,
+            sourceTable: task.sourceTable || "marketplace_tasks",
             status: "rejected",
             moderationStatus: "rejected",
             moderationNotes: reason,
@@ -1147,14 +1314,14 @@ const AdminDashboard = () => {
     } catch (err) {
       showFeedback("error", err.message || "Failed to reject task");
     } finally {
-      setActionLoading((prev) => ({ ...prev, [task.id]: null }));
+      setActionLoading((prev) => ({ ...prev, [taskId]: null }));
     }
   };
 
   const openTaskEditor = (task) => {
     setEditingTask(task);
     setTaskEditForm({
-      id: task.id,
+      id: task.id || task._id,
       sourceTable: task.sourceTable || "marketplace_tasks",
       title: task.title || "",
       description: task.description || "",
@@ -1174,30 +1341,38 @@ const AdminDashboard = () => {
     try {
       setSavingUser(true);
       const nextStatus = publishLive ? "active" : taskEditForm.status;
-      const table = taskEditForm.sourceTable || "marketplace_tasks";
+      const taskId = taskEditForm.id;
 
-      // Direct Supabase update
-      const updatePayload = {
+      // Direct Supabase update across potential tables
+      const updatePayloadMkt = {
         title: taskEditForm.title,
         status: nextStatus,
         moderation_status: nextStatus === "active" ? "approved" : nextStatus,
         moderation_notes: taskEditForm.moderationNotes || null,
+        reward_per_worker: Number(taskEditForm.earnerFee) || 50,
+        total_slots: Number(taskEditForm.numberOfTasks) || 10,
+        target_url: taskEditForm.actionLink || taskEditForm.targetUrl || null,
+        instructions: taskEditForm.instructions || taskEditForm.description || "",
         updated_at: new Date().toISOString(),
       };
 
-      if (table === "marketplace_tasks") {
-        updatePayload.reward_per_worker = Number(taskEditForm.earnerFee) || 50;
-        updatePayload.total_slots = Number(taskEditForm.numberOfTasks) || 10;
-        updatePayload.target_url = taskEditForm.actionLink || taskEditForm.targetUrl || null;
-        updatePayload.instructions = taskEditForm.instructions || taskEditForm.description || "";
-      } else {
-        updatePayload.earner_fee = Number(taskEditForm.earnerFee) || 50;
-        updatePayload.number_of_tasks = Number(taskEditForm.numberOfTasks) || 10;
-        updatePayload.action_link = taskEditForm.actionLink || taskEditForm.targetUrl || null;
-        updatePayload.instructions = taskEditForm.instructions || taskEditForm.description || "";
-      }
+      const updatePayloadAdv = {
+        title: taskEditForm.title,
+        status: nextStatus,
+        moderation_status: nextStatus === "active" ? "approved" : nextStatus,
+        moderation_notes: taskEditForm.moderationNotes || null,
+        earner_fee: Number(taskEditForm.earnerFee) || 50,
+        number_of_tasks: Number(taskEditForm.numberOfTasks) || 10,
+        action_link: taskEditForm.actionLink || taskEditForm.targetUrl || null,
+        instructions: taskEditForm.instructions || taskEditForm.description || "",
+        updated_at: new Date().toISOString(),
+      };
 
-      await supabase.from(table).update(updatePayload).eq("id", taskEditForm.id);
+      await Promise.allSettled([
+        supabase.from("marketplace_tasks").update(updatePayloadMkt).eq("id", taskId),
+        supabase.from("advert_tasks").update(updatePayloadAdv).eq("id", taskId),
+        supabase.from("engagement_tasks").update(updatePayloadAdv).eq("id", taskId),
+      ]);
 
       try {
         await axios.put(
@@ -1224,15 +1399,27 @@ const AdminDashboard = () => {
   };
 
   const handleToggleTaskStatus = async (task, nextStatus) => {
+    const taskId = task.id || task._id;
+    if (!taskId) return;
     try {
-      const table = task.sourceTable || "marketplace_tasks";
-      await supabase.from(table).update({ status: nextStatus, updated_at: new Date().toISOString() }).eq("id", task.id);
+      setTasksList((prev) =>
+        prev.map((t) =>
+          (t.id === taskId || t._id === taskId) ? { ...t, status: nextStatus } : t
+        )
+      );
+
+      await Promise.allSettled([
+        supabase.from("marketplace_tasks").update({ status: nextStatus, updated_at: new Date().toISOString() }).eq("id", taskId),
+        supabase.from("advert_tasks").update({ status: nextStatus, updated_at: new Date().toISOString() }).eq("id", taskId),
+        supabase.from("engagement_tasks").update({ status: nextStatus, updated_at: new Date().toISOString() }).eq("id", taskId),
+      ]);
+
       try {
         await axios.put(
           "/api/v1/admin/task",
           {
-            id: task.id,
-            sourceTable: table,
+            id: taskId,
+            sourceTable: task.sourceTable || "marketplace_tasks",
             status: nextStatus,
           },
           { headers: { "x-user-id": currentUser?.id } }
@@ -1246,12 +1433,20 @@ const AdminDashboard = () => {
   };
 
   const handleDeleteTask = async (task) => {
+    const taskId = task.id || task._id;
+    if (!taskId) return;
     if (!window.confirm(`Delete task "${task.title}" permanently?`)) return;
     try {
-      const table = task.sourceTable || "marketplace_tasks";
-      await supabase.from(table).delete().eq("id", task.id);
+      setTasksList((prev) => prev.filter((t) => t.id !== taskId && t._id !== taskId));
+
+      await Promise.allSettled([
+        supabase.from("marketplace_tasks").delete().eq("id", taskId),
+        supabase.from("advert_tasks").delete().eq("id", taskId),
+        supabase.from("engagement_tasks").delete().eq("id", taskId),
+      ]);
+
       try {
-        await axios.delete(`/api/v1/admin/task?id=${task.id}&sourceTable=${table}`, {
+        await axios.delete(`/api/v1/admin/task?id=${taskId}&sourceTable=${task.sourceTable || "marketplace_tasks"}`, {
           headers: { "x-user-id": currentUser?.id },
         });
       } catch {}
@@ -1450,13 +1645,17 @@ const AdminDashboard = () => {
     }
   };
 
-  // Filters
+  // Filters & Paginated Slices
   const filteredWithdrawals = withdrawals.filter((w) => {
     if (withdrawalFilter === "pending") return w.status === "pending";
     if (withdrawalFilter === "approved") return w.status === "approved";
     if (withdrawalFilter === "disapproved") return w.status === "disapproved";
     return true;
   });
+  const paginatedWithdrawals = filteredWithdrawals.slice(
+    (withdrawalsPage - 1) * ITEMS_PER_PAGE,
+    withdrawalsPage * ITEMS_PER_PAGE
+  );
 
   const filteredUsers = usersList.filter((u) => {
     if (!userSearch) return true;
@@ -1468,6 +1667,10 @@ const AdminDashboard = () => {
       u.lastname?.toLowerCase().includes(q)
     );
   });
+  const paginatedUsers = filteredUsers.slice(
+    (usersPage - 1) * ITEMS_PER_PAGE,
+    usersPage * ITEMS_PER_PAGE
+  );
 
   const pendingTasksCount = tasksList.filter((t) => t.status === "pending").length;
 
@@ -1479,6 +1682,10 @@ const AdminDashboard = () => {
     if (taskFilter === "completed") return t.status === "completed";
     return true;
   });
+  const paginatedTasks = filteredTasks.slice(
+    (tasksPage - 1) * ITEMS_PER_PAGE,
+    tasksPage * ITEMS_PER_PAGE
+  );
 
   const filteredFundings = fundings.filter((f) => {
     if (fundingFilter === "success") return f.status === "success";
@@ -1486,6 +1693,15 @@ const AdminDashboard = () => {
     if (fundingFilter === "failed") return f.status === "failed" || f.status === "cancelled";
     return true;
   });
+  const paginatedFundings = filteredFundings.slice(
+    (fundingsPage - 1) * ITEMS_PER_PAGE,
+    fundingsPage * ITEMS_PER_PAGE
+  );
+
+  const paginatedSubmissions = submissions.slice(
+    (submissionsPage - 1) * ITEMS_PER_PAGE,
+    submissionsPage * ITEMS_PER_PAGE
+  );
 
   return (
     <ClientLayout>
@@ -1796,7 +2012,7 @@ const AdminDashboard = () => {
                         </td>
                       </tr>
                     ) : (
-                      filteredUsers.map((u) => {
+                      paginatedUsers.map((u) => {
                         const isAdmin = u.role === "admin";
                         const isBanned = u.isBanned || u.is_banned;
                         return (
@@ -1876,6 +2092,12 @@ const AdminDashboard = () => {
                     )}
                   </tbody>
                 </table>
+                <TablePagination
+                  currentPage={usersPage}
+                  totalItems={filteredUsers.length}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  onPageChange={setUsersPage}
+                />
               </div>
             </div>
           )
@@ -2421,7 +2643,7 @@ const AdminDashboard = () => {
                         </td>
                       </tr>
                     ) : (
-                      filteredWithdrawals.map((w) => {
+                      paginatedWithdrawals.map((w) => {
                         const isPending = w.status === "pending";
                         const isApproved = w.status === "approved";
                         return (
@@ -2480,6 +2702,12 @@ const AdminDashboard = () => {
                     )}
                   </tbody>
                 </table>
+                <TablePagination
+                  currentPage={withdrawalsPage}
+                  totalItems={filteredWithdrawals.length}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  onPageChange={setWithdrawalsPage}
+                />
               </div>
             </div>
           )
@@ -2533,7 +2761,7 @@ const AdminDashboard = () => {
                         </td>
                       </tr>
                     ) : (
-                      filteredFundings.map((f) => {
+                      paginatedFundings.map((f) => {
                         const isPending = f.status === "pending";
                         const isSuccess = f.status === "success";
                         const rawMethod = String(f.paymentMethod || f.payment_method || "PocketFi Virtual Account")
@@ -2627,6 +2855,12 @@ const AdminDashboard = () => {
                     )}
                   </tbody>
                 </table>
+                <TablePagination
+                  currentPage={fundingsPage}
+                  totalItems={filteredFundings.length}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  onPageChange={setFundingsPage}
+                />
               </div>
             </div>
           )
@@ -2692,7 +2926,7 @@ const AdminDashboard = () => {
                         </td>
                       </tr>
                     ) : (
-                      filteredTasks.map((t) => {
+                      paginatedTasks.map((t) => {
                         const isPending = t.status === "pending";
                         const isActive = t.status === "active" || t.status === "running";
                         const isPaused = t.status === "paused";
@@ -2753,25 +2987,40 @@ const AdminDashboard = () => {
                                 {isPending && (
                                   <>
                                     <button
-                                      onClick={() => handleApproveTask(t)}
-                                      disabled={actionLoading[t.id] === "approving"}
-                                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs shadow-xs transition-colors cursor-pointer flex items-center gap-1 disabled:opacity-50"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleApproveTask(t);
+                                      }}
+                                      disabled={actionLoading[t.id || t._id] === "approving"}
+                                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs shadow-xs transition-colors cursor-pointer flex items-center gap-1 disabled:opacity-50 active:scale-95"
                                     >
                                       <FiCheck size={12} />
-                                      <span>Approve & Publish</span>
+                                      <span>{actionLoading[t.id || t._id] === "approving" ? "Publishing..." : "Approve & Publish"}</span>
                                     </button>
                                     <button
-                                      onClick={() => openTaskEditor(t)}
-                                      className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-colors cursor-pointer flex items-center gap-1"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        openTaskEditor(t);
+                                      }}
+                                      className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-colors cursor-pointer flex items-center gap-1 active:scale-95"
                                       title="Edit Campaign Before Approving"
                                     >
                                       <FiEdit size={12} />
                                       <span>Edit</span>
                                     </button>
                                     <button
-                                      onClick={() => handleDisapproveTask(t)}
-                                      disabled={actionLoading[t.id] === "rejecting"}
-                                      className="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold rounded-xl text-xs transition-colors cursor-pointer disabled:opacity-50"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleDisapproveTask(t);
+                                      }}
+                                      disabled={actionLoading[t.id || t._id] === "rejecting"}
+                                      className="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold rounded-xl text-xs transition-colors cursor-pointer disabled:opacity-50 active:scale-95"
                                     >
                                       Reject
                                     </button>
@@ -2781,21 +3030,36 @@ const AdminDashboard = () => {
                                 {isActive && (
                                   <>
                                     <button
-                                      onClick={() => handleToggleTaskStatus(t, "paused")}
-                                      className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-lg text-xs font-bold cursor-pointer"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleToggleTaskStatus(t, "paused");
+                                      }}
+                                      className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-lg text-xs font-bold cursor-pointer active:scale-95"
                                     >
                                       Pause
                                     </button>
                                     <button
-                                      onClick={() => openTaskEditor(t)}
-                                      className="p-1.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        openTaskEditor(t);
+                                      }}
+                                      className="p-1.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer active:scale-95"
                                       title="Edit Task"
                                     >
                                       <FiEdit size={14} />
                                     </button>
                                     <button
-                                      onClick={() => handleDeleteTask(t)}
-                                      className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleDeleteTask(t);
+                                      }}
+                                      className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer active:scale-95"
                                       title="Delete Task"
                                     >
                                       <FiTrash2 size={14} />
@@ -2806,21 +3070,36 @@ const AdminDashboard = () => {
                                 {isPaused && (
                                   <>
                                     <button
-                                      onClick={() => handleToggleTaskStatus(t, "active")}
-                                      className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold cursor-pointer"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleToggleTaskStatus(t, "active");
+                                      }}
+                                      className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold cursor-pointer active:scale-95"
                                     >
                                       Activate
                                     </button>
                                     <button
-                                      onClick={() => openTaskEditor(t)}
-                                      className="p-1.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        openTaskEditor(t);
+                                      }}
+                                      className="p-1.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer active:scale-95"
                                       title="Edit Task"
                                     >
                                       <FiEdit size={14} />
                                     </button>
                                     <button
-                                      onClick={() => handleDeleteTask(t)}
-                                      className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleDeleteTask(t);
+                                      }}
+                                      className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer active:scale-95"
                                       title="Delete Task"
                                     >
                                       <FiTrash2 size={14} />
@@ -2857,6 +3136,12 @@ const AdminDashboard = () => {
                     )}
                   </tbody>
                 </table>
+                <TablePagination
+                  currentPage={tasksPage}
+                  totalItems={filteredTasks.length}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  onPageChange={setTasksPage}
+                />
               </div>
 
               {/* Task Edit & Moderation Modal */}
@@ -3075,7 +3360,7 @@ const AdminDashboard = () => {
                         </td>
                       </tr>
                     ) : (
-                      submissions.map((sub) => {
+                      paginatedSubmissions.map((sub) => {
                         const isPending = sub.status === "in_review" || sub.status === "pending" || sub.status === "submitted";
                         const isApproved = sub.status === "approved" || sub.status === "auto_approved";
                         const proofImg = sub.proof_url || sub.image_proof || sub.screenshot || (Array.isArray(sub.proof_urls) ? sub.proof_urls[0] : null);
@@ -3149,6 +3434,12 @@ const AdminDashboard = () => {
                     )}
                   </tbody>
                 </table>
+                <TablePagination
+                  currentPage={submissionsPage}
+                  totalItems={submissions.length}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  onPageChange={setSubmissionsPage}
+                />
               </div>
             </div>
           )

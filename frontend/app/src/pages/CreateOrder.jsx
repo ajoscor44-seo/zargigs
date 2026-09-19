@@ -256,7 +256,7 @@ const CreateOrder = () => {
         await supabase.from("users").update({ balance: userBal - totalBudget, updated_at: new Date().toISOString() }).eq("id", currentUser?.id);
 
         // Insert engagement_task with status = 'pending'
-        const { data: engTask, error: engErr } = await supabase.from("engagement_tasks").insert({
+        const baseTaskData = {
           user_id: currentUser?.id,
           title: payload.title || "Engagement Task",
           platform: payload.taskPlatform || "instagram",
@@ -266,11 +266,32 @@ const CreateOrder = () => {
           earner_fee: Number(payload.amountToEarn || 20),
           status: "pending",
           action_link: payload.link,
-          instructions: payload.instructions || `Complete the engagement task on ${payload.taskPlatform || "social media"}.`,
           created_at: new Date().toISOString(),
-        }).select().single();
+        };
 
-        if (engErr) throw engErr;
+        let engTask = null;
+        const { data: firstTry, error: engErr } = await supabase
+          .from("engagement_tasks")
+          .insert({
+            ...baseTaskData,
+            instructions: payload.instructions || `Complete the engagement task on ${payload.taskPlatform || "social media"}.`,
+          })
+          .select()
+          .single();
+
+        if (engErr) {
+          // If the schema cache is missing 'instructions', retry with base columns
+          const { data: retryData, error: retryErr } = await supabase
+            .from("engagement_tasks")
+            .insert(baseTaskData)
+            .select()
+            .single();
+
+          if (retryErr) throw retryErr;
+          engTask = retryData;
+        } else {
+          engTask = firstTry;
+        }
 
         // Log transaction
         await supabase.from("transactions").insert({

@@ -8,6 +8,9 @@ import { Link } from "react-router-dom/cjs/react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 
+import { userService, bankService, walletService } from "../../services/supabaseService";
+import { supabase } from "../../config/supabase.config";
+
 const Transfer = () => {
   const [toastNotifications, setToastNotifications] = useState([]);
   const { adminData, currentUser, fetchUserData } = useAuth();
@@ -17,46 +20,73 @@ const Transfer = () => {
   const [transferError, setTransferError] = useState(null);
   const [makingTransfer, setMakingTransfer] = useState(false);
   const [password, setPassword] = useState("");
-  const balance = currentUser?.userEarnings?.balance || 0;
+  const balance = currentUser?.balance || currentUser?.userEarnings?.balance || 0;
   const charges = adminData?.withdrawalCharges || 0;
   const amountTransferable = balance > charges ? balance - charges : 0;
+
+  const isGoogleUser =
+    currentUser?.app_metadata?.provider === "google" ||
+    currentUser?.app_metadata?.providers?.includes("google") ||
+    currentUser?.user_metadata?.iss?.includes("google.com");
 
   const showToast = (notificationObj) => {
     setToastNotifications([...toastNotifications, notificationObj]);
     setTimeout(() => {
       setToastNotifications([]);
-      window.location.reload();
-    }, 2800);
+    }, 3000);
   };
 
   const makeTransfer = async () => {
     try {
-      if (!amount || !password || !receiverUsername) {
-        return setTransferError("Please fill in receiver username, amount, and your login password.");
+      if (!receiverUsername || !receiverUsername.trim()) {
+        return setTransferError("Please enter the recipient username.");
+      }
+      if (!amount || Number(amount) <= 0) {
+        return setTransferError("Please enter a valid transfer amount.");
+      }
+      if (!isGoogleUser && !password) {
+        return setTransferError("Please enter your account password for security verification.");
       }
       if (Number(balance) - Number(amount) - Number(charges) < 0) {
         return setTransferError("Insufficient balance to cover transfer amount + fee.");
       }
-      const transfer_data = {
-        receiver: receiverUsername.trim().toLowerCase(),
-        amount: Number(amount),
-        password,
-        charges,
-      };
+
       setMakingTransfer(true);
-      const response = await axios.post("/api/v1/transfer/make", transfer_data);
+      setTransferError(null);
+
+      // If non-Google user entered a password, optional pre-verification
+      if (!isGoogleUser && password && currentUser?.email) {
+        const { error: authErr } = await supabase.auth.signInWithPassword({
+          email: currentUser.email,
+          password,
+        });
+        if (authErr) {
+          setMakingTransfer(false);
+          return setTransferError("Incorrect account password. Please check and try again.");
+        }
+      }
+
+      const result = await walletService.transferFunds({
+        senderId: currentUser?.id,
+        receiverUsername: receiverUsername.trim().toLowerCase(),
+        amount: Number(amount),
+        charges: Number(charges),
+      });
 
       setMakingTransfer(false);
       setTransferError(null);
+      setAmount("");
+      setReceiverUsername("");
+      setPassword("");
       await fetchUserData();
       showToast({
-        msg: `${response.data.message || "Transfer completed successfully"}`,
+        msg: result.message || "Transfer completed successfully!",
         errorType: "success",
       });
     } catch (error) {
       setMakingTransfer(false);
       setTransferError(
-        error.response?.data?.message || "Failed to process transfer"
+        error.message || "Failed to process transfer"
       );
     }
   };
@@ -173,30 +203,46 @@ const Transfer = () => {
               </p>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Account Login Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your account password"
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-hidden text-sm font-medium placeholder:text-slate-400 pr-12 rounded-2xl transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-                >
-                  {showPassword ? <BsEyeSlashFill size={18} /> : <BsEyeFill size={18} />}
-                </button>
+            {isGoogleUser ? (
+              <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200/80 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 font-bold text-xs shadow-xs">
+                  ✓
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-emerald-900">
+                    Google Authentication Verified
+                  </h4>
+                  <p className="text-[11px] text-emerald-700">
+                    Your session is authorized via {currentUser?.email || "Google"}. No password needed.
+                  </p>
+                </div>
               </div>
-              <p className="text-[11px] text-slate-400 mt-1">
-                Required for transaction verification and security.
-              </p>
-            </div>
+            ) : (
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Account Login Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your account password"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-hidden text-sm font-medium placeholder:text-slate-400 pr-12 rounded-2xl transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  >
+                    {showPassword ? <BsEyeSlashFill size={18} /> : <BsEyeFill size={18} />}
+                  </button>
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1">
+                  Required for transaction verification and security.
+                </p>
+              </div>
+            )}
 
             <div className="pt-2 space-y-3">
               <button
