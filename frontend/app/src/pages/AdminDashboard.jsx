@@ -5,7 +5,7 @@ import axios from "axios";
 import numeral from "numeral";
 import formatDate from "../hooks/formatDate";
 import { supabase } from "../config/supabase.config";
-import { bankService } from "../services/supabaseService";
+import { bankService, emailService } from "../services/supabaseService";
 import {
   FiUsers,
   FiCreditCard,
@@ -226,7 +226,7 @@ const AdminDashboard = () => {
   // Platform Settings
   const [adminSettings, setAdminSettings] = useState({
     id: "",
-    appName: "DocsZar",
+    appName: "DocsZAR",
     membershipFee: 1000,
     withdrawalCharges: 50,
     minWithdrawal: 300,
@@ -513,7 +513,7 @@ const AdminDashboard = () => {
       if (sData) {
         setAdminSettings({
           id: sData.id,
-          appName: sData.app_name || "DocsZar",
+          appName: sData.app_name || "DocsZAR",
           membershipFee: Number(sData.membership_fee) || 1000,
           withdrawalCharges: Number(sData.withdrawal_charges) || 50,
           minWithdrawal: Number(sData.min_withdrawal) || 300,
@@ -1265,17 +1265,52 @@ const AdminDashboard = () => {
   // Submission Review
   const handleReviewSubmission = async (sub, status) => {
     try {
+      const earnerId = sub.worker_id || sub.user_id || sub.userId;
+      const earnerFee = parseFloat(sub.reward || sub.reward_amount || sub.earner_fee || sub.earnerFee || 0);
+
       await axios.put(
         "/api/v1/admin/submission/review",
         {
           id: sub.id,
           status,
-          earnerId: sub.worker_id || sub.user_id || sub.userId,
-          earnerFee: sub.reward || sub.reward_amount || sub.earner_fee || sub.earnerFee || 0,
+          earnerId,
+          earnerFee,
           sourceTable: sub.sourceTable || (sub.task_id && sub.worker_id ? "task_submissions" : "proof_of_work"),
         },
         { headers: { "x-user-id": currentUser?.id } }
       );
+
+      // Asynchronously dispatch email notification to earner
+      if (earnerId) {
+        (async () => {
+          try {
+            const { data: earner } = await supabase
+              .from("users")
+              .select("id, email, firstname, username")
+              .eq("id", earnerId)
+              .maybeSingle();
+
+            if (earner?.email) {
+              if (status === "approved") {
+                emailService.sendTaskApprovedEmail({
+                  to: earner.email,
+                  name: earner.firstname || earner.username || "Earner",
+                  taskTitle: sub.taskTitle || sub.title || "Marketplace Task",
+                  reward: earnerFee,
+                }).catch(() => {});
+              } else if (status === "rejected") {
+                emailService.sendTaskRejectedEmail({
+                  to: earner.email,
+                  name: earner.firstname || earner.username || "Earner",
+                  taskTitle: sub.taskTitle || sub.title || "Marketplace Task",
+                  reason: "Proof does not match required instructions.",
+                }).catch(() => {});
+              }
+            }
+          } catch {}
+        })();
+      }
+
       showFeedback("success", `Submission marked as ${status.toUpperCase()}!`);
       await fetchSubmissions();
     } catch (err) {
@@ -1344,7 +1379,7 @@ const AdminDashboard = () => {
     try {
       setSavingSettings(true);
       const payload = {
-        app_name: adminSettings.appName || "DocsZar",
+        app_name: adminSettings.appName || "DocsZAR",
         membership_fee: Number(adminSettings.membershipFee) || 1000,
         min_withdrawal: Number(adminSettings.minWithdrawal) || 300,
         withdrawal_charges: Number(adminSettings.withdrawalCharges) || 50,

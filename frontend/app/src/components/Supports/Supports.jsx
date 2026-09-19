@@ -5,7 +5,7 @@ import { FiChevronRight } from "react-icons/fi";
 const Supports = () => {
   return (
     <a
-      href="https://wa.me/2349027662488?text=Hello%20DocsZar%20Support%2C%20I%20need%20assistance"
+      href="https://wa.me/2349027662488?text=Hello%20DocsZAR%20Support%2C%20I%20need%20assistance"
       target="_blank"
       rel="noreferrer"
       className="bg-white hover:bg-emerald-50/50 rounded-3xl p-6 shadow-sm border border-slate-100/80 transition-all flex items-center justify-between group cursor-pointer"

@@ -231,24 +231,55 @@ export const authService = {
     if (tokenHash) {
       params.token_hash = tokenHash;
     } else {
-      params.email = email;
-      params.token = token;
+      params.email = (email || "").trim().toLowerCase();
+      params.token = (token || "").trim();
     }
-    const { data, error } = await supabase.auth.verifyOtp(params);
-    if (error) throw error;
+
+    let { data, error } = await supabase.auth.verifyOtp(params);
+
+    // If type 'signup' fails, try 'email' as fallback if token & email provided
+    if (error && !tokenHash && params.email && params.token && type === "signup") {
+      const fallbackRes = await supabase.auth.verifyOtp({
+        email: params.email,
+        token: params.token,
+        type: "email",
+      });
+      if (!fallbackRes.error && fallbackRes.data) {
+        data = fallbackRes.data;
+        error = null;
+      }
+    }
+
+    if (error) {
+      const msg = error.message || "";
+      if (msg.toLowerCase().includes("rate limit") || msg.toLowerCase().includes("over_email_send_rate_limit")) {
+        throw new Error("Rate limit exceeded. Please wait a few moments before trying again.");
+      }
+      if (msg.toLowerCase().includes("invalid") || msg.toLowerCase().includes("expired")) {
+        throw new Error("The verification code is invalid or has expired. Please request a new code.");
+      }
+      throw error;
+    }
     return data;
   },
 
   async resendVerification({ email, type = "signup" }) {
+    const cleanEmail = (email || "").trim().toLowerCase();
     const emailRedirectTo = typeof window !== "undefined" ? `${window.location.origin}/verify-email` : undefined;
     const { data, error } = await supabase.auth.resend({
       type,
-      email,
+      email: cleanEmail,
       options: {
         emailRedirectTo,
       },
     });
-    if (error) throw error;
+    if (error) {
+      const msg = error.message || "";
+      if (msg.toLowerCase().includes("rate limit") || msg.toLowerCase().includes("over_email_send_rate_limit")) {
+        throw new Error("Email sending rate limit reached. Please wait a few minutes before requesting another code.");
+      }
+      throw error;
+    }
     return data;
   },
 
@@ -488,6 +519,11 @@ export const userService = {
   },
 
   async updateProfile(userId, updates) {
+    if (!userId) {
+      const { data: authData } = await supabase.auth.getUser();
+      userId = authData?.user?.id;
+    }
+
     const userPayload = {};
     if (updates.firstname !== undefined) userPayload.firstname = updates.firstname;
     if (updates.lastname !== undefined) userPayload.lastname = updates.lastname;
@@ -507,34 +543,53 @@ export const userService = {
     if (updates.accountNumber !== undefined) userPayload.account_number = updates.accountNumber;
     if (updates.accountName !== undefined) userPayload.account_name = updates.accountName;
 
-    if (Object.keys(userPayload).length > 0) {
-      await supabase
+    if (userId && Object.keys(userPayload).length > 0) {
+      const { error: updateErr } = await supabase
         .from("users")
         .update(userPayload)
         .eq("id", userId);
+
+      if (updateErr) {
+        console.warn("User table update retry by email:", updateErr.message);
+        const { data: authData } = await supabase.auth.getUser();
+        if (authData?.user?.email) {
+          await supabase
+            .from("users")
+            .update(userPayload)
+            .eq("email", authData.user.email);
+        }
+      }
     }
 
-    // Update user_details table if details provided
+    // Update user_details table with only its existing columns
     const detailsPayload = {};
     if (updates.gender !== undefined) detailsPayload.gender = updates.gender;
-    if (updates.device !== undefined || updates.deviceType !== undefined || updates.device_type !== undefined) {
-      detailsPayload.device = updates.device || updates.deviceType || updates.device_type;
-    }
     if (updates.state !== undefined) detailsPayload.state = updates.state;
-    if (updates.country !== undefined) detailsPayload.country = updates.country;
     if (updates.lga !== undefined) detailsPayload.lga = updates.lga;
-    if (updates.religion !== undefined) detailsPayload.religion = updates.religion;
     if (updates.bankName !== undefined) detailsPayload.bank_name = updates.bankName;
     if (updates.accountNumber !== undefined) detailsPayload.account_number = updates.accountNumber;
     if (updates.accountName !== undefined) detailsPayload.account_name = updates.accountName;
 
-    if (Object.keys(detailsPayload).length > 0) {
+    if (userId && Object.keys(detailsPayload).length > 0) {
       try {
-        await supabase
+        const { data: existingDetails } = await supabase
           .from("user_details")
-          .upsert({ user_id: userId, ...detailsPayload }, { onConflict: "user_id" });
+          .select("id")
+          .eq("user_id", userId)
+          .maybeSingle();
+
+        if (existingDetails) {
+          await supabase
+            .from("user_details")
+            .update({ ...detailsPayload, updated_at: new Date().toISOString() })
+            .eq("user_id", userId);
+        } else {
+          await supabase
+            .from("user_details")
+            .insert({ user_id: userId, ...detailsPayload });
+        }
       } catch (err) {
-        console.warn("Details update notice:", err);
+        console.warn("user_details update notice:", err);
       }
     }
 
@@ -990,6 +1045,48 @@ export const taskService = {
         .eq("id", taskId);
     } catch {}
 
+    // 5. Notify Campaign Creator via Email & in-app notification
+    const creatorUserId = task.creator_id || task.user_id;
+    if (creatorUserId && creatorUserId !== workerUserId) {
+      (async () => {
+        try {
+          const { data: creatorUser } = await supabase
+            .from("users")
+            .select("id, email, firstname, username")
+            .eq("id", creatorUserId)
+            .maybeSingle();
+
+          const { data: workerUser } = await supabase
+            .from("users")
+            .select("username")
+            .eq("id", workerUserId)
+            .maybeSingle();
+
+          if (creatorUser?.email) {
+            emailService.sendNewSubmissionEmail({
+              to: creatorUser.email,
+              name: creatorUser.firstname || creatorUser.username || "Creator",
+              taskTitle: task.title || "Campaign Task",
+              workerUsername: workerUser?.username || "earner",
+              manageUrl: `https://www.docszar.com/creator/campaigns/${taskId}`,
+            }).catch(() => {});
+          }
+
+          // Check if campaign reached target
+          const newCompleted = (task.slots_completed || 0) + 1;
+          const totalSlots = task.slots_total || task.number_of_tasks || 1;
+          if (newCompleted >= totalSlots && creatorUser?.email) {
+            emailService.sendCampaignCompletedEmail({
+              to: creatorUser.email,
+              name: creatorUser.firstname || creatorUser.username || "Creator",
+              taskTitle: task.title || "Campaign Task",
+              totalParticipants: totalSlots,
+            }).catch(() => {});
+          }
+        } catch {}
+      })();
+    }
+
     return formatRecord(submission);
   },
 
@@ -1021,6 +1118,16 @@ export const taskService = {
       console.warn(`Error inserting into ${tableName}:`, error.message);
       return payload;
     }
+
+    // Broadcast Earner Alerts (Instant email for >= ₦100, Daily Digest for < ₦100)
+    emailService.broadcastNewTaskAlert({
+      taskTitle: taskData.title || (isAdvert ? "Social Status Advert" : "Social Engagement Task"),
+      reward: taskData.costPerTask || 50,
+      platform: taskData.platform || "social",
+      availableSlots: taskData.totalParticipants || taskData.quantity || 10,
+      taskUrl: isAdvert ? "https://www.docszar.com/earn/whatsapp-status" : "https://www.docszar.com/earn/instagram-followers",
+    }).catch(() => {});
+
     return formatRecord(data);
   },
 
@@ -1484,7 +1591,7 @@ export const walletService = {
         user_id: userId,
         bank_name: (accountData.bankName || "PAGA").toUpperCase(),
         account_number: String(accountData.accountNumber).trim(),
-        account_name: accountData.accountName || "DocsZar Earner",
+        account_name: accountData.accountName || "DocsZAR Earner",
         provider: "pocketfi",
         currency: "NGN",
         updated_at: new Date().toISOString(),
@@ -1494,7 +1601,7 @@ export const walletService = {
       await supabase.from("user_details").update({
         virtual_account_bank: (accountData.bankName || "PAGA").toUpperCase(),
         virtual_account_number: String(accountData.accountNumber).trim(),
-        virtual_account_name: accountData.accountName || "DocsZar Earner",
+        virtual_account_name: accountData.accountName || "DocsZAR Earner",
         updated_at: new Date().toISOString(),
       }).eq("user_id", userId);
 
@@ -1565,7 +1672,7 @@ export const adminService = {
 
       if (error || !data) {
         return {
-          appName: "DocsZar",
+          appName: "DocsZAR",
           membershipFee: 1000,
           withdrawalCharges: 50,
           minWithdrawal: 300,
@@ -1573,14 +1680,14 @@ export const adminService = {
           fundingAccount: {
             bankName: "Moniepoint",
             accountNumber: "8123456789",
-            accountName: "DocsZar Technologies",
+            accountName: "DocsZAR Technologies",
           },
         };
       }
       return formatRecord(data);
     } catch {
       return {
-        appName: "DocsZar",
+        appName: "DocsZAR",
         membershipFee: 1000,
         withdrawalCharges: 50,
         minWithdrawal: 300,
@@ -1588,7 +1695,7 @@ export const adminService = {
         fundingAccount: {
           bankName: "Moniepoint",
           accountNumber: "8123456789",
-          accountName: "DocsZar Technologies",
+          accountName: "DocsZAR Technologies",
         },
       };
     }
@@ -1600,26 +1707,161 @@ export const adminService = {
 // ==============================================================================
 
 export const emailService = {
-  async sendEmail({ to, subject, type, data, name, senderName = "Joscor of ZAR" }) {
+  async sendEmail({ to, subject, type, data, name, senderName = "Joscor from DocsZAR" }) {
     if (!to) return null;
     try {
       const res = await supabase.functions.invoke("send-email", {
         body: { to, subject, type, data, name, senderName },
       });
-      return res.data;
-    } catch (err) {
-      console.warn("Failed to dispatch transactional email:", err.message);
+      return res?.data || null;
+    } catch {
       return null;
     }
   },
 
   async sendWelcomeEmail({ to, name }) {
-    return this.sendEmail({
-      to,
-      name,
-      type: "welcome_email",
-      senderName: "Joscor of ZAR",
-    });
+    try {
+      return await this.sendEmail({
+        to,
+        name,
+        type: "welcome_email",
+        senderName: "Joscor from DocsZAR",
+      });
+    } catch {
+      return null;
+    }
+  },
+
+  async sendTaskApprovedEmail({ to, name, taskTitle, reward }) {
+    try {
+      return await this.sendEmail({
+        to,
+        name,
+        type: "task_approved",
+        data: { taskTitle, reward },
+        senderName: "DocsZAR Rewards",
+      });
+    } catch {
+      return null;
+    }
+  },
+
+  async sendTaskRejectedEmail({ to, name, taskTitle, reason }) {
+    try {
+      return await this.sendEmail({
+        to,
+        name,
+        type: "task_rejected",
+        data: { taskTitle, reason },
+        senderName: "DocsZAR Task Team",
+      });
+    } catch {
+      return null;
+    }
+  },
+
+  async sendNewSubmissionEmail({ to, name, taskTitle, workerUsername, manageUrl }) {
+    try {
+      return await this.sendEmail({
+        to,
+        name,
+        type: "new_submission",
+        data: { taskTitle, workerUsername, manageUrl },
+        senderName: "DocsZAR Campaigns",
+      });
+    } catch {
+      return null;
+    }
+  },
+
+  async sendCampaignCompletedEmail({ to, name, taskTitle, totalParticipants }) {
+    try {
+      return await this.sendEmail({
+        to,
+        name,
+        type: "campaign_completed",
+        data: { taskTitle, totalParticipants },
+        senderName: "DocsZAR Campaigns",
+      });
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Broadcasts alerts when new tasks are available:
+   * - High-price tasks (>= ₦100): Instant alert sent immediately to earners
+   * - Low-price tasks (< ₦100): Daily digest sent at most once every 24 hours
+   */
+  async broadcastNewTaskAlert({ taskTitle, reward, platform, availableSlots, taskUrl }) {
+    const rewardNum = parseFloat(reward || 0);
+    const isHighPaying = rewardNum >= 100;
+
+    try {
+      if (isHighPaying) {
+        // High Paying Task Alert: Send instant alert to verified earners
+        const { data: earners } = await supabase
+          .from("users")
+          .select("id, email, firstname, username")
+          .eq("is_email_verified", true)
+          .limit(25);
+
+        if (earners && earners.length > 0) {
+          for (const earner of earners) {
+            if (earner.email) {
+              this.sendEmail({
+                to: earner.email,
+                name: earner.firstname || earner.username || "Earner",
+                type: "high_paying_task_alert",
+                data: {
+                  taskTitle,
+                  reward: rewardNum,
+                  platform: platform || "Social Gig",
+                  availableSlots: availableSlots || "Limited",
+                  taskUrl: taskUrl || "https://www.docszar.com/tasks",
+                },
+                senderName: "DocsZAR High-Reward Alerts",
+              }).catch(() => {});
+            }
+          }
+        }
+      } else {
+        // Low Price Task: Send daily digest at most once every 24 hours
+        const lastSentKey = "docszar_last_daily_task_digest";
+        const lastSent = typeof localStorage !== "undefined" ? localStorage.getItem(lastSentKey) : null;
+        const oneDayMs = 24 * 60 * 60 * 1000;
+
+        if (!lastSent || Date.now() - Number(lastSent) > oneDayMs) {
+          if (typeof localStorage !== "undefined") {
+            localStorage.setItem(lastSentKey, String(Date.now()));
+          }
+
+          const { data: earners } = await supabase
+            .from("users")
+            .select("id, email, firstname, username")
+            .eq("is_email_verified", true)
+            .limit(25);
+
+          if (earners && earners.length > 0) {
+            for (const earner of earners) {
+              if (earner.email) {
+                this.sendEmail({
+                  to: earner.email,
+                  name: earner.firstname || earner.username || "Earner",
+                  type: "daily_task_digest",
+                  data: {
+                    totalEstimatedRewards: 1000,
+                  },
+                  senderName: "DocsZAR Daily Digest",
+                }).catch(() => {});
+              }
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("broadcastNewTaskAlert notice:", err.message);
+    }
   },
 };
 
@@ -1655,74 +1897,11 @@ const POPULAR_BANK_CODES = [
   "120001", // 9PSB
 ];
 
-let cachedBanks = [...NIGERIAN_BANKS];
+const verifiedAccountCache = new Map();
 
 export const bankService = {
-  // Fetch full live list of Nigerian banks from PocketFi with robust instant fallback
+  // Fetch full live list of Nigerian banks (instant synchronous fallback)
   async getBanks() {
-    if (cachedBanks && cachedBanks.length > 0) {
-      // Refresh asynchronously in background if needed
-    }
-
-    try {
-      // 1. Direct call to PocketFi API
-      const res = await fetch(`${POCKETFI_API_BASE}/payout/bank-list`, {
-        headers: {
-          Authorization: `Bearer ${POCKETFI_BEARER_TOKEN}`,
-          Accept: "application/json",
-        },
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const rawBanks = Array.isArray(data?.banks) ? data.banks : [];
-        if (rawBanks.length > 0) {
-          const formatted = rawBanks.map((b) => ({
-            id: b.id || b.code,
-            code: String(b.code).trim(),
-            name: String(b.name).trim(),
-          }));
-
-          // Sort with popular Nigerian banks first, then alphabetically
-          formatted.sort((a, b) => {
-            const aPop = POPULAR_BANK_CODES.indexOf(a.code);
-            const bPop = POPULAR_BANK_CODES.indexOf(b.code);
-            if (aPop !== -1 && bPop !== -1) return aPop - bPop;
-            if (aPop !== -1) return -1;
-            if (bPop !== -1) return 1;
-            return a.name.localeCompare(b.name);
-          });
-
-          cachedBanks = formatted;
-          return formatted;
-        }
-      }
-    } catch (err) {
-      console.warn("Direct PocketFi bank fetch notice:", err.message);
-    }
-
-    // 2. Try Supabase Edge Function proxy
-    try {
-      const edgeRes = await fetch("https://itzqsxmjyjfgtbolfhmq.supabase.co/functions/v1/pocketfi-banks", {
-        headers: { Accept: "application/json" },
-      });
-      if (edgeRes.ok) {
-        const data = await edgeRes.json();
-        const rawBanks = Array.isArray(data?.banks) ? data.banks : [];
-        if (rawBanks.length > 0) {
-          const formatted = rawBanks.map((b) => ({
-            id: b.id || b.code,
-            code: String(b.code).trim(),
-            name: String(b.name).trim(),
-          }));
-          cachedBanks = formatted;
-          return formatted;
-        }
-      }
-    } catch {
-      // Continue to fallback
-    }
-
     return cachedBanks && cachedBanks.length > 0 ? cachedBanks : NIGERIAN_BANKS;
   },
 
@@ -1735,10 +1914,13 @@ export const bankService = {
 
     let codeToUse = String(bankCode || "").trim();
 
-    // If bankCode is missing, resolve it from bankName via cached list
-    if (!codeToUse && bankName && cachedBanks) {
-      const matched = cachedBanks.find(
-        (b) => b.name.toLowerCase() === bankName.toLowerCase()
+    // If bankCode is missing or looks like legacy 3-digit code, resolve it from NIGERIAN_BANKS
+    if ((!codeToUse || codeToUse.length < 5) && bankName) {
+      const bankLookup = NIGERIAN_BANKS;
+      const matched = bankLookup.find(
+        (b) => b.name.toLowerCase() === bankName.toLowerCase() ||
+               b.name.toLowerCase().includes(bankName.toLowerCase()) ||
+               bankName.toLowerCase().includes(b.name.toLowerCase())
       );
       if (matched) codeToUse = matched.code;
     }
@@ -1747,7 +1929,15 @@ export const bankService = {
       throw new Error("Please select a bank to verify account.");
     }
 
+    const cacheKey = `${codeToUse}:${cleanNum}`;
+    if (verifiedAccountCache.has(cacheKey)) {
+      return verifiedAccountCache.get(cacheKey);
+    }
+
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6500);
+
       // Call Supabase Edge Function proxy (handles CORS & PocketFi securely)
       const edgeRes = await fetch("https://itzqsxmjyjfgtbolfhmq.supabase.co/functions/v1/pocketfi-banks", {
         method: "POST",
@@ -1759,20 +1949,42 @@ export const bankService = {
           accountNumber: cleanNum,
           bankCode: codeToUse,
         }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
 
       const edgeData = await edgeRes.json();
-      if (edgeRes.ok && (edgeData?.status === "success" || edgeData?.account_name || edgeData?.data?.account_name)) {
-        const resolvedName = edgeData.account_name || edgeData.data?.account_name || edgeData.accountName;
-        return {
+      const resolvedName = String(
+        edgeData?.account_name ||
+        edgeData?.data?.account_name ||
+        edgeData?.accountName ||
+        ""
+      ).trim();
+
+      const isInvalid =
+        !resolvedName ||
+        resolvedName.length < 2 ||
+        resolvedName.toLowerCase().includes("unknown") ||
+        resolvedName.toLowerCase().includes("invalid") ||
+        resolvedName.toLowerCase().includes("error") ||
+        resolvedName.toLowerCase().includes("not found");
+
+      if (edgeRes.ok && (edgeData?.status === "success" || edgeData?.account_name) && !isInvalid) {
+        const payload = {
           status: "success",
           accountName: resolvedName,
           bankCode: edgeData.bank_code || codeToUse,
         };
+        verifiedAccountCache.set(cacheKey, payload);
+        return payload;
       } else {
-        throw new Error(edgeData?.message || "Could not resolve bank account name.");
+        const errMsg = edgeData?.message || "Could not verify account name. Please confirm your account number matches the selected bank.";
+        throw new Error(errMsg);
       }
     } catch (err) {
+      if (err.name === "AbortError") {
+        throw new Error("Bank verification timed out. You can type your account name manually below or retry.");
+      }
       console.warn("PocketFi bank verification notice:", err.message);
       throw new Error(err.message || "Failed to verify bank account.");
     }

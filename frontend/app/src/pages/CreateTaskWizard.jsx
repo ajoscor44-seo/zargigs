@@ -3,6 +3,7 @@ import ClientLayout from "../components/ClientLayout/ClientLayout";
 import { Link, useHistory } from "react-router-dom/cjs/react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../config/supabase.config";
+import { emailService } from "../services/supabaseService";
 import axios from "axios";
 import numeral from "numeral";
 import {
@@ -504,6 +505,15 @@ const CreateTaskWizard = () => {
         console.warn("Notification notice:", notifErr);
       }
 
+      // 5. Broadcast Earner Alerts (Instant email for >= ₦100, Daily Digest for < ₦100)
+      emailService.broadcastNewTaskAlert({
+        taskTitle: taskData.title.trim(),
+        reward: rewardUnit,
+        platform: taskData.category || "Marketplace Gig",
+        availableSlots: totalParticipants,
+        taskUrl: `https://www.docszar.com/tasks`,
+      }).catch(() => {});
+
       // Refresh auth user data
       if (fetchUserData) await fetchUserData();
 
@@ -638,7 +648,7 @@ const CreateTaskWizard = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Download & test the DocsZar Android App"
+                  placeholder="e.g. Download & test the DocsZAR Android App"
                   value={taskData.title}
                   onChange={(e) => setTaskData({ ...taskData, title: e.target.value })}
                   className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm font-semibold focus:ring-2 focus:ring-emerald-500/30 focus:outline-hidden"
@@ -676,7 +686,7 @@ const CreateTaskWizard = () => {
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. DocsZar App, Kuda, @MyBrand"
+                    placeholder="e.g. DocsZAR App, Kuda, @MyBrand"
                     value={taskData.appName}
                     onChange={(e) => setTaskData({ ...taskData, appName: e.target.value })}
                     className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/30 focus:outline-hidden"

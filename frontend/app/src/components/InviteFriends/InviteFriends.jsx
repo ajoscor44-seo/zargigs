@@ -26,9 +26,9 @@ const InviteFriends = () => {
 
   const referralLink = `${app_url}/ref/${currentUser?.username || "user"}`;
 
-  const message = `Introducing ${adminData?.appName || "DocsZar"}: Where Engagement Meets Earning and Growth! Dive into a platform that rewards you for social tasks like liking, following, and commenting while elevating your social media influence.\n\nEarn daily rewards, withdraw directly to your bank account, or advertise your business to thousands of verified users.\n\nRegister using my link to get started: ${referralLink}`;
+  const message = `Introducing ${adminData?.appName || "DocsZAR"}: Where Engagement Meets Earning and Growth! Dive into a platform that rewards you for social tasks like liking, following, and commenting while elevating your social media influence.\n\nEarn daily rewards, withdraw directly to your bank account, or advertise your business to thousands of verified users.\n\nRegister using my link to get started: ${referralLink}`;
 
-  const briefMessage = `Discover ${adminData?.appName || "DocsZar"}, earn daily by completing simple social media tasks or advertise to thousands! Join today: ${referralLink}`;
+  const briefMessage = `Discover ${adminData?.appName || "DocsZAR"}, earn daily by completing simple social media tasks or advertise to thousands! Join today: ${referralLink}`;
 
   const handleCopyLink = () => {
     navigator.clipboard?.writeText(referralLink);

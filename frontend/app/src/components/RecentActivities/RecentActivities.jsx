@@ -12,7 +12,7 @@ const RecentActivities = ({ recentActivities }) => {
       <div className="font-primary pb-2 border-b border-slate-100">
         <h2 className="font-black text-base sm:text-lg text-slate-900">Recent Platform Activities</h2>
         <p className="text-xs text-slate-500">
-          Real-time completed tasks and payouts across {adminData?.appName || "DocsZar"}
+          Real-time completed tasks and payouts across {adminData?.appName || "DocsZAR"}
         </p>
       </div>
       <div className="space-y-2.5">

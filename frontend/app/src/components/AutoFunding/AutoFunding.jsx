@@ -94,7 +94,7 @@ const AutoFunding = ({
 
       const payload = {
         userId: uId,
-        firstname: currentUser?.firstname || currentUser?.first_name || currentUser?.username || "DocsZar",
+        firstname: currentUser?.firstname || currentUser?.first_name || currentUser?.username || "DocsZAR",
         lastname: currentUser?.lastname || currentUser?.last_name || "Earner",
         email: currentUser?.email || "",
         phone: currentUser?.phone || "",

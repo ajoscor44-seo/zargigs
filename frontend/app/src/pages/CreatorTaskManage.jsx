@@ -19,6 +19,7 @@ import {
 } from "react-icons/fa6";
 import { MdPoll, MdOutlineRateReview } from "react-icons/md";
 import { supabase } from "../config/supabase.config";
+import { emailService } from "../services/supabaseService";
 
 const CreatorTaskManage = () => {
   const { taskId } = useParams();
@@ -124,7 +125,7 @@ const CreatorTaskManage = () => {
         // Credit worker balance
         const { data: workerData } = await supabase
           .from("users")
-          .select("id, balance")
+          .select("id, email, firstname, username, balance")
           .eq("id", subToUpdate.worker_id)
           .maybeSingle();
 
@@ -136,7 +137,7 @@ const CreatorTaskManage = () => {
             .eq("id", subToUpdate.worker_id);
         }
 
-        // Notification to worker
+        // In-app Notification to worker
         try {
           await supabase.from("notifications").insert({
             user_id: subToUpdate.worker_id,
@@ -144,6 +145,41 @@ const CreatorTaskManage = () => {
             message: `Your proof for "${task?.title || "Task"}" has been approved! ₦${rewardAmount} credited to your wallet.`,
           });
         } catch {}
+
+        // Email Notification to worker
+        if (workerData?.email) {
+          emailService.sendTaskApprovedEmail({
+            to: workerData.email,
+            name: workerData.firstname || workerData.username || "Earner",
+            taskTitle: task?.title || "Task",
+            reward: rewardAmount,
+          }).catch(() => {});
+        }
+      } else if (!isApproved && subToUpdate?.worker_id) {
+        // In-app rejection notification
+        try {
+          await supabase.from("notifications").insert({
+            user_id: subToUpdate.worker_id,
+            title: "Task Submission Update ⚠️",
+            message: `Your proof for "${task?.title || "Task"}" was rejected. Reason: ${reason || "Does not meet instructions."}`,
+          });
+        } catch {}
+
+        // Email rejection notification to worker
+        const { data: workerData } = await supabase
+          .from("users")
+          .select("id, email, firstname, username")
+          .eq("id", subToUpdate.worker_id)
+          .maybeSingle();
+
+        if (workerData?.email) {
+          emailService.sendTaskRejectedEmail({
+            to: workerData.email,
+            name: workerData.firstname || workerData.username || "Earner",
+            taskTitle: task?.title || "Task",
+            reason: reason || "Submission did not match task requirements.",
+          }).catch(() => {});
+        }
       }
 
       setFeedbackMsg(isApproved ? "Submission approved and worker credited!" : "Submission rejected.");

@@ -158,7 +158,7 @@ const TaskDetails = () => {
           ...data,
           id: data.id || id,
           title: data.title || (type === "advert" ? `Post Advert on ${resolvedPlatform.toUpperCase()} Status` : `Perform Verified ${resolvedPlatform.toUpperCase()} Task`),
-          caption: data.caption || `Promote with DocsZar on ${resolvedPlatform}. Earn daily income! Register: https://docszar.com`,
+          caption: data.caption || `Promote with DocsZAR on ${resolvedPlatform}. Earn daily income! Register: https://docszar.com`,
           link: data.link || data.action_link || (resolvedPlatform === "facebook" ? "https://facebook.com" : "https://docszar.com"),
           mediaUrl: data.mediaUrl || data.media_url || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80",
           earningPerTask: Number(data.earningPerTask) || Number(data.earner_fee) || (type === "advert" ? 100 : 25),
@@ -178,7 +178,7 @@ const TaskDetails = () => {
       setTaskDetails({
         id,
         title: type === "advert" ? `Post Advert on ${fallbackPlatform.toUpperCase()} Status` : `Perform Verified ${fallbackPlatform.toUpperCase()} Task`,
-        caption: `Check out DocsZar! Monetize your social media and earn daily cash. Join here: https://docszar.com #DocsZar`,
+        caption: `Check out DocsZAR! Monetize your social media and earn daily cash. Join here: https://docszar.com #DocsZAR`,
         link: fallbackPlatform === "facebook" ? "https://facebook.com" : "https://docszar.com",
         mediaUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80",
         earningPerTask: type === "advert" ? 100 : 25,

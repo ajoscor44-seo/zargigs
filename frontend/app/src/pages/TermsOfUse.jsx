@@ -6,7 +6,7 @@ const TermsOfUse = () => {
     {
       title: "Introduction",
       description:
-        "Welcome to DocsZar! By accessing or using our services, you agree to comply with and be bound by these Terms and Services. Please read them carefully.",
+        "Welcome to DocsZAR! By accessing or using our services, you agree to comply with and be bound by these Terms and Services. Please read them carefully.",
     },
     {
       title: "Acceptance of Terms",
@@ -25,7 +25,7 @@ const TermsOfUse = () => {
     {
       title: "Intellectual Property",
       description:
-        "All content on DocsZar, including text, graphics, logos, and software, is the property of DocsZar or its licensors and is protected by applicable laws.",
+        "All content on DocsZAR, including text, graphics, logos, and software, is the property of DocsZAR or its licensors and is protected by applicable laws.",
     },
     {
       title: "Payment and Fees",
@@ -44,7 +44,7 @@ const TermsOfUse = () => {
     {
       title: "Limitation of Liability",
       description:
-        "DocsZar is not liable for any indirect, incidental, or consequential damages arising out of your use of our services.",
+        "DocsZAR is not liable for any indirect, incidental, or consequential damages arising out of your use of our services.",
     },
     {
       title: "Contact Us",

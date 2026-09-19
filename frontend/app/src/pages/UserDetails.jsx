@@ -101,7 +101,7 @@ const UserDetails = () => {
 
   const shareOnWhatsApp = () => {
     const text = encodeURIComponent(
-      `Hey! Earn daily income by completing simple microtasks, surveys, and social tasks on ${adminData?.appName || "DocsZar"}. Sign up here: ${referralLink}`
+      `Hey! Earn daily income by completing simple microtasks, surveys, and social tasks on ${adminData?.appName || "DocsZAR"}. Sign up here: ${referralLink}`
     );
     window.open(`https://wa.me/?text=${text}`, "_blank");
   };

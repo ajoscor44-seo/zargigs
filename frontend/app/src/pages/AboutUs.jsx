@@ -4,9 +4,9 @@ import Legal from "../components/Landing/Legal";
 const AboutUs = () => {
   const data = [
     {
-      title: "Welcome to DocsZar",
+      title: "Welcome to DocsZAR",
       description:
-        "Welcome to DocsZar. DocsZar is a dynamic platform designed to connect users with a wide range of earning opportunities. Whether you're looking to complete simple tasks, promote products, or engage in various online activities, DocsZar provides a user-friendly environment to help you achieve your financial goals.",
+        "Welcome to DocsZAR. DocsZAR is a dynamic platform designed to connect users with a wide range of earning opportunities. Whether you're looking to complete simple tasks, promote products, or engage in various online activities, DocsZAR provides a user-friendly environment to help you achieve your financial goals.",
     },
     {
       title: "Our Mission",
@@ -25,7 +25,7 @@ const AboutUs = () => {
     {
       title: "Join Us",
       description:
-        "Become a part of the DocsZar community and start earning today. Whether you're a task creator looking to promote your business or a task performer seeking new opportunities, DocsZar is here to support you.",
+        "Become a part of the DocsZAR community and start earning today. Whether you're a task creator looking to promote your business or a task performer seeking new opportunities, DocsZAR is here to support you.",
     },
     {
       title: "Contact Us",

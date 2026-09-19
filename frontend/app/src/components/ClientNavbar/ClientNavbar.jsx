@@ -52,7 +52,7 @@ const ClientNavbar = () => {
           <Link to="/" className="flex items-center gap-2.5 text-decoration-none group">
             <img
               src={logo}
-              alt={adminData?.appName || "DocsZar"}
+              alt={adminData?.appName || "DocsZAR"}
               className="h-8 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform"
             />
           </Link>

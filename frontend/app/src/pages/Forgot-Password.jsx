@@ -16,7 +16,7 @@ const ForgotPassword = () => {
   const [isRecoveryMode, setIsRecoveryMode] = useState(false);
   const history = useHistory();
   const location = useLocation();
-  const appName = adminData?.appName || "DocsZar";
+  const appName = adminData?.appName || "DocsZAR";
 
   // Detect recovery session from URL hash or query params
   useEffect(() => {

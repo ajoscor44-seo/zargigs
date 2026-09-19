@@ -6,7 +6,7 @@ const PrivacyPolicy = () => {
     {
       title: "Introduction",
       description:
-        "Welcome to DocsZar.com. We value your privacy and are committed to protecting your personal data. This privacy policy explains how we collect, use, and share information about you when you use our services.",
+        "Welcome to DocsZAR.com. We value your privacy and are committed to protecting your personal data. This privacy policy explains how we collect, use, and share information about you when you use our services.",
     },
     {
       title: "Information We Collect",

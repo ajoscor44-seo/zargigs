@@ -11,7 +11,7 @@ const RefundPolicy = () => {
     {
       title: "Task Payments",
       description:
-        "Payments for completed tasks are final once they have been verified and credited to your DocsZar wallet. We do not offer refunds for completed tasks.",
+        "Payments for completed tasks are final once they have been verified and credited to your DocsZAR wallet. We do not offer refunds for completed tasks.",
     },
     {
       title: "Referral Fees",

@@ -417,36 +417,39 @@ const EditProfile = () => {
                     />
                   </div>
 
-                  <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <label className="block text-xs font-bold text-slate-600">
-                        Account Name
-                      </label>
-                      {bankVerified && (
-                        <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
-                          <FiCheck size={13} />
-                          <span>Verified</span>
-                        </span>
-                      )}
+                  {bankVerified && formData.accountName && (
+                    <div className="p-4 rounded-2xl bg-emerald-50/90 border border-emerald-200 text-emerald-950 flex items-center gap-3.5 shadow-xs animate-in fade-in zoom-in-95 duration-200">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm shadow-emerald-600/20">
+                        <FiCheck size={20} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[10px] font-black uppercase tracking-wider text-emerald-700">
+                          Verified Account Name
+                        </div>
+                        <div className="text-sm sm:text-base font-black text-slate-900 truncate mt-0.5">
+                          {formData.accountName}
+                        </div>
+                      </div>
                     </div>
-                    <input
-                      type="text"
-                      name="accountName"
-                      value={formData.accountName}
-                      onChange={handleChange}
-                      placeholder={verifyingBank ? "Verifying with bank..." : "Must match your registered bank name"}
-                      className={`w-full text-slate-800 font-semibold text-sm px-4 py-3 rounded-2xl border outline-none transition-all ${
-                        bankVerified
-                          ? "bg-emerald-50/50 border-emerald-300 text-emerald-900 font-bold"
-                          : "bg-slate-50 hover:bg-slate-100/60 focus:bg-white border-slate-200 focus:border-emerald-500"
-                      }`}
-                    />
-                    <p className="text-[11px] text-slate-400 mt-1">
-                      {bankVerified
-                        ? "✓ Verified bank account holder name."
-                        : "Type your 10-digit account number to auto-verify account name."}
-                    </p>
-                  </div>
+                  )}
+
+                  {!bankVerified && (
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="block text-xs font-bold text-slate-600">
+                          Account Name
+                        </label>
+                      </div>
+                      <input
+                        type="text"
+                        name="accountName"
+                        value={formData.accountName}
+                        onChange={handleChange}
+                        placeholder={verifyingBank ? "Verifying with PocketFi..." : "Must match your registered bank name"}
+                        className="w-full text-slate-800 font-semibold text-sm px-4 py-3 rounded-2xl border bg-slate-50 hover:bg-slate-100/60 focus:bg-white border-slate-200 focus:border-emerald-500 outline-none transition-all"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 

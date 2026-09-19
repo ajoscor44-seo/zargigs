@@ -87,7 +87,7 @@ const CreateAdvertisement = ({ setCreatingAdvert }) => {
         return alert("Please complete all required advert fields.");
       }
       const response = await axios.post("/api/v1/advertisements", advertData);
-      alert(`${response.data.message || "Advert created successfully!"}. Thanks for choosing DocsZar!`);
+      alert(`${response.data.message || "Advert created successfully!"}. Thanks for choosing DocsZAR!`);
       return setCreatingAdvert(false);
     } catch (error) {
       console.error(error);

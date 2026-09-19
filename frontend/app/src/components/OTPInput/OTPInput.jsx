@@ -1,10 +1,15 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 
-function OtpInput({ otp, setOtp, error }) {
+function OtpInput({ otp, setOtp, error, length = 6, onLengthChange }) {
   const inputRefs = useRef([]);
 
+  // Adjust refs array length
+  useEffect(() => {
+    inputRefs.current = inputRefs.current.slice(0, otp.length);
+  }, [otp.length]);
+
   const handleChange = (event, index) => {
-    const val = event.target.value.replace(/\D/g, "");
+    const val = event.target.value.replace(/[^a-zA-Z0-9]/g, "");
     if (!val) {
       const newOtp = [...otp];
       newOtp[index] = "";
@@ -26,7 +31,14 @@ function OtpInput({ otp, setOtp, error }) {
   const handleKeyDown = (event, index) => {
     if (event.key === "Backspace") {
       if (!otp[index] && index > 0) {
+        const newOtp = [...otp];
+        newOtp[index - 1] = "";
+        setOtp(newOtp);
         inputRefs.current[index - 1]?.focus();
+      } else if (otp[index]) {
+        const newOtp = [...otp];
+        newOtp[index] = "";
+        setOtp(newOtp);
       }
     } else if (event.key === "ArrowLeft" && index > 0) {
       inputRefs.current[index - 1]?.focus();
@@ -37,27 +49,35 @@ function OtpInput({ otp, setOtp, error }) {
 
   const handlePaste = (event) => {
     event.preventDefault();
-    const pasteData = event.clipboardData
+    const rawData = event.clipboardData
       .getData("text")
-      .replace(/\D/g, "")
-      .trim()
-      .slice(0, otp.length);
-    if (!pasteData) return;
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .trim();
 
+    if (!rawData) return;
+
+    // If pasted data is 8 chars and currently 6, adapt if callback provided
+    if (rawData.length >= 8 && otp.length === 6 && onLengthChange) {
+      onLengthChange(8, rawData.slice(0, 8));
+      return;
+    }
+
+    const targetLength = otp.length;
+    const cleanData = rawData.slice(0, targetLength);
     const newOtp = [...otp];
-    for (let i = 0; i < pasteData.length; i++) {
-      if (i < otp.length) {
-        newOtp[i] = pasteData[i];
-      }
+    for (let i = 0; i < targetLength; i++) {
+      newOtp[i] = cleanData[i] || "";
     }
     setOtp(newOtp);
-    const targetIndex = Math.min(pasteData.length, otp.length - 1);
+    const targetIndex = Math.min(cleanData.length, targetLength - 1);
     inputRefs.current[targetIndex]?.focus();
   };
 
   return (
     <div
-      className="flex items-center justify-center gap-2 sm:gap-2.5"
+      className={`flex items-center justify-center flex-wrap ${
+        otp.length > 6 ? "gap-1.5 sm:gap-2" : "gap-2 sm:gap-2.5"
+      }`}
       onPaste={handlePaste}
     >
       {otp.map((digit, index) => (
@@ -66,12 +86,16 @@ function OtpInput({ otp, setOtp, error }) {
           ref={(ref) => (inputRefs.current[index] = ref)}
           type="text"
           inputMode="numeric"
-          pattern="[0-9]*"
+          autoComplete="one-time-code"
           maxLength={1}
           value={digit}
           onKeyDown={(e) => handleKeyDown(e, index)}
           onChange={(event) => handleChange(event, index)}
-          className={`w-10 h-12 sm:w-11 sm:h-13 text-center text-lg sm:text-xl font-bold rounded-xl border transition-all ${
+          className={`${
+            otp.length > 6
+              ? "w-8 h-10 sm:w-9 sm:h-11 text-base sm:text-lg"
+              : "w-10 h-12 sm:w-11 sm:h-13 text-lg sm:text-xl"
+          } text-center font-black rounded-xl border transition-all ${
             error
               ? "border-rose-300 bg-rose-50/50 text-rose-900 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
               : digit
@@ -85,4 +109,5 @@ function OtpInput({ otp, setOtp, error }) {
 }
 
 export default OtpInput;
+
 

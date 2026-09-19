@@ -25,7 +25,7 @@ const SignUp = () => {
 
   const pagesData = [
     {
-      title: `Create your ${adminData?.appName || "DocsZar"} Account`,
+      title: `Create your ${adminData?.appName || "DocsZAR"} Account`,
       info: "Start earning or promote your campaigns in seconds.",
       step: 1,
     },
@@ -46,8 +46,9 @@ const SignUp = () => {
         setError("Please enter your lastname");
         return true;
       }
-      if (!formData.email?.trim() || !formData.email.includes("@")) {
-        setError("Please enter a valid email address");
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!formData.email?.trim() || !emailRegex.test(formData.email.trim())) {
+        setError("Please enter a valid email address (e.g. name@example.com)");
         return true;
       }
       if (!formData.phone?.trim()) {
@@ -100,10 +101,20 @@ const SignUp = () => {
       setIsLoading(true);
       setError(null);
 
-      const res = await signupUser(formData);
+      const cleanEmail = (formData.email || "").trim().toLowerCase();
+      const submissionData = {
+        ...formData,
+        email: cleanEmail,
+      };
+
+      const res = await signupUser(submissionData);
       if (res.failed) {
         setIsLoading(false);
-        return setError(res.message || "An error occurred during registration.");
+        const msg = res.message || "";
+        if (msg.toLowerCase().includes("rate limit") || msg.toLowerCase().includes("over_email_send_rate_limit")) {
+          return setError("Email limit exceeded on server. Please wait a few minutes before trying again.");
+        }
+        return setError(msg || "An error occurred during registration.");
       }
 
       if (formData.accountType) {
@@ -111,14 +122,18 @@ const SignUp = () => {
       }
 
       if (res.requiresVerification) {
-        sessionStorage.setItem("auth-user-email", formData.email.trim());
+        sessionStorage.setItem("auth-user-email", cleanEmail);
+        sessionStorage.setItem("auth_pending_email", cleanEmail);
+        localStorage.setItem("auth_pending_email", cleanEmail);
         setIsLoading(false);
-        return history.push("/verify-email");
+        return history.push(`/verify-email?email=${encodeURIComponent(cleanEmail)}`);
       }
 
       sessionStorage.removeItem("auth-user-email");
+      sessionStorage.removeItem("auth_pending_email");
+      localStorage.removeItem("auth_pending_email");
       try {
-        await loginUser(formData.email.trim(), formData.password);
+        await loginUser(cleanEmail, formData.password);
         await fetchUserData();
         setIsLoading(false);
         return history.push("/dashboard");

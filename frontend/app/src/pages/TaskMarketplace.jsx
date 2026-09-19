@@ -163,19 +163,29 @@ const TaskMarketplace = () => {
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Complete simple online jobs, surveys, and app tasks to earn cash.
+              {isAdvertiser
+                ? "Browse live marketplace campaigns or launch tasks to hire thousands of verified Nigerian workers."
+                : "Complete simple online jobs, surveys, and app tasks to earn cash."}
             </p>
           </div>
 
           <div className="shrink-0 flex items-center gap-2">
             {isAdvertiser ? (
-              <Link
-                to="/create-task"
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs shadow-xs transition-colors"
-              >
-                <FaPlus size={11} />
-                <span>+ Post Task Campaign</span>
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/order-history"
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs transition-colors"
+                >
+                  <span>My Campaigns</span>
+                </Link>
+                <Link
+                  to="/create-task"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs shadow-xs transition-colors"
+                >
+                  <FaPlus size={11} />
+                  <span>+ Post Task Campaign</span>
+                </Link>
+              </div>
             ) : (
               <Link
                 to="/earn"
@@ -187,6 +197,32 @@ const TaskMarketplace = () => {
             )}
           </div>
         </div>
+
+        {/* Advertiser Mode Notice Banner */}
+        {isAdvertiser && (
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm shrink-0 border border-emerald-500/30">
+                📢
+              </div>
+              <div>
+                <div className="text-xs font-black text-white">
+                  Advertiser Preview Mode
+                </div>
+                <div className="text-[11px] text-slate-300">
+                  This marketplace shows all live tasks available to earners. You can review current rates or post your campaign.
+                </div>
+              </div>
+            </div>
+            <Link
+              to="/create-task"
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs shrink-0 transition-colors"
+            >
+              <FaPlus size={11} />
+              <span>Create Campaign</span>
+            </Link>
+          </div>
+        )}
 
         {/* Search & Category Pills Filter */}
         <div className="mb-6 space-y-4">
@@ -332,6 +368,9 @@ const TaskMarketplace = () => {
                   (task.category === "advert" ? 100 : 25)
               );
 
+              const currentUserId = currentUser?.id || currentUser?._id;
+              const isMyTask = Boolean(task?.creator_id && currentUserId && String(task.creator_id) === String(currentUserId));
+
               return (
                 <div
                   key={task.id}
@@ -393,7 +432,15 @@ const TaskMarketplace = () => {
                       </span>
                     </div>
 
-                    {task.hasSubmitted ? (
+                    {isMyTask ? (
+                      <Link
+                        to={`/creator/campaigns/${task.id}`}
+                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md shadow-slate-900/20 active:scale-98 transition-all"
+                      >
+                        <span>Manage Campaign</span>
+                        <FaArrowRight size={11} />
+                      </Link>
+                    ) : task.hasSubmitted ? (
                       <div className="flex items-center gap-2">
                         <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200/80 text-xs font-black uppercase">
                           <FaCheck size={11} className="text-emerald-600" />

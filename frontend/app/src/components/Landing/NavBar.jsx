@@ -39,7 +39,7 @@ const LandingNavBar = () => {
           <Link to="/" className="flex items-center gap-2 group">
             <img
               src={logo}
-              alt="DocsZar"
+              alt="DocsZAR"
               className="h-8 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105"
             />
           </Link>

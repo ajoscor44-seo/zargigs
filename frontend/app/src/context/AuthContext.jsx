@@ -35,7 +35,7 @@ export const useAuth = () => {
 };
 
 const defaultAdminData = {
-  appName: "DocsZar",
+  appName: "DocsZAR",
   membershipFee: 1000,
   withdrawalCharges: 50,
   minWithdrawal: 1000,
@@ -43,7 +43,7 @@ const defaultAdminData = {
   fundingAccount: {
     bankName: "Moniepoint",
     accountNumber: "8123456789",
-    accountName: "DocsZar Technologies",
+    accountName: "DocsZAR Technologies",
   },
 };
 
@@ -465,6 +465,14 @@ const AuthProvider = ({ children }) => {
         (authUser.identities && authUser.identities[0]?.identity_data?.picture) ||
         "";
 
+      const isEmailVerified = Boolean(
+        authUser.email_confirmed_at ||
+        authUser.confirmed_at ||
+        meta.email_verified ||
+        profile?.is_email_verified ||
+        profile?.isEmailVerified
+      );
+
       // If profile doesn't exist yet in the public users table, create it from auth metadata
       if (!profile) {
         profile = await userService.upsertUser({
@@ -475,7 +483,7 @@ const AuthProvider = ({ children }) => {
           username: meta.username || authUser.email?.split("@")[0] || "user",
           phone: meta.phone || authUser.phone || "",
           avatar_url: googleAvatar,
-          is_email_verified: true,
+          is_email_verified: isEmailVerified,
           balance: 0,
           pending_balance: 0,
         });
@@ -487,6 +495,15 @@ const AuthProvider = ({ children }) => {
           profile.image = googleAvatar;
           userService.updateProfile(authUser.id, { avatarUrl: googleAvatar }).catch(() => {});
         }
+        // If auth says email is confirmed but DB hasn't recorded it yet, sync DB
+        if (isEmailVerified && !profile.is_email_verified) {
+          supabase
+            .from("users")
+            .update({ is_email_verified: true })
+            .eq("id", authUser.id)
+            .then(() => {})
+            .catch(() => {});
+        }
       }
 
       if (profile) {
@@ -496,6 +513,14 @@ const AuthProvider = ({ children }) => {
           profile.image = googleAvatar;
           profile.avatar_url = googleAvatar;
         }
+        profile.isEmailVerified = isEmailVerified;
+        profile.is_email_verified = isEmailVerified;
+        if (!profile.gender && meta.gender) profile.gender = meta.gender;
+        if (!profile.state && meta.state) profile.state = meta.state;
+        if (!profile.lga && meta.lga) profile.lga = meta.lga;
+        if (!profile.device && meta.device) profile.device = meta.device;
+        if (meta.completed_onboarding) profile.completed_onboarding = true;
+        profile.user_metadata = meta;
       }
 
       setCurrentUser(profile);

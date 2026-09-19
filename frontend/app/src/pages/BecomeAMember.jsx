@@ -64,7 +64,7 @@ const BecomeAMember = () => {
     },
     {
       title: `Instant ₦${numeral((adminData?.membershipFee || 1000) * 0.6).format("0,0")} Referral Bonus`,
-      desc: `Earn 60% instant direct commission whenever you refer a new member to ${adminData?.appName || "DocsZar"}.`,
+      desc: `Earn 60% instant direct commission whenever you refer a new member to ${adminData?.appName || "DocsZAR"}.`,
     },
     {
       title: "Direct & Unlimited Bank Withdrawals",

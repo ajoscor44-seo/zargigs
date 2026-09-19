@@ -182,10 +182,10 @@ const AppSidebar = () => {
                 className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                   isActive
                     ? isEarner
-                      ? "bg-emerald-50 text-emerald-700 font-extrabold shadow-2xs"
-                      : "bg-slate-100 text-slate-900 font-extrabold shadow-2xs"
+                      ? "bg-emerald-50 text-emerald-700 font-extrabold shadow-2xs border border-emerald-200/80"
+                      : "bg-slate-900 text-white font-extrabold shadow-2xs"
                     : item.isSpecial
-                    ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-extrabold border border-emerald-200/60"
+                    ? "text-emerald-700 hover:bg-emerald-50/70 font-extrabold border border-emerald-200/50 bg-emerald-50/30"
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 }`}
               >

@@ -31,7 +31,7 @@ const Services = () => {
       icon: <FaMoneyBillTrendUp size={22} className="text-purple-500" />,
       bg: "bg-purple-50 border-purple-100",
       title: "ROI-Optimized Cost Solutions",
-      desc: `Pay only for verified task completions. With ${adminData?.appName || "DocsZar"}, zero ad budget is wasted on bot clicks.`,
+      desc: `Pay only for verified task completions. With ${adminData?.appName || "DocsZAR"}, zero ad budget is wasted on bot clicks.`,
     },
   ];
 
@@ -44,7 +44,7 @@ const Services = () => {
             <div className="relative mx-auto max-w-md lg:max-w-none">
               <img
                 src={lady_advertiser}
-                alt="Grow with DocsZar"
+                alt="Grow with DocsZAR"
                 className="w-full rounded-2xl shadow-sm object-cover ring-1 ring-slate-900/5 aspect-4/5"
               />
 

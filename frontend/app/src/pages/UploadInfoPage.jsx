@@ -97,18 +97,21 @@ const UploadInfoPage = () => {
       setLoading(false);
       return setError("Please select your phone operating system (Android or iPhone).");
     }
-    if (!userLocation?.state || !userLocation?.LGA) {
+    if (!userLocation?.state || (!userLocation?.LGA && !userLocation?.lga)) {
       setLoading(false);
       return setError("Please select your State and LGA.");
     }
+
+    const cleanLga = userLocation?.LGA || userLocation?.lga || "";
+    const cleanState = userLocation?.state || "";
 
     try {
       await userService.updateProfile(userId, {
         gender: selectedGender,
         device: selectedDevice,
         deviceType: selectedDevice,
-        state: userLocation?.state,
-        lga: userLocation?.LGA,
+        state: cleanState,
+        lga: cleanLga,
         religion: religion || "",
         avatarUrl: image || currentUser?.avatarUrl,
         bankName: bank || bankDetail?.bankName,
@@ -117,7 +120,7 @@ const UploadInfoPage = () => {
         isMember: false, // Strictly Free tier by default
       });
 
-      // Send welcome email from Joscor of ZAR
+      // Send welcome email
       if (currentUser?.email) {
         emailService.sendWelcomeEmail({
           to: currentUser.email,
@@ -127,7 +130,7 @@ const UploadInfoPage = () => {
 
       await fetchUserData();
       setLoading(false);
-      window.location.href = "/dashboard";
+      history.replace("/dashboard");
     } catch (err) {
       setLoading(false);
       return setError(err.message || "Failed to complete account setup.");
@@ -248,7 +251,7 @@ const UploadInfoPage = () => {
       </main>
 
       <div className="py-3 text-center text-[10px] text-slate-400">
-        &copy; {new Date().getFullYear()} DocsZar Technologies. All rights reserved.
+        &copy; {new Date().getFullYear()} DocsZAR Technologies. All rights reserved.
       </div>
     </div>
   );

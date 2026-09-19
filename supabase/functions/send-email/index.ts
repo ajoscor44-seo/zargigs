@@ -199,6 +199,115 @@ serve(async (req) => {
         `);
         break;
 
+      case "task_rejected":
+        emailSubject = `⚠️ Task Submission Update: "${data?.taskTitle || "Task"}"`;
+        bodyHtml = wrapHtml(emailSubject, `
+          <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin-top: 0;">Proof Review Update</h2>
+          <p>${greeting}</p>
+          <p>Your submission for <strong>"${data?.taskTitle || "Task"}"</strong> was reviewed, but could not be approved by the creator.</p>
+          <div style="background-color: #fff1f2; border: 1px solid #fecdd3; border-radius: 14px; padding: 18px; margin: 20px 0;">
+            <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #e11d48; margin-bottom: 4px;">Reason Provided:</div>
+            <div style="font-size: 14px; color: #9f1239; font-weight: 600;">${data?.reason || "Proof does not match the task instructions or was incomplete."}</div>
+          </div>
+          <p style="font-size: 13px; color: #64748b;">Don't worry! New high-paying tasks are added to the marketplace every hour. Be sure to follow the step-by-step proof instructions carefully.</p>
+          <div style="text-align: center; margin-top: 24px;">
+            <a href="https://www.docszar.com/tasks" style="background-color: #0f172a; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 10px; font-weight: 700; display: inline-block;">Browse Available Tasks &rarr;</a>
+          </div>
+        `);
+        break;
+
+      case "new_submission":
+        emailSubject = `📥 New Proof Submitted: "${data?.taskTitle || "Campaign"}"`;
+        bodyHtml = wrapHtml(emailSubject, `
+          <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin-top: 0;">New Task Proof Received! 📬</h2>
+          <p>${greeting}</p>
+          <p>A worker has submitted proof for your campaign <strong>"${data?.taskTitle || "Campaign"}"</strong>.</p>
+          <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; margin: 20px 0;">
+            <div style="font-size: 13px; color: #475569; margin-bottom: 4px;"><strong>Worker:</strong> @${data?.workerUsername || "earner"}</div>
+            <div style="font-size: 13px; color: #475569;"><strong>Status:</strong> <span style="color: #0284c7; font-weight: 700;">Awaiting Your Review</span></div>
+          </div>
+          <div style="text-align: center; margin-top: 24px;">
+            <a href="${data?.manageUrl || "https://www.docszar.com/order-history"}" style="background-color: #10b981; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 10px; font-weight: 700; display: inline-block;">Review Submission Proof &rarr;</a>
+          </div>
+        `);
+        break;
+
+      case "high_paying_task_alert":
+        emailSubject = `🔥 High-Paying Task Alert: Earn ₦${Number(data?.reward || 0).toLocaleString()} for "${data?.taskTitle || "Featured Gig"}"`;
+        bodyHtml = wrapHtml(emailSubject, `
+          <div style="text-align: center; margin-bottom: 20px;">
+            <div style="display: inline-block; background: #fef2f2; color: #ef4444; width: 48px; height: 48px; border-radius: 50%; line-height: 48px; font-size: 24px;">
+              🔥
+            </div>
+          </div>
+          <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin-top: 0; text-align: center;">New High-Reward Task Available!</h2>
+          <p style="text-align: center; color: #64748b; font-size: 14px; margin-top: -6px;">A premium campaign has just been published on DocsZAR.</p>
+          <p>${greeting}</p>
+          <p>A new high-paying task is now live and accepting workers. Slots are limited and filled on a first-come, first-served basis.</p>
+          
+          <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; margin: 24px 0;">
+            <div style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">${data?.taskTitle || "Featured Task"}</div>
+            <table width="100%" style="font-size: 14px; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 6px 0; color: #64748b;">Reward Payout:</td>
+                <td style="padding: 6px 0; text-align: right; font-weight: 900; color: #10b981; font-size: 18px;">₦${Number(data?.reward || 0).toLocaleString()}</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 0; color: #64748b;">Platform / Category:</td>
+                <td style="padding: 6px 0; text-align: right; font-weight: 700; color: #1e293b; text-transform: capitalize;">${data?.platform || "Social Task"}</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 0; color: #64748b;">Available Slots:</td>
+                <td style="padding: 6px 0; text-align: right; font-weight: 700; color: #0284c7;">${data?.availableSlots || "Limited"}</td>
+              </tr>
+            </table>
+          </div>
+
+          <div style="text-align: center; margin: 28px 0;">
+            <a href="${data?.taskUrl || "https://www.docszar.com/tasks"}" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: 800; font-size: 15px; display: inline-block; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">Claim Slot & Start Task &rarr;</a>
+          </div>
+          <p style="font-size: 12px; color: #94a3b8; text-align: center;">Tip: Reserve your slot early before the maximum participant quota is reached.</p>
+        `);
+        break;
+
+      case "daily_task_digest":
+        emailSubject = `☀️ Today's Top Earning Opportunities on DocsZAR (Earn ₦${Number(data?.totalEstimatedRewards || 500).toLocaleString()}+)`;
+        bodyHtml = wrapHtml(emailSubject, `
+          <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin-top: 0;">Daily Earning Opportunities ☀️</h2>
+          <p>${greeting}</p>
+          <p>Fresh daily microtasks are now available in the marketplace! Complete quick social tasks, app downloads, and status posts to earn daily income.</p>
+          
+          <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px; padding: 18px; margin: 20px 0;">
+            <div style="font-size: 13px; font-weight: 800; text-transform: uppercase; color: #166534; margin-bottom: 6px;">Available Daily Tasks:</div>
+            <ul style="margin: 0; padding-left: 18px; color: #15803d; font-size: 14px; line-height: 1.8;">
+              <li><strong>WhatsApp Status Posts:</strong> Earn ₦100+ per post</li>
+              <li><strong>Instagram & TikTok Tasks:</strong> Earn ₦120 - ₦150 per post</li>
+              <li><strong>Social Engagements (Follows, Likes, Comments):</strong> Instant rewards</li>
+              <li><strong>App Reviews & PlayStore Gigs:</strong> Up to ₦500 per download</li>
+            </ul>
+          </div>
+
+          <div style="text-align: center; margin: 28px 0;">
+            <a href="https://www.docszar.com/earn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: 800; font-size: 14px; display: inline-block;">Browse All Daily Tasks &rarr;</a>
+          </div>
+        `);
+        break;
+
+      case "campaign_completed":
+        emailSubject = `🎯 100% Target Reached: "${data?.taskTitle || "Campaign"}" Completed!`;
+        bodyHtml = wrapHtml(emailSubject, `
+          <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin-top: 0;">Campaign Completed! 🚀</h2>
+          <p>${greeting}</p>
+          <p>All requested participants (${data?.totalParticipants || "all"} workers) have completed your campaign <strong>"${data?.taskTitle || "Campaign"}"</strong>.</p>
+          <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px; padding: 18px; margin: 20px 0;">
+            <div style="font-size: 15px; color: #166534; font-weight: 800;">Target: 100% Verified Deliveries Completed</div>
+          </div>
+          <div style="text-align: center; margin-top: 24px;">
+            <a href="https://www.docszar.com/create-task" style="background-color: #10b981; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 10px; font-weight: 700; display: inline-block;">Launch Another Campaign &rarr;</a>
+          </div>
+        `);
+        break;
+
       case "referral_earned":
         emailSubject = `🎁 Referral Commission Earned: ₦${Number(data?.amount || 0).toLocaleString()}`;
         bodyHtml = wrapHtml(emailSubject, `

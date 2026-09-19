@@ -6,7 +6,7 @@ import { FaArrowLeft, FaGift } from "react-icons/fa6";
 
 const SignupLayout = ({ children, referralUsername }) => {
   const { adminData } = useAuth();
-  const appName = adminData?.appName || "DocsZar";
+  const appName = adminData?.appName || "DocsZAR";
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center py-4 sm:py-8 px-3 sm:px-6 font-primary">

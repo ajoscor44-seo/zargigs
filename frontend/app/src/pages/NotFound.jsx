@@ -44,7 +44,7 @@ const NotFound = () => {
         </div>
 
         <p className="text-[11px] text-slate-400 font-medium">
-          {adminData?.appName || "DocsZar"} • All Rights Reserved
+          {adminData?.appName || "DocsZAR"} • All Rights Reserved
         </p>
       </div>
     </div>

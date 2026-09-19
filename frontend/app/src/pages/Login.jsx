@@ -20,7 +20,7 @@ const Login = () => {
   const [error, setError] = useState(null);
   const history = useHistory();
   const location = useLocation();
-  const appName = adminData?.appName || "DocsZar";
+  const appName = adminData?.appName || "DocsZAR";
   const isRegisteredSuccess = location.search?.includes("registered=true");
 
   const handleChange = (e) => {
@@ -49,6 +49,7 @@ const Login = () => {
           errMsg.toLowerCase().includes("not verified")
         ) {
           sessionStorage.setItem("auth-user-email", formData.email.trim());
+          localStorage.setItem("auth_pending_email", formData.email.trim());
           return setError(
             <span>
               {errMsg}{" "}

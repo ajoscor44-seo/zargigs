@@ -18,7 +18,14 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
         if (!currentUser.isEmailVerified) {
           return <Redirect to="/login" />;
         }
-        if (!currentUser.gender && !currentUser.state && !currentUser.location) {
+        const hasCompletedOnboarding = Boolean(
+          currentUser.gender ||
+          currentUser.state ||
+          currentUser.location ||
+          currentUser.completed_onboarding ||
+          currentUser.user_metadata?.completed_onboarding
+        );
+        if (!hasCompletedOnboarding) {
           return <Redirect to="/input-user-info" />;
         }
         return <Component {...props} />;

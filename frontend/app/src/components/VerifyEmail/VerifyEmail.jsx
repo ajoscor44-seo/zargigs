@@ -1,27 +1,42 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { FaArrowLeft, FaCircleCheck, FaSpinner, FaShieldHalved } from "react-icons/fa6";
+import { FaArrowLeft, FaCircleCheck, FaSpinner, FaShieldHalved, FaPenToSquare } from "react-icons/fa6";
 import { MdEmail, MdRefresh } from "react-icons/md";
 import OtpInput from "../OTPInput/OTPInput";
 import { Link, useHistory, useLocation } from "react-router-dom/cjs/react-router-dom";
 import { supabase } from "../../config/supabase.config";
 import logo from "../../assets/png/logo-color.png";
 
+const isValidEmail = (emailStr) => {
+  return typeof emailStr === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr.trim());
+};
+
+const getInitialEmail = (search, currentUser) => {
+  const params = new URLSearchParams(search);
+  const fromQuery = params.get("email");
+  if (fromQuery && isValidEmail(fromQuery)) return fromQuery.trim();
+
+  const fromLocal = localStorage.getItem("auth_pending_email");
+  if (fromLocal && isValidEmail(fromLocal)) return fromLocal.trim();
+
+  const fromSession = sessionStorage.getItem("auth-user-email") || sessionStorage.getItem("auth_pending_email");
+  if (fromSession && isValidEmail(fromSession)) return fromSession.trim();
+
+  if (currentUser?.email && isValidEmail(currentUser.email)) return currentUser.email.trim();
+
+  return fromQuery || fromSession || fromLocal || "";
+};
+
 const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
   const { verifyUserEmail, adminData, resendOTP, fetchUserData, currentUser } = useAuth();
-  const [otp, setOtp] = useState(Array(6).fill(""));
   const history = useHistory();
   const location = useLocation();
 
-  const [email, setEmail] = useState(() => {
-    const params = new URLSearchParams(location.search);
-    return (
-      params.get("email") ||
-      sessionStorage.getItem("auth-user-email") ||
-      currentUser?.email ||
-      ""
-    );
-  });
+  const [otpLength, setOtpLength] = useState(6);
+  const [otp, setOtp] = useState(Array(6).fill(""));
+  const [email, setEmail] = useState(() => getInitialEmail(location.search, currentUser));
+  const [isEditingEmail, setIsEditingEmail] = useState(() => !isValidEmail(getInitialEmail(location.search, currentUser)));
+  const [tempEmailInput, setTempEmailInput] = useState(() => getInitialEmail(location.search, currentUser));
 
   const [emailVerified, setEmailVerified] = useState(false);
   const [error, setError] = useState(null);
@@ -30,13 +45,25 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
   const [resending, setResending] = useState(false);
   const [countdown, setCountdown] = useState(0);
 
-  const appName = adminData?.appName || "DocsZar";
+  const appName = adminData?.appName || "DocsZAR";
+
+  // Switch OTP length (e.g. 6 or 8 digits)
+  const handleOtpLengthChange = (newLen, prefillVal = "") => {
+    setOtpLength(newLen);
+    const newArr = Array(newLen).fill("");
+    if (prefillVal) {
+      for (let i = 0; i < Math.min(newLen, prefillVal.length); i++) {
+        newArr[i] = prefillVal[i];
+      }
+    }
+    setOtp(newArr);
+  };
 
   // Countdown timer for resend OTP
   useEffect(() => {
     let timer;
     if (countdown > 0) {
-      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      timer = setTimeout(() => setCountdown((prev) => prev - 1), 1000);
     }
     return () => clearTimeout(timer);
   }, [countdown]);
@@ -45,7 +72,6 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
   useEffect(() => {
     const handleUrlVerification = async () => {
       try {
-        // If user is already logged in with verified email
         if (currentUser?.isEmailVerified) {
           setEmailVerified(true);
           return;
@@ -57,8 +83,10 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
         const code = queryParams.get("code");
         const urlEmail = queryParams.get("email");
 
-        if (urlEmail && !email) {
-          setEmail(urlEmail);
+        if (urlEmail && isValidEmail(urlEmail)) {
+          setEmail(urlEmail.trim());
+          setTempEmailInput(urlEmail.trim());
+          setIsEditingEmail(false);
         }
 
         // 1. Supabase PKCE Code exchange
@@ -119,47 +147,84 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
     history.push("/login");
   };
 
+  const handleSaveEmail = () => {
+    const clean = (tempEmailInput || "").trim().toLowerCase();
+    if (!isValidEmail(clean)) {
+      setError("Please enter a valid email address (e.g., yourname@example.com).");
+      return;
+    }
+    setEmail(clean);
+    localStorage.setItem("auth_pending_email", clean);
+    sessionStorage.setItem("auth-user-email", clean);
+    setIsEditingEmail(false);
+    setError(null);
+  };
+
   const verifyEmail = async (e) => {
     if (e) e.preventDefault();
     const token = otp.join("").trim();
-    if (token.length < 6) {
-      return setError("Please enter the full 6-digit verification code.");
+
+    if (token.length < otpLength) {
+      return setError(`Please enter the full ${otpLength}-character verification code.`);
     }
-    if (!email || !email.trim()) {
-      return setError("Please enter your registered email address.");
+
+    const cleanEmail = (email || tempEmailInput || "").trim().toLowerCase();
+    if (!isValidEmail(cleanEmail)) {
+      setIsEditingEmail(true);
+      return setError("Please enter a valid email address before submitting.");
     }
 
     try {
       setLoading(true);
       setError(null);
-      await verifyUserEmail(email.trim(), token, null, "signup");
+      await verifyUserEmail(cleanEmail, token, null, "signup");
       sessionStorage.removeItem("auth-user-email");
+      sessionStorage.removeItem("auth_pending_email");
+      localStorage.removeItem("auth_pending_email");
       setLoading(false);
       setEmailVerified(true);
     } catch (err) {
       setLoading(false);
       setEmailVerified(false);
-      return setError(err.message || "Invalid or expired verification code.");
+      const rawMsg = err.message || "";
+      if (rawMsg.toLowerCase().includes("rate limit") || rawMsg.toLowerCase().includes("over_email_send_rate_limit")) {
+        setError("Rate limit reached. Please wait a few minutes before trying again or request a new code.");
+      } else if (rawMsg.toLowerCase().includes("invalid email")) {
+        setIsEditingEmail(true);
+        setError("Invalid email format. Please check and re-enter your email.");
+      } else if (rawMsg.toLowerCase().includes("expired") || rawMsg.toLowerCase().includes("invalid")) {
+        setError("Invalid or expired verification code. Please check your email or click Resend Code.");
+      } else {
+        setError(rawMsg || "Failed to verify email. Please check your code.");
+      }
     }
   };
 
   const resendNewOTP = async () => {
     if (countdown > 0) return;
-    if (!email || !email.trim()) {
-      return setError("Please enter your email address to resend code.");
+    const cleanEmail = (email || tempEmailInput || "").trim().toLowerCase();
+    if (!isValidEmail(cleanEmail)) {
+      setIsEditingEmail(true);
+      return setError("Please enter a valid email address to resend the code.");
     }
+
     try {
       setResending(true);
       setError(null);
       setMessage(null);
-      const res = await resendOTP(email.trim(), "signup");
+      const res = await resendOTP(cleanEmail, "signup");
       setResending(false);
       setCountdown(60);
       setMessage(res.message || "A fresh verification code has been sent to your email.");
     } catch (err) {
       setResending(false);
       setMessage(null);
-      setError(err.message || "Failed to resend verification code.");
+      const rawMsg = err.message || "";
+      if (rawMsg.toLowerCase().includes("rate limit") || rawMsg.toLowerCase().includes("over_email_send_rate_limit")) {
+        setError("Rate limit reached on server. Please wait a few minutes before requesting another code.");
+      } else {
+        setError(rawMsg || "Failed to resend verification code.");
+      }
     }
   };
 
@@ -217,25 +282,53 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
                 Verify Your Email
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xs mx-auto">
-                We sent a 6-digit confirmation code and link to your email address:
+                We sent a confirmation code and activation link to your email address:
               </p>
 
-              {email ? (
-                <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-100 text-slate-800 rounded-full text-xs font-bold font-mono mt-3 max-w-full truncate border border-slate-200/60">
-                  <MdEmail size={14} className="text-emerald-600 shrink-0" />
-                  <span className="truncate">{email}</span>
-                </div>
-              ) : (
-                <div className="mt-3">
-                  <input
-                    type="email"
-                    placeholder="Enter your registered email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 text-center font-medium bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                  />
-                </div>
-              )}
+              {/* Editable Email Badge / Input Container */}
+              <div className="mt-3">
+                {!isEditingEmail && email ? (
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-slate-100 text-slate-800 rounded-full text-xs font-bold font-mono border border-slate-200/80 shadow-xs max-w-full">
+                    <MdEmail size={14} className="text-emerald-600 shrink-0" />
+                    <span className="truncate">{email}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setTempEmailInput(email);
+                        setIsEditingEmail(true);
+                        setError(null);
+                      }}
+                      className="text-slate-400 hover:text-emerald-600 ml-1 p-0.5 transition-colors cursor-pointer"
+                      title="Change email"
+                    >
+                      <FaPenToSquare size={12} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2 max-w-xs mx-auto">
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        type="email"
+                        placeholder="Enter your registered email"
+                        value={tempEmailInput}
+                        onChange={(e) => {
+                          setTempEmailInput(e.target.value);
+                          if (error) setError(null);
+                        }}
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 text-center font-medium bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                        autoFocus
+                      />
+                      <button
+                        type="button"
+                        onClick={handleSaveEmail}
+                        className="px-3 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 transition-colors shrink-0 cursor-pointer"
+                      >
+                        Set
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {error && (
@@ -252,15 +345,50 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
               </div>
             )}
 
+            {/* OTP Length Selector (6 or 8 digits) */}
+            <div className="flex items-center justify-between text-[11px] font-semibold text-slate-500 px-1">
+              <span>Enter verification code:</span>
+              <div className="inline-flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200/60">
+                <button
+                  type="button"
+                  onClick={() => handleOtpLengthChange(6)}
+                  className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                    otpLength === 6
+                      ? "bg-white text-emerald-700 shadow-xs"
+                      : "text-slate-500 hover:text-slate-800"
+                  }`}
+                >
+                  6-Digit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleOtpLengthChange(8)}
+                  className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                    otpLength === 8
+                      ? "bg-white text-emerald-700 shadow-xs"
+                      : "text-slate-500 hover:text-slate-800"
+                  }`}
+                >
+                  8-Digit
+                </button>
+              </div>
+            </div>
+
             {/* OTP Input Form */}
             <form onSubmit={verifyEmail} className="space-y-4">
-              <div className="flex justify-center py-2">
-                <OtpInput otp={otp} setOtp={setOtp} error={error} />
+              <div className="flex justify-center py-1">
+                <OtpInput
+                  otp={otp}
+                  setOtp={setOtp}
+                  length={otpLength}
+                  error={error}
+                  onLengthChange={handleOtpLengthChange}
+                />
               </div>
 
               <button
                 type="submit"
-                disabled={loading || otp.join("").length < 6}
+                disabled={loading || otp.join("").length < otpLength}
                 className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold text-sm rounded-xl shadow-md shadow-emerald-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
               >
                 {loading ? (
@@ -305,3 +433,4 @@ const VerifyEmail = ({ isLoginPage, setNotVerified }) => {
 };
 
 export default VerifyEmail;
+

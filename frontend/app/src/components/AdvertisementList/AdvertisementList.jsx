@@ -264,7 +264,7 @@ const AdvertisementList = ({ setCreatingAdvert }) => {
             No Active Advertisements
           </h3>
           <p className="text-xs sm:text-sm text-slate-400 max-w-sm mb-6">
-            Promote your products, channels, and services to thousands of verified users on DocsZar.
+            Promote your products, channels, and services to thousands of verified users on DocsZAR.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
