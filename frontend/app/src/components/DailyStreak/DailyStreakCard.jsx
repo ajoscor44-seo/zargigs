@@ -6,7 +6,7 @@ import { FaFire, FaGift, FaCheck, FaCrown, FaClock, FaSpinner } from "react-icon
 import numeral from "numeral";
 
 const DailyStreakCard = () => {
-  const { currentUser, fetchUserData } = useAuth();
+  const { currentUser, fetchUserData, updateUserBalance } = useAuth();
   const [streakStatus, setStreakStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState(false);
@@ -62,10 +62,32 @@ const DailyStreakCard = () => {
     try {
       setClaiming(true);
       const res = await streakService.claimDailyStreak(userId);
+      
+      // 1. Immediately update local streak status without waiting for network or refresh
+      setStreakStatus((prev) => ({
+        ...prev,
+        currentStreak: res.day,
+        lastCheckinDate: streakService.getTodayDateString(),
+        canClaimToday: false,
+        nextDayNumber: (res.day % 7) + 1,
+        todayReward: rewards[Math.min(res.day - 1, 6)]?.reward || 5,
+        totalClaimed: (prev?.totalClaimed || 0) + (res.reward || 0),
+      }));
+
+      // 2. Immediately update the global user balance in React context
+      if (updateUserBalance) {
+        if (res.newBalance !== undefined) {
+          updateUserBalance(res.newBalance);
+        } else {
+          updateUserBalance((prevBal) => (prevBal || 0) + (res.reward || 0));
+        }
+      }
+
       triggerConfetti();
       setSuccessMsg(`🎉 Claimed ₦${res.reward}.00! Added to your wallet.`);
-      await fetchUserData();
-      await loadStreak();
+
+      // 3. Background sync with backend
+      fetchUserData().catch(() => {});
     } catch (err) {
       console.warn("Claim streak error:", err.message);
     } finally {

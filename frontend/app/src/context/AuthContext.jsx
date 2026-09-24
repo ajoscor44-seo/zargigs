@@ -751,8 +751,21 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUserBalance = (newBalanceOrUpdater) => {
+    setCurrentUser((prev) => {
+      if (!prev) return prev;
+      const updatedBalance =
+        typeof newBalanceOrUpdater === "function"
+          ? newBalanceOrUpdater(prev.balance || 0)
+          : Number(newBalanceOrUpdater);
+      return { ...prev, balance: updatedBalance };
+    });
+  };
+
   const AuthValue = {
     currentUser,
+    setCurrentUser,
+    updateUserBalance,
     adminData,
     advertEarner,
     advertCreator,

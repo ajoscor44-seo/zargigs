@@ -60,10 +60,10 @@ const ReferAndEarn = ({ username }) => {
             )}
           </button>
         </div>
-        <p className="text-xs mt-2 text-center">
-          Or You can tell your referral to use your username{" "}
-          <span className="font-bold">({username})</span> under the referral
-          section at the point of registration.
+        <p className="text-xs mt-2 text-center text-slate-600">
+          Or you can tell your friends to enter your username{" "}
+          <span className="font-bold text-slate-900">({username})</span> under the referral
+          section at registration. You'll receive instant cash bonuses as soon as they proceed with account activation or complete their first withdrawal!
         </p>
       </div>
     </div>
