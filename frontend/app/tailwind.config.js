@@ -16,7 +16,9 @@ export default {
         dark: "#000000",
       },
       fontFamily: {
-        primary: ["'Plus Jakarta Sans'", "Nunito Sans", "sans-serif"],
+        sans: ["'Bricolage Grotesque'", "sans-serif"],
+        primary: ["'Bricolage Grotesque'", "sans-serif"],
+        heading: ["'Bricolage Grotesque'", "sans-serif"],
       },
       boxShadow: {
         xs: "0 1px 2px 0 rgba(0, 0, 0, 0.04)",

@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Antic+Slab&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
 
 :root {
   --primary: #10b981;
@@ -12,15 +12,23 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  font-family: 'Bricolage Grotesque', sans-serif;
+}
+
 body {
-  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-family: 'Bricolage Grotesque', sans-serif;
   color: #1e293b;
   background-color: #ffffff;
   overflow-x: hidden;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+}
+
 .font-primary {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Bricolage Grotesque', sans-serif;
 }
 
 .gradient-text {

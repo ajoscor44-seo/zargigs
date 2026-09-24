@@ -26,7 +26,9 @@ export default {
         dark: "#000000",
       },
       fontFamily: {
-        primary: ["Nunito Sans", "sans-serif"],
+        sans: ["'Bricolage Grotesque'", "sans-serif"],
+        primary: ["'Bricolage Grotesque'", "sans-serif"],
+        heading: ["'Bricolage Grotesque'", "sans-serif"],
       },
       backgroundImage: {
         "instagram-gradient":
