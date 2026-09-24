@@ -141,7 +141,7 @@ const Footer = () => {
         {/* Bottom copyright bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
           <div>
-            &copy; {new Date().getFullYear()} DocsZar Technologies. All rights reserved.
+            &copy; {new Date().getFullYear()} ZAR Media Services. All rights reserved.
           </div>
           <div className="flex items-center gap-6">
             <Link to="/privacy-policy" className="hover:text-slate-400">Privacy Policy</Link>

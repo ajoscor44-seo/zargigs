@@ -48,7 +48,7 @@ const wrapHtml = (title: string, content: string) => `
           DocsZar &bull; Empowering Nigerian Creators & Digital Earners
         </p>
         <p style="margin: 0 0 10px 0; color: #94a3b8; font-size: 11px;">
-          &copy; ${new Date().getFullYear()} DocsZar Technologies. All rights reserved.
+          &copy; ${new Date().getFullYear()} ZAR Media Services. All rights reserved.
         </p>
         <div style="font-size: 11px;">
           <a href="https://www.docszar.com/dashboard" style="color: #10b981; text-decoration: none; font-weight: 700; margin: 0 8px;">Dashboard</a> &bull;
